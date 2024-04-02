@@ -27,7 +27,9 @@ class Client:
         if api_key and api_secret:
             init_payload = {"authorization": f"Basic {api_key} {api_secret}"}
         ws_transport = WebsocketsTransport(
-            url=f"{self.ws_url}/graphql", init_payload=init_payload
+            url=f"{self.ws_url}/graphql",
+            init_payload=init_payload,
+            connect_args={"ping_interval": None},
         )
         self.ws_session = gql.Client(
             transport=ws_transport, fetch_schema_from_transport=False
