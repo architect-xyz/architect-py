@@ -1,5 +1,7 @@
 # architect_py
 
+`poetry run ariadne-codegen`
+
 ## Example
 
 ```python

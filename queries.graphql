@@ -1,0 +1,41 @@
+query BalancesForCpty($venue: VenueId!, $route: RouteId!) {
+  balancesForCpty(venue: $venue, route: $route) {
+    snapshotTs
+    product {
+      name
+    }
+    amount
+  }
+}
+
+query OpenOrdersFromOms {
+  openOrders {
+    timestamp
+    order {
+      id
+      market {
+        id
+        name
+      }
+      dir
+      quantity
+    }
+    orderState
+    filledQty
+    avgFillPrice
+    rejectReason
+  }
+}
+
+mutation SendOrder($order: CreateOrder!) {
+  createOrder(order: $order)
+}
+
+subscription TradesForMarket($market: MarketId!) {
+  trades(market: $market) {
+    time
+    price
+    size
+    direction
+  }
+}
