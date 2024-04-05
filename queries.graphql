@@ -1,21 +1,139 @@
-query BalancesForCpty($venue: VenueId!, $route: RouteId!) {
+fragment ProductFields on Product {
+  __typename
+  id
+  name
+  kind
+  markUsd
+}
+
+fragment MarketFields on Market {
+  __typename
+  venue {
+    id
+    name
+  }
+  exchangeSymbol
+  id
+  kind {
+    ... on ExchangeMarketKind {
+      __typename
+      base {
+        ...ProductFields
+      }
+      quote {
+        ...ProductFields
+      }
+    }
+    ... on PoolMarketKind {
+      __typename
+      products {
+        ...ProductFields
+      }
+    }
+  }
+  name
+  tickSize
+  stepSize
+  route {
+    id
+    name
+  }
+  isFavorite
+}
+
+fragment MarketSnapshotFields on MarketSnapshot {
+  __typename
+  marketId
+  market {
+    name
+  }
+  high24h
+  lastPrice
+  low24h
+  volume24h
+  open24h
+  bidPrice
+  askPrice
+}
+
+fragment CandleFields on CandleV1 {
+  time
+  open
+  high
+  low
+  close
+  volume
+}
+
+query GetMarket($id: MarketId!) {
+  market(id: $id) {
+    ...MarketFields
+  }
+}
+
+query GetMarkets($ids: [MarketId!]!) {
+  markets(id: $ids) {
+    ...MarketFields
+  }
+}
+
+query GetFilteredMarkets(
+  $venue: Str
+  $base: Str
+  $quote: Str
+  $underlying: Str
+  $maxResults: Int
+  $resultsOffset: Int
+  $searchString: Str
+  $onlyFavorites: Boolean
+  $sortByVolumeDesc: Boolean
+) {
+  filterMarkets(
+    filter: {
+      venue: $venue
+      base: $base
+      quote: $quote
+      underlying: $underlying
+      maxResults: $maxResults
+      resultsOffset: $resultsOffset
+      searchString: $searchString
+      onlyFavorites: $onlyFavorites
+      sortByVolumeDesc: $sortByVolumeDesc
+    }
+  ) {
+    ...MarketFields
+  }
+}
+
+query GetMarketSnapshot($id: MarketId!) {
+  marketSnapshot(market: $id) {
+    ...MarketSnapshotFields
+  }
+}
+
+query GetAllMarketSnapshots {
+  marketsSnapshots {
+    ...MarketSnapshotFields
+  }
+}
+
+query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
   balancesForCpty(venue: $venue, route: $route) {
     snapshotTs
     product {
-      name
+      ...ProductFields
     }
     amount
   }
 }
 
-query OpenOrdersFromOms {
+query GetOpenOrders {
   openOrders {
     timestamp
     order {
       id
       market {
-        id
-        name
+        ...MarketFields
       }
       dir
       quantity
@@ -27,15 +145,40 @@ query OpenOrdersFromOms {
   }
 }
 
-mutation SendOrder($order: CreateOrder!) {
-  createOrder(order: $order)
-}
-
-subscription TradesForMarket($market: MarketId!) {
+subscription SubscribeTrades($market: MarketId!) {
   trades(market: $market) {
     time
     price
     size
     direction
   }
+}
+
+subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
+  candles(market: $id, candleWidth: $width) {
+    ...CandleFields
+  }
+}
+
+subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
+  book(market: $id, precision: $precision) {
+    bids {
+      price
+      amount
+      total
+    }
+    asks {
+      price
+      amount
+      total
+    }
+  }
+}
+
+mutation SendOrder($order: CreateOrder!) {
+  createOrder(order: $order)
+}
+
+mutation CancelOrder($orderId: OrderId!) {
+  cancelOrder(orderId: $orderId)
 }

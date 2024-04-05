@@ -6,15 +6,15 @@ from typing import Any, Optional
 from .base_model import BaseModel
 
 
-class TradesForMarket(BaseModel):
-    trades: "TradesForMarketTrades"
+class SubscribeTrades(BaseModel):
+    trades: "SubscribeTradesTrades"
 
 
-class TradesForMarketTrades(BaseModel):
+class SubscribeTradesTrades(BaseModel):
     time: Optional[Any]
     price: Any
     size: Any
     direction: Optional[Any]
 
 
-TradesForMarket.model_rebuild()
+SubscribeTrades.model_rebuild()
