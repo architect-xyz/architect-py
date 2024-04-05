@@ -9,7 +9,9 @@ async def main():
     c: Client = create_client()
     market_id = "BTC Crypto/USD*COINBASE/DIRECT"
     try:
-        stream = c.subscribe_candles(market_id, width=CandleWidth.ONE_MINUTE)
+        stream = c.subscribe_candles(
+            market_id, width=CandleWidth.ONE_MINUTE, ping_interval=None
+        )
         async for item in stream:
             print(item.candles)
     except GraphQLClientHttpError as e:
