@@ -9,6 +9,7 @@ from .cancel_order import CancelOrder
 from .enums import CandleWidth
 from .get_all_market_snapshots import GetAllMarketSnapshots
 from .get_balances_for_cpty import GetBalancesForCpty
+from .get_fills import GetFills
 from .get_filtered_markets import GetFilteredMarkets
 from .get_market import GetMarket
 from .get_market_snapshot import GetMarketSnapshot
@@ -408,6 +409,90 @@ class Client(AsyncBaseClient):
         )
         data = self.get_data(response)
         return GetOpenOrders.model_validate(data)
+
+    async def get_fills(
+        self,
+        venue: Union[Optional[Any], UnsetType] = UNSET,
+        route: Union[Optional[Any], UnsetType] = UNSET,
+        base: Union[Optional[Any], UnsetType] = UNSET,
+        quote: Union[Optional[Any], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetFills:
+        query = gql(
+            """
+            query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
+              fills(venue: $venue, route: $route, base: $base, quote: $quote) {
+                normal {
+                  kind
+                  fillId
+                  orderId
+                  market {
+                    ...MarketFields
+                  }
+                  dir
+                  price
+                  quantity
+                  recvTime
+                  tradeTime
+                }
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "route": route,
+            "base": base,
+            "quote": quote,
+        }
+        response = await self.execute(
+            query=query, operation_name="GetFills", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetFills.model_validate(data)
 
     async def subscribe_trades(
         self, market: Any, **kwargs: Any

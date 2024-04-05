@@ -145,6 +145,24 @@ query GetOpenOrders {
   }
 }
 
+query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
+  fills(venue: $venue, route: $route, base: $base, quote: $quote) {
+    normal {
+      kind
+      fillId
+      orderId
+      market {
+        ...MarketFields
+      }
+      dir
+      price
+      quantity
+      recvTime
+      tradeTime
+    }
+  }
+}
+
 subscription SubscribeTrades($market: MarketId!) {
   trades(market: $market) {
     time

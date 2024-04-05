@@ -48,6 +48,12 @@ from .get_balances_for_cpty import (
     GetBalancesForCptyBalancesForCpty,
     GetBalancesForCptyBalancesForCptyProduct,
 )
+from .get_fills import (
+    GetFills,
+    GetFillsFills,
+    GetFillsFillsNormal,
+    GetFillsFillsNormalMarket,
+)
 from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
@@ -105,6 +111,10 @@ __all__ = [
     "GetBalancesForCpty",
     "GetBalancesForCptyBalancesForCpty",
     "GetBalancesForCptyBalancesForCptyProduct",
+    "GetFills",
+    "GetFillsFills",
+    "GetFillsFillsNormal",
+    "GetFillsFillsNormalMarket",
     "GetFilteredMarkets",
     "GetFilteredMarketsFilterMarkets",
     "GetMarket",
