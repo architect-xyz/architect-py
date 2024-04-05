@@ -4,6 +4,7 @@ from graphql_client.enums import CandleWidth
 from graphql_client.exceptions import GraphQLClientHttpError
 from .common import create_client
 
+
 async def main():
     c: Client = create_client()
     market_id = "BTC Crypto/USD*COINBASE/DIRECT"
@@ -14,5 +15,6 @@ async def main():
     except GraphQLClientHttpError as e:
         print(e.status_code)
         print(e.response.json())
+
 
 asyncio.run(main())
