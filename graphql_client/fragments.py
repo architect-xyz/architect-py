@@ -6,6 +6,7 @@ from typing import Any, List, Literal, Optional, Union
 from pydantic import Field
 
 from .base_model import BaseModel
+from .enums import OrderStateFlags
 
 
 class CandleFields(BaseModel):
@@ -96,7 +97,29 @@ class MarketSnapshotFieldsMarket(BaseModel):
     name: str
 
 
+class OrderLogFields(BaseModel):
+    typename__: str = Field(alias="__typename")
+    timestamp: Any
+    order: "OrderLogFieldsOrder"
+    order_state: List[OrderStateFlags] = Field(alias="orderState")
+    filled_qty: Any = Field(alias="filledQty")
+    avg_fill_price: Optional[Any] = Field(alias="avgFillPrice")
+    reject_reason: Optional[str] = Field(alias="rejectReason")
+
+
+class OrderLogFieldsOrder(BaseModel):
+    id: Any
+    market: "OrderLogFieldsOrderMarket"
+    dir: Any
+    quantity: Any
+
+
+class OrderLogFieldsOrderMarket(MarketFields):
+    pass
+
+
 CandleFields.model_rebuild()
 ProductFields.model_rebuild()
 MarketFields.model_rebuild()
 MarketSnapshotFields.model_rebuild()
+OrderLogFields.model_rebuild()

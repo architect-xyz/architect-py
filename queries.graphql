@@ -65,6 +65,23 @@ fragment CandleFields on CandleV1 {
   volume
 }
 
+fragment OrderLogFields on OrderLog {
+  __typename
+  timestamp
+  order {
+    id
+    market {
+      ...MarketFields
+    }
+    dir
+    quantity
+  }
+  orderState
+  filledQty
+  avgFillPrice
+  rejectReason
+}
+
 query GetMarket($id: MarketId!) {
   market(id: $id) {
     ...MarketFields
@@ -129,19 +146,19 @@ query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
 
 query GetOpenOrders {
   openOrders {
-    timestamp
-    order {
-      id
-      market {
-        ...MarketFields
-      }
-      dir
-      quantity
-    }
-    orderState
-    filledQty
-    avgFillPrice
-    rejectReason
+    ...OrderLogFields
+  }
+}
+
+query GetOutOrders($fromInclusive: DateTime!, $toExclusive: DateTime!) {
+  outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+    ...OrderLogFields
+  }
+}
+
+query GetOrder($orderId: OrderId!) {
+  order(orderId: $orderId) {
+    ...OrderLogFields
   }
 }
 

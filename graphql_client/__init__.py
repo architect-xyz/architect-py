@@ -37,6 +37,9 @@ from .fragments import (
     MarketFieldsVenue,
     MarketSnapshotFields,
     MarketSnapshotFieldsMarket,
+    OrderLogFields,
+    OrderLogFieldsOrder,
+    OrderLogFieldsOrderMarket,
     ProductFields,
 )
 from .get_all_market_snapshots import (
@@ -58,12 +61,9 @@ from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMa
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
-from .get_open_orders import (
-    GetOpenOrders,
-    GetOpenOrdersOpenOrders,
-    GetOpenOrdersOpenOrdersOrder,
-    GetOpenOrdersOpenOrdersOrderMarket,
-)
+from .get_open_orders import GetOpenOrders, GetOpenOrdersOpenOrders
+from .get_order import GetOrder, GetOrderOrder
+from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
 from .input_types import (
     CreateMMAlgo,
     CreateOrder,
@@ -125,8 +125,10 @@ __all__ = [
     "GetMarketsMarkets",
     "GetOpenOrders",
     "GetOpenOrdersOpenOrders",
-    "GetOpenOrdersOpenOrdersOrder",
-    "GetOpenOrdersOpenOrdersOrderMarket",
+    "GetOrder",
+    "GetOrderOrder",
+    "GetOutOrders",
+    "GetOutOrdersOutedOrders",
     "GraphQLClientError",
     "GraphQLClientGraphQLError",
     "GraphQLClientGraphQLMultiError",
@@ -145,6 +147,9 @@ __all__ = [
     "MarketFilter",
     "MarketSnapshotFields",
     "MarketSnapshotFieldsMarket",
+    "OrderLogFields",
+    "OrderLogFieldsOrder",
+    "OrderLogFieldsOrderMarket",
     "OrderSource",
     "OrderStateFlags",
     "ProductFields",

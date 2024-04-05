@@ -879,8 +879,8 @@ type QueryRoot {
   balances: [Balance!]!
   "Get all fills for a given venue, route, base, and quote."
   fills(venue: VenueId, route: RouteId, base: ProductId, quote: ProductId): Fills!
-  "Find order details by order ID."
-  order(orderId: OrderId!): Order
+  "Find order details by order ID from the OMS."
+  order(orderId: OrderId!): OrderLog
   "List all open orders known to the OMS."
   openOrders: [OrderLog!]!
   "List all recently outed orders known to the OMS."

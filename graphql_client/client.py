@@ -15,6 +15,8 @@ from .get_market import GetMarket
 from .get_market_snapshot import GetMarketSnapshot
 from .get_markets import GetMarkets
 from .get_open_orders import GetOpenOrders
+from .get_order import GetOrder
+from .get_out_orders import GetOutOrders
 from .input_types import CreateOrder
 from .send_order import SendOrder
 from .subscribe_book import SubscribeBook
@@ -343,19 +345,7 @@ class Client(AsyncBaseClient):
             """
             query GetOpenOrders {
               openOrders {
-                timestamp
-                order {
-                  id
-                  market {
-                    ...MarketFields
-                  }
-                  dir
-                  quantity
-                }
-                orderState
-                filledQty
-                avgFillPrice
-                rejectReason
+                ...OrderLogFields
               }
             }
 
@@ -394,6 +384,23 @@ class Client(AsyncBaseClient):
               isFavorite
             }
 
+            fragment OrderLogFields on OrderLog {
+              __typename
+              timestamp
+              order {
+                id
+                market {
+                  ...MarketFields
+                }
+                dir
+                quantity
+              }
+              orderState
+              filledQty
+              avgFillPrice
+              rejectReason
+            }
+
             fragment ProductFields on Product {
               __typename
               id
@@ -409,6 +416,165 @@ class Client(AsyncBaseClient):
         )
         data = self.get_data(response)
         return GetOpenOrders.model_validate(data)
+
+    async def get_out_orders(
+        self, from_inclusive: Any, to_exclusive: Any, **kwargs: Any
+    ) -> GetOutOrders:
+        query = gql(
+            """
+            query GetOutOrders($fromInclusive: DateTime!, $toExclusive: DateTime!) {
+              outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+                ...OrderLogFields
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment OrderLogFields on OrderLog {
+              __typename
+              timestamp
+              order {
+                id
+                market {
+                  ...MarketFields
+                }
+                dir
+                quantity
+              }
+              orderState
+              filledQty
+              avgFillPrice
+              rejectReason
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "fromInclusive": from_inclusive,
+            "toExclusive": to_exclusive,
+        }
+        response = await self.execute(
+            query=query, operation_name="GetOutOrders", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetOutOrders.model_validate(data)
+
+    async def get_order(self, order_id: Any, **kwargs: Any) -> GetOrder:
+        query = gql(
+            """
+            query GetOrder($orderId: OrderId!) {
+              order(orderId: $orderId) {
+                ...OrderLogFields
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment OrderLogFields on OrderLog {
+              __typename
+              timestamp
+              order {
+                id
+                market {
+                  ...MarketFields
+                }
+                dir
+                quantity
+              }
+              orderState
+              filledQty
+              avgFillPrice
+              rejectReason
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetOrder.model_validate(data)
 
     async def get_fills(
         self,

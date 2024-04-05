@@ -9,12 +9,12 @@ from .base_model import BaseModel
 from .fragments import OrderLogFields
 
 
-class GetOpenOrders(BaseModel):
-    open_orders: List["GetOpenOrdersOpenOrders"] = Field(alias="openOrders")
+class GetOutOrders(BaseModel):
+    outed_orders: List["GetOutOrdersOutedOrders"] = Field(alias="outedOrders")
 
 
-class GetOpenOrdersOpenOrders(OrderLogFields):
+class GetOutOrdersOutedOrders(OrderLogFields):
     pass
 
 
-GetOpenOrders.model_rebuild()
+GetOutOrders.model_rebuild()
