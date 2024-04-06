@@ -11,24 +11,12 @@ from architect_py.client import Client
 
 async def main():
     c = Client(
-        "https://<your installation domain>:4567",
-        "wss://<your installation domain>:4567/subscriptions",
-        "<api key>",
-        "<api secret>"
+        host="<your installation domain>",
+        api_key="<api key>",
+        api_secret="<api secret>"
     )
-    print(await c.execute_async("query { me { userId email } }"))
-    s = await c.subscribe_async(
-        """
-    subscription {
-        trades(market: "BTC Crypto/USD*COINBASE/DIRECT") {
-            time
-            direction
-            price
-            size
-        }
-    }
-    """
-    )
+    print(await c.execute("query { me { userId email } }"))
+    s = c.subscribe_trades("BTC Crypto/USD*COINBASE/DIRECT")
     async for trade in s:
         print(trade)
 
