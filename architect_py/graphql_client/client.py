@@ -21,6 +21,7 @@ from .juniper_async_base_client import JuniperAsyncBaseClient
 from .send_order import SendOrder
 from .subscribe_book import SubscribeBook
 from .subscribe_candles import SubscribeCandles
+from .subscribe_exchange_specific import SubscribeExchangeSpecific
 from .subscribe_trades import SubscribeTrades
 
 
@@ -737,6 +738,74 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="SubscribeBook", variables=variables, **kwargs
         ):
             yield SubscribeBook.model_validate(data)
+
+    async def subscribe_exchange_specific(
+        self, markets: List[Any], fields: List[str], **kwargs: Any
+    ) -> AsyncIterator[SubscribeExchangeSpecific]:
+        query = gql(
+            """
+            subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
+              exchangeSpecific(markets: $markets, fields: $fields) {
+                market {
+                  ...MarketFields
+                }
+                field
+                value
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {"markets": markets, "fields": fields}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="SubscribeExchangeSpecific",
+            variables=variables,
+            **kwargs
+        ):
+            yield SubscribeExchangeSpecific.model_validate(data)
 
     async def send_order(self, order: CreateOrder, **kwargs: Any) -> SendOrder:
         query = gql(

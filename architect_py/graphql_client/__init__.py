@@ -77,6 +77,11 @@ from .subscribe_book import (
     SubscribeBookBookBids,
 )
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
+from .subscribe_exchange_specific import (
+    SubscribeExchangeSpecific,
+    SubscribeExchangeSpecificExchangeSpecific,
+    SubscribeExchangeSpecificExchangeSpecificMarket,
+)
 from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
 
 __all__ = [
@@ -150,6 +155,9 @@ __all__ = [
     "SubscribeBookBookBids",
     "SubscribeCandles",
     "SubscribeCandlesCandles",
+    "SubscribeExchangeSpecific",
+    "SubscribeExchangeSpecificExchangeSpecific",
+    "SubscribeExchangeSpecificExchangeSpecificMarket",
     "SubscribeTrades",
     "SubscribeTradesTrades",
     "UpdateMarket",

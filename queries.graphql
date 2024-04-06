@@ -210,6 +210,16 @@ subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
   }
 }
 
+subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
+  exchangeSpecific(markets: $markets, fields: $fields) {
+    market {
+      ...MarketFields
+    }
+    field
+    value
+  }
+}
+
 mutation SendOrder($order: CreateOrder!) {
   createOrder(order: $order)
 }
