@@ -1,6 +1,14 @@
 # architect_py
 
-`poetry run ariadne-codegen`
+Clone this repository to run examples in the `examples` directory.
+
+```bash
+export ARCHITECT_HOST="<your installation domain>"
+export ARCHITECT_API_KEY="<api key>"
+export ARCHITECT_API_SECRET="<api secret>"
+
+python -m examples.trades
+```
 
 ## Example
 
@@ -23,3 +31,7 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## Maintainers
+
+`poetry run ariadne-codegen`
