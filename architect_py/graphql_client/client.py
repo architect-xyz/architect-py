@@ -3,7 +3,6 @@
 
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 
-from .async_base_client import AsyncBaseClient
 from .base_model import UNSET, UnsetType
 from .cancel_order import CancelOrder
 from .enums import CandleWidth
@@ -18,6 +17,7 @@ from .get_open_orders import GetOpenOrders
 from .get_order import GetOrder
 from .get_out_orders import GetOutOrders
 from .input_types import CreateOrder
+from .juniper_async_base_client import JuniperAsyncBaseClient
 from .send_order import SendOrder
 from .subscribe_book import SubscribeBook
 from .subscribe_candles import SubscribeCandles
@@ -28,7 +28,7 @@ def gql(q: str) -> str:
     return q
 
 
-class Client(AsyncBaseClient):
+class GraphQLClient(JuniperAsyncBaseClient):
     async def get_market(self, id: Any, **kwargs: Any) -> GetMarket:
         query = gql(
             """

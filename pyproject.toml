@@ -24,8 +24,13 @@ ariadne-codegen = {extras = ["subscriptions"], version = "^0.13.0"}
 python-dotenv = "^1.0.1"
 
 [tool.ariadne-codegen]
+target_package_path = "./architect_py"
+client_name = "GraphQLClient"
 schema_path = "schema.graphql"
 queries_path = "queries.graphql"
+base_client_name = "JuniperAsyncBaseClient"
+base_client_file_path = "./templates/juniper_async_base_client.py"
+files_to_include = ["./templates/exceptions.py"]
 
 [build-system]
 requires = ["poetry-core"]

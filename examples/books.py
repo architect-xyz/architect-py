@@ -1,7 +1,7 @@
 import asyncio
 import os
-from graphql_client.client import Client
-from graphql_client.exceptions import GraphQLClientHttpError
+from architect_py.client import Client
+from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 from .common import create_client
 
 buy_columns = "{:>15} {:>15} {:>15}"
