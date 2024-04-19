@@ -8,7 +8,7 @@ def create_client():
     host = os.environ["ARCHITECT_HOST"]
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
-    use_tls = False if (api_key == None and api_secret == None) else True
+    use_tls = api_key is not None or api_secret is not None
 
     c = Client(
         host=host,
