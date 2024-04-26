@@ -48,11 +48,18 @@ class MMAlgoKind(str, Enum):
     SPREAD = "SPREAD"
 
 
+class MinOrderQuantityUnit(str, Enum):
+    BASE = "BASE"
+    QUOTE = "QUOTE"
+
+
 class OrderSource(str, Enum):
     API = "API"
     GUI = "GUI"
     ALGO = "ALGO"
     EXTERNAL = "EXTERNAL"
+    CLI = "CLI"
+    OTHER = "OTHER"
 
 
 class OrderStateFlags(str, Enum):

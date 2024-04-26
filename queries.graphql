@@ -195,6 +195,26 @@ subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
   }
 }
 
+subscription FillsSubscription {
+  fills {
+    dir
+    fillId
+    kind
+    marketId
+    orderId
+    price
+    quantity
+    recvTime
+    tradeTime
+    market {
+      tickSize
+      stepSize
+      name
+      exchangeSymbol
+    }
+  }
+}
+
 subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
   book(market: $id, precision: $precision) {
     bids {

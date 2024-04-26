@@ -123,6 +123,7 @@ class MarketFilter(BaseModel):
     results_offset: Optional[int] = Field(alias="resultsOffset", default=None)
     only_favorites: Optional[bool] = Field(alias="onlyFavorites", default=None)
     sort_by_volume_desc: Optional[bool] = Field(alias="sortByVolumeDesc", default=None)
+    include_delisted: Optional[bool] = Field(alias="includeDelisted", default=None)
 
 
 class UpdateMarket(BaseModel):

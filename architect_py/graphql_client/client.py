@@ -6,6 +6,7 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from .base_model import UNSET, UnsetType
 from .cancel_order import CancelOrder
 from .enums import CandleWidth
+from .fills_subscription import FillsSubscription
 from .get_all_market_snapshots import GetAllMarketSnapshots
 from .get_balances_for_cpty import GetBalancesForCpty
 from .get_fills import GetFills
@@ -711,6 +712,41 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         ):
             yield SubscribeCandles.model_validate(data)
+
+    async def fills_subscription(
+        self, **kwargs: Any
+    ) -> AsyncIterator[FillsSubscription]:
+        query = gql(
+            """
+            subscription FillsSubscription {
+              fills {
+                dir
+                fillId
+                kind
+                marketId
+                orderId
+                price
+                quantity
+                recvTime
+                tradeTime
+                market {
+                  tickSize
+                  stepSize
+                  name
+                  exchangeSymbol
+                }
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="FillsSubscription",
+            variables=variables,
+            **kwargs
+        ):
+            yield FillsSubscription.model_validate(data)
 
     async def subscribe_book(
         self, id: Any, precision: Union[Optional[Any], UnsetType] = UNSET, **kwargs: Any
