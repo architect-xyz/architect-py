@@ -730,12 +730,52 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 recvTime
                 tradeTime
                 market {
-                  tickSize
-                  stepSize
-                  name
-                  exchangeSymbol
+                  ...MarketFields
                 }
               }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
             }
             """
         )

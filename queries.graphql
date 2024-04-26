@@ -207,10 +207,7 @@ subscription FillsSubscription {
     recvTime
     tradeTime
     market {
-      tickSize
-      stepSize
-      name
-      exchangeSymbol
+      ...MarketFields
     }
   }
 }

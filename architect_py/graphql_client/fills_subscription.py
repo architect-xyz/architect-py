@@ -7,6 +7,7 @@ from pydantic import Field
 
 from .base_model import BaseModel
 from .enums import FillKind
+from .fragments import MarketFields
 
 
 class FillsSubscription(BaseModel):
@@ -26,11 +27,8 @@ class FillsSubscriptionFills(BaseModel):
     market: "FillsSubscriptionFillsMarket"
 
 
-class FillsSubscriptionFillsMarket(BaseModel):
-    tick_size: Any = Field(alias="tickSize")
-    step_size: Any = Field(alias="stepSize")
-    name: str
-    exchange_symbol: str = Field(alias="exchangeSymbol")
+class FillsSubscriptionFillsMarket(MarketFields):
+    pass
 
 
 FillsSubscription.model_rebuild()
