@@ -10,11 +10,17 @@ from .enums import (
     CreateOrderType,
     CreateTimeInForceInstruction,
     FillKind,
+    MinOrderQuantityUnit,
     MMAlgoKind,
     OrderSource,
     OrderStateFlags,
     Reason,
     ReferencePrice,
+)
+from .fills_subscription import (
+    FillsSubscription,
+    FillsSubscriptionFills,
+    FillsSubscriptionFillsMarket,
 )
 from .fragments import (
     CandleFields,
@@ -102,6 +108,9 @@ __all__ = [
     "CreateTimeInForceInstruction",
     "CreateTwapAlgo",
     "FillKind",
+    "FillsSubscription",
+    "FillsSubscriptionFills",
+    "FillsSubscriptionFillsMarket",
     "GetAllMarketSnapshots",
     "GetAllMarketSnapshotsMarketsSnapshots",
     "GetBalancesForCpty",
@@ -140,6 +149,7 @@ __all__ = [
     "MarketFilter",
     "MarketSnapshotFields",
     "MarketSnapshotFieldsMarket",
+    "MinOrderQuantityUnit",
     "OrderLogFields",
     "OrderLogFieldsOrder",
     "OrderLogFieldsOrderMarket",

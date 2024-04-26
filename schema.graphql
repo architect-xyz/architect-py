@@ -48,11 +48,18 @@ enum MMAlgoKind {
   SPREAD
 }
 
+enum MinOrderQuantityUnit {
+  BASE
+  QUOTE
+}
+
 enum OrderSource {
   API
   GUI
   ALGO
   EXTERNAL
+  CLI
+  OTHER
 }
 
 "The state of an order"
@@ -199,6 +206,7 @@ input MarketFilter {
   resultsOffset: Int
   onlyFavorites: Boolean
   sortByVolumeDesc: Boolean
+  includeDelisted: Boolean
 }
 
 input UpdateMarket {
@@ -212,6 +220,19 @@ input UpdateMarket {
   name itself, as they are 1-1.
 """
 scalar AccountId
+
+"""
+  Components within an Architect installation are uniquely identified by a 16-bit integer
+  in the range `1..<0xFFFF`.
+
+  The integers 0 and 0xFFFF are reserved as special values and MUST NOT be used as component IDs.
+
+  Canonical meanings of special values:
+
+  * `0x0` -- None/executor/broadcast
+  * `0xFFFF` -- Self/loopback
+"""
+scalar ComponentId
 
 """
   Combined date and time (with time zone) in [RFC 3339][0] format.
@@ -310,6 +331,7 @@ type AberrantFill {
   quantity: Decimal
   price: Decimal
   dir: Dir
+  isMaker: Boolean
   recvTime: DateTime
   tradeTime: DateTime
 }
@@ -388,6 +410,10 @@ type BookLevel {
 type Cancel {
   orderId: OrderId!
   order: Order
+}
+
+type CancelAll {
+  venueId: VenueId
 }
 
 """
@@ -554,6 +580,9 @@ type CmeProductGroupInfo {
   maxBidAskConstraint: String
   altMinQuoteLife: String
   subfraction: String
+  url: String
+  category: String
+  subCategory: String
 }
 
 type CoinInfo {
@@ -575,6 +604,13 @@ type CoinInfo {
   marketCap: Decimal
   fullyDilutedMarketCap: Decimal
   tags: [String!]!
+}
+
+type CptyInfo {
+  componentId: ComponentId!
+  venue: Venue!
+  route: Route!
+  canSetCredentials: Boolean!
 }
 
 type ExchangeMarketKind {
@@ -687,7 +723,11 @@ type Market {
   exchangeSymbol: String!
   tickSize: Decimal!
   stepSize: Decimal!
+  minOrderQuantity: Decimal!
+  minOrderQuantityUnit: MinOrderQuantityUnit!
+  isDelisted: Boolean!
   isFavorite: Boolean!
+  cmeProductGroupInfo: CmeProductGroupInfo
 }
 
 type MarketSnapshot {
@@ -707,14 +747,19 @@ type MutationRoot {
   createApiKey: ApiKey!
   "Remove an API key"
   removeApiKey(apiKey: String!): Boolean!
-  "Set credentials for a given component kind."
-  setCredentials(kind: String!, credentials: String!): Boolean!
+  "Set credentials for a given component id."
+  setCredentials(componentId: ComponentId!, credentials: String!): Boolean!
   "Set/unset market favorited by current user."
   updateMarket(payload: UpdateMarket!): Market
   "Send an order to Architect."
   createOrder(order: CreateOrder!): OrderId!
   "Cancel an Architect order."
   cancelOrder(orderId: OrderId!): OrderId!
+  """
+    Cancel all orders on component, irregardless of architect order state
+    If venue is speicifed it will act as filter if the component manages multiple counterparties (oms for example)
+  """
+  cancelAllOrders(venueId: VenueId): VenueId
   sendAlgoControlCommand(orderId: OrderId!, command: AlgoControlCommand!): OrderId!
   "Create a new TWAP algo order."
   createTwapAlgo(twapAlgo: CreateTwapAlgo!): OrderId!
@@ -816,6 +861,7 @@ type Product {
   strike: String
   optionType: String
   markUsd: Decimal
+  multiplier: Decimal!
 }
 
 type QueryRoot {
@@ -823,8 +869,7 @@ type QueryRoot {
   me: AuthInfo!
   "List the API keys associated with the current user."
   listApiKeys: [ApiKey!]!
-  "Given component of `kind`, return whether it is publishing a set-credentials RPC."
-  canSetCredentials(kind: String!): Boolean!
+  cptys: [CptyInfo!]!
   """
     List all known/mapped accounts.  Accounts are generally defined by exchange connectors
     or their respective exchange configs.  Refer to the User Guide for more information
@@ -923,6 +968,7 @@ type QueryRoot {
 
 type Reject {
   orderId: OrderId!
+  order: Order
   reason: String!
 }
 
@@ -978,6 +1024,8 @@ type SubscriptionRoot {
   rfqs(base: ProductId!, quote: ProductId!, venues: [VenueId!]!, quantity: Decimal!): [RfqResponse!]!
   "Subscribe to all orderflow."
   orderflow: Orderflow!
+  "Subscribe to all fills"
+  fills: Fill!
   pollOpenOrders(pollIntervalMs: Int!): [OrderLog!]!
   pollFills(pollIntervalMs: Int!, venue: VenueId, route: RouteId, base: ProductId, quote: ProductId): Fills!
   pollBalances(pollIntervalMs: Int!): [Balance!]!
@@ -1044,5 +1092,5 @@ union MarketKind = ExchangeMarketKind | PoolMarketKind | UnknownMarketKind
 
 union OrderType = LimitOrderType | StopLossLimitOrderType | TakeProfitLimitOrderType
 
-union Orderflow = OmsOrderUpdate | Cancel | Ack | Reject | Fill | AberrantFill | Out
+union Orderflow = OmsOrderUpdate | Cancel | CancelAll | Ack | Reject | Fill | AberrantFill | Out
 
