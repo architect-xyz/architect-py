@@ -88,6 +88,16 @@ from .subscribe_exchange_specific import (
     SubscribeExchangeSpecificExchangeSpecific,
     SubscribeExchangeSpecificExchangeSpecificMarket,
 )
+from .subscribe_orderflow import (
+    SubscribeOrderflow,
+    SubscribeOrderflowOrderflowAberrantFill,
+    SubscribeOrderflowOrderflowAck,
+    SubscribeOrderflowOrderflowCancel,
+    SubscribeOrderflowOrderflowFill,
+    SubscribeOrderflowOrderflowOmsOrderUpdate,
+    SubscribeOrderflowOrderflowOut,
+    SubscribeOrderflowOrderflowReject,
+)
 from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
 
 __all__ = [
@@ -168,6 +178,14 @@ __all__ = [
     "SubscribeExchangeSpecific",
     "SubscribeExchangeSpecificExchangeSpecific",
     "SubscribeExchangeSpecificExchangeSpecificMarket",
+    "SubscribeOrderflow",
+    "SubscribeOrderflowOrderflowAberrantFill",
+    "SubscribeOrderflowOrderflowAck",
+    "SubscribeOrderflowOrderflowCancel",
+    "SubscribeOrderflowOrderflowFill",
+    "SubscribeOrderflowOrderflowOmsOrderUpdate",
+    "SubscribeOrderflowOrderflowOut",
+    "SubscribeOrderflowOrderflowReject",
     "SubscribeTrades",
     "SubscribeTradesTrades",
     "UpdateMarket",

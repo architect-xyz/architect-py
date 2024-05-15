@@ -23,6 +23,7 @@ from .send_order import SendOrder
 from .subscribe_book import SubscribeBook
 from .subscribe_candles import SubscribeCandles
 from .subscribe_exchange_specific import SubscribeExchangeSpecific
+from .subscribe_orderflow import SubscribeOrderflow
 from .subscribe_trades import SubscribeTrades
 
 
@@ -912,3 +913,50 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return CancelOrder.model_validate(data)
+
+    async def subscribe_orderflow(
+        self, **kwargs: Any
+    ) -> AsyncIterator[SubscribeOrderflow]:
+        query = gql(
+            """
+            subscription SubscribeOrderflow {
+              orderflow {
+                __typename
+                ... on Ack {
+                  orderId
+                }
+                ... on Reject {
+                  __typename
+                  orderId
+                  reason
+                }
+                ... on OmsOrderUpdate {
+                  orderId
+                  orderState: state
+                  filledQty
+                  avgFillPrice
+                }
+                ... on Fill {
+                  fillOrderId: orderId
+                  fillKind: kind
+                  marketId
+                  dir
+                  price
+                  quantity
+                  tradeTime
+                }
+                ... on Out {
+                  orderId
+                }
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="SubscribeOrderflow",
+            variables=variables,
+            **kwargs
+        ):
+            yield SubscribeOrderflow.model_validate(data)
