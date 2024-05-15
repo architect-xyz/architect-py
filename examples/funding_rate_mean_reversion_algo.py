@@ -49,6 +49,21 @@ async def update_marketdata(c: Client):
                 best_ask_price = value
 
 
+async def subscribe_and_print_orderflow(c: Client):
+    try:
+        stream = c.subscribe_orderflow()
+        async for item in stream:
+            if item.orderflow.typename__ == "Ack":
+                print(f"<!> ACK {item.orderflow.order_id}")
+            elif item.orderflow.typename__ == "Reject":
+                print(f"<!> REJECT {item.orderflow.order_id}: {item.orderflow.reason}")
+            elif item.orderflow.typename__ == "Out":
+                print(f"<!> OUT {item.orderflow.order_id}")
+    except GraphQLClientHttpError as e:
+        print(e.status_code)
+        print(e.response.json())
+
+
 async def step_to_target_position(c: Client):
     while True:
         await asyncio.sleep(10)
@@ -112,7 +127,10 @@ async def print_info(c: Client):
 async def main():
     c = create_client()
     await asyncio.gather(
-        update_marketdata(c), step_to_target_position(c), print_info(c)
+        update_marketdata(c),
+        step_to_target_position(c),
+        print_info(c),
+        subscribe_and_print_orderflow(c),
     )
 
 
