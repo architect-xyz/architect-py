@@ -1017,6 +1017,16 @@ files = [
 requests = ">=2.0.1,<3.0.0"
 
 [[package]]
+name = "simplewebsocketserver"
+version = "0.1.2"
+description = "A Simple Websocket Server written in Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "SimpleWebSocketServer-0.1.2.tar.gz", hash = "sha256:48615b8769d6a01e58375a3399117c9c240ba649a15f8c7720d68b23949eff66"},
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -1289,4 +1299,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4"
-content-hash = "91cda81ccce685cc7ce93f8b7df761fa0dc3e0c144eaaf22ee2d5ba9dd39294b"
+content-hash = "cd8cfc16527e9ffc169e74c0fefdc572a0a83370c441fb1053ecd22faa392a46"

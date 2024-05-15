@@ -22,6 +22,7 @@ websockets = "^11"
 [tool.poetry.group.dev.dependencies]
 ariadne-codegen = {extras = ["subscriptions"], version = "^0.13.0"}
 python-dotenv = "^1.0.1"
+simplewebsocketserver = "^0.1.2"
 
 [tool.ariadne-codegen]
 target_package_path = "./architect_py"
