@@ -195,6 +195,23 @@ subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
   }
 }
 
+subscription FillsSubscription {
+  fills {
+    dir
+    fillId
+    kind
+    marketId
+    orderId
+    price
+    quantity
+    recvTime
+    tradeTime
+    market {
+      ...MarketFields
+    }
+  }
+}
+
 subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
   book(market: $id, precision: $precision) {
     bids {
@@ -226,4 +243,36 @@ mutation SendOrder($order: CreateOrder!) {
 
 mutation CancelOrder($orderId: OrderId!) {
   cancelOrder(orderId: $orderId)
+}
+
+subscription SubscribeOrderflow {
+  orderflow {
+    __typename
+    ... on Ack {
+      orderId
+    }
+    ... on Reject {
+      __typename
+      orderId
+      reason
+    }
+    ... on OmsOrderUpdate {
+      orderId
+      orderState: state
+      filledQty
+      avgFillPrice
+    }
+    ... on Fill {
+      fillOrderId: orderId
+      fillKind: kind
+      marketId
+      dir
+      price
+      quantity
+      tradeTime
+    }
+    ... on Out {
+      orderId
+    }
+  }
 }
