@@ -31,7 +31,7 @@ following from the repository root.
 
 ```bash
 poetry shell
-poetry install 
+poetry install --sync 
 
 export ARCHITECT_HOST="<your installation domain>"
 export ARCHITECT_API_KEY="<api key>"
