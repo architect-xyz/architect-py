@@ -281,8 +281,8 @@ subscription SubscribeOrderflow {
   }
 }
 
-query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal) {
-  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision) {
+query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSeconds: Int) {
+  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSeconds) {
     timestamp
     bids {
       price

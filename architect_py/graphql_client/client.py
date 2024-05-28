@@ -971,12 +971,18 @@ class GraphQLClient(JuniperAsyncBaseClient):
         market: Any,
         num_levels: int,
         precision: Union[Optional[Any], UnsetType] = UNSET,
+        retain_seconds: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
     ) -> GetBookSnapshot:
         query = gql(
             """
-            query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal) {
-              bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision) {
+            query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSeconds: Int) {
+              bookSnapshot(
+                market: $market
+                numLevels: $numLevels
+                precision: $precision
+                retainSubscriptionForNSeconds: $retainSeconds
+              ) {
                 timestamp
                 bids {
                   price
@@ -996,6 +1002,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
             "market": market,
             "numLevels": num_levels,
             "precision": precision,
+            "retainSeconds": retain_seconds,
         }
         response = await self.execute(
             query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
