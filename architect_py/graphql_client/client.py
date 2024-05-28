@@ -9,6 +9,7 @@ from .enums import CandleWidth
 from .fills_subscription import FillsSubscription
 from .get_all_market_snapshots import GetAllMarketSnapshots
 from .get_balances_for_cpty import GetBalancesForCpty
+from .get_book_snapshot import GetBookSnapshot
 from .get_fills import GetFills
 from .get_filtered_markets import GetFilteredMarkets
 from .get_market import GetMarket
@@ -315,12 +316,16 @@ class GraphQLClient(JuniperAsyncBaseClient):
         query = gql(
             """
             query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
-              balancesForCpty(venue: $venue, route: $route) {
+              accountSummariesForCpty(venue: $venue, route: $route) {
                 snapshotTs
-                product {
-                  ...ProductFields
+                byAccount {
+                  balances {
+                    product {
+                      ...ProductFields
+                    }
+                    amount
+                  }
                 }
-                amount
               }
             }
 
@@ -960,3 +965,40 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         ):
             yield SubscribeOrderflow.model_validate(data)
+
+    async def get_book_snapshot(
+        self,
+        market: Any,
+        num_levels: int,
+        precision: Union[Optional[Any], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetBookSnapshot:
+        query = gql(
+            """
+            query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal) {
+              bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision) {
+                timestamp
+                bids {
+                  price
+                  amount
+                  total
+                }
+                asks {
+                  price
+                  amount
+                  total
+                }
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "market": market,
+            "numLevels": num_levels,
+            "precision": precision,
+        }
+        response = await self.execute(
+            query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetBookSnapshot.model_validate(data)

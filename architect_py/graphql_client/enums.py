@@ -25,6 +25,19 @@ class CandleWidth(str, Enum):
     ONE_DAY = "ONE_DAY"
 
 
+class CmeSecurityType(str, Enum):
+    CASH = "CASH"
+    COMBO = "COMBO"
+    FRA = "FRA"
+    FUT = "FUT"
+    FWD = "FWD"
+    IDX = "IDX"
+    INDEX = "INDEX"
+    IRS = "IRS"
+    OOC = "OOC"
+    OOF = "OOF"
+
+
 class CreateOrderType(str, Enum):
     LIMIT = "LIMIT"
     STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"

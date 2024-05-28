@@ -135,12 +135,16 @@ query GetAllMarketSnapshots {
 }
 
 query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
-  balancesForCpty(venue: $venue, route: $route) {
+  accountSummariesForCpty(venue: $venue, route: $route) {
     snapshotTs
-    product {
-      ...ProductFields
+    byAccount {
+      balances {
+        product {
+          ...ProductFields
+        }
+        amount
+      }
     }
-    amount
   }
 }
 
@@ -273,6 +277,22 @@ subscription SubscribeOrderflow {
     }
     ... on Out {
       orderId
+    }
+  }
+}
+
+query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal) {
+  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision) {
+    timestamp
+    bids {
+      price
+      amount
+      total
+    }
+    asks {
+      price
+      amount
+      total
     }
   }
 }

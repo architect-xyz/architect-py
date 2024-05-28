@@ -25,6 +25,19 @@ enum CandleWidth {
   ONE_DAY
 }
 
+enum CmeSecurityType {
+  CASH
+  COMBO
+  FRA
+  FUT
+  FWD
+  IDX
+  INDEX
+  IRS
+  OOC
+  OOF
+}
+
 enum CreateOrderType {
   LIMIT
   STOP_LOSS_LIMIT
@@ -235,6 +248,21 @@ scalar AccountId
 scalar ComponentId
 
 """
+  Date in the proleptic Gregorian calendar (without time zone).
+
+  Represents a description of the date (as used for birthdays, for example).
+  It cannot represent an instant on the time-line.
+
+  [`Date` scalar][1] compliant.
+
+  See also [`chrono::NaiveDate`][2] for details.
+
+  [1]: https://graphql-scalars.dev/docs/scalars/date
+  [2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
+"""
+scalar Date
+
+"""
   Combined date and time (with time zone) in [RFC 3339][0] format.
 
   Represents a description of an exact instant on the time-line (such as the
@@ -334,11 +362,29 @@ type AberrantFill {
   isMaker: Boolean
   recvTime: DateTime
   tradeTime: DateTime
+  trader: UserId
 }
 
 type Account {
   id: AccountId!
-  name: Str!
+  name: String!
+  venueId: VenueId!
+  venue: Venue
+}
+
+type AccountSummaries {
+  snapshotTs: DateTime!
+  byAccount: [AccountSummary!]!
+}
+
+type AccountSummary {
+  venueId: VenueId!
+  venue: Venue
+  accountId: AccountId!
+  account: Account
+  balances: [Balance!]!
+  positions: [Position!]!
+  profitLoss: Decimal
 }
 
 type Ack {
@@ -356,6 +402,7 @@ type AlgoLog {
 type AlgoOrder {
   orderId: OrderId!
   trader: UserId!
+  account: AccountId
   algo: Str!
 }
 
@@ -385,13 +432,18 @@ type AuthInfo {
 }
 
 type Balance {
-  venueId: VenueId!
   accountId: AccountId!
-  productId: ProductId!
-  snapshotTs: DateTime!
-  amount: Decimal!
+  account: Account
+  venueId: VenueId!
   venue: Venue
+  productId: ProductId!
   product: Product
+  amount: Decimal
+  totalMargin: Decimal
+  positionMargin: Decimal
+  purchasingPower: Decimal
+  cashExcess: Decimal
+  yesterdayBalance: Decimal
 }
 
 type Book {
@@ -434,7 +486,7 @@ type CandleV1 {
 type CmeProductGroupInfo {
   productGuid: String
   productName: String
-  securityType: String
+  securityType: CmeSecurityType!
   clearingSymbol: String
   masterSymbol: String
   exchangeClearing: String
@@ -572,7 +624,7 @@ type CmeProductGroupInfo {
   settlCcy: String
   isEfixProduct: String
   marketData: String
-  fixedPayout: String
+  fixedPayout: Float
   sizePriorityQty: String
   topEligible: String
   altGlobexMinTick: String
@@ -726,6 +778,8 @@ type Market {
   minOrderQuantity: Decimal!
   minOrderQuantityUnit: MinOrderQuantityUnit!
   isDelisted: Boolean!
+  initialMargin: Decimal
+  maintenanceMargin: Decimal
   isFavorite: Boolean!
   cmeProductGroupInfo: CmeProductGroupInfo
 }
@@ -829,6 +883,22 @@ type PoolMarketKind {
   products: [Product!]!
 }
 
+type Position {
+  accountId: AccountId!
+  account: Account
+  venueId: VenueId!
+  venue: Venue
+  marketId: MarketId!
+  market: Market
+  quantity: Decimal
+  averagePrice: Decimal
+  tradeTime: DateTime
+  tradeDate: Date
+  dir: Dir!
+  breakEvenPrice: Decimal
+  liquidationPrice: Decimal
+}
+
 type PovAlgoOrder {
   name: String!
   orderId: OrderId!
@@ -871,11 +941,14 @@ type QueryRoot {
   listApiKeys: [ApiKey!]!
   cptys: [CptyInfo!]!
   """
-    List all known/mapped accounts.  Accounts are generally defined by exchange connectors
-    or their respective exchange configs.  Refer to the User Guide for more information
-    on how Architect names and manages accounts.
+    List all known/mapped accounts relevant to the logged-in user.
+
+    Accounts are generally defined by exchange connectors or their respective exchange configs.
+    Refer to the User Guide for more information on how Architect names and manages accounts.
+
+    Set `reload_cache` to `true` to force a reload of accounts.
   """
-  accounts: [Account!]!
+  accounts(reloadCache: Boolean): [Account!]!
   """
     List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
     route IDs are fully determined by their string names as UUIDv5.
@@ -906,6 +979,7 @@ type QueryRoot {
   market(id: MarketId!): Market
   "Find markets and their details by some filtering criteria."
   filterMarkets(filter: MarketFilter!): [Market!]!
+  bookSnapshot(market: MarketId!, numLevels: Int!, precision: Decimal, retainSubscriptionForNSeconds: Int): Book!
   """
     Get a snapshot of the marketdata for a given market, at a given time.  If no
     latest_at_or_before is provided, the most recent snapshot is returned.
@@ -919,9 +993,9 @@ type QueryRoot {
   "Get a snapshot of the options data for a given underlying, at a given time."
   optionsMarketSnapshots(underlying: ProductId!, latestAtOrBefore: DateTime): [OptionsMarketSnapshot!]!
   "Get the current known balances and positions for a given counterparty."
-  balancesForCpty(venue: VenueId!, route: RouteId!): [Balance!]!
+  accountSummariesForCpty(venue: VenueId!, route: RouteId!): AccountSummaries!
   "Get all current known balances and positions for all counterparties."
-  balances: [Balance!]!
+  accountSummaries: [AccountSummaries!]!
   "Get all fills for a given venue, route, base, and quote."
   fills(venue: VenueId, route: RouteId, base: ProductId, quote: ProductId): Fills!
   "Find order details by order ID from the OMS."
@@ -1028,7 +1102,7 @@ type SubscriptionRoot {
   fills: Fill!
   pollOpenOrders(pollIntervalMs: Int!): [OrderLog!]!
   pollFills(pollIntervalMs: Int!, venue: VenueId, route: RouteId, base: ProductId, quote: ProductId): Fills!
-  pollBalances(pollIntervalMs: Int!): [Balance!]!
+  pollAccountSummaries(pollIntervalMs: Int!): [AccountSummaries!]!
   pollAlgoStatus(pollIntervalMs: Int!, orderId: OrderId): [AlgoStatus!]!
   pollTwapAlgoStatus(pollIntervalMs: Int!, orderId: OrderId): [TwapStatus!]!
   pollMmAlgoStatus(pollIntervalMs: Int!, orderId: OrderId): [MMAlgoStatus!]!

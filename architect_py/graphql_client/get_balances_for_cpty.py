@@ -10,20 +10,34 @@ from .fragments import ProductFields
 
 
 class GetBalancesForCpty(BaseModel):
-    balances_for_cpty: List["GetBalancesForCptyBalancesForCpty"] = Field(
-        alias="balancesForCpty"
+    account_summaries_for_cpty: "GetBalancesForCptyAccountSummariesForCpty" = Field(
+        alias="accountSummariesForCpty"
     )
 
 
-class GetBalancesForCptyBalancesForCpty(BaseModel):
+class GetBalancesForCptyAccountSummariesForCpty(BaseModel):
     snapshot_ts: Any = Field(alias="snapshotTs")
-    product: Optional["GetBalancesForCptyBalancesForCptyProduct"]
-    amount: Any
+    by_account: List["GetBalancesForCptyAccountSummariesForCptyByAccount"] = Field(
+        alias="byAccount"
+    )
 
 
-class GetBalancesForCptyBalancesForCptyProduct(ProductFields):
+class GetBalancesForCptyAccountSummariesForCptyByAccount(BaseModel):
+    balances: List["GetBalancesForCptyAccountSummariesForCptyByAccountBalances"]
+
+
+class GetBalancesForCptyAccountSummariesForCptyByAccountBalances(BaseModel):
+    product: Optional[
+        "GetBalancesForCptyAccountSummariesForCptyByAccountBalancesProduct"
+    ]
+    amount: Optional[Any]
+
+
+class GetBalancesForCptyAccountSummariesForCptyByAccountBalancesProduct(ProductFields):
     pass
 
 
 GetBalancesForCpty.model_rebuild()
-GetBalancesForCptyBalancesForCpty.model_rebuild()
+GetBalancesForCptyAccountSummariesForCpty.model_rebuild()
+GetBalancesForCptyAccountSummariesForCptyByAccount.model_rebuild()
+GetBalancesForCptyAccountSummariesForCptyByAccountBalances.model_rebuild()
