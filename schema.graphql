@@ -50,6 +50,11 @@ enum CreateTimeInForceInstruction {
   IOC
 }
 
+enum EnvironmentKind {
+  PLATFORM
+  BROKERAGE
+}
+
 enum FillKind {
   NORMAL
   REVERSAL
@@ -363,6 +368,7 @@ type AberrantFill {
   recvTime: DateTime
   tradeTime: DateTime
   trader: UserId
+  fee: Fee
 }
 
 type Account {
@@ -426,11 +432,6 @@ type ApiKey {
   apiSecret: String!
 }
 
-type AuthInfo {
-  userId: UserId!
-  email: String!
-}
-
 type Balance {
   accountId: AccountId!
   account: Account
@@ -443,6 +444,7 @@ type Balance {
   positionMargin: Decimal
   purchasingPower: Decimal
   cashExcess: Decimal
+  marginExcess: Decimal
   yesterdayBalance: Decimal
 }
 
@@ -665,6 +667,11 @@ type CptyInfo {
   canSetCredentials: Boolean!
 }
 
+type Environment {
+  kind: EnvironmentKind!
+  id: String!
+}
+
 type ExchangeMarketKind {
   base: Product!
   quote: Product!
@@ -674,6 +681,11 @@ type ExchangeSpecificUpdate {
   market: Market!
   field: String!
   value: Decimal
+}
+
+type Fee {
+  amount: Decimal!
+  feeCurrency: ProductId!
 }
 
 type Fill {
@@ -781,6 +793,8 @@ type Market {
   initialMargin: Decimal
   maintenanceMargin: Decimal
   isFavorite: Boolean!
+  lastTradingDate: DateTime
+  firstNoticeDate: DateTime
   cmeProductGroupInfo: CmeProductGroupInfo
 }
 
@@ -794,6 +808,12 @@ type MarketSnapshot {
   high24h: Decimal
   low24h: Decimal
   volume24h: Decimal
+}
+
+type Me {
+  userId: UserId!
+  email: String!
+  environment: Environment!
 }
 
 type MutationRoot {
@@ -810,7 +830,7 @@ type MutationRoot {
   "Cancel an Architect order."
   cancelOrder(orderId: OrderId!): OrderId!
   """
-    Cancel all orders on component, irregardless of architect order state
+    Cancel all orders on component, regardless of architect order state
     If venue is speicifed it will act as filter if the component manages multiple counterparties (oms for example)
   """
   cancelAllOrders(venueId: VenueId): VenueId
@@ -935,8 +955,9 @@ type Product {
 }
 
 type QueryRoot {
+  version: String!
   "Return the current user's authentication information."
-  me: AuthInfo!
+  me: Me!
   "List the API keys associated with the current user."
   listApiKeys: [ApiKey!]!
   cptys: [CptyInfo!]!
@@ -945,10 +966,8 @@ type QueryRoot {
 
     Accounts are generally defined by exchange connectors or their respective exchange configs.
     Refer to the User Guide for more information on how Architect names and manages accounts.
-
-    Set `reload_cache` to `true` to force a reload of accounts.
   """
-  accounts(reloadCache: Boolean): [Account!]!
+  accounts: [Account!]!
   """
     List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
     route IDs are fully determined by their string names as UUIDv5.
@@ -1006,6 +1025,29 @@ type QueryRoot {
   outedOrders(fromInclusive: DateTime!, toExclusive: DateTime!): [OrderLog!]!
   "Query historical OHLCV candles for a given market, candle width, and time range."
   historicalCandles(id: MarketId!, start: DateTime!, end: DateTime!, width: CandleWidth!): [CandleV1!]!
+  "Query TCA pnl / marks stats, id is an optional field but the dates are required"
+  tcaMarks(id: MarketId, fromInclusive: DateTime!, toExclusive: DateTime!): [TcaMarksV1!]!
+  "Query TCA summary stats, id is an optional field but the dates are required"
+  tcaSummary(currency: String, id: MarketId, fromInclusive: DateTime!, toExclusive: DateTime!): [TcaSummaryV1!]!
+  """
+    Query TCA balance pnl stats, the account_id is a required field.
+    The following filtering is allowed ..
+    If no venue is provided then all venues will be included
+    If use_purchasing_power is false or not provided then we will use
+      the balance column in the table. If it's true then we will use
+      the purchasing power column. This is needed for the rfb environment
+  """
+  tcaBalancePnl(accountId: AccountId!, venueId: VenueId, usePurchasingPower: Boolean): [TcaBalancePnlV1!]!
+  """
+    Query TCA balance pnl timeseries, the account_id and venue_id are
+    required fields. If both date ranges are not valid then we will return
+    the timeseries for the last rolling 24 hours. If they are both provided
+    then the timeseries will return hourly data points for the range provided
+    If use_purchasing_power is false or not provided then we will use
+      the balance column in the table. If it's true then we will use
+      the purchasing power column. This is needed for the rfb environment
+  """
+  tcaBalancePnlTimeseries(accountId: AccountId!, venueId: VenueId!, fromInclusive: DateTime, toExclusive: DateTime, usePurchasingPower: Boolean): [TcaPnlV1!]!
   "Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap."
   coinInfos: [CoinInfo!]!
   "Get token info for a given product."
@@ -1113,6 +1155,54 @@ type SubscriptionRoot {
 type TakeProfitLimitOrderType {
   limitPrice: Decimal!
   triggerPrice: Decimal!
+}
+
+type TcaBalancePnlV1 {
+  tsNow: DateTime!
+  tsPast: DateTime!
+  pnl: Decimal!
+  balanceNow: Decimal!
+  balancePast: Decimal!
+  venueId: VenueId!
+  venue: String!
+}
+
+type TcaData {
+  tcaType: String!
+  tcaValue: Decimal!
+  markPrice: Decimal!
+}
+
+type TcaMarksV1 {
+  fillId: FillId!
+  orderId: OrderId
+  tradeTime: DateTime!
+  dir: Dir!
+  quantity: Decimal!
+  marketId: MarketId!
+  market: String!
+  price: Decimal!
+  multiplier: Decimal!
+  source: String
+  fees: Decimal
+  feeCurrency: String
+  tcaValues: [TcaData!]!
+}
+
+type TcaPnlV1 {
+  ts: DateTime!
+  pnl: Decimal!
+}
+
+type TcaSummaryV1 {
+  label: String!
+  numberOfFills: Int!
+  totalNotionalTraded: Decimal!
+  buyNotionalTraded: Decimal!
+  sellNotionalTraded: Decimal!
+  fees: Decimal!
+  pnlBps: Decimal!
+  pnlPriceCurrency: Decimal!
 }
 
 type TimeInForce {

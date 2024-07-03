@@ -70,6 +70,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -130,6 +132,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -204,6 +208,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -385,6 +391,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -464,6 +472,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -544,6 +554,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -640,6 +652,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -769,6 +783,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name
@@ -864,6 +880,8 @@ class GraphQLClient(JuniperAsyncBaseClient):
               name
               tickSize
               stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
               route {
                 id
                 name

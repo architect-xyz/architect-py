@@ -34,6 +34,8 @@ fragment MarketFields on Market {
   name
   tickSize
   stepSize
+  minOrderQuantity
+  minOrderQuantityUnit
   route {
     id
     name

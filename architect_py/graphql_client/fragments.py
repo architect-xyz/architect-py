@@ -6,7 +6,7 @@ from typing import Any, List, Literal, Optional, Union
 from pydantic import Field
 
 from .base_model import BaseModel
-from .enums import OrderStateFlags
+from .enums import MinOrderQuantityUnit, OrderStateFlags
 
 
 class CandleFields(BaseModel):
@@ -39,6 +39,8 @@ class MarketFields(BaseModel):
     name: str
     tick_size: Any = Field(alias="tickSize")
     step_size: Any = Field(alias="stepSize")
+    min_order_quantity: Any = Field(alias="minOrderQuantity")
+    min_order_quantity_unit: MinOrderQuantityUnit = Field(alias="minOrderQuantityUnit")
     route: "MarketFieldsRoute"
     is_favorite: bool = Field(alias="isFavorite")
 

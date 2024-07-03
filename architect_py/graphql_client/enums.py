@@ -50,6 +50,11 @@ class CreateTimeInForceInstruction(str, Enum):
     IOC = "IOC"
 
 
+class EnvironmentKind(str, Enum):
+    PLATFORM = "PLATFORM"
+    BROKERAGE = "BROKERAGE"
+
+
 class FillKind(str, Enum):
     NORMAL = "NORMAL"
     REVERSAL = "REVERSAL"
