@@ -9,15 +9,6 @@ from .base_model import BaseModel
 from .enums import MinOrderQuantityUnit, OrderStateFlags
 
 
-class CandleFields(BaseModel):
-    time: Any
-    open: Any
-    high: Any
-    low: Any
-    close: Any
-    volume: Any
-
-
 class ProductFields(BaseModel):
     typename__: str = Field(alias="__typename")
     id: Any
@@ -82,6 +73,82 @@ class MarketFieldsRoute(BaseModel):
     name: Any
 
 
+class AccountSummariesFields(BaseModel):
+    snapshot_ts: Any = Field(alias="snapshotTs")
+    by_account: List["AccountSummariesFieldsByAccount"] = Field(alias="byAccount")
+
+
+class AccountSummariesFieldsByAccount(BaseModel):
+    account: Optional["AccountSummariesFieldsByAccountAccount"]
+    balances: List["AccountSummariesFieldsByAccountBalances"]
+    positions: List["AccountSummariesFieldsByAccountPositions"]
+
+
+class AccountSummariesFieldsByAccountAccount(BaseModel):
+    id: Any
+    name: str
+
+
+class AccountSummariesFieldsByAccountBalances(BaseModel):
+    product: Optional["AccountSummariesFieldsByAccountBalancesProduct"]
+    account: Optional["AccountSummariesFieldsByAccountBalancesAccount"]
+    venue: Optional["AccountSummariesFieldsByAccountBalancesVenue"]
+    amount: Optional[Any]
+    total_margin: Optional[Any] = Field(alias="totalMargin")
+    position_margin: Optional[Any] = Field(alias="positionMargin")
+    purchasing_power: Optional[Any] = Field(alias="purchasingPower")
+    cash_excess: Optional[Any] = Field(alias="cashExcess")
+    yesterday_balance: Optional[Any] = Field(alias="yesterdayBalance")
+
+
+class AccountSummariesFieldsByAccountBalancesProduct(ProductFields):
+    pass
+
+
+class AccountSummariesFieldsByAccountBalancesAccount(BaseModel):
+    id: Any
+    name: str
+
+
+class AccountSummariesFieldsByAccountBalancesVenue(BaseModel):
+    id: Any
+    name: Any
+
+
+class AccountSummariesFieldsByAccountPositions(BaseModel):
+    account: Optional["AccountSummariesFieldsByAccountPositionsAccount"]
+    venue: Optional["AccountSummariesFieldsByAccountPositionsVenue"]
+    market: Optional["AccountSummariesFieldsByAccountPositionsMarket"]
+    dir: Any
+    quantity: Optional[Any]
+    average_price: Optional[Any] = Field(alias="averagePrice")
+    trade_date: Optional[Any] = Field(alias="tradeDate")
+    trade_time: Optional[Any] = Field(alias="tradeTime")
+
+
+class AccountSummariesFieldsByAccountPositionsAccount(BaseModel):
+    id: Any
+    name: str
+
+
+class AccountSummariesFieldsByAccountPositionsVenue(BaseModel):
+    id: Any
+    name: Any
+
+
+class AccountSummariesFieldsByAccountPositionsMarket(MarketFields):
+    pass
+
+
+class CandleFields(BaseModel):
+    time: Any
+    open: Any
+    high: Any
+    low: Any
+    close: Any
+    volume: Any
+
+
 class MarketSnapshotFields(BaseModel):
     typename__: str = Field(alias="__typename")
     market_id: Any = Field(alias="marketId")
@@ -120,8 +187,9 @@ class OrderLogFieldsOrderMarket(MarketFields):
     pass
 
 
-CandleFields.model_rebuild()
 ProductFields.model_rebuild()
 MarketFields.model_rebuild()
+AccountSummariesFields.model_rebuild()
+CandleFields.model_rebuild()
 MarketSnapshotFields.model_rebuild()
 OrderLogFields.model_rebuild()

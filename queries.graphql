@@ -84,6 +84,53 @@ fragment OrderLogFields on OrderLog {
   rejectReason
 }
 
+fragment AccountSummariesFields on AccountSummaries {
+  snapshotTs
+  byAccount {
+    account {
+      id
+      name
+    }
+    balances {
+      product {
+        ...ProductFields
+      }
+      account {
+        id
+        name
+      }
+      venue {
+        id
+        name
+      }
+      amount
+      totalMargin
+      positionMargin
+      purchasingPower
+      cashExcess
+      yesterdayBalance
+    }
+    positions {
+      account {
+        id
+        name
+      }
+      venue {
+        id
+        name
+      }
+      market {
+        ...MarketFields
+      }
+      dir
+      quantity
+      averagePrice
+      tradeDate
+      tradeTime
+    }
+  }
+}
+
 query GetMarket($id: MarketId!) {
   market(id: $id) {
     ...MarketFields
@@ -136,17 +183,15 @@ query GetAllMarketSnapshots {
   }
 }
 
-query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
+query GetAccountSummaries {
+  accountSummaries {
+    ...AccountSummariesFields
+  }
+}
+
+query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
   accountSummariesForCpty(venue: $venue, route: $route) {
-    snapshotTs
-    byAccount {
-      balances {
-        product {
-          ...ProductFields
-        }
-        amount
-      }
-    }
+    ...AccountSummariesFields
   }
 }
 

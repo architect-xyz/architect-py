@@ -7,8 +7,9 @@ from .base_model import UNSET, UnsetType
 from .cancel_order import CancelOrder
 from .enums import CandleWidth
 from .fills_subscription import FillsSubscription
+from .get_account_summaries import GetAccountSummaries
+from .get_account_summaries_for_cpty import GetAccountSummariesForCpty
 from .get_all_market_snapshots import GetAllMarketSnapshots
-from .get_balances_for_cpty import GetBalancesForCpty
 from .get_book_snapshot import GetBookSnapshot
 from .get_fills import GetFills
 from .get_filtered_markets import GetFilteredMarkets
@@ -316,23 +317,211 @@ class GraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return GetAllMarketSnapshots.model_validate(data)
 
-    async def get_balances_for_cpty(
-        self, venue: Any, route: Any, **kwargs: Any
-    ) -> GetBalancesForCpty:
+    async def get_account_summaries(self, **kwargs: Any) -> GetAccountSummaries:
         query = gql(
             """
-            query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
-              accountSummariesForCpty(venue: $venue, route: $route) {
-                snapshotTs
-                byAccount {
-                  balances {
-                    product {
-                      ...ProductFields
-                    }
-                    amount
+            query GetAccountSummaries {
+              accountSummaries {
+                ...AccountSummariesFields
+              }
+            }
+
+            fragment AccountSummariesFields on AccountSummaries {
+              snapshotTs
+              byAccount {
+                account {
+                  id
+                  name
+                }
+                balances {
+                  product {
+                    ...ProductFields
+                  }
+                  account {
+                    id
+                    name
+                  }
+                  venue {
+                    id
+                    name
+                  }
+                  amount
+                  totalMargin
+                  positionMargin
+                  purchasingPower
+                  cashExcess
+                  yesterdayBalance
+                }
+                positions {
+                  account {
+                    id
+                    name
+                  }
+                  venue {
+                    id
+                    name
+                  }
+                  market {
+                    ...MarketFields
+                  }
+                  dir
+                  quantity
+                  averagePrice
+                  tradeDate
+                  tradeTime
+                }
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
                   }
                 }
               }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query,
+            operation_name="GetAccountSummaries",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetAccountSummaries.model_validate(data)
+
+    async def get_account_summaries_for_cpty(
+        self, venue: Any, route: Any, **kwargs: Any
+    ) -> GetAccountSummariesForCpty:
+        query = gql(
+            """
+            query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
+              accountSummariesForCpty(venue: $venue, route: $route) {
+                ...AccountSummariesFields
+              }
+            }
+
+            fragment AccountSummariesFields on AccountSummaries {
+              snapshotTs
+              byAccount {
+                account {
+                  id
+                  name
+                }
+                balances {
+                  product {
+                    ...ProductFields
+                  }
+                  account {
+                    id
+                    name
+                  }
+                  venue {
+                    id
+                    name
+                  }
+                  amount
+                  totalMargin
+                  positionMargin
+                  purchasingPower
+                  cashExcess
+                  yesterdayBalance
+                }
+                positions {
+                  account {
+                    id
+                    name
+                  }
+                  venue {
+                    id
+                    name
+                  }
+                  market {
+                    ...MarketFields
+                  }
+                  dir
+                  quantity
+                  averagePrice
+                  tradeDate
+                  tradeTime
+                }
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
             }
 
             fragment ProductFields on Product {
@@ -347,12 +536,12 @@ class GraphQLClient(JuniperAsyncBaseClient):
         variables: Dict[str, object] = {"venue": venue, "route": route}
         response = await self.execute(
             query=query,
-            operation_name="GetBalancesForCpty",
+            operation_name="GetAccountSummariesForCpty",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetBalancesForCpty.model_validate(data)
+        return GetAccountSummariesForCpty.model_validate(data)
 
     async def get_open_orders(self, **kwargs: Any) -> GetOpenOrders:
         query = gql(
