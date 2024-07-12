@@ -195,6 +195,21 @@ query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
   }
 }
 
+# [2024-07-01] deprecated in favor of GetAccountSummariesForCpty
+query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
+  accountSummariesForCpty(venue: $venue, route: $route) {
+    snapshotTs
+    byAccount {
+      balances {
+        product {
+          ...ProductFields
+        }
+        amount
+      }
+    }
+  }
+}
+
 query GetOpenOrders {
   openOrders {
     ...OrderLogFields

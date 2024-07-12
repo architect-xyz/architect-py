@@ -10,6 +10,7 @@ from .fills_subscription import FillsSubscription
 from .get_account_summaries import GetAccountSummaries
 from .get_account_summaries_for_cpty import GetAccountSummariesForCpty
 from .get_all_market_snapshots import GetAllMarketSnapshots
+from .get_balances_for_cpty import GetBalancesForCpty
 from .get_book_snapshot import GetBookSnapshot
 from .get_fills import GetFills
 from .get_filtered_markets import GetFilteredMarkets
@@ -542,6 +543,44 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return GetAccountSummariesForCpty.model_validate(data)
+
+    async def get_balances_for_cpty(
+        self, venue: Any, route: Any, **kwargs: Any
+    ) -> GetBalancesForCpty:
+        query = gql(
+            """
+            query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
+              accountSummariesForCpty(venue: $venue, route: $route) {
+                snapshotTs
+                byAccount {
+                  balances {
+                    product {
+                      ...ProductFields
+                    }
+                    amount
+                  }
+                }
+              }
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {"venue": venue, "route": route}
+        response = await self.execute(
+            query=query,
+            operation_name="GetBalancesForCpty",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetBalancesForCpty.model_validate(data)
 
     async def get_open_orders(self, **kwargs: Any) -> GetOpenOrders:
         query = gql(
