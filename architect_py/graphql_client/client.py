@@ -1173,11 +1173,38 @@ class GraphQLClient(JuniperAsyncBaseClient):
             subscription SubscribeOrderflow {
               orderflow {
                 __typename
+                ... on Order {
+                  id
+                  marketId
+                  dir
+                  quantity
+                  accountId
+                  orderType {
+                    __typename
+                    ... on LimitOrderType {
+                      limitPrice
+                      postOnly
+                    }
+                    ... on StopLossLimitOrderType {
+                      limitPrice
+                      triggerPrice
+                    }
+                    ... on TakeProfitLimitOrderType {
+                      limitPrice
+                      triggerPrice
+                    }
+                  }
+                  timeInForce {
+                    instruction
+                    goodTilDate
+                  }
+                  quoteId
+                  source
+                }
                 ... on Ack {
                   orderId
                 }
                 ... on Reject {
-                  __typename
                   orderId
                   reason
                 }

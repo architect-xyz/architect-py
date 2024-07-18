@@ -6,11 +6,12 @@ from typing import Any, List, Literal, Optional, Union
 from pydantic import Field
 
 from .base_model import BaseModel
-from .enums import FillKind, OrderStateFlags
+from .enums import FillKind, OrderSource, OrderStateFlags
 
 
 class SubscribeOrderflow(BaseModel):
     orderflow: Union[
+        "SubscribeOrderflowOrderflowOrder",
         "SubscribeOrderflowOrderflowOmsOrderUpdate",
         "SubscribeOrderflowOrderflowCancel",
         "SubscribeOrderflowOrderflowCancelAll",
@@ -20,6 +21,48 @@ class SubscribeOrderflow(BaseModel):
         "SubscribeOrderflowOrderflowAberrantFill",
         "SubscribeOrderflowOrderflowOut",
     ] = Field(discriminator="typename__")
+
+
+class SubscribeOrderflowOrderflowOrder(BaseModel):
+    typename__: Literal["Order"] = Field(alias="__typename")
+    id: Any
+    market_id: Any = Field(alias="marketId")
+    dir: Any
+    quantity: Any
+    account_id: Optional[Any] = Field(alias="accountId")
+    order_type: Union[
+        "SubscribeOrderflowOrderflowOrderOrderTypeLimitOrderType",
+        "SubscribeOrderflowOrderflowOrderOrderTypeStopLossLimitOrderType",
+        "SubscribeOrderflowOrderflowOrderOrderTypeTakeProfitLimitOrderType",
+    ] = Field(alias="orderType", discriminator="typename__")
+    time_in_force: "SubscribeOrderflowOrderflowOrderTimeInForce" = Field(
+        alias="timeInForce"
+    )
+    quote_id: Optional[Any] = Field(alias="quoteId")
+    source: OrderSource
+
+
+class SubscribeOrderflowOrderflowOrderOrderTypeLimitOrderType(BaseModel):
+    typename__: Literal["LimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    post_only: bool = Field(alias="postOnly")
+
+
+class SubscribeOrderflowOrderflowOrderOrderTypeStopLossLimitOrderType(BaseModel):
+    typename__: Literal["StopLossLimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    trigger_price: Any = Field(alias="triggerPrice")
+
+
+class SubscribeOrderflowOrderflowOrderOrderTypeTakeProfitLimitOrderType(BaseModel):
+    typename__: Literal["TakeProfitLimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    trigger_price: Any = Field(alias="triggerPrice")
+
+
+class SubscribeOrderflowOrderflowOrderTimeInForce(BaseModel):
+    instruction: str
+    good_til_date: Optional[Any] = Field(alias="goodTilDate")
 
 
 class SubscribeOrderflowOrderflowOmsOrderUpdate(BaseModel):
@@ -44,7 +87,6 @@ class SubscribeOrderflowOrderflowAck(BaseModel):
 
 
 class SubscribeOrderflowOrderflowReject(BaseModel):
-    typename__: Literal["Reject"] = Field(alias="__typename")
     typename__: Literal["Reject"] = Field(alias="__typename")
     order_id: Any = Field(alias="orderId")
     reason: str
@@ -71,3 +113,4 @@ class SubscribeOrderflowOrderflowOut(BaseModel):
 
 
 SubscribeOrderflow.model_rebuild()
+SubscribeOrderflowOrderflowOrder.model_rebuild()

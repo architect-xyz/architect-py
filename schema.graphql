@@ -1256,5 +1256,5 @@ union MarketKind = ExchangeMarketKind | PoolMarketKind | UnknownMarketKind
 
 union OrderType = LimitOrderType | StopLossLimitOrderType | TakeProfitLimitOrderType
 
-union Orderflow = OmsOrderUpdate | Cancel | CancelAll | Ack | Reject | Fill | AberrantFill | Out
+union Orderflow = Order | OmsOrderUpdate | Cancel | CancelAll | Ack | Reject | Fill | AberrantFill | Out
 
