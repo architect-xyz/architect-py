@@ -290,6 +290,7 @@ subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
       amount
       total
     }
+    timestamp
   }
 }
 

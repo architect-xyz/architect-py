@@ -1055,6 +1055,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
                   amount
                   total
                 }
+                timestamp
               }
             }
             """

@@ -13,6 +13,7 @@ class SubscribeBook(BaseModel):
 class SubscribeBookBook(BaseModel):
     bids: List["SubscribeBookBookBids"]
     asks: List["SubscribeBookBookAsks"]
+    timestamp: Any
 
 
 class SubscribeBookBookBids(BaseModel):
