@@ -84,6 +84,11 @@ fragment OrderLogFields on OrderLog {
     }
     dir
     quantity
+    orderType {
+      ... on LimitOrderType {
+        limitPrice
+      }
+    }
   }
   orderState
   filledQty

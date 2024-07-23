@@ -680,6 +680,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 }
                 dir
                 quantity
+                orderType {
+                  ... on LimitOrderType {
+                    limitPrice
+                  }
+                }
               }
               orderState
               filledQty
@@ -768,6 +773,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 }
                 dir
                 quantity
+                orderType {
+                  ... on LimitOrderType {
+                    limitPrice
+                  }
+                }
               }
               orderState
               filledQty
@@ -857,6 +867,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 }
                 dir
                 quantity
+                orderType {
+                  ... on LimitOrderType {
+                    limitPrice
+                  }
+                }
               }
               orderState
               filledQty

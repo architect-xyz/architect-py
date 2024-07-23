@@ -52,6 +52,9 @@ from .fragments import (
     OrderLogFields,
     OrderLogFieldsOrder,
     OrderLogFieldsOrderMarket,
+    OrderLogFieldsOrderOrderTypeLimitOrderType,
+    OrderLogFieldsOrderOrderTypeStopLossLimitOrderType,
+    OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType,
     ProductFields,
 )
 from .get_account_summaries import (
@@ -223,6 +226,9 @@ __all__ = [
     "OrderLogFields",
     "OrderLogFieldsOrder",
     "OrderLogFieldsOrderMarket",
+    "OrderLogFieldsOrderOrderTypeLimitOrderType",
+    "OrderLogFieldsOrderOrderTypeStopLossLimitOrderType",
+    "OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType",
     "OrderSource",
     "OrderStateFlags",
     "ProductFields",

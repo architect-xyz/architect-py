@@ -192,10 +192,28 @@ class OrderLogFieldsOrder(BaseModel):
     market: "OrderLogFieldsOrderMarket"
     dir: Any
     quantity: Any
+    order_type: Union[
+        "OrderLogFieldsOrderOrderTypeLimitOrderType",
+        "OrderLogFieldsOrderOrderTypeStopLossLimitOrderType",
+        "OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType",
+    ] = Field(alias="orderType", discriminator="typename__")
 
 
 class OrderLogFieldsOrderMarket(MarketFields):
     pass
+
+
+class OrderLogFieldsOrderOrderTypeLimitOrderType(BaseModel):
+    typename__: Literal["LimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+
+
+class OrderLogFieldsOrderOrderTypeStopLossLimitOrderType(BaseModel):
+    typename__: Literal["StopLossLimitOrderType"] = Field(alias="__typename")
+
+
+class OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType(BaseModel):
+    typename__: Literal["TakeProfitLimitOrderType"] = Field(alias="__typename")
 
 
 ProductFields.model_rebuild()
