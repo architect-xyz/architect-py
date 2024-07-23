@@ -52,6 +52,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -114,6 +121,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -190,6 +204,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -382,6 +403,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -496,6 +524,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -599,6 +634,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -680,6 +722,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -762,6 +811,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -860,6 +916,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -991,6 +1054,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename
@@ -1089,6 +1159,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
               }
               exchangeSymbol
               id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
               kind {
                 ... on ExchangeMarketKind {
                   __typename

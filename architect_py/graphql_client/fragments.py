@@ -6,7 +6,7 @@ from typing import Any, List, Literal, Optional, Union
 from pydantic import Field
 
 from .base_model import BaseModel
-from .enums import MinOrderQuantityUnit, OrderStateFlags
+from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderStateFlags
 
 
 class ProductFields(BaseModel):
@@ -22,6 +22,9 @@ class MarketFields(BaseModel):
     venue: "MarketFieldsVenue"
     exchange_symbol: str = Field(alias="exchangeSymbol")
     id: Any
+    cme_product_group_info: Optional["MarketFieldsCmeProductGroupInfo"] = Field(
+        alias="cmeProductGroupInfo"
+    )
     kind: Union[
         "MarketFieldsKindExchangeMarketKind",
         "MarketFieldsKindPoolMarketKind",
@@ -39,6 +42,14 @@ class MarketFields(BaseModel):
 class MarketFieldsVenue(BaseModel):
     id: Any
     name: Any
+
+
+class MarketFieldsCmeProductGroupInfo(BaseModel):
+    product_name: Optional[str] = Field(alias="productName")
+    security_type: CmeSecurityType = Field(alias="securityType")
+    category: Optional[str]
+    sub_category: Optional[str] = Field(alias="subCategory")
+    main_fraction: Optional[int] = Field(alias="mainFraction")
 
 
 class MarketFieldsKindExchangeMarketKind(BaseModel):
