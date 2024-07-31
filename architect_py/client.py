@@ -1,8 +1,16 @@
-from collections import defaultdict
+from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Literal, Optional
+
+from architect_py.graphql_client.enums import CreateOrderType, OrderSource
 import logging
+
 from .graphql_client import GraphQLClient
-from .graphql_client.input_types import CreateOrder, CreateTimeInForce
+from .graphql_client.input_types import (
+    CreateOrder,
+    CreateTimeInForce,
+    CreateTimeInForceInstruction,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -86,21 +94,45 @@ class Client(GraphQLClient):
 
     async def send_limit_order(
         self,
+        *,
         market: str,
         side: Literal["buy", "sell"],
-        limit_price: float,
-        quantity: float,
+        quantity: float | Decimal,
+        order_type: CreateOrderType = CreateOrderType.LIMIT,
+        limit_price: float | Decimal,
         post_only: bool = False,
-        time_in_force: str = "GTC",
+        trigger_price: Optional[float | Decimal] = None,
+        time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
+        good_til_date: Optional[datetime] = None,
+        source: OrderSource = OrderSource.API,
     ):
-        return await self.send_order(
+        if good_til_date is not None:
+            if good_til_date.tzinfo is None:
+                raise ValueError(
+                    "in sent_limit_order, the good_til_date must be timezone-aware. "
+                    "Try datetime(..., tzinfo={your_local_timezone})"
+                )
+            else:
+                utc_datetime = good_til_date.astimezone(timezone.utc)
+                good_til_date_str = f"{utc_datetime.isoformat()}Z"
+        else:
+            good_til_date_str = None
+
+        order = await self.send_order(
             CreateOrder(
                 market=market,
-                order_type="LIMIT",
                 dir=side,
-                limit_price=str(limit_price),
                 quantity=str(quantity),
+                order_type=order_type,
+                limit_price=str(limit_price),
                 post_only=post_only,
-                time_in_force=CreateTimeInForce(instruction=time_in_force),
+                trigger_price=str(trigger_price),
+                time_in_force=CreateTimeInForce(
+                    instruction=time_in_force_instruction,
+                    good_til_date=good_til_date_str,
+                ),
+                source=source,
             )
         )
+
+        return await self.get_order(order.order.id)
