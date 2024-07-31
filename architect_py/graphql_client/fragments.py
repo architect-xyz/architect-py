@@ -210,10 +210,14 @@ class OrderLogFieldsOrderOrderTypeLimitOrderType(BaseModel):
 
 class OrderLogFieldsOrderOrderTypeStopLossLimitOrderType(BaseModel):
     typename__: Literal["StopLossLimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    trigger_price: Any = Field(alias="triggerPrice")
 
 
 class OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType(BaseModel):
     typename__: Literal["TakeProfitLimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    trigger_price: Any = Field(alias="triggerPrice")
 
 
 ProductFields.model_rebuild()
