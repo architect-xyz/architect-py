@@ -20,8 +20,8 @@ async def lookup_multiple_markets(c: Client):
     sol_usdt_binance = "SOL Crypto/USDT Crypto*BINANCE/DIRECT"
     market_ids = [btc_usd_coinbase, sol_usdt_binance]
     try:
-        r = await c.get_markets(market_ids)
-        results = zip(market_ids, r.markets)
+        markets = await c.get_markets(market_ids)
+        results = zip(market_ids, markets)
         for market_id, market in results:
             print(f"Market information for {market_id}:")
             print(f"--> {market}")
@@ -33,8 +33,8 @@ async def lookup_multiple_markets(c: Client):
 
 async def search_markets(c: Client):
     try:
-        r = await c.get_filtered_markets(search_string="SOL", max_results=10)
-        for market in r.filter_markets:
+        markets = await c.get_filtered_markets(search_string="SOL", max_results=10)
+        for market in markets:
             print(f"--> {market.name}")
     except GraphQLClientHttpError as e:
         print(e.status_code)

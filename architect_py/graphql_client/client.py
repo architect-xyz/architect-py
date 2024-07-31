@@ -6,28 +6,54 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from .base_model import UNSET, UnsetType
 from .cancel_order import CancelOrder
 from .enums import CandleWidth
-from .fills_subscription import FillsSubscription
-from .get_account_summaries import GetAccountSummaries
-from .get_account_summaries_for_cpty import GetAccountSummariesForCpty
-from .get_all_market_snapshots import GetAllMarketSnapshots
-from .get_balances_for_cpty import GetBalancesForCpty
-from .get_book_snapshot import GetBookSnapshot
-from .get_fills import GetFills
-from .get_filtered_markets import GetFilteredMarkets
-from .get_market import GetMarket
-from .get_market_snapshot import GetMarketSnapshot
-from .get_markets import GetMarkets
-from .get_open_orders import GetOpenOrders
-from .get_order import GetOrder
-from .get_out_orders import GetOutOrders
+from .fills_subscription import FillsSubscription, FillsSubscriptionFills
+from .get_account_summaries import (
+    GetAccountSummaries,
+    GetAccountSummariesAccountSummaries,
+)
+from .get_account_summaries_for_cpty import (
+    GetAccountSummariesForCpty,
+    GetAccountSummariesForCptyAccountSummariesForCpty,
+)
+from .get_all_market_snapshots import (
+    GetAllMarketSnapshots,
+    GetAllMarketSnapshotsMarketsSnapshots,
+)
+from .get_balances_for_cpty import (
+    GetBalancesForCpty,
+    GetBalancesForCptyAccountSummariesForCpty,
+)
+from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotBookSnapshot
+from .get_fills import GetFills, GetFillsFills
+from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
+from .get_market import GetMarket, GetMarketMarket
+from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
+from .get_markets import GetMarkets, GetMarketsMarkets
+from .get_open_orders import GetOpenOrders, GetOpenOrdersOpenOrders
+from .get_order import GetOrder, GetOrderOrder
+from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
 from .input_types import CreateOrder
 from .juniper_async_base_client import JuniperAsyncBaseClient
 from .send_order import SendOrder
-from .subscribe_book import SubscribeBook
-from .subscribe_candles import SubscribeCandles
-from .subscribe_exchange_specific import SubscribeExchangeSpecific
-from .subscribe_orderflow import SubscribeOrderflow
-from .subscribe_trades import SubscribeTrades
+from .subscribe_book import SubscribeBook, SubscribeBookBook
+from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
+from .subscribe_exchange_specific import (
+    SubscribeExchangeSpecific,
+    SubscribeExchangeSpecificExchangeSpecific,
+)
+from .subscribe_orderflow import (
+    SubscribeOrderflow,
+    SubscribeOrderflowOrderflowAberrantFill,
+    SubscribeOrderflowOrderflowAck,
+    SubscribeOrderflowOrderflowCancel,
+    SubscribeOrderflowOrderflowCancelAll,
+    SubscribeOrderflowOrderflowFill,
+    SubscribeOrderflowOrderflowOmsOrderUpdate,
+    SubscribeOrderflowOrderflowOrder,
+    SubscribeOrderflowOrderflowOut,
+    SubscribeOrderflowOrderflowReject,
+)
+from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
 
 
 def gql(q: str) -> str:
@@ -35,7 +61,7 @@ def gql(q: str) -> str:
 
 
 class GraphQLClient(JuniperAsyncBaseClient):
-    async def get_market(self, id: Any, **kwargs: Any) -> GetMarket:
+    async def get_market(self, id: Any, **kwargs: Any) -> Optional[GetMarketMarket]:
         query = gql(
             """
             query GetMarket($id: MarketId!) {
@@ -102,9 +128,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetMarket", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetMarket.model_validate(data)
+        return GetMarket.model_validate(data).market
 
-    async def get_markets(self, ids: List[Any], **kwargs: Any) -> GetMarkets:
+    async def get_markets(
+        self, ids: List[Any], **kwargs: Any
+    ) -> List[Optional[GetMarketsMarkets]]:
         query = gql(
             """
             query GetMarkets($ids: [MarketId!]!) {
@@ -171,7 +199,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetMarkets", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetMarkets.model_validate(data)
+        return GetMarkets.model_validate(data).markets
 
     async def get_filtered_markets(
         self,
@@ -185,7 +213,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
         only_favorites: Union[Optional[bool], UnsetType] = UNSET,
         sort_by_volume_desc: Union[Optional[bool], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetFilteredMarkets:
+    ) -> List[GetFilteredMarketsFilterMarkets]:
         query = gql(
             """
             query GetFilteredMarkets($venue: Str, $base: Str, $quote: Str, $underlying: Str, $maxResults: Int, $resultsOffset: Int, $searchString: Str, $onlyFavorites: Boolean, $sortByVolumeDesc: Boolean) {
@@ -267,9 +295,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetFilteredMarkets.model_validate(data)
+        return GetFilteredMarkets.model_validate(data).filter_markets
 
-    async def get_market_snapshot(self, id: Any, **kwargs: Any) -> GetMarketSnapshot:
+    async def get_market_snapshot(
+        self, id: Any, **kwargs: Any
+    ) -> Optional[GetMarketSnapshotMarketSnapshot]:
         query = gql(
             """
             query GetMarketSnapshot($id: MarketId!) {
@@ -302,9 +332,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetMarketSnapshot.model_validate(data)
+        return GetMarketSnapshot.model_validate(data).market_snapshot
 
-    async def get_all_market_snapshots(self, **kwargs: Any) -> GetAllMarketSnapshots:
+    async def get_all_market_snapshots(
+        self, **kwargs: Any
+    ) -> List[GetAllMarketSnapshotsMarketsSnapshots]:
         query = gql(
             """
             query GetAllMarketSnapshots {
@@ -337,9 +369,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetAllMarketSnapshots.model_validate(data)
+        return GetAllMarketSnapshots.model_validate(data).markets_snapshots
 
-    async def get_account_summaries(self, **kwargs: Any) -> GetAccountSummaries:
+    async def get_account_summaries(
+        self, **kwargs: Any
+    ) -> List[GetAccountSummariesAccountSummaries]:
         query = gql(
             """
             query GetAccountSummaries {
@@ -456,11 +490,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetAccountSummaries.model_validate(data)
+        return GetAccountSummaries.model_validate(data).account_summaries
 
     async def get_account_summaries_for_cpty(
         self, venue: Any, route: Any, **kwargs: Any
-    ) -> GetAccountSummariesForCpty:
+    ) -> GetAccountSummariesForCptyAccountSummariesForCpty:
         query = gql(
             """
             query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
@@ -577,11 +611,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetAccountSummariesForCpty.model_validate(data)
+        return GetAccountSummariesForCpty.model_validate(
+            data
+        ).account_summaries_for_cpty
 
     async def get_balances_for_cpty(
         self, venue: Any, route: Any, **kwargs: Any
-    ) -> GetBalancesForCpty:
+    ) -> GetBalancesForCptyAccountSummariesForCpty:
         query = gql(
             """
             query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
@@ -615,9 +651,9 @@ class GraphQLClient(JuniperAsyncBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetBalancesForCpty.model_validate(data)
+        return GetBalancesForCpty.model_validate(data).account_summaries_for_cpty
 
-    async def get_open_orders(self, **kwargs: Any) -> GetOpenOrders:
+    async def get_open_orders(self, **kwargs: Any) -> List[GetOpenOrdersOpenOrders]:
         query = gql(
             """
             query GetOpenOrders {
@@ -706,11 +742,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetOpenOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetOpenOrders.model_validate(data)
+        return GetOpenOrders.model_validate(data).open_orders
 
     async def get_out_orders(
         self, from_inclusive: Any, to_exclusive: Any, **kwargs: Any
-    ) -> GetOutOrders:
+    ) -> List[GetOutOrdersOutedOrders]:
         query = gql(
             """
             query GetOutOrders($fromInclusive: DateTime!, $toExclusive: DateTime!) {
@@ -802,9 +838,9 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetOutOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetOutOrders.model_validate(data)
+        return GetOutOrders.model_validate(data).outed_orders
 
-    async def get_order(self, order_id: Any, **kwargs: Any) -> GetOrder:
+    async def get_order(self, order_id: Any, **kwargs: Any) -> Optional[GetOrderOrder]:
         query = gql(
             """
             query GetOrder($orderId: OrderId!) {
@@ -893,7 +929,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetOrder.model_validate(data)
+        return GetOrder.model_validate(data).order
 
     async def get_fills(
         self,
@@ -902,7 +938,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
         base: Union[Optional[Any], UnsetType] = UNSET,
         quote: Union[Optional[Any], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetFills:
+    ) -> GetFillsFills:
         query = gql(
             """
             query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
@@ -986,11 +1022,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetFills", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetFills.model_validate(data)
+        return GetFills.model_validate(data).fills
 
     async def subscribe_trades(
         self, market: Any, **kwargs: Any
-    ) -> AsyncIterator[SubscribeTrades]:
+    ) -> AsyncIterator[SubscribeTradesTrades]:
         query = gql(
             """
             subscription SubscribeTrades($market: MarketId!) {
@@ -1007,11 +1043,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
         async for data in self.execute_ws(
             query=query, operation_name="SubscribeTrades", variables=variables, **kwargs
         ):
-            yield SubscribeTrades.model_validate(data)
+            yield SubscribeTrades.model_validate(data).trades
 
     async def subscribe_candles(
         self, id: Any, width: CandleWidth, **kwargs: Any
-    ) -> AsyncIterator[SubscribeCandles]:
+    ) -> AsyncIterator[SubscribeCandlesCandles]:
         query = gql(
             """
             subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
@@ -1037,11 +1073,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             variables=variables,
             **kwargs
         ):
-            yield SubscribeCandles.model_validate(data)
+            yield SubscribeCandles.model_validate(data).candles
 
     async def fills_subscription(
         self, **kwargs: Any
-    ) -> AsyncIterator[FillsSubscription]:
+    ) -> AsyncIterator[FillsSubscriptionFills]:
         query = gql(
             """
             subscription FillsSubscription {
@@ -1121,11 +1157,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
             variables=variables,
             **kwargs
         ):
-            yield FillsSubscription.model_validate(data)
+            yield FillsSubscription.model_validate(data).fills
 
     async def subscribe_book(
         self, id: Any, precision: Union[Optional[Any], UnsetType] = UNSET, **kwargs: Any
-    ) -> AsyncIterator[SubscribeBook]:
+    ) -> AsyncIterator[SubscribeBookBook]:
         query = gql(
             """
             subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
@@ -1149,11 +1185,11 @@ class GraphQLClient(JuniperAsyncBaseClient):
         async for data in self.execute_ws(
             query=query, operation_name="SubscribeBook", variables=variables, **kwargs
         ):
-            yield SubscribeBook.model_validate(data)
+            yield SubscribeBook.model_validate(data).book
 
     async def subscribe_exchange_specific(
         self, markets: List[Any], fields: List[str], **kwargs: Any
-    ) -> AsyncIterator[SubscribeExchangeSpecific]:
+    ) -> AsyncIterator[List[SubscribeExchangeSpecificExchangeSpecific]]:
         query = gql(
             """
             subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
@@ -1226,9 +1262,9 @@ class GraphQLClient(JuniperAsyncBaseClient):
             variables=variables,
             **kwargs
         ):
-            yield SubscribeExchangeSpecific.model_validate(data)
+            yield SubscribeExchangeSpecific.model_validate(data).exchange_specific
 
-    async def send_order(self, order: CreateOrder, **kwargs: Any) -> SendOrder:
+    async def send_order(self, order: CreateOrder, **kwargs: Any) -> Any:
         query = gql(
             """
             mutation SendOrder($order: CreateOrder!) {
@@ -1241,9 +1277,9 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="SendOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return SendOrder.model_validate(data)
+        return SendOrder.model_validate(data).create_order
 
-    async def cancel_order(self, order_id: Any, **kwargs: Any) -> CancelOrder:
+    async def cancel_order(self, order_id: Any, **kwargs: Any) -> Any:
         query = gql(
             """
             mutation CancelOrder($orderId: OrderId!) {
@@ -1256,11 +1292,21 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="CancelOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return CancelOrder.model_validate(data)
+        return CancelOrder.model_validate(data).cancel_order
 
-    async def subscribe_orderflow(
-        self, **kwargs: Any
-    ) -> AsyncIterator[SubscribeOrderflow]:
+    async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
+        Union[
+            SubscribeOrderflowOrderflowOrder,
+            SubscribeOrderflowOrderflowOmsOrderUpdate,
+            SubscribeOrderflowOrderflowCancel,
+            SubscribeOrderflowOrderflowCancelAll,
+            SubscribeOrderflowOrderflowAck,
+            SubscribeOrderflowOrderflowReject,
+            SubscribeOrderflowOrderflowFill,
+            SubscribeOrderflowOrderflowAberrantFill,
+            SubscribeOrderflowOrderflowOut,
+        ]
+    ]:
         query = gql(
             """
             subscription SubscribeOrderflow {
@@ -1330,7 +1376,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
             variables=variables,
             **kwargs
         ):
-            yield SubscribeOrderflow.model_validate(data)
+            yield SubscribeOrderflow.model_validate(data).orderflow
 
     async def get_book_snapshot(
         self,
@@ -1339,7 +1385,7 @@ class GraphQLClient(JuniperAsyncBaseClient):
         precision: Union[Optional[Any], UnsetType] = UNSET,
         retain_seconds: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetBookSnapshot:
+    ) -> GetBookSnapshotBookSnapshot:
         query = gql(
             """
             query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSeconds: Int) {
@@ -1374,4 +1420,4 @@ class GraphQLClient(JuniperAsyncBaseClient):
             query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetBookSnapshot.model_validate(data)
+        return GetBookSnapshot.model_validate(data).book_snapshot

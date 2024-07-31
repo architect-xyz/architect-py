@@ -1,5 +1,8 @@
 import asyncio
 import os
+
+from pydantic import ValidationError
+
 from architect_py.client import Client
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 from .common import create_client
@@ -31,14 +34,16 @@ def print_book(book):
 async def main():
     c: Client = create_client()
     # market_id = "BTC Crypto/USD*COINBASE/DIRECT"
-    market_id = "SOL-USDC Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
+    market_id = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
     try:
         stream = c.subscribe_book(market_id, precision="0.1", ping_interval=None)
-        async for item in stream:
-            print_book(item.book)
+        async for book in stream:
+            print_book(book)
     except GraphQLClientHttpError as e:
         print(e.status_code)
         print(e.response.json())
+    except ValidationError as e:
+        print(e)
 
 
 if __name__ == "__main__":
