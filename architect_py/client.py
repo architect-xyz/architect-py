@@ -1,9 +1,61 @@
+from collections import defaultdict
 from typing import Literal, Optional
+import logging
 from .graphql_client import GraphQLClient
 from .graphql_client.input_types import CreateOrder, CreateTimeInForce
 
+logger = logging.getLogger(__name__)
+
 
 class Client(GraphQLClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.market_names_by_route = {}
+
+    async def start_session(self):
+        await self.load_and_index_symbology()
+
+    async def load_and_index_symbology(self):
+        logger.info("Loading symbology...")
+        markets = await self.get_filtered_markets()
+        logger.info("Loaded %d markets", len(markets))
+        self.market_names_by_route = {}
+        for market in markets:
+            if market.route.name not in self.market_names_by_route:
+                self.market_names_by_route[market.route.name] = {}
+            by_venue = self.market_names_by_route[market.route.name]
+            if market.venue.name not in by_venue:
+                by_venue[market.venue.name] = {}
+            by_base = by_venue[market.venue.name]
+            if market.kind.base.name not in by_base:
+                by_base[market.kind.base.name] = {}
+            by_quote = by_base[market.kind.base.name]
+            by_quote[market.kind.quote.name] = market.name
+        logger.info("Indexed %d markets", len(markets))
+
+    # CR alee: make base, venue, route optional, and add optional quote.
+    # Have to think harder about efficient indexing.
+    def find_markets(
+        self,
+        base: str,
+        venue: str,
+        route: str = "DIRECT",
+    ):
+        """
+        Lookup all markets matching the given criteria.  Requires the client to be initialized
+        and symbology to be loaded and indexed.
+        """
+        if route not in self.market_names_by_route:
+            return []
+        by_venue = self.market_names_by_route[route]
+        if venue not in by_venue:
+            return []
+        by_base = by_venue[venue]
+        if not by_base:
+            return []
+        by_quote = by_base.get(base, {})
+        return list(by_quote.values())
+
     async def get_open_orders(
         self,
         venue: Optional[str] = None,
