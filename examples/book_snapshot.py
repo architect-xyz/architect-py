@@ -13,7 +13,7 @@ async def main():
         start = time.perf_counter()
         result = await c.get_book_snapshot(market_id, num_levels=100)
         elapsed = time.perf_counter() - start
-        print_book(result.book_snapshot)
+        print_book(result)
         print(f"Elapsed time: {elapsed:.4f} seconds")
     except GraphQLClientHttpError as e:
         print(e.status_code)
