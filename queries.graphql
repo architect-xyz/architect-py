@@ -85,8 +85,17 @@ fragment OrderLogFields on OrderLog {
     dir
     quantity
     orderType {
+      __typename
       ... on LimitOrderType {
         limitPrice
+      }
+      ... on StopLossLimitOrderType {
+        limitPrice
+        triggerPrice
+      }
+      ... on TakeProfitLimitOrderType {
+        limitPrice
+        triggerPrice
       }
     }
   }
@@ -222,7 +231,7 @@ query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
   }
 }
 
-query GetOpenOrders {
+query GetAllOpenOrders {
   openOrders {
     ...OrderLogFields
   }

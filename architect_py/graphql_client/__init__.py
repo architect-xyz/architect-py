@@ -69,6 +69,7 @@ from .get_all_market_snapshots import (
     GetAllMarketSnapshots,
     GetAllMarketSnapshotsMarketsSnapshots,
 )
+from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOpenOrders
 from .get_balances_for_cpty import (
     GetBalancesForCpty,
     GetBalancesForCptyAccountSummariesForCpty,
@@ -92,7 +93,6 @@ from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMa
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
-from .get_open_orders import GetOpenOrders, GetOpenOrdersOpenOrders
 from .get_order import GetOrder, GetOrderOrder
 from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
 from .input_types import (
@@ -179,6 +179,8 @@ __all__ = [
     "GetAccountSummariesForCptyAccountSummariesForCpty",
     "GetAllMarketSnapshots",
     "GetAllMarketSnapshotsMarketsSnapshots",
+    "GetAllOpenOrders",
+    "GetAllOpenOrdersOpenOrders",
     "GetBalancesForCpty",
     "GetBalancesForCptyAccountSummariesForCpty",
     "GetBalancesForCptyAccountSummariesForCptyByAccount",
@@ -200,8 +202,6 @@ __all__ = [
     "GetMarketSnapshotMarketSnapshot",
     "GetMarkets",
     "GetMarketsMarkets",
-    "GetOpenOrders",
-    "GetOpenOrdersOpenOrders",
     "GetOrder",
     "GetOrderOrder",
     "GetOutOrders",

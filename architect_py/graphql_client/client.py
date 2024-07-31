@@ -19,6 +19,7 @@ from .get_all_market_snapshots import (
     GetAllMarketSnapshots,
     GetAllMarketSnapshotsMarketsSnapshots,
 )
+from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOpenOrders
 from .get_balances_for_cpty import (
     GetBalancesForCpty,
     GetBalancesForCptyAccountSummariesForCpty,
@@ -29,7 +30,6 @@ from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMa
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
-from .get_open_orders import GetOpenOrders, GetOpenOrdersOpenOrders
 from .get_order import GetOrder, GetOrderOrder
 from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
 from .input_types import CreateOrder
@@ -653,10 +653,12 @@ class GraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return GetBalancesForCpty.model_validate(data).account_summaries_for_cpty
 
-    async def get_open_orders(self, **kwargs: Any) -> List[GetOpenOrdersOpenOrders]:
+    async def get_all_open_orders(
+        self, **kwargs: Any
+    ) -> List[GetAllOpenOrdersOpenOrders]:
         query = gql(
             """
-            query GetOpenOrders {
+            query GetAllOpenOrders {
               openOrders {
                 ...OrderLogFields
               }
@@ -717,8 +719,17 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 dir
                 quantity
                 orderType {
+                  __typename
                   ... on LimitOrderType {
                     limitPrice
+                  }
+                  ... on StopLossLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                  ... on TakeProfitLimitOrderType {
+                    limitPrice
+                    triggerPrice
                   }
                 }
               }
@@ -739,10 +750,13 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         variables: Dict[str, object] = {}
         response = await self.execute(
-            query=query, operation_name="GetOpenOrders", variables=variables, **kwargs
+            query=query,
+            operation_name="GetAllOpenOrders",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return GetOpenOrders.model_validate(data).open_orders
+        return GetAllOpenOrders.model_validate(data).open_orders
 
     async def get_out_orders(
         self, from_inclusive: Any, to_exclusive: Any, **kwargs: Any
@@ -810,8 +824,17 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 dir
                 quantity
                 orderType {
+                  __typename
                   ... on LimitOrderType {
                     limitPrice
+                  }
+                  ... on StopLossLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                  ... on TakeProfitLimitOrderType {
+                    limitPrice
+                    triggerPrice
                   }
                 }
               }
@@ -904,8 +927,17 @@ class GraphQLClient(JuniperAsyncBaseClient):
                 dir
                 quantity
                 orderType {
+                  __typename
                   ... on LimitOrderType {
                     limitPrice
+                  }
+                  ... on StopLossLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                  ... on TakeProfitLimitOrderType {
+                    limitPrice
+                    triggerPrice
                   }
                 }
               }
