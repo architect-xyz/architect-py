@@ -41,17 +41,17 @@ class Client(GraphQLClient):
         order = await self.send_order(
             CreateOrder(
                 market=market,
-                order_type=order_type,
                 dir=side,
-                limit_price=str(limit_price),
                 quantity=str(quantity),
+                order_type=order_type,
+                limit_price=str(limit_price),
                 post_only=post_only,
                 trigger_price=str(trigger_price),
                 time_in_force=CreateTimeInForce(
                     instruction=time_in_force_instruction,
                     good_til_date=good_til_date_str,
                 ),
-                order_source=source,
+                source=source,
             )
         )
 
