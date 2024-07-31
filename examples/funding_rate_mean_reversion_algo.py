@@ -22,7 +22,7 @@ async def update_marketdata(c: Client):
         fields=["funding_rate", "best_bid_price", "best_ask_price"],
     )
     async for batched in s:
-        for update in batched.exchange_specific:
+        for update in batched:
             value = None
             if update.value is not None:
                 value = float(update.value)
@@ -68,8 +68,8 @@ async def step_to_target_position(c: Client):
     while True:
         await asyncio.sleep(10)
         # check open orders
-        r = await c.get_open_orders()
-        n = len(r.open_orders)
+        open_orders = await c.get_open_orders()
+        n = len(open_orders)
         if n > 0:
             print("there are {n} open orders, skipping step")
             continue

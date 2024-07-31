@@ -12,8 +12,8 @@ async def main():
         stream = c.subscribe_candles(
             market_id, width=CandleWidth.ONE_MINUTE, ping_interval=None
         )
-        async for item in stream:
-            print(item.candles)
+        async for candle in stream:
+            print(candle)
     except GraphQLClientHttpError as e:
         print(e.status_code)
         print(e.response.json())
