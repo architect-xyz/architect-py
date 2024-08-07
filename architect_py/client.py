@@ -123,13 +123,13 @@ class Client(GraphQLClient):
                 market=market,
                 dir=side,
                 quantity=str(quantity),
-                order_type=order_type,
-                limit_price=str(limit_price),
-                post_only=post_only,
-                trigger_price=str(trigger_price),
-                time_in_force=CreateTimeInForce(
+                orderType=order_type,
+                limitPrice=str(limit_price),
+                postOnly=post_only,
+                triggerPrice=str(trigger_price),
+                timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
-                    good_til_date=good_til_date_str,
+                    goodTilDate=good_til_date_str,
                 ),
                 source=source,
             )
