@@ -147,7 +147,7 @@ class Client(GraphQLClient):
         order = await self.send_order(
             CreateOrder(
                 market=market,
-                dir=dir,
+                dir=dir.value,
                 quantity=str(quantity),
                 account=account,
                 orderType=order_type,
@@ -184,7 +184,7 @@ class Client(GraphQLClient):
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                dir=dir,
+                dir=dir.value,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
@@ -215,7 +215,7 @@ class Client(GraphQLClient):
             CreatePovAlgo(
                 name=name,
                 market=market,
-                dir=dir,
+                dir=dir.value,
                 targetVolumeFrac=str(target_volume_frac),
                 minOrderQuantity=str(min_order_quantity),
                 maxQuantity=str(max_quantity),
@@ -246,7 +246,7 @@ class Client(GraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir,
+                dir=dir.value,
                 limitPrice=str(limit_price),
                 targetSize=str(target_size),
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -271,7 +271,7 @@ class Client(GraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir,
+                dir=dir.value,
                 limitPrice=str(limit_price),
                 targetSize=str(target_size),
                 executionTimeLimitMs=execution_time_limit_ms,
