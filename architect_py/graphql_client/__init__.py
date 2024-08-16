@@ -3,9 +3,11 @@
 from .base_model import BaseModel, Upload
 from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
+from .cancel_orders import CancelOrders
 from .client import GraphQLClient
 from .enums import (
     AlgoControlCommand,
+    AlgoKind,
     AlgoRunningStatus,
     CandleWidth,
     CmeSecurityType,
@@ -13,6 +15,7 @@ from .enums import (
     CreateTimeInForceInstruction,
     EnvironmentKind,
     FillKind,
+    LicenseTier,
     MinOrderQuantityUnit,
     MMAlgoKind,
     OrderSource,
@@ -122,6 +125,7 @@ from .preview_smart_order_router_algo_request import (
 )
 from .send_mm_algo_request import SendMmAlgoRequest
 from .send_order import SendOrder
+from .send_orders import SendOrders
 from .send_pov_algo_request import SendPovAlgoRequest
 from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
 from .send_spread_algo_request import SendSpreadAlgoRequest
@@ -169,10 +173,12 @@ __all__ = [
     "AccountSummariesFieldsByAccountPositionsMarket",
     "AccountSummariesFieldsByAccountPositionsVenue",
     "AlgoControlCommand",
+    "AlgoKind",
     "AlgoRunningStatus",
     "BaseModel",
     "CancelAllOrders",
     "CancelOrder",
+    "CancelOrders",
     "CandleFields",
     "CandleWidth",
     "CmeSecurityType",
@@ -226,6 +232,7 @@ __all__ = [
     "GetOutOrdersOutedOrders",
     "GraphQLClient",
     "JuniperAsyncBaseClient",
+    "LicenseTier",
     "MMAlgoKind",
     "MarketFields",
     "MarketFieldsCmeProductGroupInfo",
@@ -263,6 +270,7 @@ __all__ = [
     "ReferencePrice",
     "SendMmAlgoRequest",
     "SendOrder",
+    "SendOrders",
     "SendPovAlgoRequest",
     "SendSmartOrderRouterAlgoRequest",
     "SendSpreadAlgoRequest",

@@ -6,6 +6,7 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from .base_model import UNSET, UnsetType
 from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
+from .cancel_orders import CancelOrders
 from .enums import CandleWidth
 from .fills_subscription import FillsSubscription, FillsSubscriptionFills
 from .get_account_summaries import (
@@ -48,6 +49,7 @@ from .preview_smart_order_router_algo_request import (
 )
 from .send_mm_algo_request import SendMmAlgoRequest
 from .send_order import SendOrder
+from .send_orders import SendOrders
 from .send_pov_algo_request import SendPovAlgoRequest
 from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
 from .send_spread_algo_request import SendSpreadAlgoRequest
@@ -1328,6 +1330,21 @@ class GraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return SendOrder.model_validate(data).create_order
 
+    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[Any]:
+        query = gql(
+            """
+            mutation SendOrders($orders: [CreateOrder!]!) {
+              createOrders(orders: $orders)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orders": orders}
+        response = await self.execute(
+            query=query, operation_name="SendOrders", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return SendOrders.model_validate(data).create_orders
+
     async def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> Any:
         query = gql(
             """
@@ -1548,6 +1565,21 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return CancelOrder.model_validate(data).cancel_order
+
+    async def cancel_orders(self, order_ids: List[Any], **kwargs: Any) -> List[Any]:
+        query = gql(
+            """
+            mutation CancelOrders($orderIds: [OrderId!]!) {
+              cancelOrders(orderIds: $orderIds)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderIds": order_ids}
+        response = await self.execute(
+            query=query, operation_name="CancelOrders", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return CancelOrders.model_validate(data).cancel_orders
 
     async def cancel_all_orders(
         self, venue: Union[Optional[Any], UnsetType] = UNSET, **kwargs: Any
