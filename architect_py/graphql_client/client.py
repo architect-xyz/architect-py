@@ -4,7 +4,9 @@
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 
 from .base_model import UNSET, UnsetType
+from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
+from .cancel_orders import CancelOrders
 from .enums import CandleWidth
 from .fills_subscription import FillsSubscription, FillsSubscriptionFills
 from .get_account_summaries import (
@@ -32,9 +34,27 @@ from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnaps
 from .get_markets import GetMarkets, GetMarketsMarkets
 from .get_order import GetOrder, GetOrderOrder
 from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
-from .input_types import CreateOrder
+from .input_types import (
+    CreateMMAlgo,
+    CreateOrder,
+    CreatePovAlgo,
+    CreateSmartOrderRouterAlgo,
+    CreateSpreadAlgo,
+    CreateTwapAlgo,
+)
 from .juniper_async_base_client import JuniperAsyncBaseClient
+from .preview_smart_order_router_algo_request import (
+    PreviewSmartOrderRouterAlgoRequest,
+    PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo,
+)
+from .remove_telegram_api_keys import RemoveTelegramApiKeys
+from .send_mm_algo_request import SendMmAlgoRequest
 from .send_order import SendOrder
+from .send_orders import SendOrders
+from .send_pov_algo_request import SendPovAlgoRequest
+from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
+from .send_spread_algo_request import SendSpreadAlgoRequest
+from .send_twap_algo_request import SendTwapAlgoRequest
 from .subscribe_book import SubscribeBook, SubscribeBookBook
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
 from .subscribe_exchange_specific import (
@@ -1311,6 +1331,227 @@ class GraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return SendOrder.model_validate(data).create_order
 
+    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[Any]:
+        query = gql(
+            """
+            mutation SendOrders($orders: [CreateOrder!]!) {
+              createOrders(orders: $orders)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orders": orders}
+        response = await self.execute(
+            query=query, operation_name="SendOrders", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return SendOrders.model_validate(data).create_orders
+
+    async def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> Any:
+        query = gql(
+            """
+            mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
+              createTwapAlgo(twapAlgo: $algo)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"algo": algo}
+        response = await self.execute(
+            query=query,
+            operation_name="SendTwapAlgoRequest",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return SendTwapAlgoRequest.model_validate(data).create_twap_algo
+
+    async def send_pov_algo_request(self, algo: CreatePovAlgo, **kwargs: Any) -> Any:
+        query = gql(
+            """
+            mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
+              createPovAlgo(povAlgo: $algo)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"algo": algo}
+        response = await self.execute(
+            query=query,
+            operation_name="SendPovAlgoRequest",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return SendPovAlgoRequest.model_validate(data).create_pov_algo
+
+    async def preview_smart_order_router_algo_request(
+        self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
+    ) -> Optional[PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo]:
+        query = gql(
+            """
+            mutation PreviewSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
+              previewSmartOrderRouterAlgo(algo: $algo) {
+                orders {
+                  ...OrderFields
+                }
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+              }
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment OrderFields on Order {
+              id
+              marketId
+              market {
+                ...MarketFields
+              }
+              dir
+              quantity
+              accountId
+              orderType {
+                __typename
+                ... on LimitOrderType {
+                  limitPrice
+                  postOnly
+                }
+                ... on StopLossLimitOrderType {
+                  limitPrice
+                  triggerPrice
+                }
+                ... on TakeProfitLimitOrderType {
+                  limitPrice
+                  triggerPrice
+                }
+              }
+              timeInForce {
+                instruction
+                goodTilDate
+              }
+              quoteId
+              source
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {"algo": algo}
+        response = await self.execute(
+            query=query,
+            operation_name="PreviewSmartOrderRouterAlgoRequest",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return PreviewSmartOrderRouterAlgoRequest.model_validate(
+            data
+        ).preview_smart_order_router_algo
+
+    async def send_smart_order_router_algo_request(
+        self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
+    ) -> Any:
+        query = gql(
+            """
+            mutation SendSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
+              createSmartOrderRouterAlgo(algo: $algo)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"algo": algo}
+        response = await self.execute(
+            query=query,
+            operation_name="SendSmartOrderRouterAlgoRequest",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return SendSmartOrderRouterAlgoRequest.model_validate(
+            data
+        ).create_smart_order_router_algo
+
+    async def send_mm_algo_request(self, algo: CreateMMAlgo, **kwargs: Any) -> Any:
+        query = gql(
+            """
+            mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
+              createMmAlgo(mmAlgo: $algo)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"algo": algo}
+        response = await self.execute(
+            query=query,
+            operation_name="SendMmAlgoRequest",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return SendMmAlgoRequest.model_validate(data).create_mm_algo
+
+    async def send_spread_algo_request(
+        self, algo: CreateSpreadAlgo, **kwargs: Any
+    ) -> Any:
+        query = gql(
+            """
+            mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
+              createSpreadAlgo(spreadAlgo: $algo)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"algo": algo}
+        response = await self.execute(
+            query=query,
+            operation_name="SendSpreadAlgoRequest",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return SendSpreadAlgoRequest.model_validate(data).create_spread_algo
+
     async def cancel_order(self, order_id: Any, **kwargs: Any) -> Any:
         query = gql(
             """
@@ -1325,6 +1566,56 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return CancelOrder.model_validate(data).cancel_order
+
+    async def cancel_orders(self, order_ids: List[Any], **kwargs: Any) -> List[Any]:
+        query = gql(
+            """
+            mutation CancelOrders($orderIds: [OrderId!]!) {
+              cancelOrders(orderIds: $orderIds)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderIds": order_ids}
+        response = await self.execute(
+            query=query, operation_name="CancelOrders", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return CancelOrders.model_validate(data).cancel_orders
+
+    async def cancel_all_orders(
+        self, venue: Union[Optional[Any], UnsetType] = UNSET, **kwargs: Any
+    ) -> Optional[Any]:
+        query = gql(
+            """
+            mutation CancelAllOrders($venue: VenueId) {
+              cancelAllOrders(venueId: $venue)
+            }
+            """
+        )
+        variables: Dict[str, object] = {"venue": venue}
+        response = await self.execute(
+            query=query, operation_name="CancelAllOrders", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return CancelAllOrders.model_validate(data).cancel_all_orders
+
+    async def remove_telegram_api_keys(self, **kwargs: Any) -> bool:
+        query = gql(
+            """
+            mutation RemoveTelegramApiKeys {
+              removeTelegramApiKeys
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query,
+            operation_name="RemoveTelegramApiKeys",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return RemoveTelegramApiKeys.model_validate(data).remove_telegram_api_keys
 
     async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
         Union[

@@ -10,6 +10,15 @@ class AlgoControlCommand(str, Enum):
     STOP = "STOP"
 
 
+class AlgoKind(str, Enum):
+    MARKET_MAKER = "MARKET_MAKER"
+    POV = "POV"
+    SMART_ORDER_ROUTER = "SMART_ORDER_ROUTER"
+    TWAP = "TWAP"
+    SPREAD = "SPREAD"
+    CHASER = "CHASER"
+
+
 class AlgoRunningStatus(str, Enum):
     RUNNING = "RUNNING"
     PAUSED = "PAUSED"
@@ -61,6 +70,11 @@ class FillKind(str, Enum):
     CORRECTION = "CORRECTION"
 
 
+class LicenseTier(str, Enum):
+    BASIC = "BASIC"
+    PROFESSIONAL = "PROFESSIONAL"
+
+
 class MMAlgoKind(str, Enum):
     MM = "MM"
     SPREAD = "SPREAD"
@@ -77,6 +91,7 @@ class OrderSource(str, Enum):
     ALGO = "ALGO"
     EXTERNAL = "EXTERNAL"
     CLI = "CLI"
+    TELEGRAM = "TELEGRAM"
     OTHER = "OTHER"
 
 

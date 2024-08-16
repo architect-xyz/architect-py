@@ -6,7 +6,7 @@ from typing import Any, List, Literal, Optional, Union
 from pydantic import Field
 
 from .base_model import BaseModel
-from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderStateFlags
+from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderSource, OrderStateFlags
 
 
 class ProductFields(BaseModel):
@@ -177,6 +177,50 @@ class MarketSnapshotFieldsMarket(BaseModel):
     name: str
 
 
+class OrderFields(BaseModel):
+    id: Any
+    market_id: Any = Field(alias="marketId")
+    market: "OrderFieldsMarket"
+    dir: Any
+    quantity: Any
+    account_id: Optional[Any] = Field(alias="accountId")
+    order_type: Union[
+        "OrderFieldsOrderTypeLimitOrderType",
+        "OrderFieldsOrderTypeStopLossLimitOrderType",
+        "OrderFieldsOrderTypeTakeProfitLimitOrderType",
+    ] = Field(alias="orderType", discriminator="typename__")
+    time_in_force: "OrderFieldsTimeInForce" = Field(alias="timeInForce")
+    quote_id: Optional[Any] = Field(alias="quoteId")
+    source: OrderSource
+
+
+class OrderFieldsMarket(MarketFields):
+    pass
+
+
+class OrderFieldsOrderTypeLimitOrderType(BaseModel):
+    typename__: Literal["LimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    post_only: bool = Field(alias="postOnly")
+
+
+class OrderFieldsOrderTypeStopLossLimitOrderType(BaseModel):
+    typename__: Literal["StopLossLimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    trigger_price: Any = Field(alias="triggerPrice")
+
+
+class OrderFieldsOrderTypeTakeProfitLimitOrderType(BaseModel):
+    typename__: Literal["TakeProfitLimitOrderType"] = Field(alias="__typename")
+    limit_price: Any = Field(alias="limitPrice")
+    trigger_price: Any = Field(alias="triggerPrice")
+
+
+class OrderFieldsTimeInForce(BaseModel):
+    instruction: str
+    good_til_date: Optional[Any] = Field(alias="goodTilDate")
+
+
 class OrderLogFields(BaseModel):
     typename__: str = Field(alias="__typename")
     timestamp: Any
@@ -225,4 +269,5 @@ MarketFields.model_rebuild()
 AccountSummariesFields.model_rebuild()
 CandleFields.model_rebuild()
 MarketSnapshotFields.model_rebuild()
+OrderFields.model_rebuild()
 OrderLogFields.model_rebuild()
