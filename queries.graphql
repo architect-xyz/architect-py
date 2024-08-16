@@ -409,6 +409,10 @@ mutation CancelAllOrders($venue: VenueId) {
   cancelAllOrders(venueId: $venue)
 }
 
+mutation RemoveTelegramApiKeys {
+  removeTelegramApiKeys
+}
+
 
 subscription SubscribeOrderflow {
   orderflow {

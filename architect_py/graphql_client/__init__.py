@@ -123,6 +123,7 @@ from .preview_smart_order_router_algo_request import (
     PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo,
     PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgoOrders,
 )
+from .remove_telegram_api_keys import RemoveTelegramApiKeys
 from .send_mm_algo_request import SendMmAlgoRequest
 from .send_order import SendOrder
 from .send_orders import SendOrders
@@ -268,6 +269,7 @@ __all__ = [
     "ProductFields",
     "Reason",
     "ReferencePrice",
+    "RemoveTelegramApiKeys",
     "SendMmAlgoRequest",
     "SendOrder",
     "SendOrders",

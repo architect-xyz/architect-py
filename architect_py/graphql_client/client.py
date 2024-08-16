@@ -47,6 +47,7 @@ from .preview_smart_order_router_algo_request import (
     PreviewSmartOrderRouterAlgoRequest,
     PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo,
 )
+from .remove_telegram_api_keys import RemoveTelegramApiKeys
 from .send_mm_algo_request import SendMmAlgoRequest
 from .send_order import SendOrder
 from .send_orders import SendOrders
@@ -1597,6 +1598,24 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return CancelAllOrders.model_validate(data).cancel_all_orders
+
+    async def remove_telegram_api_keys(self, **kwargs: Any) -> bool:
+        query = gql(
+            """
+            mutation RemoveTelegramApiKeys {
+              removeTelegramApiKeys
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query,
+            operation_name="RemoveTelegramApiKeys",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return RemoveTelegramApiKeys.model_validate(data).remove_telegram_api_keys
 
     async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
         Union[
