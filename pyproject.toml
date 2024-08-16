@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "architect-py"
-version = "0.5.2"
+version = "0.5.3"
 description = "Client library for the Architect trading platform."
 authors = ["Architect Financial Technologies, Inc. <hello@architect.xyz>"]
 readme = "README.md"

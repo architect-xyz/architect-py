@@ -50,6 +50,40 @@ fragment MarketFields on Market {
   isFavorite
 }
 
+
+fragment OrderFields on Order {
+  id
+  marketId
+  market {
+    ...MarketFields
+  }
+  dir
+  quantity
+  accountId
+  orderType {
+    __typename
+    ... on LimitOrderType {
+      limitPrice
+      postOnly
+    }
+    ... on StopLossLimitOrderType {
+      limitPrice
+      triggerPrice
+    }
+    ... on TakeProfitLimitOrderType {
+      limitPrice
+      triggerPrice
+    }
+  }
+  timeInForce {
+    instruction
+    goodTilDate
+  }
+  quoteId
+  source
+}
+
+
 fragment MarketSnapshotFields on MarketSnapshot {
   __typename
   marketId
@@ -329,8 +363,42 @@ mutation SendOrder($order: CreateOrder!) {
   createOrder(order: $order)
 }
 
+mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
+  createTwapAlgo(twapAlgo: $algo)
+}
+
+mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
+  createPovAlgo(povAlgo: $algo)
+}
+
+mutation PreviewSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
+  previewSmartOrderRouterAlgo(algo: $algo) {
+    orders {
+      ...OrderFields
+    }
+  }
+}
+
+mutation SendSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
+  createSmartOrderRouterAlgo(algo: $algo)
+}
+
+
+mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
+  createMmAlgo(mmAlgo: $algo)
+}
+
+mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
+  createSpreadAlgo(spreadAlgo: $algo)
+}
+
+
 mutation CancelOrder($orderId: OrderId!) {
   cancelOrder(orderId: $orderId)
+}
+
+mutation CancelAllOrders($venue: VenueId) {
+  cancelAllOrders(venueId: $venue)
 }
 
 subscription SubscribeOrderflow {

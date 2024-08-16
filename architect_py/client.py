@@ -1,18 +1,48 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+from enum import Enum
 from typing import Literal, Optional
 
-from architect_py.graphql_client.enums import CreateOrderType, OrderSource
+from architect_py.graphql_client.enums import (
+    CreateOrderType,
+    OrderSource,
+    ReferencePrice,
+)
 import logging
+
+from architect_py.graphql_client.fragments import OrderFields
+from architect_py.graphql_client.get_order import GetOrderOrder
 
 from .graphql_client import GraphQLClient
 from .graphql_client.input_types import (
+    CreateMMAlgo,
     CreateOrder,
+    CreatePovAlgo,
+    CreateSmartOrderRouterAlgo,
+    CreateSpreadAlgo,
+    CreateSpreadAlgoHedgeMarket,
     CreateTimeInForce,
     CreateTimeInForceInstruction,
+    CreateTwapAlgo,
 )
 
 logger = logging.getLogger(__name__)
+
+
+class OrderDirection(Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+    def __int__(self):
+        if self == OrderDirection.BUY:
+            return 1
+        elif self == OrderDirection.SELL:
+            return -1
+        else:
+            raise ValueError(f"Unknown OrderDirection: {self}")
+
+
+type ValueInputType = int | float | Decimal | str
 
 
 class Client(GraphQLClient):
@@ -35,10 +65,11 @@ class Client(GraphQLClient):
             if market.venue.name not in by_venue:
                 by_venue[market.venue.name] = {}
             by_base = by_venue[market.venue.name]
-            if market.kind.base.name not in by_base:
-                by_base[market.kind.base.name] = {}
-            by_quote = by_base[market.kind.base.name]
-            by_quote[market.kind.quote.name] = market.name
+
+            if market.kind.base.name not in by_base:  # type: ignore
+                by_base[market.kind.base.name] = {}  # type: ignore
+            by_quote = by_base[market.kind.base.name]  # type: ignore
+            by_quote[market.kind.quote.name] = market.name  # type: ignore
         logger.info("Indexed %d markets", len(markets))
 
     # CR alee: make base, venue, route optional, and add optional quote.
@@ -96,33 +127,29 @@ class Client(GraphQLClient):
         self,
         *,
         market: str,
-        side: Literal["buy", "sell"],
-        quantity: float | Decimal,
+        dir: OrderDirection,
+        quantity: ValueInputType,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
-        limit_price: float | Decimal,
+        limit_price: ValueInputType,
         post_only: bool = False,
-        trigger_price: Optional[float | Decimal] = None,
+        trigger_price: Optional[ValueInputType] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
         good_til_date: Optional[datetime] = None,
+        account: Optional[str] = None,
+        quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-    ):
+    ) -> Optional[GetOrderOrder]:
         if good_til_date is not None:
-            if good_til_date.tzinfo is None:
-                raise ValueError(
-                    "in sent_limit_order, the good_til_date must be timezone-aware. "
-                    "Try datetime(..., tzinfo={your_local_timezone})"
-                )
-            else:
-                utc_datetime = good_til_date.astimezone(timezone.utc)
-                good_til_date_str = f"{utc_datetime.isoformat()}Z"
+            good_til_date_str = convert_datetime_to_utc_str(good_til_date)
         else:
             good_til_date_str = None
 
         order = await self.send_order(
             CreateOrder(
                 market=market,
-                dir=side,
+                dir=dir,
                 quantity=str(quantity),
+                account=account,
                 orderType=order_type,
                 limitPrice=str(limit_price),
                 postOnly=post_only,
@@ -131,8 +158,219 @@ class Client(GraphQLClient):
                     instruction=time_in_force_instruction,
                     goodTilDate=good_til_date_str,
                 ),
+                quoteId=quote_id,
                 source=source,
             )
         )
 
         return await self.get_order(order.order.id)
+
+    async def send_twap_algo(
+        self,
+        *,
+        name: str,
+        market: str,
+        dir: OrderDirection,
+        quantity: ValueInputType,
+        interval_ms: int,
+        reject_lockout_ms: int,
+        end_time: datetime,
+        account: Optional[str] = None,
+        take_through_frac: Optional[ValueInputType] = None,
+    ):
+
+        end_time_str = convert_datetime_to_utc_str(end_time)
+        algo = await self.send_twap_algo_request(
+            CreateTwapAlgo(
+                name=name,
+                market=market,
+                dir=dir,
+                quantity=quantity,
+                intervalMs=interval_ms,
+                rejectLockoutMs=reject_lockout_ms,
+                endTime=end_time_str,
+                account=account,
+                takeThroughFrac=take_through_frac,
+            )
+        )
+
+        return await self.get_order(algo.algo.id)
+
+    async def send_pov_algo(
+        self,
+        *,
+        name: str,
+        market: str,
+        dir: OrderDirection,
+        target_volume_frac: ValueInputType,
+        min_order_quantity: ValueInputType,
+        max_quantity: ValueInputType,
+        order_lockout_ms: int,
+        end_time: datetime,
+        account: Optional[str] = None,
+        take_through_frac: Optional[ValueInputType] = None,
+    ):
+        end_time_str = convert_datetime_to_utc_str(end_time)
+        algo = await self.send_pov_algo_request(
+            CreatePovAlgo(
+                name=name,
+                market=market,
+                dir=dir,
+                targetVolumeFrac=str(target_volume_frac),
+                minOrderQuantity=str(min_order_quantity),
+                maxQuantity=str(max_quantity),
+                orderLockoutMs=order_lockout_ms,
+                endTime=end_time_str,
+                account=account,
+                takeThroughFrac=(
+                    str(take_through_frac) if take_through_frac is not None else None
+                ),
+            )
+        )
+
+        return await self.get_order(algo.algo.id)
+
+    async def send_smart_order_router_algo(
+        self,
+        *,
+        markets: list[str],
+        base: str,
+        quote: str,
+        dir: OrderDirection,
+        limit_price: ValueInputType,
+        target_size: ValueInputType,
+        execution_time_limit_ms: int,
+    ):
+        algo = await self.send_smart_order_router_algo_request(
+            CreateSmartOrderRouterAlgo(
+                markets=markets,
+                base=base,
+                quote=quote,
+                dir=dir,
+                limitPrice=str(limit_price),
+                targetSize=str(target_size),
+                executionTimeLimitMs=execution_time_limit_ms,
+            )
+        )
+
+        return await self.get_order(algo.algo.id)
+
+    async def preview_smart_order_router(
+        self,
+        *,
+        markets: list[str],
+        base: str,
+        quote: str,
+        dir: OrderDirection,
+        limit_price: ValueInputType,
+        target_size: ValueInputType,
+        execution_time_limit_ms: int,
+    ) -> Optional[list[OrderFields]]:
+        algo = await self.preview_smart_order_router_algo_request(
+            CreateSmartOrderRouterAlgo(
+                markets=markets,
+                base=base,
+                quote=quote,
+                dir=dir,
+                limitPrice=str(limit_price),
+                targetSize=str(target_size),
+                executionTimeLimitMs=execution_time_limit_ms,
+            )
+        )
+
+        return getattr(algo, "orders", None)
+
+    async def send_mm_algo(
+        self,
+        *,
+        name: str,
+        market: str,
+        account: Optional[str] = None,
+        buy_quantity: ValueInputType,
+        sell_quantity: ValueInputType,
+        min_position: ValueInputType,
+        max_position: ValueInputType,
+        max_improve_bbo: ValueInputType,
+        position_tilt: ValueInputType,
+        reference_price: ReferencePrice,
+        ref_dist_frac: ValueInputType,
+        tolerance_frac: ValueInputType,
+        fill_lockout_ms: int,
+        order_lockout_ms: int,
+        reject_lockout_ms: int,
+    ):
+        algo = await self.send_mm_algo_request(
+            CreateMMAlgo(
+                name=name,
+                market=market,
+                account=account,
+                buyQuantity=buy_quantity,
+                sellQuantity=sell_quantity,
+                minPosition=min_position,
+                maxPosition=max_position,
+                maxImproveBbo=max_improve_bbo,
+                positionTilt=position_tilt,
+                referencePrice=reference_price,
+                refDistFrac=ref_dist_frac,
+                toleranceFrac=tolerance_frac,
+                fillLockoutMs=fill_lockout_ms,
+                orderLockoutMs=order_lockout_ms,
+                rejectLockoutMs=reject_lockout_ms,
+            )
+        )
+        return await self.get_order(algo.algo.id)
+
+    async def send_spread_algo(
+        self,
+        *,
+        name: str,
+        market: str,
+        buy_quantity: ValueInputType,
+        sell_quantity: ValueInputType,
+        min_position: ValueInputType,
+        max_position: ValueInputType,
+        max_improve_bbo: ValueInputType,
+        position_tilt: ValueInputType,
+        reference_price: ReferencePrice,
+        ref_dist_frac: ValueInputType,
+        tolerance_frac: ValueInputType,
+        hedge_market: CreateSpreadAlgoHedgeMarket,
+        fill_lockout_ms: int,
+        order_lockout_ms: int,
+        reject_lockout_ms: int,
+        account: Optional[str] = None,
+    ):
+        algo = await self.send_spread_algo_request(
+            CreateSpreadAlgo(
+                name=name,
+                market=market,
+                account=account,
+                buyQuantity=buy_quantity,
+                sellQuantity=sell_quantity,
+                minPosition=min_position,
+                maxPosition=max_position,
+                maxImproveBbo=max_improve_bbo,
+                positionTilt=position_tilt,
+                referencePrice=reference_price,
+                refDistFrac=ref_dist_frac,
+                toleranceFrac=tolerance_frac,
+                hedgeMarket=hedge_market,
+                fillLockoutMs=fill_lockout_ms,
+                orderLockoutMs=order_lockout_ms,
+                rejectLockoutMs=reject_lockout_ms,
+            )
+        )
+        return await self.get_order(algo.algo.id)
+
+
+def convert_datetime_to_utc_str(dt: datetime):
+    if dt.tzinfo is None:
+        raise ValueError(
+            "in sent_limit_order, the good_til_date must be timezone-aware. Try \n"
+            "import pytz\n"
+            "datetime(..., tzinfo={your_local_timezone})\n"
+            "# examples of local timezones: pytz.timezone('US/Eastern'), "
+            "pytz.timezone('US/Pacific'), pytz.timezone('US/Central')"
+        )
+    utc_datetime = dt.astimezone(timezone.utc)
+    return f"{utc_datetime.isoformat()}Z"
