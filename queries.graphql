@@ -363,6 +363,10 @@ mutation SendOrder($order: CreateOrder!) {
   createOrder(order: $order)
 }
 
+mutation SendOrders($orders: [CreateOrder!]!) {
+  createOrders(orders: $orders)
+}
+
 mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
   createTwapAlgo(twapAlgo: $algo)
 }
@@ -397,9 +401,14 @@ mutation CancelOrder($orderId: OrderId!) {
   cancelOrder(orderId: $orderId)
 }
 
+mutation CancelOrders($orderIds: [OrderId!]!) {
+  cancelOrders(orderIds: $orderIds)
+}
+
 mutation CancelAllOrders($venue: VenueId) {
   cancelAllOrders(venueId: $venue)
 }
+
 
 subscription SubscribeOrderflow {
   orderflow {
