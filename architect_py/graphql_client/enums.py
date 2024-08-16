@@ -78,6 +78,7 @@ class OrderSource(str, Enum):
     EXTERNAL = "EXTERNAL"
     CLI = "CLI"
     OTHER = "OTHER"
+    TELEGRAM = "TELEGRAM"
 
 
 class OrderStateFlags(str, Enum):

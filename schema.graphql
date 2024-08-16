@@ -78,6 +78,7 @@ enum OrderSource {
   EXTERNAL
   CLI
   OTHER
+  TELEGRAM
 }
 
 "The state of an order"
