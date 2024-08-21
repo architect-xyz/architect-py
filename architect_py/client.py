@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Literal, Optional
+from typing import Optional, TypeAlias, Union
+
 
 from architect_py.graphql_client.enums import (
     CreateOrderType,
@@ -42,7 +43,7 @@ class OrderDirection(Enum):
             raise ValueError(f"Unknown OrderDirection: {self}")
 
 
-type ValueInputType = int | float | Decimal | str
+ValueInputType: TypeAlias = Union[int, float, Decimal, str]
 
 
 class Client(GraphQLClient):
