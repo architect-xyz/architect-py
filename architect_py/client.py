@@ -140,6 +140,10 @@ class Client(GraphQLClient):
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
     ) -> Optional[GetOrderOrder]:
+        """
+        `account` is optional depending on the final cpty it gets to
+        For CME orders, the account is required
+        """
         if good_til_date is not None:
             good_til_date_str = convert_datetime_to_utc_str(good_til_date)
         else:
