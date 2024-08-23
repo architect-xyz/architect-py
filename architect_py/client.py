@@ -149,7 +149,7 @@ class Client(GraphQLClient):
         else:
             good_til_date_str = None
 
-        order = await self.send_order(
+        order: str = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=dir.value,
@@ -158,7 +158,7 @@ class Client(GraphQLClient):
                 orderType=order_type,
                 limitPrice=str(limit_price),
                 postOnly=post_only,
-                triggerPrice=str(trigger_price),
+                triggerPrice=str(trigger_price) if trigger_price is not None else None,
                 timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
                     goodTilDate=good_til_date_str,
@@ -168,7 +168,7 @@ class Client(GraphQLClient):
             )
         )
 
-        return await self.get_order(order.order.id)
+        return await self.get_order(order)
 
     async def send_twap_algo(
         self,
