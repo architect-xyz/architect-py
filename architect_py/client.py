@@ -199,7 +199,7 @@ class Client(GraphQLClient):
             )
         )
 
-        return await self.get_order(algo.algo.id)
+        return await self.get_order(algo)
 
     async def send_pov_algo(
         self,
@@ -233,7 +233,7 @@ class Client(GraphQLClient):
             )
         )
 
-        return await self.get_order(algo.algo.id)
+        return await self.get_order(algo)
 
     async def send_smart_order_router_algo(
         self,
@@ -258,7 +258,7 @@ class Client(GraphQLClient):
             )
         )
 
-        return await self.get_order(algo.algo.id)
+        return await self.get_order(algo)
 
     async def preview_smart_order_router(
         self,
@@ -323,7 +323,7 @@ class Client(GraphQLClient):
                 rejectLockoutMs=reject_lockout_ms,
             )
         )
-        return await self.get_order(algo.algo.id)
+        return await self.get_order(algo)
 
     async def send_spread_algo(
         self,
@@ -365,7 +365,7 @@ class Client(GraphQLClient):
                 rejectLockoutMs=reject_lockout_ms,
             )
         )
-        return await self.get_order(algo.algo.id)
+        return await self.get_order(algo)
 
 
 def convert_datetime_to_utc_str(dt: datetime):
