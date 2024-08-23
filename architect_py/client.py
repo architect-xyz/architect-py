@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Literal, Optional
+from typing import Optional, TypeAlias, Union
+
 
 from architect_py.graphql_client.enums import (
     CreateOrderType,
@@ -42,7 +43,7 @@ class OrderDirection(Enum):
             raise ValueError(f"Unknown OrderDirection: {self}")
 
 
-type ValueInputType = int | float | Decimal | str
+ValueInputType: TypeAlias = Union[int, float, Decimal, str]
 
 
 class Client(GraphQLClient):
@@ -139,6 +140,10 @@ class Client(GraphQLClient):
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
     ) -> Optional[GetOrderOrder]:
+        """
+        `account` is optional depending on the final cpty it gets to
+        For CME orders, the account is required
+        """
         if good_til_date is not None:
             good_til_date_str = convert_datetime_to_utc_str(good_til_date)
         else:
