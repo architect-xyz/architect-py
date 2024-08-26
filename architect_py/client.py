@@ -1,3 +1,24 @@
+"""
+This file extends the GraphQLClient class to provide a higher-level interface for
+order entry with the Architect API.
+
+These are not required to send orders, but provide typed interfaces for the
+various order types and algorithms that can be sent to the OMS.
+
+
+The functions to send orders will return the order ID string
+After sending the order, this string can be used to retrieve the order status
+
+send_limit_order -> get_order
+send_twap_algo -> get_twap_status / get_twap_order
+send_pov_algo -> get_pov_status / get_pov_order
+etc.
+
+get_algo_status / get_algo_order
+are the generic functions to get the status of an algo
+it may not have all the information that the specific get_algo functions have
+"""
+
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
@@ -182,10 +203,10 @@ class Client(GraphQLClient):
         end_time: datetime,
         account: Optional[str] = None,
         take_through_frac: Optional[ValueInputType] = None,
-    ):
+    ) -> str:
 
         end_time_str = convert_datetime_to_utc_str(end_time)
-        algo = await self.send_twap_algo_request(
+        return await self.send_twap_algo_request(
             CreateTwapAlgo(
                 name=name,
                 market=market,
@@ -198,8 +219,6 @@ class Client(GraphQLClient):
                 takeThroughFrac=take_through_frac,
             )
         )
-
-        return await self.get_order(algo)
 
     async def send_pov_algo(
         self,
@@ -214,9 +233,9 @@ class Client(GraphQLClient):
         end_time: datetime,
         account: Optional[str] = None,
         take_through_frac: Optional[ValueInputType] = None,
-    ):
+    ) -> str:
         end_time_str = convert_datetime_to_utc_str(end_time)
-        algo = await self.send_pov_algo_request(
+        return await self.send_pov_algo_request(
             CreatePovAlgo(
                 name=name,
                 market=market,
@@ -233,8 +252,6 @@ class Client(GraphQLClient):
             )
         )
 
-        return await self.get_order(algo)
-
     async def send_smart_order_router_algo(
         self,
         *,
@@ -245,8 +262,8 @@ class Client(GraphQLClient):
         limit_price: ValueInputType,
         target_size: ValueInputType,
         execution_time_limit_ms: int,
-    ):
-        algo = await self.send_smart_order_router_algo_request(
+    ) -> str:
+        return await self.send_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
                 base=base,
@@ -257,8 +274,6 @@ class Client(GraphQLClient):
                 executionTimeLimitMs=execution_time_limit_ms,
             )
         )
-
-        return await self.get_order(algo)
 
     async def preview_smart_order_router(
         self,
@@ -304,7 +319,7 @@ class Client(GraphQLClient):
         order_lockout_ms: int,
         reject_lockout_ms: int,
     ):
-        algo = await self.send_mm_algo_request(
+        return await self.send_mm_algo_request(
             CreateMMAlgo(
                 name=name,
                 market=market,
@@ -323,7 +338,6 @@ class Client(GraphQLClient):
                 rejectLockoutMs=reject_lockout_ms,
             )
         )
-        return await self.get_order(algo)
 
     async def send_spread_algo(
         self,
@@ -344,8 +358,8 @@ class Client(GraphQLClient):
         order_lockout_ms: int,
         reject_lockout_ms: int,
         account: Optional[str] = None,
-    ):
-        algo = await self.send_spread_algo_request(
+    ) -> str:
+        return await self.send_spread_algo_request(
             CreateSpreadAlgo(
                 name=name,
                 market=market,
@@ -365,7 +379,6 @@ class Client(GraphQLClient):
                 rejectLockoutMs=reject_lockout_ms,
             )
         )
-        return await self.get_order(algo)
 
 
 def convert_datetime_to_utc_str(dt: datetime):
@@ -377,5 +390,7 @@ def convert_datetime_to_utc_str(dt: datetime):
             "# examples of local timezones: pytz.timezone('US/Eastern'), "
             "pytz.timezone('US/Pacific'), pytz.timezone('US/Central')"
         )
-    utc_datetime = dt.astimezone(timezone.utc)
-    return f"{utc_datetime.isoformat()}Z"
+    utc_str = dt.astimezone(timezone.utc).isoformat()[:-6]
+    # [:-6] removes the utc offset
+
+    return f"{utc_str}Z"
