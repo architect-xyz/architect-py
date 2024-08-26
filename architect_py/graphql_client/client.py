@@ -17,6 +17,8 @@ from .get_account_summaries_for_cpty import (
     GetAccountSummariesForCpty,
     GetAccountSummariesForCptyAccountSummariesForCpty,
 )
+from .get_algo_order import GetAlgoOrder, GetAlgoOrderAlgoOrder
+from .get_algo_status import GetAlgoStatus, GetAlgoStatusAlgoStatus
 from .get_all_market_snapshots import (
     GetAllMarketSnapshots,
     GetAllMarketSnapshotsMarketsSnapshots,
@@ -32,8 +34,24 @@ from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMa
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
+from .get_mm_order import GetMmOrder, GetMmOrderMmAlgoOrder
+from .get_mm_status import GetMmStatus, GetMmStatusMmAlgoStatus
 from .get_order import GetOrder, GetOrderOrder
 from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
+from .get_pov_order import GetPovOrder, GetPovOrderPovOrder
+from .get_pov_status import GetPovStatus, GetPovStatusPovStatus
+from .get_smart_order_router_order import (
+    GetSmartOrderRouterOrder,
+    GetSmartOrderRouterOrderSmartOrderRouterOrder,
+)
+from .get_smart_order_router_status import (
+    GetSmartOrderRouterStatus,
+    GetSmartOrderRouterStatusSmartOrderRouterStatus,
+)
+from .get_spread_order import GetSpreadOrder, GetSpreadOrderSpreadAlgoOrder
+from .get_spread_status import GetSpreadStatus, GetSpreadStatusSpreadAlgoStatus
+from .get_twap_order import GetTwapOrder, GetTwapOrderTwapOrder
+from .get_twap_status import GetTwapStatus, GetTwapStatusTwapStatus
 from .input_types import (
     CreateMMAlgo,
     CreateOrder,
@@ -982,6 +1000,459 @@ class GraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return GetOrder.model_validate(data).order
+
+    async def get_algo_status(
+        self, order_id: Any, **kwargs: Any
+    ) -> List[GetAlgoStatusAlgoStatus]:
+        query = gql(
+            """
+            query GetAlgoStatus($orderId: OrderId!) {
+              algoStatus(orderId: $orderId) {
+                orderId
+                order {
+                  orderId
+                  trader
+                  account
+                  algo
+                  parentOrderId
+                  markets
+                }
+                creationTime
+                status
+                lastStatusChange
+                fractionComplete
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetAlgoStatus", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetAlgoStatus.model_validate(data).algo_status
+
+    async def get_algo_order(
+        self, order_id: Any, **kwargs: Any
+    ) -> Optional[GetAlgoOrderAlgoOrder]:
+        query = gql(
+            """
+            query GetAlgoOrder($orderId: OrderId!) {
+              algoOrder(orderId: $orderId) {
+                orderId
+                trader
+                account
+                algo
+                parentOrderId
+                markets
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetAlgoOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetAlgoOrder.model_validate(data).algo_order
+
+    async def get_twap_status(
+        self, order_id: Any, **kwargs: Any
+    ) -> List[GetTwapStatusTwapStatus]:
+        query = gql(
+            """
+            query GetTwapStatus($orderId: OrderId!) {
+              twapStatus(orderId: $orderId) {
+                orderId
+                order {
+                  name
+                  orderId
+                  marketId
+                  dir
+                  quantity
+                  endTime
+                  accountId
+                  intervalMs
+                  rejectLockoutMs
+                  takeThroughFrac
+                }
+                creationTime
+                status
+                fractionComplete
+                realizedTwap
+                quantityFilled
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetTwapStatus", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetTwapStatus.model_validate(data).twap_status
+
+    async def get_twap_order(
+        self, order_id: Any, **kwargs: Any
+    ) -> Optional[GetTwapOrderTwapOrder]:
+        query = gql(
+            """
+            query GetTwapOrder($orderId: OrderId!) {
+              twapOrder(orderId: $orderId) {
+                name
+                orderId
+                marketId
+                dir
+                quantity
+                endTime
+                accountId
+                intervalMs
+                rejectLockoutMs
+                takeThroughFrac
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetTwapOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetTwapOrder.model_validate(data).twap_order
+
+    async def get_pov_status(
+        self, order_id: Any, **kwargs: Any
+    ) -> List[GetPovStatusPovStatus]:
+        query = gql(
+            """
+            query GetPovStatus($orderId: OrderId!) {
+              povStatus(orderId: $orderId) {
+                orderId
+                order {
+                  name
+                  orderId
+                  marketId
+                  dir
+                  targetVolumeFrac
+                  minOrderQuantity
+                  maxQuantity
+                  endTime
+                  accountId
+                  takeThroughFrac
+                }
+                creationTime
+                status
+                fractionComplete
+                realizedVolumeFrac
+                marketVolume
+                quantityFilled
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetPovStatus", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetPovStatus.model_validate(data).pov_status
+
+    async def get_pov_order(
+        self, order_id: Any, **kwargs: Any
+    ) -> Optional[GetPovOrderPovOrder]:
+        query = gql(
+            """
+            query GetPovOrder($orderId: OrderId!) {
+              povOrder(orderId: $orderId) {
+                name
+                orderId
+                marketId
+                dir
+                targetVolumeFrac
+                minOrderQuantity
+                maxQuantity
+                endTime
+                accountId
+                takeThroughFrac
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetPovOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetPovOrder.model_validate(data).pov_order
+
+    async def get_smart_order_router_status(
+        self, order_id: Any, **kwargs: Any
+    ) -> List[GetSmartOrderRouterStatusSmartOrderRouterStatus]:
+        query = gql(
+            """
+            query GetSmartOrderRouterStatus($orderId: OrderId!) {
+              smartOrderRouterStatus(orderId: $orderId) {
+                status {
+                  orderId
+                  order {
+                    orderId
+                    trader
+                    account
+                    algo
+                    parentOrderId
+                    markets
+                  }
+                  creationTime
+                  status
+                  lastStatusChange
+                  fractionComplete
+                }
+                order {
+                  orderId
+                  markets {
+                    id
+                  }
+                  dir
+                  limitPrice
+                  targetSize
+                  executionTimeLimitMs
+                  parentOrderId
+                }
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query,
+            operation_name="GetSmartOrderRouterStatus",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetSmartOrderRouterStatus.model_validate(data).smart_order_router_status
+
+    async def get_smart_order_router_order(
+        self, order_id: Any, **kwargs: Any
+    ) -> Optional[GetSmartOrderRouterOrderSmartOrderRouterOrder]:
+        query = gql(
+            """
+            query GetSmartOrderRouterOrder($orderId: OrderId!) {
+              smartOrderRouterOrder(orderId: $orderId) {
+                orderId
+                markets {
+                  id
+                }
+                dir
+                limitPrice
+                targetSize
+                executionTimeLimitMs
+                parentOrderId
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query,
+            operation_name="GetSmartOrderRouterOrder",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetSmartOrderRouterOrder.model_validate(data).smart_order_router_order
+
+    async def get_mm_status(
+        self, order_id: Any, **kwargs: Any
+    ) -> List[GetMmStatusMmAlgoStatus]:
+        query = gql(
+            """
+            query GetMmStatus($orderId: OrderId!) {
+              mmAlgoStatus(orderId: $orderId) {
+                orderId
+                order {
+                  name
+                  orderId
+                  marketId
+                  quantityBuy
+                  quantitySell
+                  minPosition
+                  maxPosition
+                  maxImproveBbo
+                  positionTilt
+                  referencePrice
+                  refDistFrac
+                  toleranceFrac
+                  account
+                }
+                creationTime
+                status
+                position
+                hedgePosition
+                missRatio
+                effectiveSpread
+                buyStatus {
+                  lastOrderTime
+                  lastFillTime
+                  lastRejectTime
+                  openOrder {
+                    orderId
+                    price
+                    quantity
+                    cancelPending
+                  }
+                  referencePrice
+                }
+                sellStatus {
+                  lastOrderTime
+                  lastFillTime
+                  lastRejectTime
+                  openOrder {
+                    orderId
+                    price
+                    quantity
+                    cancelPending
+                  }
+                  referencePrice
+                }
+                kind
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetMmStatus", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetMmStatus.model_validate(data).mm_algo_status
+
+    async def get_mm_order(
+        self, order_id: Any, **kwargs: Any
+    ) -> Optional[GetMmOrderMmAlgoOrder]:
+        query = gql(
+            """
+            query GetMmOrder($orderId: OrderId!) {
+              mmAlgoOrder(orderId: $orderId) {
+                name
+                orderId
+                marketId
+                quantityBuy
+                quantitySell
+                minPosition
+                maxPosition
+                maxImproveBbo
+                positionTilt
+                referencePrice
+                refDistFrac
+                toleranceFrac
+                account
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetMmOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetMmOrder.model_validate(data).mm_algo_order
+
+    async def get_spread_status(
+        self, order_id: Any, **kwargs: Any
+    ) -> List[GetSpreadStatusSpreadAlgoStatus]:
+        query = gql(
+            """
+            query GetSpreadStatus($orderId: OrderId!) {
+              spreadAlgoStatus(orderId: $orderId) {
+                orderId
+                order {
+                  name
+                  orderId
+                  marketId
+                  quantityBuy
+                  quantitySell
+                  minPosition
+                  maxPosition
+                  maxImproveBbo
+                  positionTilt
+                  referencePrice
+                  refDistFrac
+                  toleranceFrac
+                  account
+                }
+                creationTime
+                status
+                position
+                hedgePosition
+                missRatio
+                effectiveSpread
+                buyStatus {
+                  lastOrderTime
+                  lastFillTime
+                  lastRejectTime
+                  openOrder {
+                    orderId
+                    price
+                    quantity
+                    cancelPending
+                  }
+                  referencePrice
+                }
+                sellStatus {
+                  lastOrderTime
+                  lastFillTime
+                  lastRejectTime
+                  openOrder {
+                    orderId
+                    price
+                    quantity
+                    cancelPending
+                  }
+                  referencePrice
+                }
+                kind
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetSpreadStatus", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetSpreadStatus.model_validate(data).spread_algo_status
+
+    async def get_spread_order(
+        self, order_id: Any, **kwargs: Any
+    ) -> Optional[GetSpreadOrderSpreadAlgoOrder]:
+        query = gql(
+            """
+            query GetSpreadOrder($orderId: OrderId!) {
+              spreadAlgoOrder(orderId: $orderId) {
+                name
+                orderId
+                marketId
+                quantityBuy
+                quantitySell
+                minPosition
+                maxPosition
+                maxImproveBbo
+                positionTilt
+                referencePrice
+                refDistFrac
+                toleranceFrac
+                account
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"orderId": order_id}
+        response = await self.execute(
+            query=query, operation_name="GetSpreadOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetSpreadOrder.model_validate(data).spread_algo_order
 
     async def get_fills(
         self,

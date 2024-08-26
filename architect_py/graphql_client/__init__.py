@@ -75,6 +75,12 @@ from .get_account_summaries_for_cpty import (
     GetAccountSummariesForCpty,
     GetAccountSummariesForCptyAccountSummariesForCpty,
 )
+from .get_algo_order import GetAlgoOrder, GetAlgoOrderAlgoOrder
+from .get_algo_status import (
+    GetAlgoStatus,
+    GetAlgoStatusAlgoStatus,
+    GetAlgoStatusAlgoStatusOrder,
+)
 from .get_all_market_snapshots import (
     GetAllMarketSnapshots,
     GetAllMarketSnapshotsMarketsSnapshots,
@@ -103,8 +109,53 @@ from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMa
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
+from .get_mm_order import GetMmOrder, GetMmOrderMmAlgoOrder
+from .get_mm_status import (
+    GetMmStatus,
+    GetMmStatusMmAlgoStatus,
+    GetMmStatusMmAlgoStatusBuyStatus,
+    GetMmStatusMmAlgoStatusBuyStatusOpenOrder,
+    GetMmStatusMmAlgoStatusOrder,
+    GetMmStatusMmAlgoStatusSellStatus,
+    GetMmStatusMmAlgoStatusSellStatusOpenOrder,
+)
 from .get_order import GetOrder, GetOrderOrder
 from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
+from .get_pov_order import GetPovOrder, GetPovOrderPovOrder
+from .get_pov_status import (
+    GetPovStatus,
+    GetPovStatusPovStatus,
+    GetPovStatusPovStatusOrder,
+)
+from .get_smart_order_router_order import (
+    GetSmartOrderRouterOrder,
+    GetSmartOrderRouterOrderSmartOrderRouterOrder,
+    GetSmartOrderRouterOrderSmartOrderRouterOrderMarkets,
+)
+from .get_smart_order_router_status import (
+    GetSmartOrderRouterStatus,
+    GetSmartOrderRouterStatusSmartOrderRouterStatus,
+    GetSmartOrderRouterStatusSmartOrderRouterStatusOrder,
+    GetSmartOrderRouterStatusSmartOrderRouterStatusOrderMarkets,
+    GetSmartOrderRouterStatusSmartOrderRouterStatusStatus,
+    GetSmartOrderRouterStatusSmartOrderRouterStatusStatusOrder,
+)
+from .get_spread_order import GetSpreadOrder, GetSpreadOrderSpreadAlgoOrder
+from .get_spread_status import (
+    GetSpreadStatus,
+    GetSpreadStatusSpreadAlgoStatus,
+    GetSpreadStatusSpreadAlgoStatusBuyStatus,
+    GetSpreadStatusSpreadAlgoStatusBuyStatusOpenOrder,
+    GetSpreadStatusSpreadAlgoStatusOrder,
+    GetSpreadStatusSpreadAlgoStatusSellStatus,
+    GetSpreadStatusSpreadAlgoStatusSellStatusOpenOrder,
+)
+from .get_twap_order import GetTwapOrder, GetTwapOrderTwapOrder
+from .get_twap_status import (
+    GetTwapStatus,
+    GetTwapStatusTwapStatus,
+    GetTwapStatusTwapStatusOrder,
+)
 from .input_types import (
     CreateMMAlgo,
     CreateOrder,
@@ -202,6 +253,11 @@ __all__ = [
     "GetAccountSummariesAccountSummaries",
     "GetAccountSummariesForCpty",
     "GetAccountSummariesForCptyAccountSummariesForCpty",
+    "GetAlgoOrder",
+    "GetAlgoOrderAlgoOrder",
+    "GetAlgoStatus",
+    "GetAlgoStatusAlgoStatus",
+    "GetAlgoStatusAlgoStatusOrder",
     "GetAllMarketSnapshots",
     "GetAllMarketSnapshotsMarketsSnapshots",
     "GetAllOpenOrders",
@@ -227,10 +283,47 @@ __all__ = [
     "GetMarketSnapshotMarketSnapshot",
     "GetMarkets",
     "GetMarketsMarkets",
+    "GetMmOrder",
+    "GetMmOrderMmAlgoOrder",
+    "GetMmStatus",
+    "GetMmStatusMmAlgoStatus",
+    "GetMmStatusMmAlgoStatusBuyStatus",
+    "GetMmStatusMmAlgoStatusBuyStatusOpenOrder",
+    "GetMmStatusMmAlgoStatusOrder",
+    "GetMmStatusMmAlgoStatusSellStatus",
+    "GetMmStatusMmAlgoStatusSellStatusOpenOrder",
     "GetOrder",
     "GetOrderOrder",
     "GetOutOrders",
     "GetOutOrdersOutedOrders",
+    "GetPovOrder",
+    "GetPovOrderPovOrder",
+    "GetPovStatus",
+    "GetPovStatusPovStatus",
+    "GetPovStatusPovStatusOrder",
+    "GetSmartOrderRouterOrder",
+    "GetSmartOrderRouterOrderSmartOrderRouterOrder",
+    "GetSmartOrderRouterOrderSmartOrderRouterOrderMarkets",
+    "GetSmartOrderRouterStatus",
+    "GetSmartOrderRouterStatusSmartOrderRouterStatus",
+    "GetSmartOrderRouterStatusSmartOrderRouterStatusOrder",
+    "GetSmartOrderRouterStatusSmartOrderRouterStatusOrderMarkets",
+    "GetSmartOrderRouterStatusSmartOrderRouterStatusStatus",
+    "GetSmartOrderRouterStatusSmartOrderRouterStatusStatusOrder",
+    "GetSpreadOrder",
+    "GetSpreadOrderSpreadAlgoOrder",
+    "GetSpreadStatus",
+    "GetSpreadStatusSpreadAlgoStatus",
+    "GetSpreadStatusSpreadAlgoStatusBuyStatus",
+    "GetSpreadStatusSpreadAlgoStatusBuyStatusOpenOrder",
+    "GetSpreadStatusSpreadAlgoStatusOrder",
+    "GetSpreadStatusSpreadAlgoStatusSellStatus",
+    "GetSpreadStatusSpreadAlgoStatusSellStatusOpenOrder",
+    "GetTwapOrder",
+    "GetTwapOrderTwapOrder",
+    "GetTwapStatus",
+    "GetTwapStatusTwapStatus",
+    "GetTwapStatusTwapStatusOrder",
     "GraphQLClient",
     "JuniperAsyncBaseClient",
     "LicenseTier",

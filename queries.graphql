@@ -283,6 +283,315 @@ query GetOrder($orderId: OrderId!) {
   }
 }
 
+query GetAlgoStatus($orderId: OrderId!) {
+  algoStatus(orderId: $orderId) {
+    orderId
+    order {
+      orderId
+      trader
+      account
+      algo
+      parentOrderId
+      markets
+    }
+    creationTime
+    status
+    lastStatusChange
+    fractionComplete
+  }
+}
+
+query GetAlgoOrder($orderId: OrderId!) {
+  algoOrder(orderId: $orderId) {
+    orderId
+    trader
+    account
+    algo
+    parentOrderId
+    markets
+  }
+}
+
+
+query GetTwapStatus($orderId: OrderId!) {
+  twapStatus(orderId: $orderId) {
+    orderId
+    order {
+      name
+      orderId
+      marketId
+      dir
+      quantity
+      endTime
+      accountId
+      intervalMs
+      rejectLockoutMs
+      takeThroughFrac
+    }
+    creationTime
+    status
+    fractionComplete
+    realizedTwap
+    quantityFilled
+  }
+}
+
+query GetTwapOrder($orderId: OrderId!) {
+  twapOrder(orderId: $orderId) {
+    name
+    orderId
+    marketId
+    dir
+    quantity
+    endTime
+    accountId
+    intervalMs
+    rejectLockoutMs
+    takeThroughFrac
+  }
+}
+
+query GetPovStatus($orderId: OrderId!) {
+  povStatus(orderId: $orderId) {
+    orderId
+    order {
+      name
+      orderId
+      marketId
+      dir
+      targetVolumeFrac
+      minOrderQuantity
+      maxQuantity
+      endTime
+      accountId
+      takeThroughFrac
+    }
+    creationTime
+    status
+    fractionComplete
+    realizedVolumeFrac
+    marketVolume
+    quantityFilled
+  }
+}
+
+query GetPovOrder($orderId: OrderId!) {
+  povOrder(orderId: $orderId) {
+    name
+    orderId
+    marketId
+    dir
+    targetVolumeFrac
+    minOrderQuantity
+    maxQuantity
+    endTime
+    accountId
+    takeThroughFrac
+  }
+}
+
+
+query GetSmartOrderRouterStatus($orderId: OrderId!) {
+  smartOrderRouterStatus(orderId: $orderId) {
+    status {
+      orderId
+      order {
+        orderId
+        trader
+        account
+        algo
+        parentOrderId
+        markets
+      }
+      creationTime
+      status
+      lastStatusChange
+      fractionComplete
+    }
+    order {
+      orderId
+      markets {
+        id
+      }
+      # base
+      # quote
+      dir
+      limitPrice
+      targetSize
+      executionTimeLimitMs
+      parentOrderId
+    }
+  }
+}
+
+
+query GetSmartOrderRouterOrder($orderId: OrderId!) {
+  smartOrderRouterOrder(orderId: $orderId) {
+    orderId
+    markets {
+      id
+    }
+    # base
+    # quote
+    dir
+    limitPrice
+    targetSize
+    executionTimeLimitMs
+    parentOrderId
+  }
+}
+
+
+query GetMmStatus($orderId: OrderId!) {
+  mmAlgoStatus(orderId: $orderId) {
+    orderId
+    order {
+      name
+      orderId
+      marketId
+      # market
+      quantityBuy
+      quantitySell
+      minPosition
+      maxPosition
+      maxImproveBbo
+      positionTilt
+      referencePrice
+      refDistFrac
+      toleranceFrac
+      account
+    }
+    creationTime
+    status
+    position
+    hedgePosition
+    missRatio
+    effectiveSpread
+    buyStatus {
+      # lastDecision
+      lastOrderTime
+      lastFillTime
+      lastRejectTime
+      openOrder {
+        orderId
+        price
+        quantity
+        cancelPending
+      }
+      referencePrice
+    }
+    sellStatus {
+      # lastDecision
+      lastOrderTime
+      lastFillTime
+      lastRejectTime
+      openOrder {
+        orderId
+        price
+        quantity
+        cancelPending
+      }
+      referencePrice
+    }
+    kind
+  }
+}
+
+
+query GetMmOrder($orderId: OrderId!) {
+  mmAlgoOrder(orderId: $orderId) {
+    name
+    orderId
+    marketId
+    quantityBuy
+    quantitySell
+    minPosition
+    maxPosition
+    maxImproveBbo
+    positionTilt
+    referencePrice
+    refDistFrac
+    toleranceFrac
+    account
+  }
+}
+
+
+query GetSpreadStatus($orderId: OrderId!) {
+  spreadAlgoStatus(orderId: $orderId) {
+    orderId
+    order {
+      name
+      orderId
+      marketId
+      # market
+      quantityBuy
+      quantitySell
+      minPosition
+      maxPosition
+      maxImproveBbo
+      positionTilt
+      referencePrice
+      refDistFrac
+      toleranceFrac
+      account
+    }
+    creationTime
+    status
+    position
+    hedgePosition
+    missRatio
+    effectiveSpread
+    buyStatus {
+      # lastDecision
+      lastOrderTime
+      lastFillTime
+      lastRejectTime
+      openOrder {
+        orderId
+        price
+        quantity
+        cancelPending
+      }
+      referencePrice
+    }
+    sellStatus {
+      # lastDecision
+      lastOrderTime
+      lastFillTime
+      lastRejectTime
+      openOrder {
+        orderId
+        price
+        quantity
+        cancelPending
+      }
+      referencePrice
+    }
+    kind
+  }
+}
+
+
+query GetSpreadOrder($orderId: OrderId!) {
+  spreadAlgoOrder(orderId: $orderId) {
+    name
+    orderId
+    marketId
+    quantityBuy
+    quantitySell
+    minPosition
+    maxPosition
+    maxImproveBbo
+    positionTilt
+    referencePrice
+    refDistFrac
+    toleranceFrac
+    account
+  }
+}
+
+
 query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
   fills(venue: $venue, route: $route, base: $base, quote: $quote) {
     normal {
