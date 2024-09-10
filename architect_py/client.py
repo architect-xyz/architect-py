@@ -19,23 +19,19 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
+import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Optional, TypeAlias, Union
-
-
-from architect_py.graphql_client.enums import (
+from .graphql_client import GraphQLClient
+from .graphql_client.enums import (
     CreateOrderType,
     OrderSource,
     ReferencePrice,
 )
-import logging
-
-from architect_py.graphql_client.fragments import OrderFields
-from architect_py.graphql_client.get_order import GetOrderOrder
-
-from .graphql_client import GraphQLClient
+from .graphql_client.fragments import OrderFields
+from .graphql_client.get_order import GetOrderOrder
 from .graphql_client.input_types import (
     CreateMMAlgo,
     CreateOrder,
@@ -47,6 +43,9 @@ from .graphql_client.input_types import (
     CreateTimeInForceInstruction,
     CreateTwapAlgo,
 )
+from .json_ws_client import JsonWsClient
+from .protocol.marketdata import L2BookSnapshot
+from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
 
@@ -68,31 +67,75 @@ ValueInputType: TypeAlias = Union[int, float, Decimal, str]
 
 
 class Client(GraphQLClient):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, no_gql: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
-        self.market_names_by_route = {}
+        self.no_gql = no_gql
+        self.marketdata = {}  # cpty => JsonWsClient
+        self.route_by_id = {}
+        self.venue_by_id = {}
+        self.product_by_id = {}
+        self.market_by_id = {}
+        self.market_names_by_route = {}  # route => venue => base => quote => market
+
+    def configure_marketdata(self, *, cpty, url):
+        self.marketdata[cpty] = JsonWsClient(url=url)
 
     async def start_session(self):
         await self.load_and_index_symbology()
 
-    async def load_and_index_symbology(self):
-        logger.info("Loading symbology...")
-        markets = await self.get_filtered_markets()
-        logger.info("Loaded %d markets", len(markets))
+    async def load_and_index_symbology(self, cpty: Optional[str] = None):
+        # TODO: consider locking
+        self.route_by_id = {}
+        self.venue_by_id = {}
+        self.product_by_id = {}
+        self.market_by_id = {}
         self.market_names_by_route = {}
-        for market in markets:
-            if market.route.name not in self.market_names_by_route:
-                self.market_names_by_route[market.route.name] = {}
-            by_venue = self.market_names_by_route[market.route.name]
-            if market.venue.name not in by_venue:
-                by_venue[market.venue.name] = {}
-            by_base = by_venue[market.venue.name]
-
-            if market.kind.base.name not in by_base:  # type: ignore
-                by_base[market.kind.base.name] = {}  # type: ignore
-            by_quote = by_base[market.kind.base.name]  # type: ignore
-            by_quote[market.kind.quote.name] = market.name  # type: ignore
-        logger.info("Indexed %d markets", len(markets))
+        if not self.no_gql:
+            logger.info("Loading symbology...")
+            markets = await self.get_filtered_markets()
+            logger.info("Loaded %d markets", len(markets))
+            for market in markets:
+                if market.route.name not in self.market_names_by_route:
+                    self.market_names_by_route[market.route.name] = {}
+                by_venue = self.market_names_by_route[market.route.name]
+                if market.venue.name not in by_venue:
+                    by_venue[market.venue.name] = {}
+                by_base = by_venue[market.venue.name]
+                if market.kind.base.name not in by_base:  # type: ignore
+                    by_base[market.kind.base.name] = {}  # type: ignore
+                by_quote = by_base[market.kind.base.name]  # type: ignore
+                by_quote[market.kind.quote.name] = market.name  # type: ignore
+            logger.info("Indexed %d markets", len(markets))
+        # get symbology from marketdata clients
+        clients = []
+        if cpty is None:
+            clients = self.marketdata.values()
+        elif cpty in self.marketdata:
+            clients = [self.marketdata[cpty]]
+        for client in clients:
+            snap = await client.get_symbology_snapshot()
+            for route in snap.routes:
+                self.route_by_id[route.id] = route
+            for venue in snap.venues:
+                self.venue_by_id[venue.id] = venue
+            for product in snap.products:
+                self.product_by_id[product.id] = product
+            for market in snap.markets:
+                self.market_by_id[market.id] = market
+                route = self.route_by_id[market.route]
+                if route.name not in self.market_names_by_route:
+                    self.market_names_by_route[route.name] = {}
+                by_venue = self.market_names_by_route[route.name]
+                venue = self.venue_by_id[market.venue]
+                if venue.name not in by_venue:
+                    by_venue[venue.name] = {}
+                by_base = by_venue[venue.name]
+                base = self.product_by_id[market.base()]
+                if base.name not in by_base:
+                    by_base[base.name] = {}
+                by_quote = by_base[base.name]
+                quote = self.product_by_id[market.quote()]
+                by_quote[quote.name] = market.name
 
     # CR alee: make base, venue, route optional, and add optional quote.
     # Have to think harder about efficient indexing.
@@ -116,6 +159,13 @@ class Client(GraphQLClient):
             return []
         by_quote = by_base.get(base, {})
         return list(by_quote.values())
+
+    async def get_l2_book_snapshot(self, market: str) -> L2BookSnapshot:
+        [_, cpty] = market.split("*", 1)
+        if cpty in self.marketdata:
+            client = self.marketdata[cpty]
+            market_id = Market.derive_id(market)
+            return await client.get_l2_book_snapshot(market_id)
 
     async def get_open_orders(
         self,

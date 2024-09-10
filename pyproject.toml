@@ -15,12 +15,14 @@ classifiers = [
 python = ">=3.8,<4"
 asyncio = "^3.4.3"
 gql = {extras = ["all"], version = "^3.5.0"}
+orjson = "^3"
 pydantic = "^2.6.4"
 httpx = "^0.27.0"
 websockets = "^11"
 
 [tool.poetry.group.dev.dependencies]
 ariadne-codegen = {extras = ["subscriptions"], version = "^0.13.0"}
+black = "^24"
 python-dotenv = "^1.0.1"
 simplewebsocketserver = "^0.1.2"
 
