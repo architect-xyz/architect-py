@@ -43,3 +43,9 @@ class ProtocolResponseMessage(ProtocolMessage):
     id: int
     result: Optional[Any] = None
     error: Optional[ProtocolError] = None
+
+
+@dataclass(kw_only=True)
+class ProtocolSubscribeMessage(ProtocolMessage):
+    id: int
+    topic: str

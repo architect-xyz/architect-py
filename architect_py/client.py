@@ -23,7 +23,7 @@ import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, TypeAlias, Union
+from typing import AsyncIterator, Optional, TypeAlias, Union
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
     CreateOrderType,
@@ -44,7 +44,7 @@ from .graphql_client.input_types import (
     CreateTwapAlgo,
 )
 from .json_ws_client import JsonWsClient
-from .protocol.marketdata import L2BookSnapshot
+from .protocol.marketdata import L2BookSnapshot, TradeV1
 from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
@@ -166,6 +166,19 @@ class Client(GraphQLClient):
             client = self.marketdata[cpty]
             market_id = Market.derive_id(market)
             return await client.get_l2_book_snapshot(market_id)
+
+    def subscribe_trades(self, market: str, *args, **kwargs) -> AsyncIterator[TradeV1]:
+        [_, cpty] = market.split("*", 1)
+        if cpty in self.marketdata:
+            client = self.marketdata[cpty]
+            market_id = Market.derive_id(market)
+            return client.subscribe_trades(market_id)
+        elif not self.no_gql:
+            return self.subscribe_trades(market, *args, **kwargs)
+        else:
+            raise ValueError(
+                f"cpty {cpty} not configured for marketdata and no GQL server"
+            )
 
     async def get_open_orders(
         self,

@@ -1,10 +1,14 @@
 import orjson
 import uuid
 import websockets.client
-from ..protocol import ProtocolQueryMessage, ProtocolResponseMessage
+from ..protocol import (
+    ProtocolQueryMessage,
+    ProtocolResponseMessage,
+    ProtocolSubscribeMessage,
+)
 from ..protocol.symbology import SymbologySnapshot, Route, Venue, Product, Market
-from ..protocol.marketdata import QueryL2BookSnapshot, L2BookSnapshot
-from typing import Optional, Any
+from ..protocol.marketdata import QueryL2BookSnapshot, L2BookSnapshot, TradeV1
+from typing import Any, AsyncIterator, Optional
 
 
 class JsonWsClient:
@@ -39,6 +43,23 @@ class JsonWsClient:
                             raise Exception(res.error)
                         return res.result
 
+    async def subscribe(self, topic: str) -> AsyncIterator[Any]:
+        async with self._connect() as ws:
+            id = self._request_id()
+            query = ProtocolSubscribeMessage(
+                id=id,
+                type="subscribe",
+                topic=topic,
+            )
+            await ws.send(orjson.dumps(query))
+            async for message in ws:
+                m = orjson.loads(message)
+                if m["type"] == "update" and m["id"] == id:
+                    yield m["data"]
+                elif m["type"] == "response" and m["id"] == id:
+                    if "error" in m:
+                        raise Exception(m["error"])
+
     async def get_symbology_snapshot(self) -> SymbologySnapshot:
         res = await self.request("symbology/snapshot")
         snap = SymbologySnapshot(**res)
@@ -54,3 +75,7 @@ class JsonWsClient:
             "marketdata/book/l2/snapshot", QueryL2BookSnapshot(market_id=market_id)
         )
         return L2BookSnapshot(**res)
+
+    async def subscribe_trades(self, market_id: uuid.UUID) -> AsyncIterator[TradeV1]:
+        async for data in self.subscribe(f"marketdata/trades/{market_id}"):
+            yield TradeV1(**data)

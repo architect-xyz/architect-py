@@ -25,3 +25,19 @@ class TradeV1:
     direction: Optional[Literal["Buy", "Sell"]]
     price: Decimal
     size: Decimal
+
+    def __init__(
+        self,
+        *,
+        time: Optional[datetime],
+        direction: Optional[Literal["Buy", "Sell"]],
+        price: Decimal,
+        size: Decimal,
+        **kwargs
+    ):
+        self.time = time
+        self.direction = direction
+        self.price = price
+        self.size = size
+        for k, v in kwargs.items():
+            setattr(self, k, v)
