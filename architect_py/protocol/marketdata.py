@@ -46,6 +46,18 @@ class L3BookSnapshot:
 
 
 @dataclass(kw_only=True)
+class CandleV1:
+    time: datetime
+    open: Decimal
+    high: Decimal
+    low: Decimal
+    close: Decimal
+    volume: Decimal
+    buy_volume: Decimal
+    sell_volume: Decimal
+
+
+@dataclass(kw_only=True)
 class TradeV1:
     time: Optional[datetime]
     direction: Optional[Literal["Buy", "Sell"]]
