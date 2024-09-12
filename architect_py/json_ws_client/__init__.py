@@ -7,7 +7,14 @@ from ..protocol import (
     ProtocolSubscribeMessage,
 )
 from ..protocol.symbology import SymbologySnapshot, Route, Venue, Product, Market
-from ..protocol.marketdata import QueryL2BookSnapshot, L2BookSnapshot, TradeV1
+from ..protocol.marketdata import (
+    QueryL2BookSnapshot,
+    QueryL3BookSnapshot,
+    L2BookSnapshot,
+    L3BookSnapshot,
+    L3Order,
+    TradeV1,
+)
 from typing import Any, AsyncIterator, Optional
 
 
@@ -75,6 +82,15 @@ class JsonWsClient:
             "marketdata/book/l2/snapshot", QueryL2BookSnapshot(market_id=market_id)
         )
         return L2BookSnapshot(**res)
+
+    async def get_l3_book_snapshot(self, market_id: uuid.UUID) -> L3BookSnapshot:
+        res = await self.request(
+            "marketdata/book/l3/snapshot", QueryL3BookSnapshot(market_id=market_id)
+        )
+        snap = L3BookSnapshot(**res)
+        snap.bids = [L3Order(**b) for b in snap.bids]
+        snap.asks = [L3Order(**a) for a in snap.asks]
+        return snap
 
     async def subscribe_trades(self, market_id: uuid.UUID) -> AsyncIterator[TradeV1]:
         async for data in self.subscribe(f"marketdata/trades/{market_id}"):

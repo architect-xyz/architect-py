@@ -6,6 +6,11 @@ from typing import Any, Generic, Literal, Optional, TypeVar
 
 
 @dataclass(kw_only=True)
+class QueryL2BookSnapshot:
+    market_id: uuid.UUID
+
+
+@dataclass(kw_only=True)
 class L2BookSnapshot:
     timestamp: datetime
     epoch: datetime
@@ -15,8 +20,29 @@ class L2BookSnapshot:
 
 
 @dataclass(kw_only=True)
-class QueryL2BookSnapshot:
+class QueryL3BookSnapshot:
     market_id: uuid.UUID
+
+
+@dataclass(kw_only=True)
+class L3Order:
+    price: Decimal
+    size: Decimal
+
+    def __init__(self, *, price: Decimal, size: Decimal, **kwargs):
+        self.price = price
+        self.size = size
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+@dataclass(kw_only=True)
+class L3BookSnapshot:
+    timestamp: datetime
+    epoch: datetime
+    seqno: int
+    bids: list[L3Order]
+    asks: list[L3Order]
 
 
 @dataclass(kw_only=True)

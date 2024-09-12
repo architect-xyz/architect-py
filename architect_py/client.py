@@ -44,7 +44,7 @@ from .graphql_client.input_types import (
     CreateTwapAlgo,
 )
 from .json_ws_client import JsonWsClient
-from .protocol.marketdata import L2BookSnapshot, TradeV1
+from .protocol.marketdata import L2BookSnapshot, L3BookSnapshot, TradeV1
 from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
@@ -166,6 +166,13 @@ class Client(GraphQLClient):
             client = self.marketdata[cpty]
             market_id = Market.derive_id(market)
             return await client.get_l2_book_snapshot(market_id)
+
+    async def get_l3_book_snapshot(self, market: str) -> L3BookSnapshot:
+        [_, cpty] = market.split("*", 1)
+        if cpty in self.marketdata:
+            client = self.marketdata[cpty]
+            market_id = Market.derive_id(market)
+            return await client.get_l3_book_snapshot(market_id)
 
     def subscribe_trades(self, market: str, *args, **kwargs) -> AsyncIterator[TradeV1]:
         [_, cpty] = market.split("*", 1)
