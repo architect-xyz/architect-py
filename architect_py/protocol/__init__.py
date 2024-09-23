@@ -30,6 +30,7 @@ class ProtocolQueryMessage(ProtocolMessage):
     id: int
     method: str
     params: Optional[dict] = None
+    type: str = "query"
 
 
 @dataclass(kw_only=True)
@@ -49,3 +50,4 @@ class ProtocolResponseMessage(ProtocolMessage):
 class ProtocolSubscribeMessage(ProtocolMessage):
     id: int
     topic: str
+    type: str = "subscribe"
