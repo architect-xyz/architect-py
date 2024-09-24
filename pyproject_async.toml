@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "architect-py"
-version = "0.5.0.post1"
+version = "1.1.0"
 description = "Client library for the Architect trading platform."
 authors = ["Architect Financial Technologies, Inc. <hello@architect.xyz>"]
 readme = "README.md"
@@ -15,24 +15,27 @@ classifiers = [
 python = ">=3.8,<4"
 asyncio = "^3.4.3"
 gql = {extras = ["all"], version = "^3.5.0"}
+orjson = "^3"
 pydantic = "^2.6.4"
 httpx = "^0.27.0"
 websockets = "^11"
 
 [tool.poetry.group.dev.dependencies]
 ariadne-codegen = {extras = ["subscriptions"], version = "^0.13.0"}
+black = "^24"
 python-dotenv = "^1.0.1"
 simplewebsocketserver = "^0.1.2"
 
 [tool.ariadne-codegen]
 target_package_path = "./architect_py"
-async_client = false
+async_client = true
 client_name = "GraphQLClient"
 schema_path = "schema.graphql"
 queries_path = "queries.graphql"
-base_client_name = "JuniperBaseClient"
-base_client_file_path = "./templates/juniper_base_client.py"
+base_client_name = "JuniperAsyncBaseClient"
+base_client_file_path = "./templates/juniper_async_base_client.py"
 files_to_include = ["./templates/exceptions.py"]
+plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
 
 [build-system]
 requires = ["poetry-core"]
