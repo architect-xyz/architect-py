@@ -25,6 +25,11 @@ class QueryL3BookSnapshot:
 
 
 @dataclass(kw_only=True)
+class QueryPriceV1:
+    market_id: uuid.UUID
+
+
+@dataclass(kw_only=True)
 class L3Order:
     price: Decimal
     size: Decimal
@@ -79,3 +84,9 @@ class TradeV1:
         self.size = size
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+
+@dataclass(kw_only=True)
+class PriceV1:
+    time: datetime
+    price: Decimal
