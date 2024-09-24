@@ -2,6 +2,7 @@
 __pycache__
 dist/
 scratch*.py
+scratch*.py.*
 .env
 .env*
 .DS_Store

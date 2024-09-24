@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from architect_py.client import Client, OrderDirection
+from architect_py.async_client import AsyncClient, OrderDirection
 from architect_py.graphql_client.enums import CreateOrderType, ReferencePrice
 from architect_py.graphql_client.fragments import MarketFieldsKindExchangeMarketKind
 from architect_py.graphql_client.get_filtered_markets import (
@@ -35,7 +35,7 @@ logging.critical(f"API_KEY: {api_key}")
 logging.critical(f"API_SECRET: {api_secret}")
 logging.critical(f"ACCOUNT: {ACCOUNT}")
 
-client = Client(host=HOST, api_key=api_key, api_secret=api_secret)
+client = AsyncClient(host=HOST, api_key=api_key, api_secret=api_secret)
 
 
 async def get_market() -> GetFilteredMarketsFilterMarkets:

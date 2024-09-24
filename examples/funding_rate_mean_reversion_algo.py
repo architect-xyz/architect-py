@@ -1,8 +1,8 @@
 import asyncio
 from typing import Optional
-from architect_py.client import Client
+from architect_py.async_client import AsyncClient
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from .common import create_client
+from .common import create_async_client
 
 
 venue = "BINANCE-FUTURES-USD-M"
@@ -16,7 +16,7 @@ target_position = 0
 current_position = 0
 
 
-async def update_marketdata(c: Client):
+async def update_marketdata(c: AsyncClient):
     s = c.subscribe_exchange_specific(
         markets=[market],
         fields=["funding_rate", "best_bid_price", "best_ask_price"],
@@ -49,7 +49,7 @@ async def update_marketdata(c: Client):
                 best_ask_price = value
 
 
-async def subscribe_and_print_orderflow(c: Client):
+async def subscribe_and_print_orderflow(c: AsyncClient):
     try:
         stream = c.subscribe_orderflow()
         async for item in stream:
@@ -64,7 +64,7 @@ async def subscribe_and_print_orderflow(c: Client):
         print(e.response.json())
 
 
-async def step_to_target_position(c: Client):
+async def step_to_target_position(c: AsyncClient):
     while True:
         await asyncio.sleep(10)
         # check open orders
@@ -106,7 +106,7 @@ async def step_to_target_position(c: Client):
                     raise e
 
 
-async def print_info(c: Client):
+async def print_info(c: AsyncClient):
     while True:
         await asyncio.sleep(3)
         r = await c.get_balances_for_cpty(venue, route)
@@ -125,7 +125,7 @@ async def print_info(c: Client):
 
 
 async def main():
-    c = create_client()
+    c = create_async_client()
     await asyncio.gather(
         update_marketdata(c),
         step_to_target_position(c),

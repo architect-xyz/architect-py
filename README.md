@@ -4,11 +4,11 @@
 
 ```python
 import asyncio
-from architect_py.client import Client
+from architect_py.async_client import AsyncClient
 
 
 async def main():
-    c = Client(
+    c = AsyncClient(
         host="<your installation domain>",
         api_key="<api key>",
         api_secret="<api secret>"
@@ -45,4 +45,5 @@ within the shell are not persisted.
 
 ## Maintainers
 
-`poetry run ariadne-codegen`
+`poetry run ariadne-codegen --config ariadne-codegen.toml`
+`poetry run ariadne-codegen --config ariadne-codegen.async.toml`

@@ -198,6 +198,35 @@ query GetMarkets($ids: [MarketId!]!) {
   }
 }
 
+# [2024-09-23] deprecated in favor of SearchMarkets
+query GetFilteredMarkets(
+  $venue: Str
+  $base: Str
+  $quote: Str
+  $underlying: Str
+  $maxResults: Int
+  $resultsOffset: Int
+  $searchString: Str
+  $onlyFavorites: Boolean
+  $sortByVolumeDesc: Boolean
+) {
+  filterMarkets(
+    filter: {
+      venue: $venue
+      base: $base
+      quote: $quote
+      underlying: $underlying
+      maxResults: $maxResults
+      resultsOffset: $resultsOffset
+      searchString: $searchString
+      onlyFavorites: $onlyFavorites
+      sortByVolumeDesc: $sortByVolumeDesc
+    }
+  ) {
+    ...MarketFields
+  }
+}
+
 query SearchMarkets(
   $venue: Str
   $base: Str
@@ -247,6 +276,21 @@ query GetAccountSummaries {
 query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
   accountSummariesForCpty(venue: $venue, route: $route) {
     ...AccountSummariesFields
+  }
+}
+
+# [2024-07-01] deprecated in favor of GetAccountSummariesForCpty
+query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
+  accountSummariesForCpty(venue: $venue, route: $route) {
+    snapshotTs
+    byAccount {
+      balances {
+        product {
+          ...ProductFields
+        }
+        amount
+      }
+    }
   }
 }
 
@@ -595,6 +639,64 @@ query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: Produ
   }
 }
 
+subscription SubscribeTrades($market: MarketId!) {
+  trades(market: $market) {
+    time
+    price
+    size
+    direction
+  }
+}
+
+subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
+  candles(market: $id, candleWidth: $width) {
+    ...CandleFields
+  }
+}
+
+subscription FillsSubscription {
+  fills {
+    dir
+    fillId
+    kind
+    marketId
+    orderId
+    price
+    quantity
+    recvTime
+    tradeTime
+    market {
+      ...MarketFields
+    }
+  }
+}
+
+subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
+  book(market: $id, precision: $precision) {
+    bids {
+      price
+      amount
+      total
+    }
+    asks {
+      price
+      amount
+      total
+    }
+    timestamp
+  }
+}
+
+subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
+  exchangeSpecific(markets: $markets, fields: $fields) {
+    market {
+      ...MarketFields
+    }
+    field
+    value
+  }
+}
+
 mutation SendOrder($order: CreateOrder!) {
   createOrder(order: $order)
 }
@@ -649,6 +751,64 @@ mutation RemoveTelegramApiKeys {
   removeTelegramApiKeys
 }
 
+
+subscription SubscribeOrderflow {
+  orderflow {
+    __typename
+    ... on Order {
+      id
+      marketId
+      dir
+      quantity
+      accountId
+      orderType {
+        ... on LimitOrderType {
+          limitPrice
+          postOnly
+        }
+        ... on StopLossLimitOrderType {
+          limitPrice
+          triggerPrice
+        }
+        ... on TakeProfitLimitOrderType {
+          limitPrice
+          triggerPrice
+        }
+      }
+      timeInForce {
+        instruction
+        goodTilDate
+      }
+      quoteId
+      source
+    }
+    ... on Ack {
+      orderId
+    }
+    ... on Reject {
+      orderId
+      reason
+    }
+    ... on OmsOrderUpdate {
+      orderId
+      orderState: state
+      filledQty
+      avgFillPrice
+    }
+    ... on Fill {
+      fillOrderId: orderId
+      fillKind: kind
+      marketId
+      dir
+      price
+      quantity
+      tradeTime
+    }
+    ... on Out {
+      orderId
+    }
+  }
+}
 
 query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSeconds: Int) {
   bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSeconds) {

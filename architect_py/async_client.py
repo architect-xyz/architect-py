@@ -23,16 +23,16 @@ import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, TypeAlias, Union
-from .graphql_client import GraphQLClient
-from .graphql_client.enums import (
+from typing import AsyncIterator, Optional, TypeAlias, Union
+from .async_graphql_client import AsyncGraphQLClient
+from .async_graphql_client.enums import (
     CreateOrderType,
     OrderSource,
     ReferencePrice,
 )
-from .graphql_client.fragments import OrderFields
-from .graphql_client.get_order import GetOrderOrder
-from .graphql_client.input_types import (
+from .async_graphql_client.fragments import OrderFields
+from .async_graphql_client.get_order import GetOrderOrder
+from .async_graphql_client.input_types import (
     CreateMMAlgo,
     CreateOrder,
     CreatePovAlgo,
@@ -43,6 +43,9 @@ from .graphql_client.input_types import (
     CreateTimeInForceInstruction,
     CreateTwapAlgo,
 )
+from .json_ws_client import JsonWsClient
+from .protocol.marketdata import L2BookSnapshot, L3BookSnapshot, TradeV1
+from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
 
@@ -63,20 +66,25 @@ class OrderDirection(Enum):
 DecimalLike: TypeAlias = Union[int, float, Decimal, str]
 
 
-class Client(GraphQLClient):
+class AsyncClient(AsyncGraphQLClient):
     def __init__(self, *args, no_gql: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
         self.no_gql = no_gql
+        self.marketdata = {}  # cpty => JsonWsClient
         self.route_by_id = {}
         self.venue_by_id = {}
         self.product_by_id = {}
         self.market_by_id = {}
         self.market_names_by_route = {}  # route => venue => base => quote => market
 
-    def start_session(self):
-        self.load_and_index_symbology()
+    def configure_marketdata(self, *, cpty, url):
+        self.marketdata[cpty] = JsonWsClient(url=url)
 
-    def load_and_index_symbology(self, cpty: Optional[str] = None):
+    async def start_session(self):
+        await self.load_and_index_symbology()
+
+    async def load_and_index_symbology(self, cpty: Optional[str] = None):
+        # TODO: consider locking
         self.route_by_id = {}
         self.venue_by_id = {}
         self.product_by_id = {}
@@ -84,7 +92,7 @@ class Client(GraphQLClient):
         self.market_names_by_route = {}
         if not self.no_gql:
             logger.info("Loading symbology...")
-            markets = self.get_filtered_markets()
+            markets = await self.get_filtered_markets()
             logger.info("Loaded %d markets", len(markets))
             for market in markets:
                 if market.route.name not in self.market_names_by_route:
@@ -98,6 +106,36 @@ class Client(GraphQLClient):
                 by_quote = by_base[market.kind.base.name]  # type: ignore
                 by_quote[market.kind.quote.name] = market.name  # type: ignore
             logger.info("Indexed %d markets", len(markets))
+        # get symbology from marketdata clients
+        clients = []
+        if cpty is None:
+            clients = self.marketdata.values()
+        elif cpty in self.marketdata:
+            clients = [self.marketdata[cpty]]
+        for client in clients:
+            snap = await client.get_symbology_snapshot()
+            for route in snap.routes:
+                self.route_by_id[route.id] = route
+            for venue in snap.venues:
+                self.venue_by_id[venue.id] = venue
+            for product in snap.products:
+                self.product_by_id[product.id] = product
+            for market in snap.markets:
+                self.market_by_id[market.id] = market
+                route = self.route_by_id[market.route]
+                if route.name not in self.market_names_by_route:
+                    self.market_names_by_route[route.name] = {}
+                by_venue = self.market_names_by_route[route.name]
+                venue = self.venue_by_id[market.venue]
+                if venue.name not in by_venue:
+                    by_venue[venue.name] = {}
+                by_base = by_venue[venue.name]
+                base = self.product_by_id[market.base()]
+                if base.name not in by_base:
+                    by_base[base.name] = {}
+                by_quote = by_base[base.name]
+                quote = self.product_by_id[market.quote()]
+                by_quote[quote.name] = market.name
 
     # CR alee: make base, venue, route optional, and add optional quote.
     # Have to think harder about efficient indexing.
@@ -122,7 +160,34 @@ class Client(GraphQLClient):
         by_quote = by_base.get(base, {})
         return list(by_quote.values())
 
-    def get_open_orders(
+    async def get_l2_book_snapshot(self, market: str) -> L2BookSnapshot:
+        [_, cpty] = market.split("*", 1)
+        if cpty in self.marketdata:
+            client = self.marketdata[cpty]
+            market_id = Market.derive_id(market)
+            return await client.get_l2_book_snapshot(market_id)
+
+    async def get_l3_book_snapshot(self, market: str) -> L3BookSnapshot:
+        [_, cpty] = market.split("*", 1)
+        if cpty in self.marketdata:
+            client = self.marketdata[cpty]
+            market_id = Market.derive_id(market)
+            return await client.get_l3_book_snapshot(market_id)
+
+    def subscribe_trades(self, market: str, *args, **kwargs) -> AsyncIterator[TradeV1]:
+        [_, cpty] = market.split("*", 1)
+        if cpty in self.marketdata:
+            client = self.marketdata[cpty]
+            market_id = Market.derive_id(market)
+            return client.subscribe_trades(market_id)
+        elif not self.no_gql:
+            return self.subscribe_trades(market, *args, **kwargs)
+        else:
+            raise ValueError(
+                f"cpty {cpty} not configured for marketdata and no GQL server"
+            )
+
+    async def get_open_orders(
         self,
         venue: Optional[str] = None,
         route: Optional[str] = None,
@@ -136,7 +201,7 @@ class Client(GraphQLClient):
         cpty_route = None
         if cpty:
             cpty_venue, cpty_route = cpty.split("/", 1)
-        open_orders = self.get_all_open_orders()
+        open_orders = await self.get_all_open_orders()
         filtered_orders = []
         for oo in open_orders:
             if venue and oo.order.market.venue.name != venue:
@@ -150,7 +215,7 @@ class Client(GraphQLClient):
             filtered_orders.append(oo)
         return filtered_orders
 
-    def send_limit_order(
+    async def send_limit_order(
         self,
         *,
         market: str,
@@ -175,7 +240,7 @@ class Client(GraphQLClient):
         else:
             good_til_date_str = None
 
-        order: str = self.send_order(
+        order: str = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=dir.value,
@@ -194,9 +259,9 @@ class Client(GraphQLClient):
             )
         )
 
-        return self.get_order(order)
+        return await self.get_order(order)
 
-    def send_twap_algo(
+    async def send_twap_algo(
         self,
         *,
         name: str,
@@ -211,7 +276,7 @@ class Client(GraphQLClient):
     ) -> str:
 
         end_time_str = convert_datetime_to_utc_str(end_time)
-        return self.send_twap_algo_request(
+        return await self.send_twap_algo_request(
             CreateTwapAlgo(
                 name=name,
                 market=market,
@@ -225,7 +290,7 @@ class Client(GraphQLClient):
             )
         )
 
-    def send_pov_algo(
+    async def send_pov_algo(
         self,
         *,
         name: str,
@@ -240,7 +305,7 @@ class Client(GraphQLClient):
         take_through_frac: Optional[DecimalLike] = None,
     ) -> str:
         end_time_str = convert_datetime_to_utc_str(end_time)
-        return self.send_pov_algo_request(
+        return await self.send_pov_algo_request(
             CreatePovAlgo(
                 name=name,
                 market=market,
@@ -257,7 +322,7 @@ class Client(GraphQLClient):
             )
         )
 
-    def send_smart_order_router_algo(
+    async def send_smart_order_router_algo(
         self,
         *,
         markets: list[str],
@@ -268,7 +333,7 @@ class Client(GraphQLClient):
         target_size: DecimalLike,
         execution_time_limit_ms: int,
     ) -> str:
-        return self.send_smart_order_router_algo_request(
+        return await self.send_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
                 base=base,
@@ -280,7 +345,7 @@ class Client(GraphQLClient):
             )
         )
 
-    def preview_smart_order_router(
+    async def preview_smart_order_router(
         self,
         *,
         markets: list[str],
@@ -291,7 +356,7 @@ class Client(GraphQLClient):
         target_size: DecimalLike,
         execution_time_limit_ms: int,
     ) -> Optional[list[OrderFields]]:
-        algo = self.preview_smart_order_router_algo_request(
+        algo = await self.preview_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
                 base=base,
@@ -305,7 +370,7 @@ class Client(GraphQLClient):
 
         return getattr(algo, "orders", None)
 
-    def send_mm_algo(
+    async def send_mm_algo(
         self,
         *,
         name: str,
@@ -324,7 +389,7 @@ class Client(GraphQLClient):
         order_lockout_ms: int,
         reject_lockout_ms: int,
     ):
-        return self.send_mm_algo_request(
+        return await self.send_mm_algo_request(
             CreateMMAlgo(
                 name=name,
                 market=market,
@@ -344,7 +409,7 @@ class Client(GraphQLClient):
             )
         )
 
-    def send_spread_algo(
+    async def send_spread_algo(
         self,
         *,
         name: str,
@@ -364,7 +429,7 @@ class Client(GraphQLClient):
         reject_lockout_ms: int,
         account: Optional[str] = None,
     ) -> str:
-        return self.send_spread_algo_request(
+        return await self.send_spread_algo_request(
             CreateSpreadAlgo(
                 name=name,
                 market=market,

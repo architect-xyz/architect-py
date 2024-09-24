@@ -1,12 +1,12 @@
 import asyncio
-from architect_py.client import Client
+from architect_py.async_client import AsyncClient
 from architect_py.graphql_client.enums import CandleWidth
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from .common import create_client
+from .common import create_async_client
 
 
 async def main():
-    c: Client = create_client()
+    c: AsyncClient = create_async_client()
     market_id = "BTC Crypto/USD*COINBASE/DIRECT"
     try:
         stream = c.subscribe_candles(

@@ -26,16 +26,6 @@ black = "^24"
 python-dotenv = "^1.0.1"
 simplewebsocketserver = "^0.1.2"
 
-[tool.ariadne-codegen]
-target_package_path = "./architect_py"
-client_name = "GraphQLClient"
-schema_path = "schema.graphql"
-queries_path = "queries.graphql"
-base_client_name = "JuniperAsyncBaseClient"
-base_client_file_path = "./templates/juniper_async_base_client.py"
-files_to_include = ["./templates/exceptions.py"]
-plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

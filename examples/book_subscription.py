@@ -3,9 +3,9 @@ import os
 
 from pydantic import ValidationError
 
-from architect_py.client import Client
-from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from .common import create_client
+from architect_py.async_client import AsyncClient
+from architect_py.async_graphql_client.exceptions import GraphQLClientHttpError
+from .common import create_async_client
 
 buy_columns = "{:>15} {:>15} {:>15}"
 sell_columns = "{:<15} {:<15} {:<15}"
@@ -32,7 +32,7 @@ def print_book(book):
 
 
 async def main():
-    c: Client = create_client()
+    c: AsyncClient = create_async_client()
     # market_id = "BTC Crypto/USD*COINBASE/DIRECT"
     market_id = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
     try:
