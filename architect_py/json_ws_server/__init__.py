@@ -6,7 +6,7 @@ import logging
 
 from websockets.asyncio.server import serve, ServerConnection
 
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Optional
 
 
 class JsonWsServer:
@@ -40,61 +40,75 @@ class JsonWsServer:
     async def handle_query(self, message: Dict[str, Any]) -> Dict[str, Any]:
         method = message.get("method")
         params = message.get("params")
-        if method == "symbology/snapshot":
+
+        if not isinstance(method, str):
             return {
                 "id": message["id"],
                 "type": "response",
-                "result": self.get_symbology_snapshot(),
+                "error": "Must pass method as string",
             }
-        elif method == "marketdata/book/l2/snapshot":
-            if params is not None:
-                return {
-                    "id": message["id"],
-                    "type": "response",
-                    "result": self.get_l2_book_snapshot(params),
-                }
-            else:
-                return {
-                    "id": message["id"],
-                    "type": "response",
-                    "result": "error: params was None",
-                }
-        elif method == "marketdata/book/l3/snapshot":
-            if params is not None:
-                return {
-                    "id": message["id"],
-                    "type": "response",
-                    "result": self.get_l3_book_snapshot(params),
-                }
-            else:
-                return {
-                    "id": message["id"],
-                    "type": "response",
-                    "result": "error: params was None",
-                }
-        else:
-            return {"id": message["id"], "type": "response", "error": "Unknown method"}
+
+        method = self.match_method(method)
+        if method is None:
+            return {
+                "id": message["id"],
+                "type": "response",
+                "error": f"No matching method for {method}",
+            }
+
+        return {
+            "id": message["id"],
+            "type": "response",
+            "result": method(params),
+        }
 
     async def handle_subscribe(
         self, message: Dict[str, Any], websocket: ServerConnection
     ) -> Dict[str, Any]:
         topic = message.get("topic")
+        id = message.get("id")
+        if not isinstance(id, int):
+            return {
+                "id": message["id"],
+                "type": "response",
+                "error": f"id must be an integer, {id} of type {type(id)} was sent",
+            }
 
-        if topic is None:
-            return {"id": message["id"], "type": "response", "error": "No topic provided"}
-        
-        
+        if not isinstance(topic, str):
+            return {
+                "id": message["id"],
+                "type": "response",
+                "error": "No topic provided",
+            }
 
-        asyncio.create_task(self._subscribe(topic, websocket))
+        asyncio.create_task(self._subscribe(topic, id, websocket))
         return {"id": message["id"], "type": "response", "status": "subscribed"}
 
-    async def _subscribe(self, topic: str, websocket: ServerConnection):
-        # acho CR: This is a potentially inoptimal implementation
-        await asyncio.sleep(5)
+    async def _subscribe(self, topic: str, id: int, websocket: ServerConnection):
+        method = self.match_topic(topic)
 
+        if method is None:
+            await websocket.send(
+                json.dumps(
+                    {
+                        "id": id,
+                        "type": "response",
+                        "error": f"No matching topic for {topic}",
+                    }
+                )
+            )
+            return
 
-        await websocket.send(json.dumps(response))
+        while True:
+            response = method()
+            await websocket.send(json.dumps(response))
+            await asyncio.sleep(5)
 
+    def match_method(self, method: str) -> Optional[Callable]:
+        raise NotImplementedError
+
+    def match_topic(self, topic: str) -> Optional[Callable]:
+        raise NotImplementedError
 
     def get_symbology_snapshot(self) -> Dict[str, Any]:
         raise NotImplementedError
