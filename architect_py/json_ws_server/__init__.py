@@ -13,6 +13,11 @@ class JsonWsServer:
     def __init__(self) -> None:
         pass
 
+    async def start(self, host: str, port: int) -> None:
+        start_server = serve(self.accept_connection, host, port)
+        logging.critical("JsonWsServer started on ws://localhost:8765")
+        await start_server
+
     async def serve(self, host: str, port: int) -> None:
         logging.critical(f"Starting server on {host}:{port}")
         await serve(self.accept_connection, host, port)
@@ -81,10 +86,10 @@ class JsonWsServer:
                 "error": "No topic provided",
             }
 
-        asyncio.create_task(self._subscribe(topic, id, websocket))
+        asyncio.create_task(self._subscribe_poll(topic, id, websocket))
         return {"id": message["id"], "type": "response", "status": "subscribed"}
 
-    async def _subscribe(self, topic: str, id: int, websocket: ServerConnection):
+    async def _subscribe_poll(self, topic: str, id: int, websocket: ServerConnection):
         method = self.match_topic(topic)
 
         if method is None:
@@ -123,18 +128,8 @@ class JsonWsServer:
         return {"bids": [], "asks": []}
 
 
-async def start_server():
-    server = JsonWsServer()
-    start_server = serve(server.accept_connection, "localhost", 8765)
-    print("Server started on ws://localhost:8765")
-    await start_server
-
-
 async def test():
     server = JsonWsServer()
-    start_server = serve(server.accept_connection, "localhost", 8765)
-    print("Server started on ws://localhost:8765")
-    await start_server
 
 
 if __name__ == "__main__":

@@ -119,7 +119,7 @@ class JsonWsClient:
             if not stack:
                 return current_cls(**current_kwargs)  # type: ignore
 
-        raise ValueError("Unexpected end of hydration process")
+        raise ValueError(f"Unexpected end of dataclass hydration process {data} {cls}")
 
     async def request(self, method: str, params: Optional[Any] = None) -> Any:
         async with self._connect() as ws:
