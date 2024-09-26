@@ -10,17 +10,20 @@ from .common import create_async_client
 
 async def main():
     c: AsyncClient = create_async_client()
-    markets = await c.search_markets(venue="COINBASE")
+    markets = await c.search_markets(venue="BYBIT")
     markets_by_id = {}
     for market in markets:
         markets_by_id[UUID(market.id)] = market
     print(f"Loaded {len(markets)} markets")
 
-    channel = await c.grpc_channel("coinbase.marketdata.architect.co")
+    channel = await c.grpc_channel("spot.bybit.marketdata.architect.co")
     stub = JsonMarketdataStub(channel)
     req = SubscribeL1BookSnapshotsRequest(market_ids=None)
     async for snap in stub.SubscribeL1BookSnapshots(req):
-        market = markets_by_id[snap.market_id]
+        market_name = "<unknown>"
+        if snap.market_id in markets_by_id:
+            market = markets_by_id[snap.market_id]
+            market_name = market.name
         best_bid_s = "<no bid>"
         best_ask_s = "<no ask>"
         if snap.best_bid:
