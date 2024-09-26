@@ -8,6 +8,7 @@ from .common import create_client, print_book, print_open_orders, confirm
 c = create_client()
 
 # Find all MET markets (Micro ETH) from CME
+# markets = c.search_markets(venue="COINBASE", base="BTC Crypto", quote="USD")
 markets = c.search_markets(venue="CME", underlying="MET CME Index")
 print()
 print("Found markets:")

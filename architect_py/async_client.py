@@ -20,10 +20,15 @@ it may not have all the information that the specific get_algo functions have
 """
 
 import logging
+import dns.asyncresolver
+import grpc.aio
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import AsyncIterator, Optional, TypeAlias, Union
+from typing import Any, AsyncIterator, Optional, TypeAlias, Union
+
+import grpc.aio
+
 from .async_graphql_client import AsyncGraphQLClient
 from .async_graphql_client.enums import (
     CreateOrderType,
@@ -76,6 +81,13 @@ class AsyncClient(AsyncGraphQLClient):
         self.product_by_id = {}
         self.market_by_id = {}
         self.market_names_by_route = {}  # route => venue => base => quote => market
+
+    async def grpc_channel(self, endpoint: Any):
+        srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
+        if len(srv_records) == 0:
+            raise Exception(f"No SRV records found for {endpoint}")
+        connect_str = f"{srv_records[0].target}:{srv_records[0].port}"
+        return grpc.aio.insecure_channel(connect_str)
 
     def configure_marketdata(self, *, cpty, url):
         self.marketdata[cpty] = JsonWsClient(url=url)

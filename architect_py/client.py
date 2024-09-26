@@ -20,10 +20,12 @@ it may not have all the information that the specific get_algo functions have
 """
 
 import logging
+import dns.resolver
+import grpc
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, TypeAlias, Union
+from typing import Any, Optional, TypeAlias, Union
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
     CreateOrderType,
@@ -72,6 +74,13 @@ class Client(GraphQLClient):
         self.product_by_id = {}
         self.market_by_id = {}
         self.market_names_by_route = {}  # route => venue => base => quote => market
+
+    def grpc_channel(self, endpoint: Any):
+        srv_records = dns.resolver.resolve(endpoint, "SRV")
+        if len(srv_records) == 0:
+            raise ValueError(f"No SRV records found for {endpoint}")
+        connect_str = f"{srv_records[0].target}:{srv_records[0].port}"
+        return grpc.insecure_channel(connect_str)
 
     def start_session(self):
         self.load_and_index_symbology()

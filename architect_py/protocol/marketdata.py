@@ -1,8 +1,40 @@
 import uuid
+import grpc
+import msgspec
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
+from uuid import UUID
 from typing import Any, Generic, Literal, Optional, TypeVar
+
+
+class JsonMarketdataStub(object):
+    def __init__(self, channel: grpc.Channel):
+        self.SubscribeL1BookSnapshots = channel.unary_stream(
+            "/json.marketdata.Marketdata/SubscribeL1BookSnapshots",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=L1BookSnapshot
+            ),
+        )
+
+
+class SubscribeL1BookSnapshotsRequest(msgspec.Struct, kw_only=True):
+    market_ids: list[str] | None
+
+
+class L1BookSnapshot(msgspec.Struct, kw_only=True):
+    market_id: UUID = msgspec.field(name="m")
+    timestamp_s: int = msgspec.field(name="ts")
+    timestamp_ns: int = msgspec.field(name="tn")
+    epoch: int | None = msgspec.field(name="e", default=None)
+    seqno: int | None = msgspec.field(name="n", default=None)
+    best_bid: tuple[Decimal, Decimal] | None = msgspec.field(name="b")
+    best_ask: tuple[Decimal, Decimal] | None = msgspec.field(name="a")
+
+    def timestamp(self):
+        dt = datetime.fromtimestamp(self.timestamp_s)
+        return dt.replace(microsecond=self.timestamp_ns // 1000)
 
 
 @dataclass(kw_only=True)
