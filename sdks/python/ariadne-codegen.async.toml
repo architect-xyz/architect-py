@@ -2,10 +2,9 @@
 target_package_path = "./architect_py"
 target_package_name = "async_graphql_client"
 client_name = "AsyncGraphQLClient"
-schema_path = "schema.graphql"
-queries_path = "queries.async.graphql"
+schema_path = "../../schema.graphql"
+queries_path = "../../queries.async.graphql"
 base_client_name = "JuniperAsyncBaseClient"
 base_client_file_path = "./templates/juniper_async_base_client.py"
 files_to_include = ["./templates/exceptions.py"]
 plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
-
