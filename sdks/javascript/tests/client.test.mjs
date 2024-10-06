@@ -15,7 +15,7 @@ const createClient = () => {
 }
 
 describe('Client', () => {
-  test('can query', async () => {
+  test('can query with types, even though we’re only using javascript', async () => {
     const c = createClient();
     const query = graphql(`query Me { me { __typename userId email } }`);
     const r = await c.execute(query);

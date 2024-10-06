@@ -1,5 +1,7 @@
 {
   "extends": "@tsconfig/node-lts/tsconfig.json",
+  "include": ["./src/**/*"],
+  "exclude": ["./node_modules"],
   "compilerOptions": {
     "strict": true,
     "checkJs": true,
@@ -8,8 +10,6 @@
     "skipLibCheck": true,
     "lib": ["es2023"],
     "target": "es2022",
-    "include": ["src"],
-    "exclude": ["node_modules"]
     "plugins": [
       {
         "name": "gql.tada/ts-plugin",

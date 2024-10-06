@@ -55,10 +55,14 @@ export class Client {
        */
       let result;
       cancel = this.client.subscribe(
-        { query: print(query), variables },
+        {
+          query: print(query),
+          // @ts-expect-error Variables type is not quite the same
+          variables
+        },
         {
           next: (resp) => {
-            // @ts-expect-error
+            // @ts-expect-error resp.data may not be provided in error cases
             result = resp.data
           },
           error: (err) => reject(err),
