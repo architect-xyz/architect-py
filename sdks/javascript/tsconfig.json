@@ -1,12 +1,21 @@
 {
+  "extends": "@tsconfig/node-lts/tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "plugins": [ 
-      { 
-        "name": "gql.tada/ts-plugin", 
-        "schema": "../../schema.graphql", 
+    "checkJs": true,
+    "module": "node16",
+    "moduleResolution": "node16",
+    "skipLibCheck": true,
+    "lib": ["es2023"],
+    "target": "es2022",
+    "include": ["src"],
+    "exclude": ["node_modules"]
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "../../schema.graphql",
         "tadaOutputLocation": "./src/graphql-env.d.ts"
-      } 
-    ] 
+      }
+    ]
   }
 }

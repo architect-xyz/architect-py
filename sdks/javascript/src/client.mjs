@@ -1,9 +1,10 @@
 /**
- *
  */
 import { createClient } from 'graphql-http';
 import { graphql } from 'gql.tada';
+import { print } from 'graphql';
 
+export { graphql };
 
 export class Client {
   /**
@@ -26,16 +27,40 @@ export class Client {
   }
 
   /**
-   * @param {string} query GraphQL document string
+   * Typed GraphQL query parser
+   *
+   * @param {Parameters<typeof graphql>[0]} query GraphQL document string
+   * @returns {ReturnType<typeof graphql>}
    */
-  async execute(query) {
-    let cancel = () => { }
+  parse(query) {
+    return graphql(query);
+  }
+
+  /**
+   * Execute a GraphQL query with typed response
+   *
+   *
+   * @template Result [Result=any]
+   * @template Variables [Variables=any]
+   *
+   * @param {import('gql.tada').TadaDocumentNode<Result, Variables>} query GraphQL document string
+   * @param {Variables} [variables] query variables
+   * @returns {Promise<Result>}
+   */
+  async execute(query, variables) {
+    let cancel = () => { };
     return new Promise((resolve, reject) => {
+      /**
+       * @type {Result}
+       */
       let result;
       cancel = this.client.subscribe(
-        { query, variables: {} },
+        { query: print(query), variables },
         {
-          next: (data) => result = data,
+          next: (resp) => {
+            // @ts-expect-error
+            result = resp.data
+          },
           error: (err) => reject(err),
           complete: () => resolve(result),
         },
