@@ -14,7 +14,6 @@ export class Client {
    * @param {string} config.host API host
    * @param {string} config.apiKey API Key
    * @param {string} config.apiSecret API Secret
-   *
    */
   constructor(config) {
     this.config = config
