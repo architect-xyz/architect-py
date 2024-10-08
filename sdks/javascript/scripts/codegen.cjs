@@ -17,6 +17,10 @@ const PREFIX = `/**
  * Temp file for iteratively building the JS SDK codegen
  */`;
 
+const IMPORTS = `
+import { client, graphql } from './client.mjs';
+`;
+
 function log(...args) {
   const file = path.join(__dirname, '..', 'tmp', 'codegen.stdout.log')
   createWriteStream(file).write(`${JSON.stringify(args, null, 2)}\n`);
@@ -52,7 +56,7 @@ module.exports = {
           code += `
 ${docblock(node)}
 function ${node.name.value}(${args(node)}) {
-  // TODO
+  return client.execute(graphql('', ${variables(node)}));
 }`
         },
 
@@ -62,10 +66,9 @@ function ${node.name.value}(${args(node)}) {
         OperationDefinition(node) {
           code += `
 /**
- * ${node.description.value}
+ * ${docblock(node)}
  **/
-
-function ${node.name.value}() {
+export function ${node.name.value}() {
   // TODO
 }`
           log('append to the code', code)
@@ -73,7 +76,7 @@ function ${node.name.value}() {
       },
     });
 
-    return `${PREFIX}\n\n'wat';\n${code}`;
+    return `${PREFIX}${IMPORTS}\n\n${code}`;
   }
 }
 
@@ -129,6 +132,13 @@ function jsDocParam(param) {
   */
 function args(node) {
   return node.arguments ? node.arguments.map(n => n.name.value).join(', ') : '';
+}
+/***
+ * Generate function body variables
+  * @param {import('graphql').FieldDefinitionNode} node
+  */
+function variables(node) {
+  return node.arguments ? `{${node.arguments.map(n => n.name.value).join(', ')}}` : 'undefined';
 }
 
 /***

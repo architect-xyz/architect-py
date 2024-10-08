@@ -19,7 +19,7 @@ const config: CodegenConfig = {
       }
     },
     */
-    "output.ts": {
+    "./demo/output.mjs": {
       "plugins": [
         "./scripts/codegen.cjs"
       ]

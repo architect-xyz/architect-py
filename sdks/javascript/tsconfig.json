@@ -1,7 +1,10 @@
 {
   "extends": "@tsconfig/node-lts/tsconfig.json",
-  "include": ["./src/**/*"],
-  "exclude": ["./node_modules"],
+  "include": [
+    "./demo/**/*",
+    "./src/**/*",
+  ],
+  "exclude": [".node_modules"],
   "compilerOptions": {
     "strict": true,
     "checkJs": true,
