@@ -11,7 +11,7 @@ from typing import Any, Generic, Literal, Optional, TypeVar
 class JsonMarketdataStub(object):
     def __init__(self, channel: grpc.Channel):
         self.SubscribeL1BookSnapshots = channel.unary_stream(
-            "/json.marketdata.Marketdata/SubscribeL1BookSnapshots",
+            "/json.architect.Marketdata/SubscribeL1BookSnapshots",
             request_serializer=msgspec.json.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=L1BookSnapshot

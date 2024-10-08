@@ -10,15 +10,19 @@ from .common import create_async_client
 
 async def main():
     c: AsyncClient = create_async_client()
-    markets = await c.search_markets(venue="BYBIT")
+    markets = await c.search_markets(venue="BINANCE-FUTURES-USD-M")
     markets_by_id = {}
     for market in markets:
         markets_by_id[UUID(market.id)] = market
     print(f"Loaded {len(markets)} markets")
 
-    channel = await c.grpc_channel("spot.bybit.marketdata.architect.co")
+    channel = await c.grpc_channel("binance-futures-usd-m.marketdata.architect.co")
     stub = JsonMarketdataStub(channel)
-    req = SubscribeL1BookSnapshotsRequest(market_ids=None)
+    req = SubscribeL1BookSnapshotsRequest(
+        market_ids=[
+            "POPCAT-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"
+        ]
+    )
     async for snap in stub.SubscribeL1BookSnapshots(req):
         market_name = "<unknown>"
         if snap.market_id in markets_by_id:
