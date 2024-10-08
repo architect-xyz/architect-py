@@ -1,10 +1,31 @@
 /**
  */
 import { createClient } from 'graphql-http';
-import { graphql } from 'gql.tada';
 import { print } from 'graphql';
+import { initGraphQLTada } from 'gql.tada'
+/**
+ * import type { introspection } from '../src/graphql-env.d.ts'
+ */
 
-export { graphql };
+export const graphql = initGraphQLTada/*<{
+  introspection: introspection
+  scalars: {
+    // TODO: this is very incomplete. Add additional scalar mapping as you come
+    // across them
+    DateTime: string
+    Decimal: string
+    AccountId: string
+    UserId: string
+    OrderId: string
+    MarketId: string
+    VenueId: string
+    RouteId: string
+    ProductId: string
+    Dir: 'buy' | 'sell'
+    Str: string
+    OrderSource: string
+  }
+}>*/();
 
 export class Client {
   /**

@@ -6,24 +6,44 @@ import { client, graphql } from './client.mjs';
 
 
 
-function version() {
-  return client.execute(graphql('', {}));
+export function version() {
+  return client.execute(
+    graphql(`query Version {
+  version 
+}`,
+    undefined)
+  );
 }
 /**
  * Return the current user's authentication information.
  * **/
-function me() {
-  return client.execute(graphql('', {}));
+export function me() {
+  return client.execute(
+    graphql(`query Me {
+  me { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * List the API keys associated with the current user.
  * **/
-function listApiKeys() {
-  return client.execute(graphql('', {}));
+export function listApiKeys() {
+  return client.execute(
+    graphql(`query ListApiKeys {
+  listApiKeys { __typename }
+}`,
+    undefined)
+  );
 }
 
-function cptys() {
-  return client.execute(graphql('', {}));
+export function cptys() {
+  return client.execute(
+    graphql(`query Cptys {
+  cptys { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * List all known/mapped accounts relevant to the logged-in user.
@@ -31,73 +51,123 @@ function cptys() {
 Accounts are generally defined by exchange connectors or their respective exchange configs.
 Refer to the User Guide for more information on how Architect names and manages accounts.
  * **/
-function accounts() {
-  return client.execute(graphql('', {}));
+export function accounts() {
+  return client.execute(
+    graphql(`query Accounts {
+  accounts { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
 route IDs are fully determined by their string names as UUIDv5.
  * **/
-function routes() {
-  return client.execute(graphql('', {}));
+export function routes() {
+  return client.execute(
+    graphql(`query Routes {
+  routes { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * Find a route by its ID.
  * @param {RouteId} id
  * **/
-function route(id) {
-  return client.execute(graphql('', {id}));
+export function route(id) {
+  return client.execute(
+    graphql(`query Route {
+  route { __typename }
+}`,
+    {id})
+  );
 }
 /**
  * List all known venues in symbology.  Venues are uniquely identified by their names or IDs;
 venue IDs are fully determined by their string names as UUIDv5.
  * **/
-function venues() {
-  return client.execute(graphql('', {}));
+export function venues() {
+  return client.execute(
+    graphql(`query Venues {
+  venues { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * Find a venue by its ID.
  * @param {VenueId} id
  * **/
-function venue(id) {
-  return client.execute(graphql('', {id}));
+export function venue(id) {
+  return client.execute(
+    graphql(`query Venue {
+  venue { __typename }
+}`,
+    {id})
+  );
 }
 /**
  * Find products and their details by their IDs.  Products are uniquely identified by their
 names or IDs; product IDs are fully determined by their string names as UUIDv5.
  * @param {ProductId[]} id
  * **/
-function products(id) {
-  return client.execute(graphql('', {id}));
+export function products(id) {
+  return client.execute(
+    graphql(`query Products {
+  products { __typename }
+}`,
+    {id})
+  );
 }
 /**
  * Find a product and its details by its ID.
  * @param {ProductId} id
  * **/
-function product(id) {
-  return client.execute(graphql('', {id}));
+export function product(id) {
+  return client.execute(
+    graphql(`query Product {
+  product { __typename }
+}`,
+    {id})
+  );
 }
 /**
  * Find markets and their details by their IDs.  Markets are uniquely identified by their
 names or IDs; market IDs are fully determined by their string names as UUIDv5.
  * @param {MarketId[]} id
  * **/
-function markets(id) {
-  return client.execute(graphql('', {id}));
+export function markets(id) {
+  return client.execute(
+    graphql(`query Markets {
+  markets { __typename }
+}`,
+    {id})
+  );
 }
 /**
  * Find a market and its details by its ID.
  * @param {MarketId} id
  * **/
-function market(id) {
-  return client.execute(graphql('', {id}));
+export function market(id) {
+  return client.execute(
+    graphql(`query Market {
+  market { __typename }
+}`,
+    {id})
+  );
 }
 /**
  * Find markets and their details by some filtering criteria.
  * @param {MarketFilter} filter
  * **/
-function filterMarkets(filter) {
-  return client.execute(graphql('', {filter}));
+export function filterMarkets(filter) {
+  return client.execute(
+    graphql(`query FilterMarkets {
+  filterMarkets { __typename }
+}`,
+    {filter})
+  );
 }
 /**
  * @param {MarketId} market
@@ -106,8 +176,13 @@ function filterMarkets(filter) {
  * @param {Int} [retainSubscriptionForNSeconds]
  * @param {Boolean} [delayed]
  * **/
-function bookSnapshot(market, numLevels, precision, retainSubscriptionForNSeconds, delayed) {
-  return client.execute(graphql('', {market, numLevels, precision, retainSubscriptionForNSeconds, delayed}));
+export function bookSnapshot(market, numLevels, precision, retainSubscriptionForNSeconds, delayed) {
+  return client.execute(
+    graphql(`query BookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
+  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename }
+}`,
+    {market, numLevels, precision, retainSubscriptionForNSeconds, delayed})
+  );
 }
 /**
  * Get a snapshot of the marketdata for a given market, at a given time.  If no
@@ -115,38 +190,63 @@ latest_at_or_before is provided, the most recent snapshot is returned.
  * @param {MarketId} market
  * @param {DateTime} [latestAtOrBefore]
  * **/
-function marketSnapshot(market, latestAtOrBefore) {
-  return client.execute(graphql('', {market, latestAtOrBefore}));
+export function marketSnapshot(market, latestAtOrBefore) {
+  return client.execute(
+    graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
+  marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename }
+}`,
+    {market, latestAtOrBefore})
+  );
 }
 /**
  * Get snapshots of all markets for the given time.  If no latest_at_or_before is provided,
 the most recent snapshots are returned.
  * @param {DateTime} [latestAtOrBefore]
  * **/
-function marketsSnapshots(latestAtOrBefore) {
-  return client.execute(graphql('', {latestAtOrBefore}));
+export function marketsSnapshots(latestAtOrBefore) {
+  return client.execute(
+    graphql(`query MarketsSnapshots {
+  marketsSnapshots { __typename }
+}`,
+    {latestAtOrBefore})
+  );
 }
 /**
  * Get a snapshot of the options data for a given underlying, at a given time.
  * @param {ProductId} underlying
  * @param {DateTime} [latestAtOrBefore]
  * **/
-function optionsMarketSnapshots(underlying, latestAtOrBefore) {
-  return client.execute(graphql('', {underlying, latestAtOrBefore}));
+export function optionsMarketSnapshots(underlying, latestAtOrBefore) {
+  return client.execute(
+    graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
+  optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename }
+}`,
+    {underlying, latestAtOrBefore})
+  );
 }
 /**
  * Get the current known balances and positions for a given counterparty.
  * @param {VenueId} venue
  * @param {RouteId} route
  * **/
-function accountSummariesForCpty(venue, route) {
-  return client.execute(graphql('', {venue, route}));
+export function accountSummariesForCpty(venue, route) {
+  return client.execute(
+    graphql(`query AccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
+  accountSummariesForCpty(venue: $venue, route: $route) { __typename }
+}`,
+    {venue, route})
+  );
 }
 /**
  * Get all current known balances and positions for all counterparties.
  * **/
-function accountSummaries() {
-  return client.execute(graphql('', {}));
+export function accountSummaries() {
+  return client.execute(
+    graphql(`query AccountSummaries {
+  accountSummaries { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * Get all fills for a given venue, route, base, and quote.
@@ -155,29 +255,49 @@ function accountSummaries() {
  * @param {ProductId} [base]
  * @param {ProductId} [quote]
  * **/
-function fills(venue, route, base, quote) {
-  return client.execute(graphql('', {venue, route, base, quote}));
+export function fills(venue, route, base, quote) {
+  return client.execute(
+    graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
+  fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename }
+}`,
+    {venue, route, base, quote})
+  );
 }
 /**
  * Find order details by order ID from the OMS.
  * @param {OrderId} orderId
  * **/
-function order(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function order(orderId) {
+  return client.execute(
+    graphql(`query Order {
+  order { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * List all open orders known to the OMS.
  * **/
-function openOrders() {
-  return client.execute(graphql('', {}));
+export function openOrders() {
+  return client.execute(
+    graphql(`query OpenOrders {
+  openOrders { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * List all recently outed orders known to the OMS.
  * @param {DateTime} [fromInclusive]
  * @param {DateTime} [toExclusive]
  * **/
-function outedOrders(fromInclusive, toExclusive) {
-  return client.execute(graphql('', {fromInclusive, toExclusive}));
+export function outedOrders(fromInclusive, toExclusive) {
+  return client.execute(
+    graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
+  outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename }
+}`,
+    {fromInclusive, toExclusive})
+  );
 }
 /**
  * Query historical OHLCV candles for a given market, candle width, and time range.
@@ -186,8 +306,13 @@ function outedOrders(fromInclusive, toExclusive) {
  * @param {DateTime} end
  * @param {CandleWidth} width
  * **/
-function historicalCandles(id, start, end, width) {
-  return client.execute(graphql('', {id, start, end, width}));
+export function historicalCandles(id, start, end, width) {
+  return client.execute(
+    graphql(`query HistoricalCandles($id: MarketId!, $start: DateTime!, $end: DateTime!, $width: CandleWidth!) {
+  historicalCandles(id: $id, start: $start, end: $end, width: $width) { __typename }
+}`,
+    {id, start, end, width})
+  );
 }
 /**
  * Query TCA pnl / marks stats, id is an optional field but the dates are required
@@ -195,8 +320,13 @@ function historicalCandles(id, start, end, width) {
  * @param {DateTime} fromInclusive
  * @param {DateTime} toExclusive
  * **/
-function tcaMarks(id, fromInclusive, toExclusive) {
-  return client.execute(graphql('', {id, fromInclusive, toExclusive}));
+export function tcaMarks(id, fromInclusive, toExclusive) {
+  return client.execute(
+    graphql(`query TcaMarks($id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+  tcaMarks(id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename }
+}`,
+    {id, fromInclusive, toExclusive})
+  );
 }
 /**
  * Query TCA summary stats, id is an optional field but the dates are required
@@ -205,8 +335,13 @@ function tcaMarks(id, fromInclusive, toExclusive) {
  * @param {DateTime} fromInclusive
  * @param {DateTime} toExclusive
  * **/
-function tcaSummary(currency, id, fromInclusive, toExclusive) {
-  return client.execute(graphql('', {currency, id, fromInclusive, toExclusive}));
+export function tcaSummary(currency, id, fromInclusive, toExclusive) {
+  return client.execute(
+    graphql(`query TcaSummary($currency: String, $id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+  tcaSummary(currency: $currency, id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename }
+}`,
+    {currency, id, fromInclusive, toExclusive})
+  );
 }
 /**
  * Query TCA balance pnl stats, the account_id is a required field.
@@ -219,8 +354,13 @@ If use_purchasing_power is false or not provided then we will use
  * @param {VenueId} [venueId]
  * @param {Boolean} [usePurchasingPower]
  * **/
-function tcaBalancePnl(accountId, venueId, usePurchasingPower) {
-  return client.execute(graphql('', {accountId, venueId, usePurchasingPower}));
+export function tcaBalancePnl(accountId, venueId, usePurchasingPower) {
+  return client.execute(
+    graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
+  tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename }
+}`,
+    {accountId, venueId, usePurchasingPower})
+  );
 }
 /**
  * Query TCA balance pnl timeseries, the account_id and venue_id are
@@ -236,116 +376,201 @@ If use_purchasing_power is false or not provided then we will use
  * @param {DateTime} [toExclusive]
  * @param {Boolean} [usePurchasingPower]
  * **/
-function tcaBalancePnlTimeseries(accountId, venueId, fromInclusive, toExclusive, usePurchasingPower) {
-  return client.execute(graphql('', {accountId, venueId, fromInclusive, toExclusive, usePurchasingPower}));
+export function tcaBalancePnlTimeseries(accountId, venueId, fromInclusive, toExclusive, usePurchasingPower) {
+  return client.execute(
+    graphql(`query TcaBalancePnlTimeseries($accountId: AccountId!, $venueId: VenueId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
+  tcaBalancePnlTimeseries(accountId: $accountId, venueId: $venueId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename }
+}`,
+    {accountId, venueId, fromInclusive, toExclusive, usePurchasingPower})
+  );
 }
 /**
  * Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap.
  * **/
-function coinInfos() {
-  return client.execute(graphql('', {}));
+export function coinInfos() {
+  return client.execute(
+    graphql(`query CoinInfos {
+  coinInfos { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * Get token info for a given product.
  * @param {ProductId} product
  * **/
-function coinInfo(product) {
-  return client.execute(graphql('', {product}));
+export function coinInfo(product) {
+  return client.execute(
+    graphql(`query CoinInfo {
+  coinInfo { __typename }
+}`,
+    {product})
+  );
 }
 /**
  * Get CME product group info.
  * **/
-function cmeProductGroupInfos() {
-  return client.execute(graphql('', {}));
+export function cmeProductGroupInfos() {
+  return client.execute(
+    graphql(`query CmeProductGroupInfos {
+  cmeProductGroupInfos { __typename }
+}`,
+    undefined)
+  );
 }
 /**
  * Find a generic algo order and its details by parent order ID.
  * @param {OrderId} orderId
  * **/
-function algoOrder(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function algoOrder(orderId) {
+  return client.execute(
+    graphql(`query AlgoOrder {
+  algoOrder { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return generic algo order status by parent order ID.
  * @param {OrderId} [orderId]
  * **/
-function algoStatus(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function algoStatus(orderId) {
+  return client.execute(
+    graphql(`query AlgoStatus {
+  algoStatus { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return generic algo logs by parent order ID.
  * @param {OrderId} orderId
  * **/
-function algoLog(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function algoLog(orderId) {
+  return client.execute(
+    graphql(`query AlgoLog {
+  algoLog { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return TWAP algo order details by parent order ID.
  * @param {OrderId} orderId
  * **/
-function twapOrder(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function twapOrder(orderId) {
+  return client.execute(
+    graphql(`query TwapOrder {
+  twapOrder { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return TWAP algo status by parent order ID.
  * @param {OrderId} [orderId]
  * **/
-function twapStatus(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function twapStatus(orderId) {
+  return client.execute(
+    graphql(`query TwapStatus {
+  twapStatus { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return POV order details by parent order ID.
  * @param {OrderId} orderId
  * **/
-function povOrder(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function povOrder(orderId) {
+  return client.execute(
+    graphql(`query PovOrder {
+  povOrder { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return POV algo status by parent order ID.
  * @param {OrderId} [orderId]
  * **/
-function povStatus(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function povStatus(orderId) {
+  return client.execute(
+    graphql(`query PovStatus {
+  povStatus { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return SOR order details by parent order ID.
  * @param {OrderId} orderId
  * **/
-function smartOrderRouterOrder(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function smartOrderRouterOrder(orderId) {
+  return client.execute(
+    graphql(`query SmartOrderRouterOrder {
+  smartOrderRouterOrder { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return SOR algo status by parent order ID.
  * @param {OrderId} [orderId]
  * **/
-function smartOrderRouterStatus(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function smartOrderRouterStatus(orderId) {
+  return client.execute(
+    graphql(`query SmartOrderRouterStatus {
+  smartOrderRouterStatus { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return MM algo order details by parent order ID.
  * @param {OrderId} orderId
  * **/
-function mmAlgoOrder(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function mmAlgoOrder(orderId) {
+  return client.execute(
+    graphql(`query MmAlgoOrder {
+  mmAlgoOrder { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return spread algo status by parent order ID.
  * @param {OrderId} orderId
  * **/
-function spreadAlgoOrder(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function spreadAlgoOrder(orderId) {
+  return client.execute(
+    graphql(`query SpreadAlgoOrder {
+  spreadAlgoOrder { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return MM algo status by parent order ID.
  * @param {OrderId} [orderId]
  * **/
-function mmAlgoStatus(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function mmAlgoStatus(orderId) {
+  return client.execute(
+    graphql(`query MmAlgoStatus {
+  mmAlgoStatus { __typename }
+}`,
+    {orderId})
+  );
 }
 /**
  * Find and return spread algo status by parent order ID.
  * @param {OrderId} [orderId]
  * **/
-function spreadAlgoStatus(orderId) {
-  return client.execute(graphql('', {orderId}));
+export function spreadAlgoStatus(orderId) {
+  return client.execute(
+    graphql(`query SpreadAlgoStatus {
+  spreadAlgoStatus { __typename }
+}`,
+    {orderId})
+  );
 }
