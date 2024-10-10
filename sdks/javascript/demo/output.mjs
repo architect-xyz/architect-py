@@ -4,7 +4,126 @@
 import { client, graphql } from './client.mjs';
 
 
-
+/**
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['AccountId']['output']} AccountId - Wrapper type around a UUIDv5 for a given namespace.  These types are
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Boolean']['output']} Boolean - The `Boolean` scalar type represents `true` or `false`.
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['ComponentId']['output']} ComponentId - Components within an Architect installation are uniquely identified by a 16-bit integer
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Date']['output']} Date - Date in the proleptic Gregorian calendar (without time zone).
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['DateTime']['output']} DateTime - Combined date and time (with time zone) in [RFC 3339][0] format.
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Decimal']['output']} Decimal - 128 bit representation of a fixed-precision decimal number.
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Dir']['output']} Dir - An order side/direction or a trade execution side/direction.
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['FillId']['output']} FillId - The ID of a fill
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Float']['output']} Float - The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Int']['output']} Int - The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['MarketId']['output']} MarketId - Wrapper type around a UUIDv5 for a given namespace.  These types are
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['OrderId']['output']} OrderId - System-unique, persistent order identifiers
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['ProductId']['output']} ProductId - Wrapper type around a UUIDv5 for a given namespace.  These types are
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['RouteId']['output']} RouteId - Wrapper type around a UUIDv5 for a given namespace.  These types are
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['Str']['output']} Str - A String type
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['String']['output']} String - The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['UserId']['output']} UserId - Wrapper type around a UUIDv5 for a given namespace.  These types are
+ * @typedef {import('../src/graphql/graphql.ts').Scalars['VenueId']['output']} VenueId - Wrapper type around a UUIDv5 for a given namespace.  These types are
+ * * @typedef {import('../src/graphql/graphql.ts').AberrantFill} AberrantFill - Fills which we received but couldn't parse fully, return details
+ * @typedef {import('../src/graphql/graphql.ts').Account} Account
+ * @typedef {import('../src/graphql/graphql.ts').AccountSummaries} AccountSummaries
+ * @typedef {import('../src/graphql/graphql.ts').AccountSummary} AccountSummary
+ * @typedef {import('../src/graphql/graphql.ts').Ack} Ack
+ * @typedef {import('../src/graphql/graphql.ts').AlgoControlCommand} AlgoControlCommand
+ * @typedef {import('../src/graphql/graphql.ts').AlgoKind} AlgoKind
+ * @typedef {import('../src/graphql/graphql.ts').AlgoLog} AlgoLog
+ * @typedef {import('../src/graphql/graphql.ts').AlgoOrder} AlgoOrder
+ * @typedef {import('../src/graphql/graphql.ts').AlgoPreview} AlgoPreview
+ * @typedef {import('../src/graphql/graphql.ts').AlgoRunningStatus} AlgoRunningStatus
+ * @typedef {import('../src/graphql/graphql.ts').AlgoStatus} AlgoStatus
+ * @typedef {import('../src/graphql/graphql.ts').ApiKey} ApiKey
+ * @typedef {import('../src/graphql/graphql.ts').Balance} Balance
+ * @typedef {import('../src/graphql/graphql.ts').Book} Book
+ * @typedef {import('../src/graphql/graphql.ts').BookLevel} BookLevel
+ * @typedef {import('../src/graphql/graphql.ts').Cancel} Cancel
+ * @typedef {import('../src/graphql/graphql.ts').CancelAll} CancelAll
+ * @typedef {import('../src/graphql/graphql.ts').CandleV1} CandleV1 - NB: buy_volume + sell_volume <> volume; volume may count trades
+ * @typedef {import('../src/graphql/graphql.ts').CandleWidth} CandleWidth
+ * @typedef {import('../src/graphql/graphql.ts').CmeProductGroupInfo} CmeProductGroupInfo
+ * @typedef {import('../src/graphql/graphql.ts').CmeSecurityType} CmeSecurityType
+ * @typedef {import('../src/graphql/graphql.ts').CoinInfo} CoinInfo
+ * @typedef {import('../src/graphql/graphql.ts').CptyInfo} CptyInfo
+ * @typedef {import('../src/graphql/graphql.ts').CreateMMAlgo} CreateMMAlgo
+ * @typedef {import('../src/graphql/graphql.ts').CreateOrder} CreateOrder
+ * @typedef {import('../src/graphql/graphql.ts').CreateOrderType} CreateOrderType
+ * @typedef {import('../src/graphql/graphql.ts').CreatePovAlgo} CreatePovAlgo
+ * @typedef {import('../src/graphql/graphql.ts').CreateSmartOrderRouterAlgo} CreateSmartOrderRouterAlgo
+ * @typedef {import('../src/graphql/graphql.ts').CreateSpreadAlgo} CreateSpreadAlgo
+ * @typedef {import('../src/graphql/graphql.ts').CreateSpreadAlgoHedgeMarket} CreateSpreadAlgoHedgeMarket
+ * @typedef {import('../src/graphql/graphql.ts').CreateTimeInForce} CreateTimeInForce
+ * @typedef {import('../src/graphql/graphql.ts').CreateTimeInForceInstruction} CreateTimeInForceInstruction
+ * @typedef {import('../src/graphql/graphql.ts').CreateTwapAlgo} CreateTwapAlgo
+ * @typedef {import('../src/graphql/graphql.ts').Environment} Environment
+ * @typedef {import('../src/graphql/graphql.ts').EnvironmentKind} EnvironmentKind
+ * @typedef {import('../src/graphql/graphql.ts').ExchangeMarketKind} ExchangeMarketKind
+ * @typedef {import('../src/graphql/graphql.ts').ExchangeSpecificUpdate} ExchangeSpecificUpdate
+ * @typedef {import('../src/graphql/graphql.ts').Fee} Fee
+ * @typedef {import('../src/graphql/graphql.ts').Fill} Fill
+ * @typedef {import('../src/graphql/graphql.ts').FillKind} FillKind
+ * @typedef {import('../src/graphql/graphql.ts').Fills} Fills
+ * @typedef {import('../src/graphql/graphql.ts').HedgeMarket} HedgeMarket
+ * @typedef {import('../src/graphql/graphql.ts').License} License
+ * @typedef {import('../src/graphql/graphql.ts').LicenseTier} LicenseTier
+ * @typedef {import('../src/graphql/graphql.ts').LimitOrderType} LimitOrderType
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoDecision} MMAlgoDecision
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoDecisionCancel} MMAlgoDecisionCancel
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoDecisionDoNothing} MMAlgoDecisionDoNothing
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoDecisionSend} MMAlgoDecisionSend
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoKind} MMAlgoKind
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoOpenOrder} MMAlgoOpenOrder
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoOrder} MMAlgoOrder
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoSide} MMAlgoSide
+ * @typedef {import('../src/graphql/graphql.ts').MMAlgoStatus} MMAlgoStatus
+ * @typedef {import('../src/graphql/graphql.ts').Market} Market
+ * @typedef {import('../src/graphql/graphql.ts').MarketFilter} MarketFilter
+ * @typedef {import('../src/graphql/graphql.ts').MarketKind} MarketKind
+ * @typedef {import('../src/graphql/graphql.ts').MarketSnapshot} MarketSnapshot
+ * @typedef {import('../src/graphql/graphql.ts').Me} Me
+ * @typedef {import('../src/graphql/graphql.ts').MinOrderQuantityUnit} MinOrderQuantityUnit
+ * @typedef {import('../src/graphql/graphql.ts').MutationRoot} MutationRoot
+ * @typedef {import('../src/graphql/graphql.ts').OmsOrderUpdate} OmsOrderUpdate
+ * @typedef {import('../src/graphql/graphql.ts').OptionsMarketSnapshot} OptionsMarketSnapshot
+ * @typedef {import('../src/graphql/graphql.ts').Order} Order
+ * @typedef {import('../src/graphql/graphql.ts').OrderLog} OrderLog
+ * @typedef {import('../src/graphql/graphql.ts').OrderSource} OrderSource
+ * @typedef {import('../src/graphql/graphql.ts').OrderStateFlags} OrderStateFlags - The state of an order
+ * @typedef {import('../src/graphql/graphql.ts').OrderType} OrderType
+ * @typedef {import('../src/graphql/graphql.ts').Orderflow} Orderflow
+ * @typedef {import('../src/graphql/graphql.ts').Out} Out
+ * @typedef {import('../src/graphql/graphql.ts').PoolMarketKind} PoolMarketKind
+ * @typedef {import('../src/graphql/graphql.ts').Position} Position
+ * @typedef {import('../src/graphql/graphql.ts').PovAlgoOrder} PovAlgoOrder
+ * @typedef {import('../src/graphql/graphql.ts').PovAlgoStatus} PovAlgoStatus
+ * @typedef {import('../src/graphql/graphql.ts').Product} Product
+ * @typedef {import('../src/graphql/graphql.ts').QueryRoot} QueryRoot
+ * @typedef {import('../src/graphql/graphql.ts').Reason} Reason
+ * @typedef {import('../src/graphql/graphql.ts').ReferencePrice} ReferencePrice
+ * @typedef {import('../src/graphql/graphql.ts').Reject} Reject
+ * @typedef {import('../src/graphql/graphql.ts').RfqResponse} RfqResponse
+ * @typedef {import('../src/graphql/graphql.ts').RfqResponseSide} RfqResponseSide
+ * @typedef {import('../src/graphql/graphql.ts').Route} Route
+ * @typedef {import('../src/graphql/graphql.ts').SmartOrderRouterOrder} SmartOrderRouterOrder
+ * @typedef {import('../src/graphql/graphql.ts').SmartOrderRouterStatus} SmartOrderRouterStatus
+ * @typedef {import('../src/graphql/graphql.ts').StopLossLimitOrderType} StopLossLimitOrderType
+ * @typedef {import('../src/graphql/graphql.ts').SubscriptionRoot} SubscriptionRoot
+ * @typedef {import('../src/graphql/graphql.ts').TakeProfitLimitOrderType} TakeProfitLimitOrderType
+ * @typedef {import('../src/graphql/graphql.ts').TcaBalancePnlV1} TcaBalancePnlV1
+ * @typedef {import('../src/graphql/graphql.ts').TcaData} TcaData
+ * @typedef {import('../src/graphql/graphql.ts').TcaMarksV1} TcaMarksV1
+ * @typedef {import('../src/graphql/graphql.ts').TcaPnlV1} TcaPnlV1
+ * @typedef {import('../src/graphql/graphql.ts').TcaSummaryV1} TcaSummaryV1
+ * @typedef {import('../src/graphql/graphql.ts').TimeInForce} TimeInForce
+ * @typedef {import('../src/graphql/graphql.ts').TradeV1} TradeV1
+ * @typedef {import('../src/graphql/graphql.ts').TwapOrder} TwapOrder
+ * @typedef {import('../src/graphql/graphql.ts').TwapStatus} TwapStatus
+ * @typedef {import('../src/graphql/graphql.ts').UnknownMarketKind} UnknownMarketKind
+ * @typedef {import('../src/graphql/graphql.ts').UpdateMarket} UpdateMarket
+ * @typedef {import('../src/graphql/graphql.ts').Venue} Venue
+ */
 
 export function version() {
   return client.execute(

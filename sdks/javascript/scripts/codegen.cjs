@@ -1,7 +1,7 @@
 const { oldVisit } = require('@graphql-codegen/plugin-helpers');
 // const { transformSchemaAST } = require('@graphql-codegen/schema-ast');
 const { createWriteStream } = require('fs');
-const { Kind } = require('graphql');
+const { Kind, GraphQLScalarType } = require('graphql');
 const path = require('path');
 /*
 const PREFIX = `/**
@@ -34,8 +34,12 @@ module.exports = {
    * @param {unknown} info
    */
   plugin(schema, documents, config) {
+    const typeMap = schema.getTypeMap();
     // log(schema.astNode);
+    //
     let code = '';
+
+    code += jsdocTypemap(typeMap);
     // TODO: schema.getMutationType().astNode
     // TODO: schema.getSubscriptionType().astNode
     const result = oldVisit(
@@ -45,7 +49,7 @@ module.exports = {
          * @param {import('graphql').FieldDefinitionNode} node
          */
         FieldDefinition(node) {
-          // logOnce('FieldDefinition', node);
+
           code += `
 ${docblock(node)}
 export function ${node.name.value}(${args(node)}) {
@@ -92,7 +96,7 @@ function docblock(node) {
 
 /***
  * 
-  * @param {import('graphql').InputValueDefinitionNode['type'} t
+ * @param {import('graphql').InputValueDefinitionNode['type'} t
  */
 function kind(t) {
   switch (t.kind) {
@@ -126,7 +130,9 @@ function jsDocParam(param) {
  * @param {import('graphql').FieldDefinitionNode} node
  */
 function args(node) {
-  return node.arguments?.length > 0 ? node.arguments.map(n => n.name.value).join(', ') : '';
+  return node.arguments?.length > 0
+    ? node.arguments.map(n => n.name.value).join(', ')
+    : '';
 }
 
 /***
@@ -202,7 +208,12 @@ function resolveReturnValue(node) {
       return resolveReturnValue(responseType);
     case Kind.NAMED_TYPE:
       // TODO: fields resolver
-      return isPrimitive(responseType.name.value) ? '' : '{ __typename }';
+      if (isPrimitive(responseType.name.value)) {
+        return '';
+      } else {
+        // console.log('ooookay', omitLoc(node));
+        return '{ __typename }';
+      }
 
     default:
       exhaustive(responseType.kind);
@@ -227,4 +238,28 @@ function capitalize(str) {
   */
 function exhaustive(no) {
   throw new TypeError('Unexpected value', JSON.stringify(no));
+}
+
+
+/**
+ *
+ * @param {ReturnType<import('graphql').GraphQLSchema['getTypeMap']>} typemap
+ */
+function jsdocTypemap(typemap) {
+  let scalars = ['/**']
+  let nonScalars = [];
+  Object.entries(typemap).forEach(([key, type]) => {
+    // TODO: handle multiple descriptions better
+    let description = type.description ? ' - ' + type.description.split('\n')[0] : ''
+    if (type instanceof GraphQLScalarType) {
+      return scalars.push(` * @typedef {import('../src/graphql/graphql.ts').Scalars['${key}']['output']} ${key}${description}`);
+    } else {
+      // ignore graphql native types
+      if (key.startsWith('__')) return;
+
+      // TODO: Handle double uppercase the same as the builtin codegen
+      return nonScalars.push(` * @typedef {import('../src/graphql/graphql.ts').${key}} ${key}${description}`);
+    }
+  });
+  return scalars.join('\n') + '\n *' + nonScalars.join('\n') + '\n */';
 }
