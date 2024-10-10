@@ -49,10 +49,11 @@ module.exports = {
          * @param {import('graphql').FieldDefinitionNode} node
          */
         FieldDefinition(node) {
+          const fields = isPrimitive(resolveReturnType(node)) ? '' : 'fields, ';
 
           code += `
 ${docblock(node)}
-export function ${node.name.value}(${args(node)}) {
+export function ${node.name.value}(${fields}${args(node)}) {
   return client.execute(
     graphql(\`${gqlString(node)}\`,
     ${variables(node)})
@@ -84,8 +85,13 @@ export function ${node.name.value}() {
  * @param {import('graphql').FieldDefinitionNode} node
  */
 function docblock(node) {
+  if (node.name.value === 'version') {
+    console.log(resolveReturnValue(node));
+  }
   const code = ['/**',
     node.description?.value,
+    isPrimitive(resolveReturnType(node)) ? '' :
+      ` * @param {Array<keyof import('../src/graphql/graphql.ts').${resolveReturnType(node)}} fields`,
     node.arguments?.map(jsDocParam),
     '**/'].flat().filter(Boolean);
 
@@ -189,9 +195,30 @@ function isPrimitive(nodeType) {
   // TODO: only NamedType
   switch (nodeType) {
     case 'String':
+    case 'Boolean':
+    case 'Int':
+    case 'Float':
       return true;
     default:
       return false;
+  }
+}
+/***
+ * Generate graphql string for field
+ * @param {import('graphql').FieldDefinitionNode} node
+ */
+function resolveReturnType(node) {
+  const responseType = node.type;
+  switch (responseType.kind) {
+    case Kind.NON_NULL_TYPE:
+      return resolveReturnType(responseType)
+    case Kind.LIST_TYPE:
+      return resolveReturnType(responseType);
+    case Kind.NAMED_TYPE:
+      return responseType.name.value;
+
+    default:
+      exhaustive(responseType.kind);
   }
 }
 
@@ -212,7 +239,7 @@ function resolveReturnValue(node) {
         return '';
       } else {
         // console.log('ooookay', omitLoc(node));
-        return '{ __typename }';
+        return '{ __typename ${fields.join(\' \')} }';
       }
 
     default:

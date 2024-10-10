@@ -135,31 +135,35 @@ export function version() {
 }
 /**
  * Return the current user's authentication information.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Me} fields
  * **/
-export function me() {
+export function me(fields, ) {
   return client.execute(
     graphql(`query Me {
-  me { __typename }
+  me { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * List the API keys associated with the current user.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').ApiKey} fields
  * **/
-export function listApiKeys() {
+export function listApiKeys(fields, ) {
   return client.execute(
     graphql(`query ListApiKeys {
-  listApiKeys { __typename }
+  listApiKeys { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
-
-export function cptys() {
+/**
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').CptyInfo} fields
+ * **/
+export function cptys(fields, ) {
   return client.execute(
     graphql(`query Cptys {
-  cptys { __typename }
+  cptys { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
@@ -169,11 +173,12 @@ export function cptys() {
 
 Accounts are generally defined by exchange connectors or their respective exchange configs.
 Refer to the User Guide for more information on how Architect names and manages accounts.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Account} fields
  * **/
-export function accounts() {
+export function accounts(fields, ) {
   return client.execute(
     graphql(`query Accounts {
-  accounts { __typename }
+  accounts { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
@@ -181,23 +186,25 @@ export function accounts() {
 /**
  * List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
 route IDs are fully determined by their string names as UUIDv5.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Route} fields
  * **/
-export function routes() {
+export function routes(fields, ) {
   return client.execute(
     graphql(`query Routes {
-  routes { __typename }
+  routes { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * Find a route by its ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Route} fields
  * @param {RouteId} id
  * **/
-export function route(id) {
+export function route(fields, id) {
   return client.execute(
     graphql(`query Route($id: RouteId!) {
-  route(id: $id) { __typename }
+  route(id: $id) { __typename ${fields.join(' ')} }
 }`,
     {id})
   );
@@ -205,23 +212,25 @@ export function route(id) {
 /**
  * List all known venues in symbology.  Venues are uniquely identified by their names or IDs;
 venue IDs are fully determined by their string names as UUIDv5.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Venue} fields
  * **/
-export function venues() {
+export function venues(fields, ) {
   return client.execute(
     graphql(`query Venues {
-  venues { __typename }
+  venues { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * Find a venue by its ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Venue} fields
  * @param {VenueId} id
  * **/
-export function venue(id) {
+export function venue(fields, id) {
   return client.execute(
     graphql(`query Venue($id: VenueId!) {
-  venue(id: $id) { __typename }
+  venue(id: $id) { __typename ${fields.join(' ')} }
 }`,
     {id})
   );
@@ -229,24 +238,26 @@ export function venue(id) {
 /**
  * Find products and their details by their IDs.  Products are uniquely identified by their
 names or IDs; product IDs are fully determined by their string names as UUIDv5.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Product} fields
  * @param {ProductId[]} id
  * **/
-export function products(id) {
+export function products(fields, id) {
   return client.execute(
     graphql(`query Products($id: ProductId[]!) {
-  products(id: $id) { __typename }
+  products(id: $id) { __typename ${fields.join(' ')} }
 }`,
     {id})
   );
 }
 /**
  * Find a product and its details by its ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Product} fields
  * @param {ProductId} id
  * **/
-export function product(id) {
+export function product(fields, id) {
   return client.execute(
     graphql(`query Product($id: ProductId!) {
-  product(id: $id) { __typename }
+  product(id: $id) { __typename ${fields.join(' ')} }
 }`,
     {id})
   );
@@ -254,51 +265,55 @@ export function product(id) {
 /**
  * Find markets and their details by their IDs.  Markets are uniquely identified by their
 names or IDs; market IDs are fully determined by their string names as UUIDv5.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Market} fields
  * @param {MarketId[]} id
  * **/
-export function markets(id) {
+export function markets(fields, id) {
   return client.execute(
     graphql(`query Markets($id: MarketId[]!) {
-  markets(id: $id) { __typename }
+  markets(id: $id) { __typename ${fields.join(' ')} }
 }`,
     {id})
   );
 }
 /**
  * Find a market and its details by its ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Market} fields
  * @param {MarketId} id
  * **/
-export function market(id) {
+export function market(fields, id) {
   return client.execute(
     graphql(`query Market($id: MarketId!) {
-  market(id: $id) { __typename }
+  market(id: $id) { __typename ${fields.join(' ')} }
 }`,
     {id})
   );
 }
 /**
  * Find markets and their details by some filtering criteria.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Market} fields
  * @param {MarketFilter} filter
  * **/
-export function filterMarkets(filter) {
+export function filterMarkets(fields, filter) {
   return client.execute(
     graphql(`query FilterMarkets($filter: MarketFilter!) {
-  filterMarkets(filter: $filter) { __typename }
+  filterMarkets(filter: $filter) { __typename ${fields.join(' ')} }
 }`,
     {filter})
   );
 }
 /**
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Book} fields
  * @param {MarketId} market
  * @param {Int} numLevels
  * @param {Decimal} [precision]
  * @param {Int} [retainSubscriptionForNSeconds]
  * @param {Boolean} [delayed]
  * **/
-export function bookSnapshot(market, numLevels, precision, retainSubscriptionForNSeconds, delayed) {
+export function bookSnapshot(fields, market, numLevels, precision, retainSubscriptionForNSeconds, delayed) {
   return client.execute(
     graphql(`query BookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
-  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename }
+  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
 }`,
     {market, numLevels, precision, retainSubscriptionForNSeconds, delayed})
   );
@@ -306,13 +321,14 @@ export function bookSnapshot(market, numLevels, precision, retainSubscriptionFor
 /**
  * Get a snapshot of the marketdata for a given market, at a given time.  If no
 latest_at_or_before is provided, the most recent snapshot is returned.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').MarketSnapshot} fields
  * @param {MarketId} market
  * @param {DateTime} [latestAtOrBefore]
  * **/
-export function marketSnapshot(market, latestAtOrBefore) {
+export function marketSnapshot(fields, market, latestAtOrBefore) {
   return client.execute(
     graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
-  marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename }
+  marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
 }`,
     {market, latestAtOrBefore})
   );
@@ -320,144 +336,155 @@ export function marketSnapshot(market, latestAtOrBefore) {
 /**
  * Get snapshots of all markets for the given time.  If no latest_at_or_before is provided,
 the most recent snapshots are returned.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').MarketSnapshot} fields
  * @param {DateTime} [latestAtOrBefore]
  * **/
-export function marketsSnapshots(latestAtOrBefore) {
+export function marketsSnapshots(fields, latestAtOrBefore) {
   return client.execute(
     graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
-  marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename }
+  marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
 }`,
     {latestAtOrBefore})
   );
 }
 /**
  * Get a snapshot of the options data for a given underlying, at a given time.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').OptionsMarketSnapshot} fields
  * @param {ProductId} underlying
  * @param {DateTime} [latestAtOrBefore]
  * **/
-export function optionsMarketSnapshots(underlying, latestAtOrBefore) {
+export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
   return client.execute(
     graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
-  optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename }
+  optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
 }`,
     {underlying, latestAtOrBefore})
   );
 }
 /**
  * Get the current known balances and positions for a given counterparty.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').AccountSummaries} fields
  * @param {VenueId} venue
  * @param {RouteId} route
  * **/
-export function accountSummariesForCpty(venue, route) {
+export function accountSummariesForCpty(fields, venue, route) {
   return client.execute(
     graphql(`query AccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
-  accountSummariesForCpty(venue: $venue, route: $route) { __typename }
+  accountSummariesForCpty(venue: $venue, route: $route) { __typename ${fields.join(' ')} }
 }`,
     {venue, route})
   );
 }
 /**
  * Get all current known balances and positions for all counterparties.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').AccountSummaries} fields
  * **/
-export function accountSummaries() {
+export function accountSummaries(fields, ) {
   return client.execute(
     graphql(`query AccountSummaries {
-  accountSummaries { __typename }
+  accountSummaries { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * Get all fills for a given venue, route, base, and quote.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').Fills} fields
  * @param {VenueId} [venue]
  * @param {RouteId} [route]
  * @param {ProductId} [base]
  * @param {ProductId} [quote]
  * **/
-export function fills(venue, route, base, quote) {
+export function fills(fields, venue, route, base, quote) {
   return client.execute(
     graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
-  fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename }
+  fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename ${fields.join(' ')} }
 }`,
     {venue, route, base, quote})
   );
 }
 /**
  * Find order details by order ID from the OMS.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').OrderLog} fields
  * @param {OrderId} orderId
  * **/
-export function order(orderId) {
+export function order(fields, orderId) {
   return client.execute(
     graphql(`query Order($orderId: OrderId!) {
-  order(orderId: $orderId) { __typename }
+  order(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * List all open orders known to the OMS.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').OrderLog} fields
  * **/
-export function openOrders() {
+export function openOrders(fields, ) {
   return client.execute(
     graphql(`query OpenOrders {
-  openOrders { __typename }
+  openOrders { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * List all recently outed orders known to the OMS.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').OrderLog} fields
  * @param {DateTime} [fromInclusive]
  * @param {DateTime} [toExclusive]
  * **/
-export function outedOrders(fromInclusive, toExclusive) {
+export function outedOrders(fields, fromInclusive, toExclusive) {
   return client.execute(
     graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
-  outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename }
+  outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
 }`,
     {fromInclusive, toExclusive})
   );
 }
 /**
  * Query historical OHLCV candles for a given market, candle width, and time range.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').CandleV1} fields
  * @param {MarketId} id
  * @param {DateTime} start
  * @param {DateTime} end
  * @param {CandleWidth} width
  * **/
-export function historicalCandles(id, start, end, width) {
+export function historicalCandles(fields, id, start, end, width) {
   return client.execute(
     graphql(`query HistoricalCandles($id: MarketId!, $start: DateTime!, $end: DateTime!, $width: CandleWidth!) {
-  historicalCandles(id: $id, start: $start, end: $end, width: $width) { __typename }
+  historicalCandles(id: $id, start: $start, end: $end, width: $width) { __typename ${fields.join(' ')} }
 }`,
     {id, start, end, width})
   );
 }
 /**
  * Query TCA pnl / marks stats, id is an optional field but the dates are required
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').TcaMarksV1} fields
  * @param {MarketId} [id]
  * @param {DateTime} fromInclusive
  * @param {DateTime} toExclusive
  * **/
-export function tcaMarks(id, fromInclusive, toExclusive) {
+export function tcaMarks(fields, id, fromInclusive, toExclusive) {
   return client.execute(
     graphql(`query TcaMarks($id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
-  tcaMarks(id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename }
+  tcaMarks(id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
 }`,
     {id, fromInclusive, toExclusive})
   );
 }
 /**
  * Query TCA summary stats, id is an optional field but the dates are required
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').TcaSummaryV1} fields
  * @param {String} [currency]
  * @param {MarketId} [id]
  * @param {DateTime} fromInclusive
  * @param {DateTime} toExclusive
  * **/
-export function tcaSummary(currency, id, fromInclusive, toExclusive) {
+export function tcaSummary(fields, currency, id, fromInclusive, toExclusive) {
   return client.execute(
     graphql(`query TcaSummary($currency: String, $id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
-  tcaSummary(currency: $currency, id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename }
+  tcaSummary(currency: $currency, id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
 }`,
     {currency, id, fromInclusive, toExclusive})
   );
@@ -469,14 +496,15 @@ If no venue is provided then all venues will be included
 If use_purchasing_power is false or not provided then we will use
   the balance column in the table. If it's true then we will use
   the purchasing power column. This is needed for the rfb environment
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').TcaBalancePnlV1} fields
  * @param {AccountId} accountId
  * @param {VenueId} [venueId]
  * @param {Boolean} [usePurchasingPower]
  * **/
-export function tcaBalancePnl(accountId, venueId, usePurchasingPower) {
+export function tcaBalancePnl(fields, accountId, venueId, usePurchasingPower) {
   return client.execute(
     graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
-  tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename }
+  tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
 }`,
     {accountId, venueId, usePurchasingPower})
   );
@@ -489,206 +517,223 @@ then the timeseries will return hourly data points for the range provided
 If use_purchasing_power is false or not provided then we will use
   the balance column in the table. If it's true then we will use
   the purchasing power column. This is needed for the rfb environment
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').TcaPnlV1} fields
  * @param {AccountId} accountId
  * @param {VenueId} venueId
  * @param {DateTime} [fromInclusive]
  * @param {DateTime} [toExclusive]
  * @param {Boolean} [usePurchasingPower]
  * **/
-export function tcaBalancePnlTimeseries(accountId, venueId, fromInclusive, toExclusive, usePurchasingPower) {
+export function tcaBalancePnlTimeseries(fields, accountId, venueId, fromInclusive, toExclusive, usePurchasingPower) {
   return client.execute(
     graphql(`query TcaBalancePnlTimeseries($accountId: AccountId!, $venueId: VenueId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
-  tcaBalancePnlTimeseries(accountId: $accountId, venueId: $venueId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename }
+  tcaBalancePnlTimeseries(accountId: $accountId, venueId: $venueId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
 }`,
     {accountId, venueId, fromInclusive, toExclusive, usePurchasingPower})
   );
 }
 /**
  * Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').CoinInfo} fields
  * **/
-export function coinInfos() {
+export function coinInfos(fields, ) {
   return client.execute(
     graphql(`query CoinInfos {
-  coinInfos { __typename }
+  coinInfos { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * Get token info for a given product.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').CoinInfo} fields
  * @param {ProductId} product
  * **/
-export function coinInfo(product) {
+export function coinInfo(fields, product) {
   return client.execute(
     graphql(`query CoinInfo($product: ProductId!) {
-  coinInfo(product: $product) { __typename }
+  coinInfo(product: $product) { __typename ${fields.join(' ')} }
 }`,
     {product})
   );
 }
 /**
  * Get CME product group info.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').CmeProductGroupInfo} fields
  * **/
-export function cmeProductGroupInfos() {
+export function cmeProductGroupInfos(fields, ) {
   return client.execute(
     graphql(`query CmeProductGroupInfos {
-  cmeProductGroupInfos { __typename }
+  cmeProductGroupInfos { __typename ${fields.join(' ')} }
 }`,
     undefined)
   );
 }
 /**
  * Find a generic algo order and its details by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').AlgoOrder} fields
  * @param {OrderId} orderId
  * **/
-export function algoOrder(orderId) {
+export function algoOrder(fields, orderId) {
   return client.execute(
     graphql(`query AlgoOrder($orderId: OrderId!) {
-  algoOrder(orderId: $orderId) { __typename }
+  algoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return generic algo order status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').AlgoStatus} fields
  * @param {OrderId} [orderId]
  * **/
-export function algoStatus(orderId) {
+export function algoStatus(fields, orderId) {
   return client.execute(
     graphql(`query AlgoStatus($orderId: OrderId) {
-  algoStatus(orderId: $orderId) { __typename }
+  algoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return generic algo logs by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').AlgoLog} fields
  * @param {OrderId} orderId
  * **/
-export function algoLog(orderId) {
+export function algoLog(fields, orderId) {
   return client.execute(
     graphql(`query AlgoLog($orderId: OrderId!) {
-  algoLog(orderId: $orderId) { __typename }
+  algoLog(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return TWAP algo order details by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').TwapOrder} fields
  * @param {OrderId} orderId
  * **/
-export function twapOrder(orderId) {
+export function twapOrder(fields, orderId) {
   return client.execute(
     graphql(`query TwapOrder($orderId: OrderId!) {
-  twapOrder(orderId: $orderId) { __typename }
+  twapOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return TWAP algo status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').TwapStatus} fields
  * @param {OrderId} [orderId]
  * **/
-export function twapStatus(orderId) {
+export function twapStatus(fields, orderId) {
   return client.execute(
     graphql(`query TwapStatus($orderId: OrderId) {
-  twapStatus(orderId: $orderId) { __typename }
+  twapStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return POV order details by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').PovAlgoOrder} fields
  * @param {OrderId} orderId
  * **/
-export function povOrder(orderId) {
+export function povOrder(fields, orderId) {
   return client.execute(
     graphql(`query PovOrder($orderId: OrderId!) {
-  povOrder(orderId: $orderId) { __typename }
+  povOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return POV algo status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').PovAlgoStatus} fields
  * @param {OrderId} [orderId]
  * **/
-export function povStatus(orderId) {
+export function povStatus(fields, orderId) {
   return client.execute(
     graphql(`query PovStatus($orderId: OrderId) {
-  povStatus(orderId: $orderId) { __typename }
+  povStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return SOR order details by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').SmartOrderRouterOrder} fields
  * @param {OrderId} orderId
  * **/
-export function smartOrderRouterOrder(orderId) {
+export function smartOrderRouterOrder(fields, orderId) {
   return client.execute(
     graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
-  smartOrderRouterOrder(orderId: $orderId) { __typename }
+  smartOrderRouterOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return SOR algo status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').SmartOrderRouterStatus} fields
  * @param {OrderId} [orderId]
  * **/
-export function smartOrderRouterStatus(orderId) {
+export function smartOrderRouterStatus(fields, orderId) {
   return client.execute(
     graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
-  smartOrderRouterStatus(orderId: $orderId) { __typename }
+  smartOrderRouterStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return MM algo order details by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').MMAlgoOrder} fields
  * @param {OrderId} orderId
  * **/
-export function mmAlgoOrder(orderId) {
+export function mmAlgoOrder(fields, orderId) {
   return client.execute(
     graphql(`query MmAlgoOrder($orderId: OrderId!) {
-  mmAlgoOrder(orderId: $orderId) { __typename }
+  mmAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return spread algo status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').MMAlgoOrder} fields
  * @param {OrderId} orderId
  * **/
-export function spreadAlgoOrder(orderId) {
+export function spreadAlgoOrder(fields, orderId) {
   return client.execute(
     graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
-  spreadAlgoOrder(orderId: $orderId) { __typename }
+  spreadAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return MM algo status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').MMAlgoStatus} fields
  * @param {OrderId} [orderId]
  * **/
-export function mmAlgoStatus(orderId) {
+export function mmAlgoStatus(fields, orderId) {
   return client.execute(
     graphql(`query MmAlgoStatus($orderId: OrderId) {
-  mmAlgoStatus(orderId: $orderId) { __typename }
+  mmAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
 }
 /**
  * Find and return spread algo status by parent order ID.
+ *  * @param {Array<keyof import('../src/graphql/graphql.ts').MMAlgoStatus} fields
  * @param {OrderId} [orderId]
  * **/
-export function spreadAlgoStatus(orderId) {
+export function spreadAlgoStatus(fields, orderId) {
   return client.execute(
     graphql(`query SpreadAlgoStatus($orderId: OrderId) {
-  spreadAlgoStatus(orderId: $orderId) { __typename }
+  spreadAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`,
     {orderId})
   );
