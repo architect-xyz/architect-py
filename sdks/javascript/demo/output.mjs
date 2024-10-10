@@ -196,8 +196,8 @@ export function routes() {
  * **/
 export function route(id) {
   return client.execute(
-    graphql(`query Route {
-  route { __typename }
+    graphql(`query Route($id: RouteId!) {
+  route(id: $id) { __typename }
 }`,
     {id})
   );
@@ -220,8 +220,8 @@ export function venues() {
  * **/
 export function venue(id) {
   return client.execute(
-    graphql(`query Venue {
-  venue { __typename }
+    graphql(`query Venue($id: VenueId!) {
+  venue(id: $id) { __typename }
 }`,
     {id})
   );
@@ -233,8 +233,8 @@ names or IDs; product IDs are fully determined by their string names as UUIDv5.
  * **/
 export function products(id) {
   return client.execute(
-    graphql(`query Products {
-  products { __typename }
+    graphql(`query Products($id: ProductId[]!) {
+  products(id: $id) { __typename }
 }`,
     {id})
   );
@@ -245,8 +245,8 @@ export function products(id) {
  * **/
 export function product(id) {
   return client.execute(
-    graphql(`query Product {
-  product { __typename }
+    graphql(`query Product($id: ProductId!) {
+  product(id: $id) { __typename }
 }`,
     {id})
   );
@@ -258,8 +258,8 @@ names or IDs; market IDs are fully determined by their string names as UUIDv5.
  * **/
 export function markets(id) {
   return client.execute(
-    graphql(`query Markets {
-  markets { __typename }
+    graphql(`query Markets($id: MarketId[]!) {
+  markets(id: $id) { __typename }
 }`,
     {id})
   );
@@ -270,8 +270,8 @@ export function markets(id) {
  * **/
 export function market(id) {
   return client.execute(
-    graphql(`query Market {
-  market { __typename }
+    graphql(`query Market($id: MarketId!) {
+  market(id: $id) { __typename }
 }`,
     {id})
   );
@@ -282,8 +282,8 @@ export function market(id) {
  * **/
 export function filterMarkets(filter) {
   return client.execute(
-    graphql(`query FilterMarkets {
-  filterMarkets { __typename }
+    graphql(`query FilterMarkets($filter: MarketFilter!) {
+  filterMarkets(filter: $filter) { __typename }
 }`,
     {filter})
   );
@@ -324,8 +324,8 @@ the most recent snapshots are returned.
  * **/
 export function marketsSnapshots(latestAtOrBefore) {
   return client.execute(
-    graphql(`query MarketsSnapshots {
-  marketsSnapshots { __typename }
+    graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
+  marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename }
 }`,
     {latestAtOrBefore})
   );
@@ -388,8 +388,8 @@ export function fills(venue, route, base, quote) {
  * **/
 export function order(orderId) {
   return client.execute(
-    graphql(`query Order {
-  order { __typename }
+    graphql(`query Order($orderId: OrderId!) {
+  order(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -520,8 +520,8 @@ export function coinInfos() {
  * **/
 export function coinInfo(product) {
   return client.execute(
-    graphql(`query CoinInfo {
-  coinInfo { __typename }
+    graphql(`query CoinInfo($product: ProductId!) {
+  coinInfo(product: $product) { __typename }
 }`,
     {product})
   );
@@ -543,8 +543,8 @@ export function cmeProductGroupInfos() {
  * **/
 export function algoOrder(orderId) {
   return client.execute(
-    graphql(`query AlgoOrder {
-  algoOrder { __typename }
+    graphql(`query AlgoOrder($orderId: OrderId!) {
+  algoOrder(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -555,8 +555,8 @@ export function algoOrder(orderId) {
  * **/
 export function algoStatus(orderId) {
   return client.execute(
-    graphql(`query AlgoStatus {
-  algoStatus { __typename }
+    graphql(`query AlgoStatus($orderId: OrderId) {
+  algoStatus(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -567,8 +567,8 @@ export function algoStatus(orderId) {
  * **/
 export function algoLog(orderId) {
   return client.execute(
-    graphql(`query AlgoLog {
-  algoLog { __typename }
+    graphql(`query AlgoLog($orderId: OrderId!) {
+  algoLog(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -579,8 +579,8 @@ export function algoLog(orderId) {
  * **/
 export function twapOrder(orderId) {
   return client.execute(
-    graphql(`query TwapOrder {
-  twapOrder { __typename }
+    graphql(`query TwapOrder($orderId: OrderId!) {
+  twapOrder(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -591,8 +591,8 @@ export function twapOrder(orderId) {
  * **/
 export function twapStatus(orderId) {
   return client.execute(
-    graphql(`query TwapStatus {
-  twapStatus { __typename }
+    graphql(`query TwapStatus($orderId: OrderId) {
+  twapStatus(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -603,8 +603,8 @@ export function twapStatus(orderId) {
  * **/
 export function povOrder(orderId) {
   return client.execute(
-    graphql(`query PovOrder {
-  povOrder { __typename }
+    graphql(`query PovOrder($orderId: OrderId!) {
+  povOrder(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -615,8 +615,8 @@ export function povOrder(orderId) {
  * **/
 export function povStatus(orderId) {
   return client.execute(
-    graphql(`query PovStatus {
-  povStatus { __typename }
+    graphql(`query PovStatus($orderId: OrderId) {
+  povStatus(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -627,8 +627,8 @@ export function povStatus(orderId) {
  * **/
 export function smartOrderRouterOrder(orderId) {
   return client.execute(
-    graphql(`query SmartOrderRouterOrder {
-  smartOrderRouterOrder { __typename }
+    graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
+  smartOrderRouterOrder(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -639,8 +639,8 @@ export function smartOrderRouterOrder(orderId) {
  * **/
 export function smartOrderRouterStatus(orderId) {
   return client.execute(
-    graphql(`query SmartOrderRouterStatus {
-  smartOrderRouterStatus { __typename }
+    graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
+  smartOrderRouterStatus(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -651,8 +651,8 @@ export function smartOrderRouterStatus(orderId) {
  * **/
 export function mmAlgoOrder(orderId) {
   return client.execute(
-    graphql(`query MmAlgoOrder {
-  mmAlgoOrder { __typename }
+    graphql(`query MmAlgoOrder($orderId: OrderId!) {
+  mmAlgoOrder(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -663,8 +663,8 @@ export function mmAlgoOrder(orderId) {
  * **/
 export function spreadAlgoOrder(orderId) {
   return client.execute(
-    graphql(`query SpreadAlgoOrder {
-  spreadAlgoOrder { __typename }
+    graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
+  spreadAlgoOrder(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -675,8 +675,8 @@ export function spreadAlgoOrder(orderId) {
  * **/
 export function mmAlgoStatus(orderId) {
   return client.execute(
-    graphql(`query MmAlgoStatus {
-  mmAlgoStatus { __typename }
+    graphql(`query MmAlgoStatus($orderId: OrderId) {
+  mmAlgoStatus(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );
@@ -687,8 +687,8 @@ export function mmAlgoStatus(orderId) {
  * **/
 export function spreadAlgoStatus(orderId) {
   return client.execute(
-    graphql(`query SpreadAlgoStatus {
-  spreadAlgoStatus { __typename }
+    graphql(`query SpreadAlgoStatus($orderId: OrderId) {
+  spreadAlgoStatus(orderId: $orderId) { __typename }
 }`,
     {orderId})
   );

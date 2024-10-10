@@ -170,7 +170,7 @@ function gqlString(node) {
     logOnce('gqlString', JSON.stringify({ ...base, name, type }, null, 4));
   }
   */
-  const args = node.arguments?.length > 1 ? node.arguments : null;
+  const args = node.arguments?.length > 0 ? node.arguments : null;
   const params = args ? '(' + args.map(n => `\$${n.name.value}: ${kind(n.type)}${n.type.kind === Kind.NON_NULL_TYPE ? '!' : ''}`).join(', ') + ')' : ''
   const queryParams = args ? '(' + args.map(n => `${n.name.value}: \$${n.name.value}`).join(', ') + ')' : ''
   const fields = resolveReturnValue(node);
