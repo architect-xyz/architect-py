@@ -1,4 +1,7 @@
 
-import { version } from './output.mjs';
-console.log('heyoo', await version());
+import * as sdk from './output.mjs';
+
+console.log('version', await sdk.version());
+console.log('me', await sdk.me(['__typename', 'userId', 'email']));
+
 
