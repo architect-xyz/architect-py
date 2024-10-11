@@ -1,9 +1,7 @@
 /* eslint-disable */
 import * as types from './graphql';
 
-
-
-const documents = {}
+const documents = {};
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
 }

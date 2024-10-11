@@ -2,12 +2,14 @@
  */
 import { createClient } from 'graphql-http';
 import { print } from 'graphql';
-import { initGraphQLTada } from 'gql.tada'
+import { initGraphQLTada } from 'gql.tada';
 /**
  * import type { introspection } from '../src/graphql-env.d.ts'
  */
 
-export const graphql = initGraphQLTada/*<{
+export const graphql =
+  initGraphQLTada(
+    /*<{
   introspection: introspection
   scalars: {
     // TODO: this is very incomplete. Add additional scalar mapping as you come
@@ -25,7 +27,8 @@ export const graphql = initGraphQLTada/*<{
     Str: string
     OrderSource: string
   }
-}>*/();
+}>*/
+  );
 
 export class Client {
   /**
@@ -37,13 +40,13 @@ export class Client {
    * @param {string} config.apiSecret API Secret
    */
   constructor(config) {
-    this.config = config
+    this.config = config;
     /**
      * GraphQL client that can execute queries against the GraphQL Server
      * @type {ReturnType<typeof createClient>}
      * @public
      */
-    this.client = createClient({ url: `${config.host}api/graphql` })
+    this.client = createClient({ url: `${config.host}api/graphql` });
   }
 
   /**
@@ -68,7 +71,7 @@ export class Client {
    * @returns {Promise<Result>}
    */
   async execute(query, variables) {
-    let cancel = () => { };
+    let cancel = () => {};
     return new Promise((resolve, reject) => {
       /**
        * @type {Result}
@@ -78,12 +81,12 @@ export class Client {
         {
           query: print(query),
           // @ts-expect-error Variables type is not quite the same
-          variables
+          variables,
         },
         {
           next: (resp) => {
             // @ts-expect-error resp.data may not be provided in error cases
-            result = resp.data
+            result = resp.data;
           },
           error: (err) => reject(err),
           complete: () => resolve(result),

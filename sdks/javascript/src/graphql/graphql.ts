@@ -1,24 +1,37 @@
 /* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  AccountId: { input: any; output: any; }
+  AccountId: { input: any; output: any };
   /**
    * Components within an Architect installation are uniquely identified by a 16-bit integer
    * in the range `1..<0xFFFF`.
@@ -30,7 +43,7 @@ export type Scalars = {
    * * `0x0` -- None/executor/broadcast
    * * `0xFFFF` -- Self/loopback
    */
-  ComponentId: { input: any; output: any; }
+  ComponentId: { input: any; output: any };
   /**
    * Date in the proleptic Gregorian calendar (without time zone).
    *
@@ -44,7 +57,7 @@ export type Scalars = {
    * [1]: https://graphql-scalars.dev/docs/scalars/date
    * [2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
    */
-  Date: { input: any; output: any; }
+  Date: { input: any; output: any };
   /**
    * Combined date and time (with time zone) in [RFC 3339][0] format.
    *
@@ -59,7 +72,7 @@ export type Scalars = {
    * [1]: https://graphql-scalars.dev/docs/scalars/date-time
    * [2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
    */
-  DateTime: { input: any; output: any; }
+  DateTime: { input: Date; output: Date };
   /**
    * 128 bit representation of a fixed-precision decimal number.
    *
@@ -76,48 +89,48 @@ export type Scalars = {
    *
    * [`rust_decimal`]: https://docs.rs/rust_decimal
    */
-  Decimal: { input: any; output: any; }
+  Decimal: { input: any; output: any };
   /**
    * An order side/direction or a trade execution side/direction.
    * In GraphQL these are serialized as "buy" or "sell".
    */
-  Dir: { input: any; output: any; }
+  Dir: { input: any; output: any };
   /** The ID of a fill */
-  FillId: { input: any; output: any; }
+  FillId: { input: any; output: any };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  MarketId: { input: any; output: any; }
+  MarketId: { input: any; output: any };
   /** System-unique, persistent order identifiers */
-  OrderId: { input: any; output: any; }
+  OrderId: { input: any; output: any };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  ProductId: { input: any; output: any; }
+  ProductId: { input: any; output: any };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  RouteId: { input: any; output: any; }
+  RouteId: { input: any; output: any };
   /** A String type */
-  Str: { input: any; output: any; }
+  Str: { input: any; output: any };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  UserId: { input: any; output: any; }
+  UserId: { input: any; output: any };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  VenueId: { input: any; output: any; }
+  VenueId: { input: any; output: any };
 };
 
 /**
@@ -175,7 +188,7 @@ export type Ack = {
 export enum AlgoControlCommand {
   Pause = 'PAUSE',
   Start = 'START',
-  Stop = 'STOP'
+  Stop = 'STOP',
 }
 
 export enum AlgoKind {
@@ -184,7 +197,7 @@ export enum AlgoKind {
   Pov = 'POV',
   SmartOrderRouter = 'SMART_ORDER_ROUTER',
   Spread = 'SPREAD',
-  Twap = 'TWAP'
+  Twap = 'TWAP',
 }
 
 export type AlgoLog = {
@@ -213,7 +226,7 @@ export type AlgoPreview = {
 export enum AlgoRunningStatus {
   Done = 'DONE',
   Paused = 'PAUSED',
-  Running = 'RUNNING'
+  Running = 'RUNNING',
 }
 
 export type AlgoStatus = {
@@ -299,7 +312,7 @@ export enum CandleWidth {
   OneDay = 'ONE_DAY',
   OneHour = 'ONE_HOUR',
   OneMinute = 'ONE_MINUTE',
-  OneSecond = 'ONE_SECOND'
+  OneSecond = 'ONE_SECOND',
 }
 
 export type CmeProductGroupInfo = {
@@ -467,7 +480,7 @@ export enum CmeSecurityType {
   Index = 'INDEX',
   Irs = 'IRS',
   Ooc = 'OOC',
-  Oof = 'OOF'
+  Oof = 'OOF',
 }
 
 export type CoinInfo = {
@@ -535,7 +548,7 @@ export type CreateOrder = {
 export enum CreateOrderType {
   Limit = 'LIMIT',
   StopLossLimit = 'STOP_LOSS_LIMIT',
-  TakeProfitLimit = 'TAKE_PROFIT_LIMIT'
+  TakeProfitLimit = 'TAKE_PROFIT_LIMIT',
 }
 
 export type CreatePovAlgo = {
@@ -595,7 +608,7 @@ export type CreateTimeInForce = {
 export enum CreateTimeInForceInstruction {
   Gtc = 'GTC',
   Gtd = 'GTD',
-  Ioc = 'IOC'
+  Ioc = 'IOC',
 }
 
 export type CreateTwapAlgo = {
@@ -618,7 +631,7 @@ export type Environment = {
 
 export enum EnvironmentKind {
   Brokerage = 'BROKERAGE',
-  Platform = 'PLATFORM'
+  Platform = 'PLATFORM',
 }
 
 export type ExchangeMarketKind = {
@@ -657,7 +670,7 @@ export type Fill = {
 export enum FillKind {
   Correction = 'CORRECTION',
   Normal = 'NORMAL',
-  Reversal = 'REVERSAL'
+  Reversal = 'REVERSAL',
 }
 
 export type Fills = {
@@ -683,7 +696,7 @@ export type License = {
 
 export enum LicenseTier {
   Basic = 'BASIC',
-  Professional = 'PROFESSIONAL'
+  Professional = 'PROFESSIONAL',
 }
 
 export type LimitOrderType = {
@@ -692,7 +705,10 @@ export type LimitOrderType = {
   postOnly: Scalars['Boolean']['output'];
 };
 
-export type MmAlgoDecision = MmAlgoDecisionCancel | MmAlgoDecisionDoNothing | MmAlgoDecisionSend;
+export type MmAlgoDecision =
+  | MmAlgoDecisionCancel
+  | MmAlgoDecisionDoNothing
+  | MmAlgoDecisionSend;
 
 export type MmAlgoDecisionCancel = {
   __typename?: 'MMAlgoDecisionCancel';
@@ -713,7 +729,7 @@ export type MmAlgoDecisionSend = {
 
 export enum MmAlgoKind {
   Mm = 'MM',
-  Spread = 'SPREAD'
+  Spread = 'SPREAD',
 }
 
 export type MmAlgoOpenOrder = {
@@ -803,7 +819,10 @@ export type MarketFilter = {
   venue?: InputMaybe<Scalars['Str']['input']>;
 };
 
-export type MarketKind = ExchangeMarketKind | PoolMarketKind | UnknownMarketKind;
+export type MarketKind =
+  | ExchangeMarketKind
+  | PoolMarketKind
+  | UnknownMarketKind;
 
 export type MarketSnapshot = {
   __typename?: 'MarketSnapshot';
@@ -829,7 +848,7 @@ export type Me = {
 
 export enum MinOrderQuantityUnit {
   Base = 'BASE',
-  Quote = 'QUOTE'
+  Quote = 'QUOTE',
 }
 
 export type MutationRoot = {
@@ -874,83 +893,67 @@ export type MutationRoot = {
   updateMarket?: Maybe<Market>;
 };
 
-
 export type MutationRootCancelAllOrdersArgs = {
   venueId?: InputMaybe<Scalars['VenueId']['input']>;
 };
-
 
 export type MutationRootCancelOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type MutationRootCancelOrdersArgs = {
   orderIds: Array<Scalars['OrderId']['input']>;
 };
-
 
 export type MutationRootCreateMmAlgoArgs = {
   mmAlgo: CreateMmAlgo;
 };
 
-
 export type MutationRootCreateOrderArgs = {
   order: CreateOrder;
 };
-
 
 export type MutationRootCreateOrdersArgs = {
   orders: Array<CreateOrder>;
 };
 
-
 export type MutationRootCreatePovAlgoArgs = {
   povAlgo: CreatePovAlgo;
 };
-
 
 export type MutationRootCreateSmartOrderRouterAlgoArgs = {
   algo: CreateSmartOrderRouterAlgo;
 };
 
-
 export type MutationRootCreateSpreadAlgoArgs = {
   spreadAlgo: CreateSpreadAlgo;
 };
-
 
 export type MutationRootCreateTelegramApiKeyArgs = {
   telegramId: Scalars['String']['input'];
 };
 
-
 export type MutationRootCreateTwapAlgoArgs = {
   twapAlgo: CreateTwapAlgo;
 };
-
 
 export type MutationRootPreviewSmartOrderRouterAlgoArgs = {
   algo: CreateSmartOrderRouterAlgo;
 };
 
-
 export type MutationRootRemoveApiKeyArgs = {
   apiKey: Scalars['String']['input'];
 };
-
 
 export type MutationRootSendAlgoControlCommandArgs = {
   command: AlgoControlCommand;
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type MutationRootSetCredentialsArgs = {
   componentId: Scalars['ComponentId']['input'];
   credentials: Scalars['String']['input'];
 };
-
 
 export type MutationRootUpdateMarketArgs = {
   payload: UpdateMarket;
@@ -1012,7 +1015,7 @@ export enum OrderSource {
   External = 'EXTERNAL',
   Gui = 'GUI',
   Other = 'OTHER',
-  Telegram = 'TELEGRAM'
+  Telegram = 'TELEGRAM',
 }
 
 /** The state of an order */
@@ -1024,12 +1027,24 @@ export enum OrderStateFlags {
   Open = 'OPEN',
   Out = 'OUT',
   Rejected = 'REJECTED',
-  Stale = 'STALE'
+  Stale = 'STALE',
 }
 
-export type OrderType = LimitOrderType | StopLossLimitOrderType | TakeProfitLimitOrderType;
+export type OrderType =
+  | LimitOrderType
+  | StopLossLimitOrderType
+  | TakeProfitLimitOrderType;
 
-export type Orderflow = AberrantFill | Ack | Cancel | CancelAll | Fill | OmsOrderUpdate | Order | Out | Reject;
+export type Orderflow =
+  | AberrantFill
+  | Ack
+  | Cancel
+  | CancelAll
+  | Fill
+  | OmsOrderUpdate
+  | Order
+  | Out
+  | Reject;
 
 export type Out = {
   __typename?: 'Out';
@@ -1228,27 +1243,22 @@ export type QueryRoot = {
   version: Scalars['String']['output'];
 };
 
-
 export type QueryRootAccountSummariesForCptyArgs = {
   route: Scalars['RouteId']['input'];
   venue: Scalars['VenueId']['input'];
 };
 
-
 export type QueryRootAlgoLogArgs = {
   orderId: Scalars['OrderId']['input'];
 };
-
 
 export type QueryRootAlgoOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type QueryRootAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
 };
-
 
 export type QueryRootBookSnapshotArgs = {
   delayed?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1258,11 +1268,9 @@ export type QueryRootBookSnapshotArgs = {
   retainSubscriptionForNSeconds?: InputMaybe<Scalars['Int']['input']>;
 };
 
-
 export type QueryRootCoinInfoArgs = {
   product: Scalars['ProductId']['input'];
 };
-
 
 export type QueryRootFillsArgs = {
   base?: InputMaybe<Scalars['ProductId']['input']>;
@@ -1271,11 +1279,9 @@ export type QueryRootFillsArgs = {
   venue?: InputMaybe<Scalars['VenueId']['input']>;
 };
 
-
 export type QueryRootFilterMarketsArgs = {
   filter: MarketFilter;
 };
-
 
 export type QueryRootHistoricalCandlesArgs = {
   end: Scalars['DateTime']['input'];
@@ -1284,106 +1290,86 @@ export type QueryRootHistoricalCandlesArgs = {
   width: CandleWidth;
 };
 
-
 export type QueryRootMarketArgs = {
   id: Scalars['MarketId']['input'];
 };
-
 
 export type QueryRootMarketSnapshotArgs = {
   latestAtOrBefore?: InputMaybe<Scalars['DateTime']['input']>;
   market: Scalars['MarketId']['input'];
 };
 
-
 export type QueryRootMarketsArgs = {
   id: Array<Scalars['MarketId']['input']>;
 };
-
 
 export type QueryRootMarketsSnapshotsArgs = {
   latestAtOrBefore?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-
 export type QueryRootMmAlgoOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type QueryRootMmAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
 };
-
 
 export type QueryRootOptionsMarketSnapshotsArgs = {
   latestAtOrBefore?: InputMaybe<Scalars['DateTime']['input']>;
   underlying: Scalars['ProductId']['input'];
 };
 
-
 export type QueryRootOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
-
 
 export type QueryRootOutedOrdersArgs = {
   fromInclusive?: InputMaybe<Scalars['DateTime']['input']>;
   toExclusive?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-
 export type QueryRootPovOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
-
 
 export type QueryRootPovStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
 };
 
-
 export type QueryRootProductArgs = {
   id: Scalars['ProductId']['input'];
 };
-
 
 export type QueryRootProductsArgs = {
   id: Array<Scalars['ProductId']['input']>;
 };
 
-
 export type QueryRootRouteArgs = {
   id: Scalars['RouteId']['input'];
 };
-
 
 export type QueryRootSmartOrderRouterOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type QueryRootSmartOrderRouterStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
 };
-
 
 export type QueryRootSpreadAlgoOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type QueryRootSpreadAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
 };
-
 
 export type QueryRootTcaBalancePnlArgs = {
   accountId: Scalars['AccountId']['input'];
   usePurchasingPower?: InputMaybe<Scalars['Boolean']['input']>;
   venueId?: InputMaybe<Scalars['VenueId']['input']>;
 };
-
 
 export type QueryRootTcaBalancePnlTimeseriesArgs = {
   accountId: Scalars['AccountId']['input'];
@@ -1393,13 +1379,11 @@ export type QueryRootTcaBalancePnlTimeseriesArgs = {
   venueId: Scalars['VenueId']['input'];
 };
 
-
 export type QueryRootTcaMarksArgs = {
   fromInclusive: Scalars['DateTime']['input'];
   id?: InputMaybe<Scalars['MarketId']['input']>;
   toExclusive: Scalars['DateTime']['input'];
 };
-
 
 export type QueryRootTcaSummaryArgs = {
   currency?: InputMaybe<Scalars['String']['input']>;
@@ -1408,16 +1392,13 @@ export type QueryRootTcaSummaryArgs = {
   toExclusive: Scalars['DateTime']['input'];
 };
 
-
 export type QueryRootTwapOrderArgs = {
   orderId: Scalars['OrderId']['input'];
 };
 
-
 export type QueryRootTwapStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
 };
-
 
 export type QueryRootVenueArgs = {
   id: Scalars['VenueId']['input'];
@@ -1437,13 +1418,13 @@ export enum Reason {
   OpenOrderWithinTolerance = 'OPEN_ORDER_WITHIN_TOLERANCE',
   WithinFillLockout = 'WITHIN_FILL_LOCKOUT',
   WithinOrderLockout = 'WITHIN_ORDER_LOCKOUT',
-  WithinRejectLockout = 'WITHIN_REJECT_LOCKOUT'
+  WithinRejectLockout = 'WITHIN_REJECT_LOCKOUT',
 }
 
 export enum ReferencePrice {
   BidAsk = 'BID_ASK',
   HedgeMarketBidAsk = 'HEDGE_MARKET_BID_ASK',
-  Mid = 'MID'
+  Mid = 'MID',
 }
 
 export type Reject = {
@@ -1525,13 +1506,11 @@ export type SubscriptionRoot = {
   trades: TradeV1;
 };
 
-
 export type SubscriptionRootBookArgs = {
   delayed?: InputMaybe<Scalars['Boolean']['input']>;
   market: Scalars['MarketId']['input'];
   precision?: InputMaybe<Scalars['Decimal']['input']>;
 };
-
 
 export type SubscriptionRootCandlesArgs = {
   candleWidth: CandleWidth;
@@ -1540,24 +1519,20 @@ export type SubscriptionRootCandlesArgs = {
   market: Scalars['MarketId']['input'];
 };
 
-
 export type SubscriptionRootExchangeSpecificArgs = {
   delayed?: InputMaybe<Scalars['Boolean']['input']>;
   fields: Array<Scalars['String']['input']>;
   markets: Array<Scalars['MarketId']['input']>;
 };
 
-
 export type SubscriptionRootPollAccountSummariesArgs = {
   pollIntervalMs: Scalars['Int']['input'];
 };
-
 
 export type SubscriptionRootPollAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
   pollIntervalMs: Scalars['Int']['input'];
 };
-
 
 export type SubscriptionRootPollFillsArgs = {
   base?: InputMaybe<Scalars['ProductId']['input']>;
@@ -1567,35 +1542,29 @@ export type SubscriptionRootPollFillsArgs = {
   venue?: InputMaybe<Scalars['VenueId']['input']>;
 };
 
-
 export type SubscriptionRootPollMmAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
   pollIntervalMs: Scalars['Int']['input'];
 };
 
-
 export type SubscriptionRootPollOpenOrdersArgs = {
   pollIntervalMs: Scalars['Int']['input'];
 };
-
 
 export type SubscriptionRootPollSorAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
   pollIntervalMs: Scalars['Int']['input'];
 };
 
-
 export type SubscriptionRootPollSpreadAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
   pollIntervalMs: Scalars['Int']['input'];
 };
 
-
 export type SubscriptionRootPollTwapAlgoStatusArgs = {
   orderId?: InputMaybe<Scalars['OrderId']['input']>;
   pollIntervalMs: Scalars['Int']['input'];
 };
-
 
 export type SubscriptionRootRfqsArgs = {
   base: Scalars['ProductId']['input'];
@@ -1603,7 +1572,6 @@ export type SubscriptionRootRfqsArgs = {
   quote: Scalars['ProductId']['input'];
   venues: Array<Scalars['VenueId']['input']>;
 };
-
 
 export type SubscriptionRootTradesArgs = {
   delayed?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1731,7 +1699,10 @@ export class TypedDocumentString<TResult, TVariables>
 {
   __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
 
-  constructor(private value: string, public __meta__?: Record<string, any>) {
+  constructor(
+    private value: string,
+    public __meta__?: Record<string, any>,
+  ) {
     super(value);
   }
 

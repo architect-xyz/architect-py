@@ -19,6 +19,7 @@
     "graphql-http": "^1.22.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.3",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/plugin-helpers": "^5.0.4",
     "@parcel/watcher": "^2.4.1",

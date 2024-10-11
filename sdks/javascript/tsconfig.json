@@ -1,9 +1,6 @@
 {
   "extends": "@tsconfig/node-lts/tsconfig.json",
-  "include": [
-    "./demo/**/*",
-    "./src/**/*",
-  ],
+  "include": ["./demo/**/*", "./src/**/*"],
   "exclude": [".node_modules"],
   "compilerOptions": {
     "strict": true,
