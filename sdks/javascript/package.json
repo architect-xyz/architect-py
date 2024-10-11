@@ -9,6 +9,7 @@
   },
   "scripts": {
     "codegen": "graphql-codegen",
+    "format": "biome format --write",
     "test": "node --env-file=../../.env --test"
   },
   "author": "Architect Financial Technologies, Inc. <hello@architect.xyz>",

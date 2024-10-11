@@ -13,27 +13,6 @@ const config: CodegenConfig = {
       config: {
         documentMode: 'string',
         scalars: {
-          ID: {
-            input: 'string',
-            output: 'string | number',
-          },
-          DateTime: 'Date',
-          JSON: '{ [key: string]: any }',
-        },
-      },
-    },
-    /*
-    './schema.graphql': {
-      plugins: ['schema-ast'],
-      config: {
-        includeDirectives: true
-      }
-    },
-    */
-    './demo/output.mjs': {
-      plugins: ['./scripts/codegen.cjs'],
-      config: {
-        scalars: {
           // TODO: add additional scalar mapping
           DateTime: 'string',
           Decimal: 'string',
@@ -50,6 +29,15 @@ const config: CodegenConfig = {
         },
       },
     },
+    /*
+    './schema.graphql': {
+      plugins: ['schema-ast'],
+      config: {
+        includeDirectives: true
+      }
+    },
+    */
+    './demo/output.mjs': { plugins: ['./scripts/codegen.cjs'] },
   },
 };
 

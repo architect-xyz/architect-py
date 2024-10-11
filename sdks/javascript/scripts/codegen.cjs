@@ -147,7 +147,7 @@ function variables(node) {
 function once(fn) {
   let called = false;
   let result;
-  return function(...args) {
+  return function (...args) {
     if (called) {
       return result;
     }
@@ -174,18 +174,18 @@ function gqlString(node) {
   const args = node.arguments?.length > 0 ? node.arguments : null;
   const params = args
     ? '(' +
-    args
-      .map(
-        (n) =>
-          `\$${n.name.value}: ${kind(n.type)}${n.type.kind === Kind.NON_NULL_TYPE ? '!' : ''}`,
-      )
-      .join(', ') +
-    ')'
+      args
+        .map(
+          (n) =>
+            `\$${n.name.value}: ${kind(n.type)}${n.type.kind === Kind.NON_NULL_TYPE ? '!' : ''}`,
+        )
+        .join(', ') +
+      ')'
     : '';
   const queryParams = args
     ? '(' +
-    args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
-    ')'
+      args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
+      ')'
     : '';
   const fields = resolveReturnValue(node);
 

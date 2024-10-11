@@ -31,7 +31,7 @@ export type Scalars = {
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  AccountId: { input: any; output: any };
+  AccountId: { input: string; output: string };
   /**
    * Components within an Architect installation are uniquely identified by a 16-bit integer
    * in the range `1..<0xFFFF`.
@@ -72,7 +72,7 @@ export type Scalars = {
    * [1]: https://graphql-scalars.dev/docs/scalars/date-time
    * [2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
    */
-  DateTime: { input: Date; output: Date };
+  DateTime: { input: string; output: string };
   /**
    * 128 bit representation of a fixed-precision decimal number.
    *
@@ -89,12 +89,12 @@ export type Scalars = {
    *
    * [`rust_decimal`]: https://docs.rs/rust_decimal
    */
-  Decimal: { input: any; output: any };
+  Decimal: { input: string; output: string };
   /**
    * An order side/direction or a trade execution side/direction.
    * In GraphQL these are serialized as "buy" or "sell".
    */
-  Dir: { input: any; output: any };
+  Dir: { input: 'buy' | 'sell'; output: 'buy' | 'sell' };
   /** The ID of a fill */
   FillId: { input: any; output: any };
   /**
@@ -102,35 +102,35 @@ export type Scalars = {
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  MarketId: { input: any; output: any };
+  MarketId: { input: string; output: string };
   /** System-unique, persistent order identifiers */
-  OrderId: { input: any; output: any };
+  OrderId: { input: string; output: string };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  ProductId: { input: any; output: any };
+  ProductId: { input: string; output: string };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  RouteId: { input: any; output: any };
+  RouteId: { input: string; output: string };
   /** A String type */
-  Str: { input: any; output: any };
+  Str: { input: string; output: string };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  UserId: { input: any; output: any };
+  UserId: { input: string; output: string };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
    * name itself, as they are 1-1.
    */
-  VenueId: { input: any; output: any };
+  VenueId: { input: string; output: string };
 };
 
 /**
