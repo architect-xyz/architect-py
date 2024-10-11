@@ -193,7 +193,7 @@ class AsyncClient(AsyncGraphQLClient):
             market_id = Market.derive_id(market)
             return client.subscribe_trades(market_id)
         elif not self.no_gql:
-            return self.subscribe_trades(market, *args, **kwargs)
+            return super().subscribe_trades(market, *args, **kwargs)
         else:
             raise ValueError(
                 f"cpty {cpty} not configured for marketdata and no GQL server"
