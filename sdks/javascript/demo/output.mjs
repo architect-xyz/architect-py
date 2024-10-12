@@ -46,7 +46,7 @@ import { client, graphql } from './client.mjs';
  * @typedef { import('../src/graphql/graphql.ts').CmeSecurityType } CmeSecurityType
  * @typedef { import('../src/graphql/graphql.ts').CoinInfo } CoinInfo
  * @typedef { import('../src/graphql/graphql.ts').CptyInfo } CptyInfo
- * @typedef { import('../src/graphql/graphql.ts').CreateMMAlgo } CreateMMAlgo
+ * @typedef { import('../src/graphql/graphql.ts').CreateMmAlgo } CreateMmAlgo
  * @typedef { import('../src/graphql/graphql.ts').CreateOrder } CreateOrder
  * @typedef { import('../src/graphql/graphql.ts').CreateOrderType } CreateOrderType
  * @typedef { import('../src/graphql/graphql.ts').CreatePovAlgo } CreatePovAlgo
@@ -68,15 +68,15 @@ import { client, graphql } from './client.mjs';
  * @typedef { import('../src/graphql/graphql.ts').License } License
  * @typedef { import('../src/graphql/graphql.ts').LicenseTier } LicenseTier
  * @typedef { import('../src/graphql/graphql.ts').LimitOrderType } LimitOrderType
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoDecision } MMAlgoDecision
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoDecisionCancel } MMAlgoDecisionCancel
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoDecisionDoNothing } MMAlgoDecisionDoNothing
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoDecisionSend } MMAlgoDecisionSend
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoKind } MMAlgoKind
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoOpenOrder } MMAlgoOpenOrder
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoOrder } MMAlgoOrder
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoSide } MMAlgoSide
- * @typedef { import('../src/graphql/graphql.ts').MMAlgoStatus } MMAlgoStatus
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoDecision } MmAlgoDecision
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoDecisionCancel } MmAlgoDecisionCancel
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoDecisionDoNothing } MmAlgoDecisionDoNothing
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoDecisionSend } MmAlgoDecisionSend
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoKind } MmAlgoKind
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoOpenOrder } MmAlgoOpenOrder
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoOrder } MmAlgoOrder
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoSide } MmAlgoSide
+ * @typedef { import('../src/graphql/graphql.ts').MmAlgoStatus } MmAlgoStatus
  * @typedef { import('../src/graphql/graphql.ts').Market } Market
  * @typedef { import('../src/graphql/graphql.ts').MarketFilter } MarketFilter
  * @typedef { import('../src/graphql/graphql.ts').MarketKind } MarketKind
@@ -906,11 +906,11 @@ export function smartOrderRouterStatus(fields, orderId) {
 }
 
 /**
- * @template {keyof import('../src/graphql/graphql.ts').MMAlgoOrder} Fields
+ * @template {keyof import('../src/graphql/graphql.ts').MmAlgoOrder} Fields
  * Find and return MM algo order details by parent order ID.
  * @param {Array<Fields>} fields
  * @param {OrderId } orderId
- * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MMAlgoOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoOrder, Fields | '__typename'>>}
  **/
 export function mmAlgoOrder(fields, orderId) {
   return client.execute(
@@ -924,11 +924,11 @@ export function mmAlgoOrder(fields, orderId) {
 }
 
 /**
- * @template {keyof import('../src/graphql/graphql.ts').MMAlgoOrder} Fields
+ * @template {keyof import('../src/graphql/graphql.ts').MmAlgoOrder} Fields
  * Find and return spread algo status by parent order ID.
  * @param {Array<Fields>} fields
  * @param {OrderId } orderId
- * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MMAlgoOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoOrder, Fields | '__typename'>>}
  **/
 export function spreadAlgoOrder(fields, orderId) {
   return client.execute(
@@ -942,11 +942,11 @@ export function spreadAlgoOrder(fields, orderId) {
 }
 
 /**
- * @template {keyof import('../src/graphql/graphql.ts').MMAlgoStatus} Fields
+ * @template {keyof import('../src/graphql/graphql.ts').MmAlgoStatus} Fields
  * Find and return MM algo status by parent order ID.
  * @param {Array<Fields>} fields
  * @param {OrderId } [orderId]
- * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MMAlgoStatus, Fields | '__typename'>[]>}
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoStatus, Fields | '__typename'>[]>}
  **/
 export function mmAlgoStatus(fields, orderId) {
   return client.execute(
@@ -960,11 +960,11 @@ export function mmAlgoStatus(fields, orderId) {
 }
 
 /**
- * @template {keyof import('../src/graphql/graphql.ts').MMAlgoStatus} Fields
+ * @template {keyof import('../src/graphql/graphql.ts').MmAlgoStatus} Fields
  * Find and return spread algo status by parent order ID.
  * @param {Array<Fields>} fields
  * @param {OrderId } [orderId]
- * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MMAlgoStatus, Fields | '__typename'>[]>}
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoStatus, Fields | '__typename'>[]>}
  **/
 export function spreadAlgoStatus(fields, orderId) {
   return client.execute(

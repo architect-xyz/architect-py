@@ -2,12 +2,9 @@
  */
 import { createClient } from 'graphql-http';
 import { print } from 'graphql';
-import { initGraphQLTada } from 'gql.tada';
-/**
- * import type { introspection } from '../src/graphql-env.d.ts'
- */
+import { graphql } from 'gql.tada';
 
-export const graphql = initGraphQLTada();
+export { graphql };
 
 export class Client {
   /**

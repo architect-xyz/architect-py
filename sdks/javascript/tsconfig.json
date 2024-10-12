@@ -1,12 +1,12 @@
 {
   "extends": "@tsconfig/node-lts/tsconfig.json",
-  "include": ["./demo/**/*", "./src/**/*"],
+  "include": ["./demo/**/*", "./src/**/*", "./tests/**/*"],
   "exclude": [".node_modules"],
   "compilerOptions": {
     "strict": true,
     "checkJs": true,
-    "module": "node16",
-    "moduleResolution": "node16",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "lib": ["es2023"],
     "target": "es2022",

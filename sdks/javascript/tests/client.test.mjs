@@ -38,4 +38,34 @@ describe('Client', () => {
       },
     });
   });
+
+  test('type things (mostly) work (RouteId is thought to be “unknown”)', async () => {
+    const c = createClient();
+    const query = graphql(`query Route($id: RouteId!) {
+      route(id: $id) {
+        __typename
+        id
+        name
+      }
+    }`);
+    const r = await c.execute(query, { id: 'hey' });
+    assert.deepEqual(r, { route: null });
+  });
+
+  test('more type things work', async () => {
+    const c = createClient();
+    const mutation = graphql(`mutation CreateOrder($order: CreateOrder!) {
+      createOrder(order: $order)
+    }`);
+    const r = await c.execute(mutation, {
+      order: {
+        timeInForce: { instruction: 'GTC' },
+        dir: 'fixme',
+        market: 'fixme',
+        quantity: 10,
+        orderType: 'LIMIT',
+      },
+    });
+    assert.deepEqual(r, { route: null });
+  });
 });

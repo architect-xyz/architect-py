@@ -224,7 +224,7 @@ function resolveReturnType(node) {
     case Kind.LIST_TYPE:
       return resolveReturnType(responseType);
     case Kind.NAMED_TYPE:
-      return responseType.name.value;
+      return grosslyHandleMMNames(responseType.name.value);
 
     default:
       exhaustive(responseType.kind);
@@ -299,9 +299,17 @@ function jsdocTypemap(typemap) {
 
       // TODO: Handle double uppercase the same as the builtin codegen
       return nonScalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').${key} } ${key}${description} `,
+        ` * @typedef { import('../src/graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description} `,
       );
     }
   });
   return scalars.join('\n') + '\n *' + nonScalars.join('\n') + '\n */';
+}
+
+/**
+ * @param {String} str
+ * @returns {String}
+ */
+function grosslyHandleMMNames(str) {
+  return str.replace(/MM/g, 'Mm');
 }
