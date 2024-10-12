@@ -10,6 +10,7 @@
   "scripts": {
     "codegen": "graphql-codegen",
     "format": "biome format --write",
+    "typecheck": "tsc --noEmit",
     "test": "node --env-file=../../.env --test"
   },
   "author": "Architect Financial Technologies, Inc. <hello@architect.xyz>",
