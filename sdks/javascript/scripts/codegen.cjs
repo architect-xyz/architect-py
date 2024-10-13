@@ -98,19 +98,41 @@ function docblock(node) {
 }
 
 /***
- *
+ * Generate kind syntax for jsdoc
  * @param {import('graphql').InputValueDefinitionNode['type'} t
  */
-function kind(t) {
+function gqlKind(t) {
   switch (t.kind) {
     case Kind.NON_NULL_TYPE: {
       // console.log(t, omitLoc(t));
       // TODO: if not required, emit `[paramName]` syntax
-      return kind(t.type);
+      return `${gqlKind(t.type)}!`;
     }
     case Kind.LIST_TYPE: {
       // console.log(t, omitLoc(t));
-      return `${kind(t.type)}[]`;
+      return `[${gqlKind(t.type)}]`;
+    }
+    case Kind.NAMED_TYPE:
+      return t.name.value;
+    default:
+      throw new TypeError(`Unexpected kind type k`);
+  }
+}
+
+/***
+ * Generate kind syntax for jsdoc
+ * @param {import('graphql').InputValueDefinitionNode['type'} t
+ */
+function jsdKind(t) {
+  switch (t.kind) {
+    case Kind.NON_NULL_TYPE: {
+      // console.log(t, omitLoc(t));
+      // TODO: if not required, emit `[paramName]` syntax
+      return jsdKind(t.type);
+    }
+    case Kind.LIST_TYPE: {
+      // console.log(t, omitLoc(t));
+      return `${jsdKind(t.type)}[]`;
     }
     case Kind.NAMED_TYPE:
       return t.name.value;
@@ -124,7 +146,7 @@ function kind(t) {
  * @param {import('graphql').InputValueDefinitionNode} param
  */
 function jsDocParam(param) {
-  const type = kind(param.type);
+  const type = jsdKind(param.type);
   const paramName =
     param.type.kind === Kind.NON_NULL_TYPE
       ? param.name.value
@@ -183,12 +205,7 @@ function gqlString(node) {
   const args = node.arguments?.length > 0 ? node.arguments : null;
   const params = args
     ? '(' +
-      args
-        .map(
-          (n) =>
-            `\$${n.name.value}: ${kind(n.type)}${n.type.kind === Kind.NON_NULL_TYPE ? '!' : ''}`,
-        )
-        .join(', ') +
+      args.map((n) => `\$${n.name.value}: ${gqlKind(n.type)}`).join(', ') +
       ')'
     : '';
   const queryParams = args

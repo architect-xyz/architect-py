@@ -1,9 +1,11 @@
 import * as sdk from './output.mjs';
 
-console.log('version', await sdk.version());
-console.log('me', await sdk.me(['__typename', 'userId', 'email']));
+// console.log('version', await sdk.version());
+// console.log('me', await sdk.me(['__typename', 'userId', 'email']));
 
-const p = await sdk.products(['kind', 'id', 'name'], ['hey']);
+console.log('route', await sdk.route(['id', 'name'], 'Id'));
+// console.log('products', await sdk.products(['id', 'name'], ['BTC']));
+/*
 const a = await sdk.listApiKeys([
   '__typename',
   'apiKey',
@@ -11,6 +13,6 @@ const a = await sdk.listApiKeys([
   'subject',
   'apiSecret',
 ]);
+//console.log('api keys', a);
+*/
 
-console.log('products', p);
-console.log('api keys', a);

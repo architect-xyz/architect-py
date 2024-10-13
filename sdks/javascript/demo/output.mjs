@@ -292,8 +292,8 @@ names or IDs; product IDs are fully determined by their string names as UUIDv5.
 export function products(fields, id) {
   return client.execute(
     graphql(
-      `query Products($id: ProductId[]!) {
-  products(id: $id) { __typename  }
+      `query Products($id: [ProductId]!) {
+  products(id: $id) { __typename ${fields.join(' ')} }
 } `,
       { id },
     ),
@@ -329,7 +329,7 @@ names or IDs; market IDs are fully determined by their string names as UUIDv5.
 export function markets(fields, id) {
   return client.execute(
     graphql(
-      `query Markets($id: MarketId[]!) {
+      `query Markets($id: [MarketId!]!) {
   markets(id: $id) { __typename ${fields.join(' ')} }
 } `,
       { id },
