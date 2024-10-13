@@ -132,7 +132,7 @@ export function version() {
   return client
     .execute(
       graphql(`query Version {
-  version 
+  version
 }`),
     )
     .then((results) => results['version']);
@@ -965,4 +965,298 @@ export function spreadAlgoStatus(fields, orderId) {
       { orderId },
     )
     .then((results) => results['spreadAlgoStatus']);
+}
+
+/**
+ * Create a new API key
+ * @template {keyof import('../src/graphql/graphql.ts').ApiKey} Fields
+ * @param {Array<Fields>} fields Fields to select in response type
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').ApiKey, Fields | '__typename'>>}
+ **/
+export function createApiKey(fields) {
+  return client
+    .execute(
+      graphql(`mutation CreateApiKey {
+  createApiKey { __typename ${fields.join(' ')} }
+}`),
+    )
+    .then((results) => results['createApiKey']);
+}
+
+/**
+ * Create a new API key for Telegram
+ * @template {keyof import('../src/graphql/graphql.ts').ApiKey} Fields
+ * @param {Array<Fields>} fields Fields to select in response type
+ * @param {String} telegramId
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').ApiKey, Fields | '__typename'>>}
+ **/
+export function createTelegramApiKey(fields, telegramId) {
+  return client
+    .execute(
+      graphql(`mutation CreateTelegramApiKey($telegramId: String!) {
+  createTelegramApiKey(telegramId: $telegramId) { __typename ${fields.join(' ')} }
+}`),
+      { telegramId },
+    )
+    .then((results) => results['createTelegramApiKey']);
+}
+
+/**
+ * Remove all Telegram API keys
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['Boolean']['output']>}
+ **/
+export function removeTelegramApiKeys() {
+  return client
+    .execute(
+      graphql(`mutation RemoveTelegramApiKeys {
+  removeTelegramApiKeys
+}`),
+    )
+    .then((results) => results['removeTelegramApiKeys']);
+}
+
+/**
+ * Remove an API key
+ * @param {String} apiKey
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['Boolean']['output']>}
+ **/
+export function removeApiKey(apiKey) {
+  return client
+    .execute(
+      graphql(`mutation RemoveApiKey($apiKey: String!) {
+  removeApiKey(apiKey: $apiKey)
+}`),
+      { apiKey },
+    )
+    .then((results) => results['removeApiKey']);
+}
+
+/**
+ * Set credentials for a given component id.
+ * @param {String} credentials
+ * @param {ComponentId} componentId
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['Boolean']['output']>}
+ **/
+export function setCredentials(credentials, componentId) {
+  return client
+    .execute(
+      graphql(`mutation SetCredentials($credentials: String!, $componentId: ComponentId!) {
+  setCredentials(credentials: $credentials, componentId: $componentId)
+}`),
+      { credentials, componentId },
+    )
+    .then((results) => results['setCredentials']);
+}
+
+/**
+ * Set/unset market favorited by current user.
+ * @template {keyof import('../src/graphql/graphql.ts').Market} Fields
+ * @param {Array<Fields>} fields Fields to select in response type
+ * @param {UpdateMarket} payload
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Market, Fields | '__typename'>>}
+ **/
+export function updateMarket(fields, payload) {
+  return client
+    .execute(
+      graphql(`mutation UpdateMarket($payload: UpdateMarket!) {
+  updateMarket(payload: $payload) { __typename ${fields.join(' ')} }
+}`),
+      { payload },
+    )
+    .then((results) => results['updateMarket']);
+}
+
+/**
+ * Send an order to Architect.
+ * @param {CreateOrder} order
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function createOrder(order) {
+  return client
+    .execute(
+      graphql(`mutation CreateOrder($order: CreateOrder!) {
+  createOrder(order: $order)
+}`),
+      { order },
+    )
+    .then((results) => results['createOrder']);
+}
+
+/**
+ * Send multiple orders to Architect.
+ * @param {CreateOrder[]} orders
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output'][]>}
+ **/
+export function createOrders(orders) {
+  return client
+    .execute(
+      graphql(`mutation CreateOrders($orders: [CreateOrder!]!) {
+  createOrders(orders: $orders)
+}`),
+      { orders },
+    )
+    .then((results) => results['createOrders']);
+}
+
+/**
+ * Cancel an Architect order.
+ * @param {OrderId} orderId
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function cancelOrder(orderId) {
+  return client
+    .execute(
+      graphql(`mutation CancelOrder($orderId: OrderId!) {
+  cancelOrder(orderId: $orderId)
+}`),
+      { orderId },
+    )
+    .then((results) => results['cancelOrder']);
+}
+
+/**
+ * Cancel multiple Architect orders.
+ * @param {OrderId[]} orderIds
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output'][]>}
+ **/
+export function cancelOrders(orderIds) {
+  return client
+    .execute(
+      graphql(`mutation CancelOrders($orderIds: [OrderId!]!) {
+  cancelOrders(orderIds: $orderIds)
+}`),
+      { orderIds },
+    )
+    .then((results) => results['cancelOrders']);
+}
+
+/**
+ * Cancel all orders on component, regardless of architect order state
+If venue is specified it will act as filter if the component manages multiple counterparties (oms for example)
+ * @param {VenueId} [venueId]
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['VenueId']['output']>}
+ **/
+export function cancelAllOrders(venueId) {
+  return client
+    .execute(
+      graphql(`mutation CancelAllOrders($venueId: VenueId) {
+  cancelAllOrders(venueId: $venueId)
+}`),
+      { venueId },
+    )
+    .then((results) => results['cancelAllOrders']);
+}
+
+/**
+ * @param {AlgoControlCommand} command
+ * @param {OrderId} orderId
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function sendAlgoControlCommand(command, orderId) {
+  return client
+    .execute(
+      graphql(`mutation SendAlgoControlCommand($command: AlgoControlCommand!, $orderId: OrderId!) {
+  sendAlgoControlCommand(command: $command, orderId: $orderId)
+}`),
+      { command, orderId },
+    )
+    .then((results) => results['sendAlgoControlCommand']);
+}
+
+/**
+ * Create a new TWAP algo order.
+ * @param {CreateTwapAlgo} twapAlgo
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function createTwapAlgo(twapAlgo) {
+  return client
+    .execute(
+      graphql(`mutation CreateTwapAlgo($twapAlgo: CreateTwapAlgo!) {
+  createTwapAlgo(twapAlgo: $twapAlgo)
+}`),
+      { twapAlgo },
+    )
+    .then((results) => results['createTwapAlgo']);
+}
+
+/**
+ * Create a new POV algo order.
+ * @param {CreatePovAlgo} povAlgo
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function createPovAlgo(povAlgo) {
+  return client
+    .execute(
+      graphql(`mutation CreatePovAlgo($povAlgo: CreatePovAlgo!) {
+  createPovAlgo(povAlgo: $povAlgo)
+}`),
+      { povAlgo },
+    )
+    .then((results) => results['createPovAlgo']);
+}
+
+/**
+ * Preview the execution of an SOR algo.
+ * @template {keyof import('../src/graphql/graphql.ts').AlgoPreview} Fields
+ * @param {Array<Fields>} fields Fields to select in response type
+ * @param {CreateSmartOrderRouterAlgo} algo
+ * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AlgoPreview, Fields | '__typename'>>}
+ **/
+export function previewSmartOrderRouterAlgo(fields, algo) {
+  return client
+    .execute(
+      graphql(`mutation PreviewSmartOrderRouterAlgo($algo: CreateSmartOrderRouterAlgo!) {
+  previewSmartOrderRouterAlgo(algo: $algo) { __typename ${fields.join(' ')} }
+}`),
+      { algo },
+    )
+    .then((results) => results['previewSmartOrderRouterAlgo']);
+}
+
+/**
+ * Create a new SOR algo order.
+ * @param {CreateSmartOrderRouterAlgo} algo
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function createSmartOrderRouterAlgo(algo) {
+  return client
+    .execute(
+      graphql(`mutation CreateSmartOrderRouterAlgo($algo: CreateSmartOrderRouterAlgo!) {
+  createSmartOrderRouterAlgo(algo: $algo)
+}`),
+      { algo },
+    )
+    .then((results) => results['createSmartOrderRouterAlgo']);
+}
+
+/**
+ * Create a new MM algo order.
+ * @param {CreateMmAlgo} mmAlgo
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function createMmAlgo(mmAlgo) {
+  return client
+    .execute(
+      graphql(`mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
+  createMmAlgo(mmAlgo: $mmAlgo)
+}`),
+      { mmAlgo },
+    )
+    .then((results) => results['createMmAlgo']);
+}
+
+/**
+ * Create a new Spread algo order.
+ * @param {CreateSpreadAlgo} spreadAlgo
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['OrderId']['output']>}
+ **/
+export function createSpreadAlgo(spreadAlgo) {
+  return client
+    .execute(
+      graphql(`mutation CreateSpreadAlgo($spreadAlgo: CreateSpreadAlgo!) {
+  createSpreadAlgo(spreadAlgo: $spreadAlgo)
+}`),
+      { spreadAlgo },
+    )
+    .then((results) => results['createSpreadAlgo']);
 }

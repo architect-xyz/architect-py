@@ -9,7 +9,6 @@ const {
   isPrimitive,
   resolveReturnType,
   resolveArgs,
-  omitLoc,
 } = require('./shared.cjs');
 
 /**
@@ -109,7 +108,7 @@ function kind(t) {
       return `${kind(t.type)}[]`;
     }
     case Kind.NAMED_TYPE:
-      return t.name.value;
+      return grosslyHandleMMNames(t.name.value);
     default:
       throw new TypeError(`Unexpected kind type k`);
   }

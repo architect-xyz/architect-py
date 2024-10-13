@@ -70,8 +70,8 @@ function template(node) {
     : '';
   const fields = resolveReturnValue(node);
 
-  return `query ${capitalize(node.name.value)}${params} {
-  ${node.name.value}${queryParams} ${fields}
+  return `${capitalize(node.name.value)}${params} {
+  ${node.name.value}${queryParams}${fields ? ' ' + fields : ''}
 }`;
 }
 

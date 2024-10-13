@@ -59,6 +59,9 @@ function isPrimitive(nodeType) {
     case 'Boolean':
     case 'Int':
     case 'Float':
+
+    case 'OrderId':
+    case 'VenueId':
       return true;
     default:
       return false;

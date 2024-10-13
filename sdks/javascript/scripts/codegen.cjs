@@ -5,6 +5,7 @@ const {
   isPrimitive,
   resolveReturnType,
   resolveArgs,
+  omitLoc,
 } = require('./emit/shared.cjs');
 
 /**
@@ -30,6 +31,30 @@ const IMPORTS = `
 import { client, graphql } from './client.mjs';
 `;
 
+/**
+ * @param ['query' | 'mutation' | 'subscription'] queryType
+ */
+function createVisitor(queryType) {
+  return {
+    leave: {
+      /**
+       * @param {import('graphql').FieldDefinitionNode} node
+       */
+      FieldDefinition(node) {
+        const fields = isPrimitive(resolveReturnType(node)) ? '' : 'fields, ';
+        const vars = variables(node);
+
+        return `${jsdoc.docblock(node)}
+export function ${node.name.value}(${fields}${args(node)}) {
+  return client.execute(
+    graphql(\`${queryType} ${gql.template(node)}\`)${vars ? `,\n${vars}\n` : ''}
+  ).then(results => results['${node.name.value}']);
+}`;
+      },
+    },
+  };
+}
+
 module.exports = {
   /***
    * @param {import('graphql').GraphQLSchema} schema
@@ -40,31 +65,24 @@ module.exports = {
   plugin(schema, _documents, _config) {
     const typeMap = schema.getTypeMap();
 
-    // TODO: schema.getMutationType().astNode
+    const queries = visit(
+      schema.getQueryType().astNode,
+      createVisitor('query'),
+    );
+    const mutations = visit(
+      schema.getMutationType().astNode,
+      createVisitor('mutation'),
+    );
     // TODO: schema.getSubscriptionType().astNode
-    const queriesResult = visit(schema.getQueryType().astNode, {
-      leave: {
-        /**
-         * @param {import('graphql').FieldDefinitionNode} node
-         */
-        FieldDefinition(node) {
-          const fields = isPrimitive(resolveReturnType(node)) ? '' : 'fields, ';
-          const vars = variables(node);
-
-          return `${jsdoc.docblock(node)}
-export function ${node.name.value}(${fields}${args(node)}) {
-  return client.execute(
-    graphql(\`${gql.template(node)}\`)${vars ? `,\n${vars}\n` : ''}
-  ).then(results => results['${node.name.value}']);
-}`;
-        },
-      },
-    });
+    // const subscriptions = visit(schema.getSubscriptionType().astNode, createVisitor('subscription'));
 
     return `${PREFIX}${IMPORTS}
 
 ${jsdoc.typemap(typeMap)}
-${queriesResult.fields.join('\n\n')}`;
+
+${queries.fields.join('\n\n')}
+
+${mutations.fields.join('\n\n')}`;
   },
 };
 
