@@ -12,11 +12,15 @@ import { graphql } from 'gql.tada';
  */
 
 export { graphql };
-let client;
+
+/** @type {Client} */
+export let client;
 /**
  * @param {Config} config API client config
  */
-export function createClient(config) {}
+export function createClient(config) {
+  client = new Client(config);
+}
 
 export class Client {
   /**
