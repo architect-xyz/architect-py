@@ -1695,8 +1695,10 @@ export type Venue = {
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
+  // @ts-expect-error
   implements DocumentTypeDecoration<TResult, TVariables>
 {
+  // @ts-expect-error
   __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
 
   constructor(
@@ -1706,6 +1708,7 @@ export class TypedDocumentString<TResult, TVariables>
     super(value);
   }
 
+  // @ts-expect-error
   toString(): string & DocumentTypeDecoration<TResult, TVariables> {
     return this.value;
   }

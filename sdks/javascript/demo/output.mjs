@@ -126,7 +126,7 @@ import { client, graphql } from './client.mjs';
  */
 
 /**
- * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['String']['output']>>}
+ * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['String']['output']>}
  **/
 export function version() {
   return client.execute(
@@ -348,8 +348,8 @@ export function filterMarkets(fields, filter) {
 /**
  * @template {keyof import('../src/graphql/graphql.ts').Book} Fields
  * @param {Array<Fields>} fields Fields to select in response type
- * @param {MarketId} market
  * @param {Int} numLevels
+ * @param {MarketId} market
  * @param {Decimal} [precision]
  * @param {Int} [retainSubscriptionForNSeconds]
  * @param {Boolean} [delayed]
@@ -357,17 +357,17 @@ export function filterMarkets(fields, filter) {
  **/
 export function bookSnapshot(
   fields,
-  market,
   numLevels,
+  market,
   precision,
   retainSubscriptionForNSeconds,
   delayed,
 ) {
   return client.execute(
-    graphql(`query BookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
-  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
+    graphql(`query BookSnapshot($numLevels: Int!, $market: MarketId!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
+  bookSnapshot(numLevels: $numLevels, market: $market, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
 }`),
-    { market, numLevels, precision, retainSubscriptionForNSeconds, delayed },
+    { numLevels, market, precision, retainSubscriptionForNSeconds, delayed },
   );
 }
 
@@ -427,16 +427,16 @@ export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
  * Get the current known balances and positions for a given counterparty.
  * @template {keyof import('../src/graphql/graphql.ts').AccountSummaries} Fields
  * @param {Array<Fields>} fields Fields to select in response type
- * @param {VenueId} venue
  * @param {RouteId} route
+ * @param {VenueId} venue
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AccountSummaries, Fields | '__typename'>>}
  **/
-export function accountSummariesForCpty(fields, venue, route) {
+export function accountSummariesForCpty(fields, route, venue) {
   return client.execute(
-    graphql(`query AccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
-  accountSummariesForCpty(venue: $venue, route: $route) { __typename ${fields.join(' ')} }
+    graphql(`query AccountSummariesForCpty($route: RouteId!, $venue: VenueId!) {
+  accountSummariesForCpty(route: $route, venue: $venue) { __typename ${fields.join(' ')} }
 }`),
-    { venue, route },
+    { route, venue },
   );
 }
 
@@ -526,18 +526,18 @@ export function outedOrders(fields, fromInclusive, toExclusive) {
  * Query historical OHLCV candles for a given market, candle width, and time range.
  * @template {keyof import('../src/graphql/graphql.ts').CandleV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
- * @param {MarketId} id
- * @param {DateTime} start
- * @param {DateTime} end
  * @param {CandleWidth} width
+ * @param {DateTime} end
+ * @param {DateTime} start
+ * @param {MarketId} id
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').CandleV1, Fields | '__typename'>[]>}
  **/
-export function historicalCandles(fields, id, start, end, width) {
+export function historicalCandles(fields, width, end, start, id) {
   return client.execute(
-    graphql(`query HistoricalCandles($id: MarketId!, $start: DateTime!, $end: DateTime!, $width: CandleWidth!) {
-  historicalCandles(id: $id, start: $start, end: $end, width: $width) { __typename ${fields.join(' ')} }
+    graphql(`query HistoricalCandles($width: CandleWidth!, $end: DateTime!, $start: DateTime!, $id: MarketId!) {
+  historicalCandles(width: $width, end: $end, start: $start, id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id, start, end, width },
+    { width, end, start, id },
   );
 }
 
@@ -545,17 +545,17 @@ export function historicalCandles(fields, id, start, end, width) {
  * Query TCA pnl / marks stats, id is an optional field but the dates are required
  * @template {keyof import('../src/graphql/graphql.ts').TcaMarksV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
- * @param {MarketId} [id]
- * @param {DateTime} fromInclusive
  * @param {DateTime} toExclusive
+ * @param {DateTime} fromInclusive
+ * @param {MarketId} [id]
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TcaMarksV1, Fields | '__typename'>[]>}
  **/
-export function tcaMarks(fields, id, fromInclusive, toExclusive) {
+export function tcaMarks(fields, toExclusive, fromInclusive, id) {
   return client.execute(
-    graphql(`query TcaMarks($id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
-  tcaMarks(id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
+    graphql(`query TcaMarks($toExclusive: DateTime!, $fromInclusive: DateTime!, $id: MarketId) {
+  tcaMarks(toExclusive: $toExclusive, fromInclusive: $fromInclusive, id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id, fromInclusive, toExclusive },
+    { toExclusive, fromInclusive, id },
   );
 }
 
@@ -563,18 +563,18 @@ export function tcaMarks(fields, id, fromInclusive, toExclusive) {
  * Query TCA summary stats, id is an optional field but the dates are required
  * @template {keyof import('../src/graphql/graphql.ts').TcaSummaryV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
+ * @param {DateTime} toExclusive
+ * @param {DateTime} fromInclusive
  * @param {String} [currency]
  * @param {MarketId} [id]
- * @param {DateTime} fromInclusive
- * @param {DateTime} toExclusive
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TcaSummaryV1, Fields | '__typename'>[]>}
  **/
-export function tcaSummary(fields, currency, id, fromInclusive, toExclusive) {
+export function tcaSummary(fields, toExclusive, fromInclusive, currency, id) {
   return client.execute(
-    graphql(`query TcaSummary($currency: String, $id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
-  tcaSummary(currency: $currency, id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
+    graphql(`query TcaSummary($toExclusive: DateTime!, $fromInclusive: DateTime!, $currency: String, $id: MarketId) {
+  tcaSummary(toExclusive: $toExclusive, fromInclusive: $fromInclusive, currency: $currency, id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { currency, id, fromInclusive, toExclusive },
+    { toExclusive, fromInclusive, currency, id },
   );
 }
 
@@ -611,8 +611,8 @@ If use_purchasing_power is false or not provided then we will use
   the purchasing power column. This is needed for the rfb environment
  * @template {keyof import('../src/graphql/graphql.ts').TcaPnlV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
- * @param {AccountId} accountId
  * @param {VenueId} venueId
+ * @param {AccountId} accountId
  * @param {DateTime} [fromInclusive]
  * @param {DateTime} [toExclusive]
  * @param {Boolean} [usePurchasingPower]
@@ -620,17 +620,17 @@ If use_purchasing_power is false or not provided then we will use
  **/
 export function tcaBalancePnlTimeseries(
   fields,
-  accountId,
   venueId,
+  accountId,
   fromInclusive,
   toExclusive,
   usePurchasingPower,
 ) {
   return client.execute(
-    graphql(`query TcaBalancePnlTimeseries($accountId: AccountId!, $venueId: VenueId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
-  tcaBalancePnlTimeseries(accountId: $accountId, venueId: $venueId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
+    graphql(`query TcaBalancePnlTimeseries($venueId: VenueId!, $accountId: AccountId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
+  tcaBalancePnlTimeseries(venueId: $venueId, accountId: $accountId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
 }`),
-    { accountId, venueId, fromInclusive, toExclusive, usePurchasingPower },
+    { venueId, accountId, fromInclusive, toExclusive, usePurchasingPower },
   );
 }
 

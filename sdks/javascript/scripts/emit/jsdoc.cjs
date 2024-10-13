@@ -4,7 +4,12 @@
  * @see module:scripts/emit/jsdoc
  */
 const { Kind, GraphQLScalarType } = require('graphql');
-const { grosslyHandleMMNames, isPrimitive, resolveReturnType } = require('./shared.cjs');
+const {
+  grosslyHandleMMNames,
+  isPrimitive,
+  resolveReturnType,
+  resolveArgs,
+} = require('./shared.cjs');
 
 /**
  * Generates jsdoc based typemap for emitted file.
@@ -36,14 +41,13 @@ function typemap(typemap) {
   return scalars.join('\n') + '\n *\n' + nonScalars.join('\n') + '\n */\n';
 }
 
-
 /***
  * Generate JSDoc param
  * @param {import('graphql').InputValueDefinitionNode} param
  */
 function param(param) {
   const type = kind(param.type);
-  // TODO: handle NON_NULL Arrays 
+  // TODO: handle NON_NULL Arrays
   const paramName =
     param.type.kind === Kind.NON_NULL_TYPE
       ? param.name.value
@@ -64,7 +68,7 @@ function docblock(node) {
 
   const returnType = resolveReturnType(node);
   const isScalar = isPrimitive(returnType);
-  let code = ['/**', node.description?.value];
+  let code = ['/**', node.description?.value].filter(Boolean);
 
   if (!isScalar) {
     code.push(
@@ -74,12 +78,15 @@ function docblock(node) {
       `@param {Array<Fields>} fields Fields to select in response type`,
     );
   }
+  const args = resolveArgs(node);
 
-  code.push(...node.arguments?.map(param));
-  code = code.flat().filter(Boolean);
+  if (args) {
+    code.push(...args.map(param));
+  }
 
   const returnTypeDef = isScalar
-    ? `@returns {Promise<import('../src/graphql/graphql.ts').Scalars['${returnType}']['output']>${isList ? '[]' : ''}>}`
+    ? // FIXME
+      `@returns {Promise<import('../src/graphql/graphql.ts').Scalars['${returnType}']['output']${isList ? '[]' : ''}>}`
     : `@returns {Promise<Pick<import('../src/graphql/graphql.ts').${returnType}, Fields | '__typename'>${isList ? '[]' : ''}>}`;
   code.push(returnTypeDef);
 
@@ -108,10 +115,8 @@ function kind(t) {
   }
 }
 
-
-
 module.exports = {
   typemap,
   docblock,
   param,
-}; 
+};

@@ -36,7 +36,7 @@ function exhaustive(no) {
 function once(fn) {
   let called = false;
   let result;
-  return function(...args) {
+  return function (...args) {
     if (called) {
       return result;
     }
@@ -46,7 +46,6 @@ function once(fn) {
   };
 }
 // const logOnce = once(console.log);
-
 
 /***
  * Generate graphql string for field
@@ -84,6 +83,19 @@ function resolveReturnType(node) {
   }
 }
 
+/**
+ * Resolves node args into if exist and sorted so required params are first
+ * @param {import('graphql').FieldDefinitionNode} node
+ */
+function resolveArgs(node) {
+  if (node.arguments === undefined || node.arguments.length === 0) {
+    return null;
+  }
+
+  return node.arguments
+    .slice(0)
+    .sort((n) => (n.type.kind === Kind.NON_NULL_TYPE ? -1 : 1));
+}
 
 module.exports = {
   grosslyHandleMMNames,
@@ -94,4 +106,5 @@ module.exports = {
 
   isPrimitive,
   resolveReturnType,
+  resolveArgs,
 };

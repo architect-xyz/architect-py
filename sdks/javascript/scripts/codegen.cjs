@@ -8,6 +8,7 @@ const {
 
   isPrimitive,
   resolveReturnType,
+  resolveArgs,
 } = require('./emit/shared.cjs');
 
 /**
@@ -99,9 +100,8 @@ function gqlKind(t) {
  * @param {import('graphql').FieldDefinitionNode} node
  */
 function args(node) {
-  return node.arguments?.length > 0
-    ? node.arguments.map((n) => n.name.value).join(', ')
-    : '';
+  const args = resolveArgs(node);
+  return args ? args.map((n) => n.name.value).join(', ') : '';
 }
 
 /***
@@ -109,9 +109,8 @@ function args(node) {
  * @param {import('graphql').FieldDefinitionNode} node
  */
 function variables(node) {
-  return node.arguments?.length > 0
-    ? `{${node.arguments.map((n) => n.name.value).join(', ')} } `
-    : 'undefined';
+  const args = resolveArgs(node);
+  return args ? `{${args.map((n) => n.name.value).join(', ')} } ` : 'undefined';
 }
 
 /***
@@ -127,16 +126,16 @@ function gqlString(node) {
     logOnce('gqlString', JSON.stringify({ ...base, name, type }, null, 4));
   }
   */
-  const args = node.arguments?.length > 0 ? node.arguments : null;
+  const args = resolveArgs(node);
   const params = args
     ? '(' +
-    args.map((n) => `\$${n.name.value}: ${gqlKind(n.type)}`).join(', ') +
-    ')'
+      args.map((n) => `\$${n.name.value}: ${gqlKind(n.type)}`).join(', ') +
+      ')'
     : '';
   const queryParams = args
     ? '(' +
-    args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
-    ')'
+      args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
+      ')'
     : '';
   const fields = resolveReturnValue(node);
 
