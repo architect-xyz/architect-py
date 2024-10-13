@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
 import { Client, graphql } from '../src/client.mjs';
+import { removeApiKey } from '../demo/output.mjs';
 
 const createClient = () => {
   const host = process.env.ARCHITECT_HOST;
@@ -95,5 +96,29 @@ describe('Client', () => {
       name: 'CME',
       id: '378aa416-97d3-54ab-9fe4-c09be5a4cb47',
     });
+  });
+
+
+  test('mutations: with object return types', async () => {
+    const c = createClient();
+    // TODO: automate these type assertions
+
+    // create
+    const m1 = graphql(`mutation M {
+      createApiKey {
+        __typename
+        apiKey
+        apiSecret
+      }
+    }`);
+    const r1 = await c.execute(m1);
+    assert.equal(r1.createApiKey.__typename, 'ApiKey');
+
+    // cleanup / delete
+    const m2 = graphql(`mutation RemoveApiKey($apiKey: String!) {
+      removeApiKey(apiKey: $apiKey)
+    }`);
+    const r2 = await c.execute(m2, { apiKey: r1.createApiKey.apiKey });
+    assert.deepEqual(r2, { removeApiKey: true });
   });
 });
