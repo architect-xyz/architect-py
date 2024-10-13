@@ -48,8 +48,8 @@ module.exports = {
           return `${docblock(node)}
 export function ${node.name.value}(${fields}${args(node)}) {
   return client.execute(
-    graphql(\`${gqlString(node)}\`,
-    ${variables(node)})
+    graphql(\`${gqlString(node)}\`),
+    ${variables(node)}
   );
 }`;
         },
@@ -217,7 +217,7 @@ function gqlString(node) {
 
   return `query ${capitalize(node.name.value)}${params} {
   ${node.name.value}${queryParams} ${fields}
-} `;
+}`;
 }
 
 /***

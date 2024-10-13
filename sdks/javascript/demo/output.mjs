@@ -130,12 +130,10 @@ import { client, graphql } from './client.mjs';
  **/
 export function version() {
   return client.execute(
-    graphql(
-      `query Version {
+    graphql(`query Version {
   version 
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -147,12 +145,10 @@ export function version() {
  **/
 export function me(fields) {
   return client.execute(
-    graphql(
-      `query Me {
+    graphql(`query Me {
   me { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -164,12 +160,10 @@ export function me(fields) {
  **/
 export function listApiKeys(fields) {
   return client.execute(
-    graphql(
-      `query ListApiKeys {
+    graphql(`query ListApiKeys {
   listApiKeys { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -180,12 +174,10 @@ export function listApiKeys(fields) {
  **/
 export function cptys(fields) {
   return client.execute(
-    graphql(
-      `query Cptys {
+    graphql(`query Cptys {
   cptys { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -200,12 +192,10 @@ Refer to the User Guide for more information on how Architect names and manages 
  **/
 export function accounts(fields) {
   return client.execute(
-    graphql(
-      `query Accounts {
+    graphql(`query Accounts {
   accounts { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -218,12 +208,10 @@ route IDs are fully determined by their string names as UUIDv5.
  **/
 export function routes(fields) {
   return client.execute(
-    graphql(
-      `query Routes {
+    graphql(`query Routes {
   routes { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -236,12 +224,10 @@ export function routes(fields) {
  **/
 export function route(fields, id) {
   return client.execute(
-    graphql(
-      `query Route($id: RouteId!) {
+    graphql(`query Route($id: RouteId!) {
   route(id: $id) { __typename ${fields.join(' ')} }
-} `,
-      { id },
-    ),
+}`),
+    { id },
   );
 }
 
@@ -254,12 +240,10 @@ venue IDs are fully determined by their string names as UUIDv5.
  **/
 export function venues(fields) {
   return client.execute(
-    graphql(
-      `query Venues {
+    graphql(`query Venues {
   venues { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -272,12 +256,10 @@ export function venues(fields) {
  **/
 export function venue(fields, id) {
   return client.execute(
-    graphql(
-      `query Venue($id: VenueId!) {
+    graphql(`query Venue($id: VenueId!) {
   venue(id: $id) { __typename ${fields.join(' ')} }
-} `,
-      { id },
-    ),
+}`),
+    { id },
   );
 }
 
@@ -291,12 +273,10 @@ names or IDs; product IDs are fully determined by their string names as UUIDv5.
  **/
 export function products(fields, id) {
   return client.execute(
-    graphql(
-      `query Products($id: [ProductId]!) {
+    graphql(`query Products($id: [ProductId!]!) {
   products(id: $id) { __typename ${fields.join(' ')} }
-} `,
-      { id },
-    ),
+}`),
+    { id },
   );
 }
 
@@ -309,12 +289,10 @@ export function products(fields, id) {
  **/
 export function product(fields, id) {
   return client.execute(
-    graphql(
-      `query Product($id: ProductId!) {
+    graphql(`query Product($id: ProductId!) {
   product(id: $id) { __typename ${fields.join(' ')} }
-} `,
-      { id },
-    ),
+}`),
+    { id },
   );
 }
 
@@ -328,12 +306,10 @@ names or IDs; market IDs are fully determined by their string names as UUIDv5.
  **/
 export function markets(fields, id) {
   return client.execute(
-    graphql(
-      `query Markets($id: [MarketId!]!) {
+    graphql(`query Markets($id: [MarketId!]!) {
   markets(id: $id) { __typename ${fields.join(' ')} }
-} `,
-      { id },
-    ),
+}`),
+    { id },
   );
 }
 
@@ -346,12 +322,10 @@ export function markets(fields, id) {
  **/
 export function market(fields, id) {
   return client.execute(
-    graphql(
-      `query Market($id: MarketId!) {
+    graphql(`query Market($id: MarketId!) {
   market(id: $id) { __typename ${fields.join(' ')} }
-} `,
-      { id },
-    ),
+}`),
+    { id },
   );
 }
 
@@ -364,12 +338,10 @@ export function market(fields, id) {
  **/
 export function filterMarkets(fields, filter) {
   return client.execute(
-    graphql(
-      `query FilterMarkets($filter: MarketFilter!) {
+    graphql(`query FilterMarkets($filter: MarketFilter!) {
   filterMarkets(filter: $filter) { __typename ${fields.join(' ')} }
-} `,
-      { filter },
-    ),
+}`),
+    { filter },
   );
 }
 
@@ -392,12 +364,10 @@ export function bookSnapshot(
   delayed,
 ) {
   return client.execute(
-    graphql(
-      `query BookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
+    graphql(`query BookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
   bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
-} `,
-      { market, numLevels, precision, retainSubscriptionForNSeconds, delayed },
-    ),
+}`),
+    { market, numLevels, precision, retainSubscriptionForNSeconds, delayed },
   );
 }
 
@@ -412,12 +382,10 @@ latest_at_or_before is provided, the most recent snapshot is returned.
  **/
 export function marketSnapshot(fields, market, latestAtOrBefore) {
   return client.execute(
-    graphql(
-      `query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
+    graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
   marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
-} `,
-      { market, latestAtOrBefore },
-    ),
+}`),
+    { market, latestAtOrBefore },
   );
 }
 
@@ -431,12 +399,10 @@ the most recent snapshots are returned.
  **/
 export function marketsSnapshots(fields, latestAtOrBefore) {
   return client.execute(
-    graphql(
-      `query MarketsSnapshots($latestAtOrBefore: DateTime) {
+    graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
   marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
-} `,
-      { latestAtOrBefore },
-    ),
+}`),
+    { latestAtOrBefore },
   );
 }
 
@@ -450,12 +416,10 @@ export function marketsSnapshots(fields, latestAtOrBefore) {
  **/
 export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
   return client.execute(
-    graphql(
-      `query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
+    graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
   optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
-} `,
-      { underlying, latestAtOrBefore },
-    ),
+}`),
+    { underlying, latestAtOrBefore },
   );
 }
 
@@ -469,12 +433,10 @@ export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
  **/
 export function accountSummariesForCpty(fields, venue, route) {
   return client.execute(
-    graphql(
-      `query AccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
+    graphql(`query AccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
   accountSummariesForCpty(venue: $venue, route: $route) { __typename ${fields.join(' ')} }
-} `,
-      { venue, route },
-    ),
+}`),
+    { venue, route },
   );
 }
 
@@ -486,12 +448,10 @@ export function accountSummariesForCpty(fields, venue, route) {
  **/
 export function accountSummaries(fields) {
   return client.execute(
-    graphql(
-      `query AccountSummaries {
+    graphql(`query AccountSummaries {
   accountSummaries { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -507,12 +467,10 @@ export function accountSummaries(fields) {
  **/
 export function fills(fields, venue, route, base, quote) {
   return client.execute(
-    graphql(
-      `query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
+    graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
   fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename ${fields.join(' ')} }
-} `,
-      { venue, route, base, quote },
-    ),
+}`),
+    { venue, route, base, quote },
   );
 }
 
@@ -525,12 +483,10 @@ export function fills(fields, venue, route, base, quote) {
  **/
 export function order(fields, orderId) {
   return client.execute(
-    graphql(
-      `query Order($orderId: OrderId!) {
+    graphql(`query Order($orderId: OrderId!) {
   order(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -542,12 +498,10 @@ export function order(fields, orderId) {
  **/
 export function openOrders(fields) {
   return client.execute(
-    graphql(
-      `query OpenOrders {
+    graphql(`query OpenOrders {
   openOrders { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -561,12 +515,10 @@ export function openOrders(fields) {
  **/
 export function outedOrders(fields, fromInclusive, toExclusive) {
   return client.execute(
-    graphql(
-      `query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
+    graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
   outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
-} `,
-      { fromInclusive, toExclusive },
-    ),
+}`),
+    { fromInclusive, toExclusive },
   );
 }
 
@@ -582,12 +534,10 @@ export function outedOrders(fields, fromInclusive, toExclusive) {
  **/
 export function historicalCandles(fields, id, start, end, width) {
   return client.execute(
-    graphql(
-      `query HistoricalCandles($id: MarketId!, $start: DateTime!, $end: DateTime!, $width: CandleWidth!) {
+    graphql(`query HistoricalCandles($id: MarketId!, $start: DateTime!, $end: DateTime!, $width: CandleWidth!) {
   historicalCandles(id: $id, start: $start, end: $end, width: $width) { __typename ${fields.join(' ')} }
-} `,
-      { id, start, end, width },
-    ),
+}`),
+    { id, start, end, width },
   );
 }
 
@@ -602,12 +552,10 @@ export function historicalCandles(fields, id, start, end, width) {
  **/
 export function tcaMarks(fields, id, fromInclusive, toExclusive) {
   return client.execute(
-    graphql(
-      `query TcaMarks($id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+    graphql(`query TcaMarks($id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
   tcaMarks(id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
-} `,
-      { id, fromInclusive, toExclusive },
-    ),
+}`),
+    { id, fromInclusive, toExclusive },
   );
 }
 
@@ -623,12 +571,10 @@ export function tcaMarks(fields, id, fromInclusive, toExclusive) {
  **/
 export function tcaSummary(fields, currency, id, fromInclusive, toExclusive) {
   return client.execute(
-    graphql(
-      `query TcaSummary($currency: String, $id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+    graphql(`query TcaSummary($currency: String, $id: MarketId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
   tcaSummary(currency: $currency, id: $id, fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
-} `,
-      { currency, id, fromInclusive, toExclusive },
-    ),
+}`),
+    { currency, id, fromInclusive, toExclusive },
   );
 }
 
@@ -648,12 +594,10 @@ If use_purchasing_power is false or not provided then we will use
  **/
 export function tcaBalancePnl(fields, accountId, venueId, usePurchasingPower) {
   return client.execute(
-    graphql(
-      `query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
+    graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
   tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
-} `,
-      { accountId, venueId, usePurchasingPower },
-    ),
+}`),
+    { accountId, venueId, usePurchasingPower },
   );
 }
 
@@ -683,12 +627,10 @@ export function tcaBalancePnlTimeseries(
   usePurchasingPower,
 ) {
   return client.execute(
-    graphql(
-      `query TcaBalancePnlTimeseries($accountId: AccountId!, $venueId: VenueId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
+    graphql(`query TcaBalancePnlTimeseries($accountId: AccountId!, $venueId: VenueId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
   tcaBalancePnlTimeseries(accountId: $accountId, venueId: $venueId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
-} `,
-      { accountId, venueId, fromInclusive, toExclusive, usePurchasingPower },
-    ),
+}`),
+    { accountId, venueId, fromInclusive, toExclusive, usePurchasingPower },
   );
 }
 
@@ -700,12 +642,10 @@ export function tcaBalancePnlTimeseries(
  **/
 export function coinInfos(fields) {
   return client.execute(
-    graphql(
-      `query CoinInfos {
+    graphql(`query CoinInfos {
   coinInfos { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -718,12 +658,10 @@ export function coinInfos(fields) {
  **/
 export function coinInfo(fields, product) {
   return client.execute(
-    graphql(
-      `query CoinInfo($product: ProductId!) {
+    graphql(`query CoinInfo($product: ProductId!) {
   coinInfo(product: $product) { __typename ${fields.join(' ')} }
-} `,
-      { product },
-    ),
+}`),
+    { product },
   );
 }
 
@@ -735,12 +673,10 @@ export function coinInfo(fields, product) {
  **/
 export function cmeProductGroupInfos(fields) {
   return client.execute(
-    graphql(
-      `query CmeProductGroupInfos {
+    graphql(`query CmeProductGroupInfos {
   cmeProductGroupInfos { __typename ${fields.join(' ')} }
-} `,
-      undefined,
-    ),
+}`),
+    undefined,
   );
 }
 
@@ -753,12 +689,10 @@ export function cmeProductGroupInfos(fields) {
  **/
 export function algoOrder(fields, orderId) {
   return client.execute(
-    graphql(
-      `query AlgoOrder($orderId: OrderId!) {
+    graphql(`query AlgoOrder($orderId: OrderId!) {
   algoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -771,12 +705,10 @@ export function algoOrder(fields, orderId) {
  **/
 export function algoStatus(fields, orderId) {
   return client.execute(
-    graphql(
-      `query AlgoStatus($orderId: OrderId) {
+    graphql(`query AlgoStatus($orderId: OrderId) {
   algoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -789,12 +721,10 @@ export function algoStatus(fields, orderId) {
  **/
 export function algoLog(fields, orderId) {
   return client.execute(
-    graphql(
-      `query AlgoLog($orderId: OrderId!) {
+    graphql(`query AlgoLog($orderId: OrderId!) {
   algoLog(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -807,12 +737,10 @@ export function algoLog(fields, orderId) {
  **/
 export function twapOrder(fields, orderId) {
   return client.execute(
-    graphql(
-      `query TwapOrder($orderId: OrderId!) {
+    graphql(`query TwapOrder($orderId: OrderId!) {
   twapOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -825,12 +753,10 @@ export function twapOrder(fields, orderId) {
  **/
 export function twapStatus(fields, orderId) {
   return client.execute(
-    graphql(
-      `query TwapStatus($orderId: OrderId) {
+    graphql(`query TwapStatus($orderId: OrderId) {
   twapStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -843,12 +769,10 @@ export function twapStatus(fields, orderId) {
  **/
 export function povOrder(fields, orderId) {
   return client.execute(
-    graphql(
-      `query PovOrder($orderId: OrderId!) {
+    graphql(`query PovOrder($orderId: OrderId!) {
   povOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -861,12 +785,10 @@ export function povOrder(fields, orderId) {
  **/
 export function povStatus(fields, orderId) {
   return client.execute(
-    graphql(
-      `query PovStatus($orderId: OrderId) {
+    graphql(`query PovStatus($orderId: OrderId) {
   povStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -879,12 +801,10 @@ export function povStatus(fields, orderId) {
  **/
 export function smartOrderRouterOrder(fields, orderId) {
   return client.execute(
-    graphql(
-      `query SmartOrderRouterOrder($orderId: OrderId!) {
+    graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
   smartOrderRouterOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -897,12 +817,10 @@ export function smartOrderRouterOrder(fields, orderId) {
  **/
 export function smartOrderRouterStatus(fields, orderId) {
   return client.execute(
-    graphql(
-      `query SmartOrderRouterStatus($orderId: OrderId) {
+    graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
   smartOrderRouterStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -915,12 +833,10 @@ export function smartOrderRouterStatus(fields, orderId) {
  **/
 export function mmAlgoOrder(fields, orderId) {
   return client.execute(
-    graphql(
-      `query MmAlgoOrder($orderId: OrderId!) {
+    graphql(`query MmAlgoOrder($orderId: OrderId!) {
   mmAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -933,12 +849,10 @@ export function mmAlgoOrder(fields, orderId) {
  **/
 export function spreadAlgoOrder(fields, orderId) {
   return client.execute(
-    graphql(
-      `query SpreadAlgoOrder($orderId: OrderId!) {
+    graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
   spreadAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -951,12 +865,10 @@ export function spreadAlgoOrder(fields, orderId) {
  **/
 export function mmAlgoStatus(fields, orderId) {
   return client.execute(
-    graphql(
-      `query MmAlgoStatus($orderId: OrderId) {
+    graphql(`query MmAlgoStatus($orderId: OrderId) {
   mmAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
 
@@ -969,11 +881,9 @@ export function mmAlgoStatus(fields, orderId) {
  **/
 export function spreadAlgoStatus(fields, orderId) {
   return client.execute(
-    graphql(
-      `query SpreadAlgoStatus($orderId: OrderId) {
+    graphql(`query SpreadAlgoStatus($orderId: OrderId) {
   spreadAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-} `,
-      { orderId },
-    ),
+}`),
+    { orderId },
   );
 }
