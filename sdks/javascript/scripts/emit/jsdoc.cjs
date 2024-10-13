@@ -9,6 +9,7 @@ const {
   isPrimitive,
   resolveReturnType,
   resolveArgs,
+  omitLoc,
 } = require('./shared.cjs');
 
 /**
@@ -85,8 +86,7 @@ function docblock(node) {
   }
 
   const returnTypeDef = isScalar
-    ? // FIXME
-      `@returns {Promise<import('../src/graphql/graphql.ts').Scalars['${returnType}']['output']${isList ? '[]' : ''}>}`
+    ? `@returns {Promise<import('../src/graphql/graphql.ts').Scalars['${returnType}']['output']${isList ? '[]' : ''}>}`
     : `@returns {Promise<Pick<import('../src/graphql/graphql.ts').${returnType}, Fields | '__typename'>${isList ? '[]' : ''}>}`;
   code.push(returnTypeDef);
 

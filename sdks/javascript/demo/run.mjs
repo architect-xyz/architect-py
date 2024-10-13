@@ -1,7 +1,9 @@
 import * as sdk from './output.mjs';
 
-console.log('version\n', await sdk.version());
-console.log('me\n', await sdk.me(['__typename', 'userId', 'email']), '\n');
+const v = await sdk.version();
+console.log('version\n', v, '\n');
+const m = await sdk.me(['__typename', 'userId', 'email']);
+console.log('me\n', m, '\n');
 
 console.log('route\n', await sdk.route(['id', 'name'], 'Id'), '\n');
 console.log('products\n', await sdk.products(['id', 'name'], ['BTC']), '\n');

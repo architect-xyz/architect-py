@@ -129,12 +129,13 @@ import { client, graphql } from './client.mjs';
  * @returns {Promise<import('../src/graphql/graphql.ts').Scalars['String']['output']>}
  **/
 export function version() {
-  return client.execute(
-    graphql(`query Version {
+  return client
+    .execute(
+      graphql(`query Version {
   version 
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['version']);
 }
 
 /**
@@ -144,12 +145,13 @@ export function version() {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Me, Fields | '__typename'>>}
  **/
 export function me(fields) {
-  return client.execute(
-    graphql(`query Me {
+  return client
+    .execute(
+      graphql(`query Me {
   me { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['me']);
 }
 
 /**
@@ -159,12 +161,13 @@ export function me(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').ApiKey, Fields | '__typename'>[]>}
  **/
 export function listApiKeys(fields) {
-  return client.execute(
-    graphql(`query ListApiKeys {
+  return client
+    .execute(
+      graphql(`query ListApiKeys {
   listApiKeys { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['listApiKeys']);
 }
 
 /**
@@ -173,12 +176,13 @@ export function listApiKeys(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').CptyInfo, Fields | '__typename'>[]>}
  **/
 export function cptys(fields) {
-  return client.execute(
-    graphql(`query Cptys {
+  return client
+    .execute(
+      graphql(`query Cptys {
   cptys { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['cptys']);
 }
 
 /**
@@ -191,12 +195,13 @@ Refer to the User Guide for more information on how Architect names and manages 
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Account, Fields | '__typename'>[]>}
  **/
 export function accounts(fields) {
-  return client.execute(
-    graphql(`query Accounts {
+  return client
+    .execute(
+      graphql(`query Accounts {
   accounts { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['accounts']);
 }
 
 /**
@@ -207,12 +212,13 @@ route IDs are fully determined by their string names as UUIDv5.
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Route, Fields | '__typename'>[]>}
  **/
 export function routes(fields) {
-  return client.execute(
-    graphql(`query Routes {
+  return client
+    .execute(
+      graphql(`query Routes {
   routes { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['routes']);
 }
 
 /**
@@ -223,12 +229,14 @@ export function routes(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Route, Fields | '__typename'>>}
  **/
 export function route(fields, id) {
-  return client.execute(
-    graphql(`query Route($id: RouteId!) {
+  return client
+    .execute(
+      graphql(`query Route($id: RouteId!) {
   route(id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id },
-  );
+      { id },
+    )
+    .then((results) => results['route']);
 }
 
 /**
@@ -239,12 +247,13 @@ venue IDs are fully determined by their string names as UUIDv5.
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Venue, Fields | '__typename'>[]>}
  **/
 export function venues(fields) {
-  return client.execute(
-    graphql(`query Venues {
+  return client
+    .execute(
+      graphql(`query Venues {
   venues { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['venues']);
 }
 
 /**
@@ -255,12 +264,14 @@ export function venues(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Venue, Fields | '__typename'>>}
  **/
 export function venue(fields, id) {
-  return client.execute(
-    graphql(`query Venue($id: VenueId!) {
+  return client
+    .execute(
+      graphql(`query Venue($id: VenueId!) {
   venue(id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id },
-  );
+      { id },
+    )
+    .then((results) => results['venue']);
 }
 
 /**
@@ -272,12 +283,14 @@ names or IDs; product IDs are fully determined by their string names as UUIDv5.
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Product, Fields | '__typename'>[]>}
  **/
 export function products(fields, id) {
-  return client.execute(
-    graphql(`query Products($id: [ProductId!]!) {
+  return client
+    .execute(
+      graphql(`query Products($id: [ProductId!]!) {
   products(id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id },
-  );
+      { id },
+    )
+    .then((results) => results['products']);
 }
 
 /**
@@ -288,12 +301,14 @@ export function products(fields, id) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Product, Fields | '__typename'>>}
  **/
 export function product(fields, id) {
-  return client.execute(
-    graphql(`query Product($id: ProductId!) {
+  return client
+    .execute(
+      graphql(`query Product($id: ProductId!) {
   product(id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id },
-  );
+      { id },
+    )
+    .then((results) => results['product']);
 }
 
 /**
@@ -305,12 +320,14 @@ names or IDs; market IDs are fully determined by their string names as UUIDv5.
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Market, Fields | '__typename'>[]>}
  **/
 export function markets(fields, id) {
-  return client.execute(
-    graphql(`query Markets($id: [MarketId!]!) {
+  return client
+    .execute(
+      graphql(`query Markets($id: [MarketId!]!) {
   markets(id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id },
-  );
+      { id },
+    )
+    .then((results) => results['markets']);
 }
 
 /**
@@ -321,12 +338,14 @@ export function markets(fields, id) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Market, Fields | '__typename'>>}
  **/
 export function market(fields, id) {
-  return client.execute(
-    graphql(`query Market($id: MarketId!) {
+  return client
+    .execute(
+      graphql(`query Market($id: MarketId!) {
   market(id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { id },
-  );
+      { id },
+    )
+    .then((results) => results['market']);
 }
 
 /**
@@ -337,12 +356,14 @@ export function market(fields, id) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Market, Fields | '__typename'>[]>}
  **/
 export function filterMarkets(fields, filter) {
-  return client.execute(
-    graphql(`query FilterMarkets($filter: MarketFilter!) {
+  return client
+    .execute(
+      graphql(`query FilterMarkets($filter: MarketFilter!) {
   filterMarkets(filter: $filter) { __typename ${fields.join(' ')} }
 }`),
-    { filter },
-  );
+      { filter },
+    )
+    .then((results) => results['filterMarkets']);
 }
 
 /**
@@ -363,12 +384,14 @@ export function bookSnapshot(
   retainSubscriptionForNSeconds,
   delayed,
 ) {
-  return client.execute(
-    graphql(`query BookSnapshot($numLevels: Int!, $market: MarketId!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
+  return client
+    .execute(
+      graphql(`query BookSnapshot($numLevels: Int!, $market: MarketId!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
   bookSnapshot(numLevels: $numLevels, market: $market, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
 }`),
-    { numLevels, market, precision, retainSubscriptionForNSeconds, delayed },
-  );
+      { numLevels, market, precision, retainSubscriptionForNSeconds, delayed },
+    )
+    .then((results) => results['bookSnapshot']);
 }
 
 /**
@@ -381,12 +404,14 @@ latest_at_or_before is provided, the most recent snapshot is returned.
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MarketSnapshot, Fields | '__typename'>>}
  **/
 export function marketSnapshot(fields, market, latestAtOrBefore) {
-  return client.execute(
-    graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
+  return client
+    .execute(
+      graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
   marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
 }`),
-    { market, latestAtOrBefore },
-  );
+      { market, latestAtOrBefore },
+    )
+    .then((results) => results['marketSnapshot']);
 }
 
 /**
@@ -398,12 +423,14 @@ the most recent snapshots are returned.
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MarketSnapshot, Fields | '__typename'>[]>}
  **/
 export function marketsSnapshots(fields, latestAtOrBefore) {
-  return client.execute(
-    graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
+  return client
+    .execute(
+      graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
   marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
 }`),
-    { latestAtOrBefore },
-  );
+      { latestAtOrBefore },
+    )
+    .then((results) => results['marketsSnapshots']);
 }
 
 /**
@@ -415,12 +442,14 @@ export function marketsSnapshots(fields, latestAtOrBefore) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').OptionsMarketSnapshot, Fields | '__typename'>[]>}
  **/
 export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
-  return client.execute(
-    graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
+  return client
+    .execute(
+      graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
   optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
 }`),
-    { underlying, latestAtOrBefore },
-  );
+      { underlying, latestAtOrBefore },
+    )
+    .then((results) => results['optionsMarketSnapshots']);
 }
 
 /**
@@ -432,12 +461,14 @@ export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AccountSummaries, Fields | '__typename'>>}
  **/
 export function accountSummariesForCpty(fields, route, venue) {
-  return client.execute(
-    graphql(`query AccountSummariesForCpty($route: RouteId!, $venue: VenueId!) {
+  return client
+    .execute(
+      graphql(`query AccountSummariesForCpty($route: RouteId!, $venue: VenueId!) {
   accountSummariesForCpty(route: $route, venue: $venue) { __typename ${fields.join(' ')} }
 }`),
-    { route, venue },
-  );
+      { route, venue },
+    )
+    .then((results) => results['accountSummariesForCpty']);
 }
 
 /**
@@ -447,12 +478,13 @@ export function accountSummariesForCpty(fields, route, venue) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AccountSummaries, Fields | '__typename'>[]>}
  **/
 export function accountSummaries(fields) {
-  return client.execute(
-    graphql(`query AccountSummaries {
+  return client
+    .execute(
+      graphql(`query AccountSummaries {
   accountSummaries { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['accountSummaries']);
 }
 
 /**
@@ -466,12 +498,14 @@ export function accountSummaries(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').Fills, Fields | '__typename'>>}
  **/
 export function fills(fields, venue, route, base, quote) {
-  return client.execute(
-    graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
+  return client
+    .execute(
+      graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
   fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename ${fields.join(' ')} }
 }`),
-    { venue, route, base, quote },
-  );
+      { venue, route, base, quote },
+    )
+    .then((results) => results['fills']);
 }
 
 /**
@@ -482,12 +516,14 @@ export function fills(fields, venue, route, base, quote) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').OrderLog, Fields | '__typename'>>}
  **/
 export function order(fields, orderId) {
-  return client.execute(
-    graphql(`query Order($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query Order($orderId: OrderId!) {
   order(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['order']);
 }
 
 /**
@@ -497,12 +533,13 @@ export function order(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').OrderLog, Fields | '__typename'>[]>}
  **/
 export function openOrders(fields) {
-  return client.execute(
-    graphql(`query OpenOrders {
+  return client
+    .execute(
+      graphql(`query OpenOrders {
   openOrders { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['openOrders']);
 }
 
 /**
@@ -514,12 +551,14 @@ export function openOrders(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').OrderLog, Fields | '__typename'>[]>}
  **/
 export function outedOrders(fields, fromInclusive, toExclusive) {
-  return client.execute(
-    graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
+  return client
+    .execute(
+      graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
   outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
 }`),
-    { fromInclusive, toExclusive },
-  );
+      { fromInclusive, toExclusive },
+    )
+    .then((results) => results['outedOrders']);
 }
 
 /**
@@ -533,12 +572,14 @@ export function outedOrders(fields, fromInclusive, toExclusive) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').CandleV1, Fields | '__typename'>[]>}
  **/
 export function historicalCandles(fields, width, end, start, id) {
-  return client.execute(
-    graphql(`query HistoricalCandles($width: CandleWidth!, $end: DateTime!, $start: DateTime!, $id: MarketId!) {
+  return client
+    .execute(
+      graphql(`query HistoricalCandles($width: CandleWidth!, $end: DateTime!, $start: DateTime!, $id: MarketId!) {
   historicalCandles(width: $width, end: $end, start: $start, id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { width, end, start, id },
-  );
+      { width, end, start, id },
+    )
+    .then((results) => results['historicalCandles']);
 }
 
 /**
@@ -551,12 +592,14 @@ export function historicalCandles(fields, width, end, start, id) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TcaMarksV1, Fields | '__typename'>[]>}
  **/
 export function tcaMarks(fields, toExclusive, fromInclusive, id) {
-  return client.execute(
-    graphql(`query TcaMarks($toExclusive: DateTime!, $fromInclusive: DateTime!, $id: MarketId) {
+  return client
+    .execute(
+      graphql(`query TcaMarks($toExclusive: DateTime!, $fromInclusive: DateTime!, $id: MarketId) {
   tcaMarks(toExclusive: $toExclusive, fromInclusive: $fromInclusive, id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { toExclusive, fromInclusive, id },
-  );
+      { toExclusive, fromInclusive, id },
+    )
+    .then((results) => results['tcaMarks']);
 }
 
 /**
@@ -570,12 +613,14 @@ export function tcaMarks(fields, toExclusive, fromInclusive, id) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TcaSummaryV1, Fields | '__typename'>[]>}
  **/
 export function tcaSummary(fields, toExclusive, fromInclusive, currency, id) {
-  return client.execute(
-    graphql(`query TcaSummary($toExclusive: DateTime!, $fromInclusive: DateTime!, $currency: String, $id: MarketId) {
+  return client
+    .execute(
+      graphql(`query TcaSummary($toExclusive: DateTime!, $fromInclusive: DateTime!, $currency: String, $id: MarketId) {
   tcaSummary(toExclusive: $toExclusive, fromInclusive: $fromInclusive, currency: $currency, id: $id) { __typename ${fields.join(' ')} }
 }`),
-    { toExclusive, fromInclusive, currency, id },
-  );
+      { toExclusive, fromInclusive, currency, id },
+    )
+    .then((results) => results['tcaSummary']);
 }
 
 /**
@@ -593,12 +638,14 @@ If use_purchasing_power is false or not provided then we will use
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TcaBalancePnlV1, Fields | '__typename'>[]>}
  **/
 export function tcaBalancePnl(fields, accountId, venueId, usePurchasingPower) {
-  return client.execute(
-    graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
+  return client
+    .execute(
+      graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
   tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
 }`),
-    { accountId, venueId, usePurchasingPower },
-  );
+      { accountId, venueId, usePurchasingPower },
+    )
+    .then((results) => results['tcaBalancePnl']);
 }
 
 /**
@@ -626,12 +673,14 @@ export function tcaBalancePnlTimeseries(
   toExclusive,
   usePurchasingPower,
 ) {
-  return client.execute(
-    graphql(`query TcaBalancePnlTimeseries($venueId: VenueId!, $accountId: AccountId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
+  return client
+    .execute(
+      graphql(`query TcaBalancePnlTimeseries($venueId: VenueId!, $accountId: AccountId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
   tcaBalancePnlTimeseries(venueId: $venueId, accountId: $accountId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
 }`),
-    { venueId, accountId, fromInclusive, toExclusive, usePurchasingPower },
-  );
+      { venueId, accountId, fromInclusive, toExclusive, usePurchasingPower },
+    )
+    .then((results) => results['tcaBalancePnlTimeseries']);
 }
 
 /**
@@ -641,12 +690,13 @@ export function tcaBalancePnlTimeseries(
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').CoinInfo, Fields | '__typename'>[]>}
  **/
 export function coinInfos(fields) {
-  return client.execute(
-    graphql(`query CoinInfos {
+  return client
+    .execute(
+      graphql(`query CoinInfos {
   coinInfos { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['coinInfos']);
 }
 
 /**
@@ -657,12 +707,14 @@ export function coinInfos(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').CoinInfo, Fields | '__typename'>>}
  **/
 export function coinInfo(fields, product) {
-  return client.execute(
-    graphql(`query CoinInfo($product: ProductId!) {
+  return client
+    .execute(
+      graphql(`query CoinInfo($product: ProductId!) {
   coinInfo(product: $product) { __typename ${fields.join(' ')} }
 }`),
-    { product },
-  );
+      { product },
+    )
+    .then((results) => results['coinInfo']);
 }
 
 /**
@@ -672,12 +724,13 @@ export function coinInfo(fields, product) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').CmeProductGroupInfo, Fields | '__typename'>[]>}
  **/
 export function cmeProductGroupInfos(fields) {
-  return client.execute(
-    graphql(`query CmeProductGroupInfos {
+  return client
+    .execute(
+      graphql(`query CmeProductGroupInfos {
   cmeProductGroupInfos { __typename ${fields.join(' ')} }
 }`),
-    undefined,
-  );
+    )
+    .then((results) => results['cmeProductGroupInfos']);
 }
 
 /**
@@ -688,12 +741,14 @@ export function cmeProductGroupInfos(fields) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AlgoOrder, Fields | '__typename'>>}
  **/
 export function algoOrder(fields, orderId) {
-  return client.execute(
-    graphql(`query AlgoOrder($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query AlgoOrder($orderId: OrderId!) {
   algoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['algoOrder']);
 }
 
 /**
@@ -704,12 +759,14 @@ export function algoOrder(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AlgoStatus, Fields | '__typename'>[]>}
  **/
 export function algoStatus(fields, orderId) {
-  return client.execute(
-    graphql(`query AlgoStatus($orderId: OrderId) {
+  return client
+    .execute(
+      graphql(`query AlgoStatus($orderId: OrderId) {
   algoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['algoStatus']);
 }
 
 /**
@@ -720,12 +777,14 @@ export function algoStatus(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').AlgoLog, Fields | '__typename'>>}
  **/
 export function algoLog(fields, orderId) {
-  return client.execute(
-    graphql(`query AlgoLog($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query AlgoLog($orderId: OrderId!) {
   algoLog(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['algoLog']);
 }
 
 /**
@@ -736,12 +795,14 @@ export function algoLog(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TwapOrder, Fields | '__typename'>>}
  **/
 export function twapOrder(fields, orderId) {
-  return client.execute(
-    graphql(`query TwapOrder($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query TwapOrder($orderId: OrderId!) {
   twapOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['twapOrder']);
 }
 
 /**
@@ -752,12 +813,14 @@ export function twapOrder(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').TwapStatus, Fields | '__typename'>[]>}
  **/
 export function twapStatus(fields, orderId) {
-  return client.execute(
-    graphql(`query TwapStatus($orderId: OrderId) {
+  return client
+    .execute(
+      graphql(`query TwapStatus($orderId: OrderId) {
   twapStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['twapStatus']);
 }
 
 /**
@@ -768,12 +831,14 @@ export function twapStatus(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').PovAlgoOrder, Fields | '__typename'>>}
  **/
 export function povOrder(fields, orderId) {
-  return client.execute(
-    graphql(`query PovOrder($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query PovOrder($orderId: OrderId!) {
   povOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['povOrder']);
 }
 
 /**
@@ -784,12 +849,14 @@ export function povOrder(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').PovAlgoStatus, Fields | '__typename'>[]>}
  **/
 export function povStatus(fields, orderId) {
-  return client.execute(
-    graphql(`query PovStatus($orderId: OrderId) {
+  return client
+    .execute(
+      graphql(`query PovStatus($orderId: OrderId) {
   povStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['povStatus']);
 }
 
 /**
@@ -800,12 +867,14 @@ export function povStatus(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').SmartOrderRouterOrder, Fields | '__typename'>>}
  **/
 export function smartOrderRouterOrder(fields, orderId) {
-  return client.execute(
-    graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
   smartOrderRouterOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['smartOrderRouterOrder']);
 }
 
 /**
@@ -816,12 +885,14 @@ export function smartOrderRouterOrder(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').SmartOrderRouterStatus, Fields | '__typename'>[]>}
  **/
 export function smartOrderRouterStatus(fields, orderId) {
-  return client.execute(
-    graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
+  return client
+    .execute(
+      graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
   smartOrderRouterStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['smartOrderRouterStatus']);
 }
 
 /**
@@ -832,12 +903,14 @@ export function smartOrderRouterStatus(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoOrder, Fields | '__typename'>>}
  **/
 export function mmAlgoOrder(fields, orderId) {
-  return client.execute(
-    graphql(`query MmAlgoOrder($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query MmAlgoOrder($orderId: OrderId!) {
   mmAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['mmAlgoOrder']);
 }
 
 /**
@@ -848,12 +921,14 @@ export function mmAlgoOrder(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoOrder, Fields | '__typename'>>}
  **/
 export function spreadAlgoOrder(fields, orderId) {
-  return client.execute(
-    graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
+  return client
+    .execute(
+      graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
   spreadAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['spreadAlgoOrder']);
 }
 
 /**
@@ -864,12 +939,14 @@ export function spreadAlgoOrder(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoStatus, Fields | '__typename'>[]>}
  **/
 export function mmAlgoStatus(fields, orderId) {
-  return client.execute(
-    graphql(`query MmAlgoStatus($orderId: OrderId) {
+  return client
+    .execute(
+      graphql(`query MmAlgoStatus($orderId: OrderId) {
   mmAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['mmAlgoStatus']);
 }
 
 /**
@@ -880,10 +957,12 @@ export function mmAlgoStatus(fields, orderId) {
  * @returns {Promise<Pick<import('../src/graphql/graphql.ts').MmAlgoStatus, Fields | '__typename'>[]>}
  **/
 export function spreadAlgoStatus(fields, orderId) {
-  return client.execute(
-    graphql(`query SpreadAlgoStatus($orderId: OrderId) {
+  return client
+    .execute(
+      graphql(`query SpreadAlgoStatus($orderId: OrderId) {
   spreadAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
 }`),
-    { orderId },
-  );
+      { orderId },
+    )
+    .then((results) => results['spreadAlgoStatus']);
 }
