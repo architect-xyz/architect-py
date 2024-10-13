@@ -71,3 +71,15 @@ export class Client {
     });
   }
 }
+
+/*
+const c = new Client({});
+const q = graphql(`query Route($id: RouteId!) {
+  route (id: $id) {
+    __typename
+    id 
+    name
+  }
+}`)
+c.execute(q, { id: 'nah' });
+*/

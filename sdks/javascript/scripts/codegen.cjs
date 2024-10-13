@@ -72,20 +72,28 @@ function docblock(node) {
     node.type.kind === Kind.LIST_TYPE ||
     (node.type.kind === Kind.NON_NULL_TYPE &&
       node.type.type.kind === Kind.LIST_TYPE);
-  const code = [
-    '/**',
-    `@template {keyof import('../src/graphql/graphql.ts').${resolveReturnType(node)}} Fields`,
-    node.description?.value,
-    isPrimitive(resolveReturnType(node)) ? '' : `@param {Array<Fields>} fields`,
-    node.arguments?.map(jsDocParam),
-    // TODO: if return type is array, this returns Promise<Array<ReturnType, Fields>>
-    `@returns {Promise<Pick<import('../src/graphql/graphql.ts').${resolveReturnType(node)}, Fields | '__typename'>${isList ? '[]' : ''}>}`,
-  ]
-    .flat()
-    .filter(Boolean);
 
-  // special case: emit no docblock if there is no value
-  if (code.length === 2) return '';
+  const returnType = resolveReturnType(node);
+  const isScalar = isPrimitive(returnType);
+  let code = ['/**', node.description?.value];
+
+  if (!isScalar) {
+    code.push(
+      `@template {keyof import('../src/graphql/graphql.ts').${returnType}} Fields`,
+    );
+    code.push(
+      `@param {Array<Fields>} fields Fields to select in response type`,
+    );
+  }
+
+  code.push(...node.arguments?.map(jsDocParam));
+  code = code.flat().filter(Boolean);
+
+  const returnTypeDef = isScalar
+    ? `@returns {Promise<import('../src/graphql/graphql.ts').Scalars['${returnType}']['output']>${isList ? '[]' : ''}>}`
+    : `@returns {Promise<Pick<import('../src/graphql/graphql.ts').${returnType}, Fields | '__typename'>${isList ? '[]' : ''}>}`;
+  code.push(returnTypeDef);
+
   return code.join('\n * ') + '\n **/';
 }
 
@@ -102,7 +110,7 @@ function kind(t) {
     }
     case Kind.LIST_TYPE: {
       // console.log(t, omitLoc(t));
-      return `${kind(t.type)} []`;
+      return `${kind(t.type)}[]`;
     }
     case Kind.NAMED_TYPE:
       return t.name.value;
@@ -122,7 +130,7 @@ function jsDocParam(param) {
       ? param.name.value
       : `[${param.name.value}]`;
   const description = param.description ? ' ' + param.description.value : '';
-  return `@param {${type} } ${paramName}${description} `;
+  return `@param {${type}} ${paramName}${description}`;
 }
 
 /***
@@ -178,14 +186,14 @@ function gqlString(node) {
       args
         .map(
           (n) =>
-            `\$${n.name.value}: ${kind(n.type)}${n.type.kind === Kind.NON_NULL_TYPE ? '!' : ''} `,
+            `\$${n.name.value}: ${kind(n.type)}${n.type.kind === Kind.NON_NULL_TYPE ? '!' : ''}`,
         )
         .join(', ') +
       ')'
     : '';
   const queryParams = args
     ? '(' +
-      args.map((n) => `${n.name.value}: \$${n.name.value} `).join(', ') +
+      args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
       ')'
     : '';
   const fields = resolveReturnValue(node);
@@ -247,7 +255,7 @@ function resolveReturnValue(node) {
       if (isPrimitive(responseType.name.value)) {
         return '';
       } else {
-        // console.log('ooookay', omitLoc(node));
+        // TODO: use fragment for fields
         return "{ __typename ${fields.join(' ')} }";
       }
 
@@ -303,7 +311,7 @@ function jsdocTypemap(typemap) {
       );
     }
   });
-  return scalars.join('\n') + '\n *' + nonScalars.join('\n') + '\n */';
+  return scalars.join('\n') + '\n *\n' + nonScalars.join('\n') + '\n */\n';
 }
 
 /**

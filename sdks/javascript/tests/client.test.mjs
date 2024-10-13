@@ -52,7 +52,9 @@ describe('Client', () => {
     assert.deepEqual(r, { route: null });
   });
 
-  test('more type things work', async () => {
+  // DONT RUN THIS IT WILL CREATE AN ACTUAL ORDER
+  test.skip('more type things work', async () => {
+    /*
     const c = createClient();
     const mutation = graphql(`mutation CreateOrder($order: CreateOrder!) {
       createOrder(order: $order)
@@ -67,5 +69,31 @@ describe('Client', () => {
       },
     });
     assert.deepEqual(r, { route: null });
+    */
+  });
+
+  test('fragments', async () => {
+    const c = createClient();
+
+    const f = graphql(`fragment Fields on Venue {
+      id
+      name
+    }`);
+    const q = graphql(
+      `query Venues {
+      venues {
+        __typename
+        ...Fields
+      }
+    }`,
+      [f],
+    );
+    const r = await c.execute(q);
+    assert.equal(r.venues.length, 5);
+    assert.deepEqual(r.venues[0], {
+      __typename: 'Venue',
+      name: 'CME',
+      id: '378aa416-97d3-54ab-9fe4-c09be5a4cb47',
+    });
   });
 });
