@@ -1,28 +1,42 @@
 /**
  */
-import { createClient } from 'graphql-http';
+import { createClient as createGraphqlClient } from 'graphql-http';
 import { print } from 'graphql';
 import { graphql } from 'gql.tada';
 
+/**
+ * @typedef {Object} Config API client config
+ * @property {string} host API Host
+ * @property {string} apiKey API Key
+ * @property {string} apiSecret API Secret
+ */
+
 export { graphql };
+let client;
+/**
+ * @param {Config} config API client config
+ */
+export function createClient(config) {}
 
 export class Client {
   /**
    * Architect Client SDK class
    *
-   * @param {Object} config API client config
-   * @param {string} config.host API host
-   * @param {string} config.apiKey API Key
-   * @param {string} config.apiSecret API Secret
+   * @param {Config} config API client config
    */
   constructor(config) {
     this.config = config;
     /**
      * GraphQL client that can execute queries against the GraphQL Server
-     * @type {ReturnType<typeof createClient>}
+     * @type {ReturnType<typeof createGraphqlClient>}
      * @public
      */
-    this.client = createClient({ url: `${config.host}api/graphql` });
+    this.client = createGraphqlClient({
+      url: `${config.host}api/graphql`,
+      headers: {
+        Authorization: `Basic ${config.apiKey} ${config.apiSecret}`,
+      },
+    });
   }
 
   /**
@@ -81,5 +95,5 @@ const q = graphql(`query Route($id: RouteId!) {
     name
   }
 }`)
-c.execute(q, { id: 'nah' });
+const b = await c.execute(q, { id: 'nah' });
 */

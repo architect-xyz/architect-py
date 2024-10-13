@@ -98,8 +98,7 @@ describe('Client', () => {
     });
   });
 
-
-  test('mutations: with object return types', async () => {
+  test('mutations: with known object return types', async () => {
     const c = createClient();
     // TODO: automate these type assertions
 
@@ -121,4 +120,42 @@ describe('Client', () => {
     const r2 = await c.execute(m2, { apiKey: r1.createApiKey.apiKey });
     assert.deepEqual(r2, { removeApiKey: true });
   });
+
+  test('mutations: with no field selection return types', async () => {
+    const c = createClient();
+    // TODO: automate these type assertions
+
+    // create
+    const m1 = graphql(
+      `mutation CreateOrder($order: CreateOrder!) { createOrder(order: $order) }`,
+    );
+    const r1 = await c.execute(m1, {
+      order: {
+        dir: 'sell',
+        market: 'CME',
+        quantity: 1,
+        orderType: 'LIMIT',
+        timeInForce: { instruction: 'GTD' },
+      },
+    });
+    assert.equal(r1.createOrder, '');
+
+    // cleanup / delete
+    /*
+    const m2 = graphql(`mutation RemoveApiKey($apiKey: String!) {
+      removeApiKey(apiKey: $apiKey)
+    }`);
+    const r2 = await c.execute(m2, { apiKey: r1.createApiKey.apiKey });
+    assert.deepEqual(r2, { removeApiKey: true });
+    */
+  });
 });
+
+/***
+ * FIXME: this is getting an inferred type of with an unknown response value
+ * TadaDocumentNode<{ createMmAlgo: unknown; }, { ...CreateMMAlgo }>;
+ */
+const g = graphql(`mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
+  createMmAlgo(mmAlgo: $mmAlgo) 
+}`);
+g;

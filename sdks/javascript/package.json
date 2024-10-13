@@ -1,8 +1,8 @@
 {
   "name": "architect-js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Client library for the Architect trading platform.",
-  "main": "index.js",
+  "main": "src/index.mjs",
   "engines": {
     "node": ">=20.11.0",
     "npm": ">=10.8.2"

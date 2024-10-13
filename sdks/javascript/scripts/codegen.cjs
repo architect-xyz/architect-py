@@ -5,7 +5,6 @@ const {
   isPrimitive,
   resolveReturnType,
   resolveArgs,
-  omitLoc,
 } = require('./emit/shared.cjs');
 
 /**
@@ -32,7 +31,8 @@ import { client, graphql } from './client.mjs';
 `;
 
 /**
- * @param ['query' | 'mutation' | 'subscription'] queryType
+ * Create codegen visitor
+ * @param {'query' | 'mutation' | 'subscription'} queryType
  */
 function createVisitor(queryType) {
   return {
@@ -43,12 +43,21 @@ function createVisitor(queryType) {
       FieldDefinition(node) {
         const fields = isPrimitive(resolveReturnType(node)) ? '' : 'fields, ';
         const vars = variables(node);
+        const deserializer =
+          queryType === 'query'
+            ? `results => results['${node.name.value}']`
+            : queryType === 'mutation'
+              ? `results => {
+    /** @type {Awaited<ReturnType<typeof ${node.name.value}>>} */
+    return results['${node.name.value}'];
+  }`
+              : 'TODO';
 
         return `${jsdoc.docblock(node)}
 export function ${node.name.value}(${fields}${args(node)}) {
   return client.execute(
     graphql(\`${queryType} ${gql.template(node)}\`)${vars ? `,\n${vars}\n` : ''}
-  ).then(results => results['${node.name.value}']);
+  ).then(${deserializer});
 }`;
       },
     },
@@ -73,7 +82,7 @@ module.exports = {
       schema.getMutationType().astNode,
       createVisitor('mutation'),
     );
-    // TODO: schema.getSubscriptionType().astNode
+    // TODO: subscriptions
     // const subscriptions = visit(schema.getSubscriptionType().astNode, createVisitor('subscription'));
 
     return `${PREFIX}${IMPORTS}

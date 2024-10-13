@@ -84,7 +84,6 @@ function docblock(node) {
     code.push(...args.map(param));
   }
 
-
   // TODO: update to this sort of syntax to reuse the other codegen emit
   // * @returns {Promise<import('../src/graphql/graphql.ts').MutationRoot['createMmAlgo']>}
   const returnTypeDef = isScalar

@@ -980,7 +980,10 @@ export function createApiKey(fields) {
   createApiKey { __typename ${fields.join(' ')} }
 }`),
     )
-    .then((results) => results['createApiKey']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createApiKey>>} */
+      return results['createApiKey'];
+    });
 }
 
 /**
@@ -998,7 +1001,10 @@ export function createTelegramApiKey(fields, telegramId) {
 }`),
       { telegramId },
     )
-    .then((results) => results['createTelegramApiKey']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createTelegramApiKey>>} */
+      return results['createTelegramApiKey'];
+    });
 }
 
 /**
@@ -1012,7 +1018,10 @@ export function removeTelegramApiKeys() {
   removeTelegramApiKeys
 }`),
     )
-    .then((results) => results['removeTelegramApiKeys']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof removeTelegramApiKeys>>} */
+      return results['removeTelegramApiKeys'];
+    });
 }
 
 /**
@@ -1028,7 +1037,10 @@ export function removeApiKey(apiKey) {
 }`),
       { apiKey },
     )
-    .then((results) => results['removeApiKey']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof removeApiKey>>} */
+      return results['removeApiKey'];
+    });
 }
 
 /**
@@ -1045,7 +1057,10 @@ export function setCredentials(credentials, componentId) {
 }`),
       { credentials, componentId },
     )
-    .then((results) => results['setCredentials']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof setCredentials>>} */
+      return results['setCredentials'];
+    });
 }
 
 /**
@@ -1063,7 +1078,10 @@ export function updateMarket(fields, payload) {
 }`),
       { payload },
     )
-    .then((results) => results['updateMarket']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof updateMarket>>} */
+      return results['updateMarket'];
+    });
 }
 
 /**
@@ -1079,7 +1097,10 @@ export function createOrder(order) {
 }`),
       { order },
     )
-    .then((results) => results['createOrder']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createOrder>>} */
+      return results['createOrder'];
+    });
 }
 
 /**
@@ -1095,7 +1116,10 @@ export function createOrders(orders) {
 }`),
       { orders },
     )
-    .then((results) => results['createOrders']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createOrders>>} */
+      return results['createOrders'];
+    });
 }
 
 /**
@@ -1111,7 +1135,10 @@ export function cancelOrder(orderId) {
 }`),
       { orderId },
     )
-    .then((results) => results['cancelOrder']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof cancelOrder>>} */
+      return results['cancelOrder'];
+    });
 }
 
 /**
@@ -1127,7 +1154,10 @@ export function cancelOrders(orderIds) {
 }`),
       { orderIds },
     )
-    .then((results) => results['cancelOrders']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof cancelOrders>>} */
+      return results['cancelOrders'];
+    });
 }
 
 /**
@@ -1144,7 +1174,10 @@ export function cancelAllOrders(venueId) {
 }`),
       { venueId },
     )
-    .then((results) => results['cancelAllOrders']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof cancelAllOrders>>} */
+      return results['cancelAllOrders'];
+    });
 }
 
 /**
@@ -1160,7 +1193,10 @@ export function sendAlgoControlCommand(command, orderId) {
 }`),
       { command, orderId },
     )
-    .then((results) => results['sendAlgoControlCommand']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof sendAlgoControlCommand>>} */
+      return results['sendAlgoControlCommand'];
+    });
 }
 
 /**
@@ -1176,7 +1212,10 @@ export function createTwapAlgo(twapAlgo) {
 }`),
       { twapAlgo },
     )
-    .then((results) => results['createTwapAlgo']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createTwapAlgo>>} */
+      return results['createTwapAlgo'];
+    });
 }
 
 /**
@@ -1192,7 +1231,10 @@ export function createPovAlgo(povAlgo) {
 }`),
       { povAlgo },
     )
-    .then((results) => results['createPovAlgo']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createPovAlgo>>} */
+      return results['createPovAlgo'];
+    });
 }
 
 /**
@@ -1210,7 +1252,10 @@ export function previewSmartOrderRouterAlgo(fields, algo) {
 }`),
       { algo },
     )
-    .then((results) => results['previewSmartOrderRouterAlgo']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof previewSmartOrderRouterAlgo>>} */
+      return results['previewSmartOrderRouterAlgo'];
+    });
 }
 
 /**
@@ -1226,7 +1271,10 @@ export function createSmartOrderRouterAlgo(algo) {
 }`),
       { algo },
     )
-    .then((results) => results['createSmartOrderRouterAlgo']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createSmartOrderRouterAlgo>>} */
+      return results['createSmartOrderRouterAlgo'];
+    });
 }
 
 /**
@@ -1242,7 +1290,10 @@ export function createMmAlgo(mmAlgo) {
 }`),
       { mmAlgo },
     )
-    .then((results) => results['createMmAlgo']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createMmAlgo>>} */
+      return results['createMmAlgo'];
+    });
 }
 
 /**
@@ -1258,5 +1309,8 @@ export function createSpreadAlgo(spreadAlgo) {
 }`),
       { spreadAlgo },
     )
-    .then((results) => results['createSpreadAlgo']);
+    .then((results) => {
+      /** @type {Awaited<ReturnType<typeof createSpreadAlgo>>} */
+      return results['createSpreadAlgo'];
+    });
 }

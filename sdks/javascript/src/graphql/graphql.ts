@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -1695,10 +1696,8 @@ export type Venue = {
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
-  // @ts-expect-error
   implements DocumentTypeDecoration<TResult, TVariables>
 {
-  // @ts-expect-error
   __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
 
   constructor(
@@ -1708,7 +1707,6 @@ export class TypedDocumentString<TResult, TVariables>
     super(value);
   }
 
-  // @ts-expect-error
   toString(): string & DocumentTypeDecoration<TResult, TVariables> {
     return this.value;
   }

@@ -4,6 +4,7 @@ const {
   isPrimitive,
   capitalize,
   exhaustive,
+  grosslyHandleMMNames,
 } = require('./shared.cjs');
 
 /***
@@ -59,14 +60,10 @@ function kind(t) {
 function template(node) {
   const args = resolveArgs(node);
   const params = args
-    ? '(' +
-      args.map((n) => `\$${n.name.value}: ${kind(n.type)}`).join(', ') +
-      ')'
+    ? `(${args.map((n) => `\$${n.name.value}: ${kind(n.type)}`).join(', ')})`
     : '';
   const queryParams = args
-    ? '(' +
-      args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
-      ')'
+    ? `(${args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ')})`
     : '';
   const fields = resolveReturnValue(node);
 
