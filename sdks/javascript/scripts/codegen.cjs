@@ -1,5 +1,14 @@
 const { oldVisit: visit } = require('@graphql-codegen/plugin-helpers');
-const { Kind, GraphQLScalarType } = require('graphql');
+const { Kind } = require('graphql');
+const jsdoc = require('./emit/jsdoc.cjs');
+const {
+  capitalize,
+  omitLoc,
+  exhaustive,
+
+  isPrimitive,
+  resolveReturnType,
+} = require('./emit/shared.cjs');
 
 /**
  * @typedef {Object} Config
@@ -45,7 +54,7 @@ module.exports = {
         FieldDefinition(node) {
           const fields = isPrimitive(resolveReturnType(node)) ? '' : 'fields, ';
 
-          return `${docblock(node)}
+          return `${jsdoc.docblock(node)}
 export function ${node.name.value}(${fields}${args(node)}) {
   return client.execute(
     graphql(\`${gqlString(node)}\`),
@@ -58,44 +67,10 @@ export function ${node.name.value}(${fields}${args(node)}) {
 
     return `${PREFIX}${IMPORTS}
 
-${jsdocTypemap(typeMap)}
+${jsdoc.typemap(typeMap)}
 ${queriesResult.fields.join('\n\n')}`;
   },
 };
-
-/**
- * Generate API docblock
- * @param {import('graphql').FieldDefinitionNode} node
- */
-function docblock(node) {
-  const isList =
-    node.type.kind === Kind.LIST_TYPE ||
-    (node.type.kind === Kind.NON_NULL_TYPE &&
-      node.type.type.kind === Kind.LIST_TYPE);
-
-  const returnType = resolveReturnType(node);
-  const isScalar = isPrimitive(returnType);
-  let code = ['/**', node.description?.value];
-
-  if (!isScalar) {
-    code.push(
-      `@template {keyof import('../src/graphql/graphql.ts').${returnType}} Fields`,
-    );
-    code.push(
-      `@param {Array<Fields>} fields Fields to select in response type`,
-    );
-  }
-
-  code.push(...node.arguments?.map(jsDocParam));
-  code = code.flat().filter(Boolean);
-
-  const returnTypeDef = isScalar
-    ? `@returns {Promise<import('../src/graphql/graphql.ts').Scalars['${returnType}']['output']>${isList ? '[]' : ''}>}`
-    : `@returns {Promise<Pick<import('../src/graphql/graphql.ts').${returnType}, Fields | '__typename'>${isList ? '[]' : ''}>}`;
-  code.push(returnTypeDef);
-
-  return code.join('\n * ') + '\n **/';
-}
 
 /***
  * Generate kind syntax for jsdoc
@@ -120,42 +95,6 @@ function gqlKind(t) {
 }
 
 /***
- * Generate kind syntax for jsdoc
- * @param {import('graphql').InputValueDefinitionNode['type'} t
- */
-function jsdKind(t) {
-  switch (t.kind) {
-    case Kind.NON_NULL_TYPE: {
-      // console.log(t, omitLoc(t));
-      // TODO: if not required, emit `[paramName]` syntax
-      return jsdKind(t.type);
-    }
-    case Kind.LIST_TYPE: {
-      // console.log(t, omitLoc(t));
-      return `${jsdKind(t.type)}[]`;
-    }
-    case Kind.NAMED_TYPE:
-      return t.name.value;
-    default:
-      throw new TypeError(`Unexpected kind type k`);
-  }
-}
-
-/***
- * Generate JSDoc param
- * @param {import('graphql').InputValueDefinitionNode} param
- */
-function jsDocParam(param) {
-  const type = jsdKind(param.type);
-  const paramName =
-    param.type.kind === Kind.NON_NULL_TYPE
-      ? param.name.value
-      : `[${param.name.value}]`;
-  const description = param.description ? ' ' + param.description.value : '';
-  return `@param {${type}} ${paramName}${description}`;
-}
-
-/***
  * Generate function param
  * @param {import('graphql').FieldDefinitionNode} node
  */
@@ -175,20 +114,6 @@ function variables(node) {
     : 'undefined';
 }
 
-function once(fn) {
-  let called = false;
-  let result;
-  return function (...args) {
-    if (called) {
-      return result;
-    }
-    result = fn(...args);
-    called = true;
-    return result;
-  };
-}
-const logOnce = once(console.log);
-
 /***
  * Generate graphql string for field
  * @param {import('graphql').FieldDefinitionNode} node
@@ -205,55 +130,19 @@ function gqlString(node) {
   const args = node.arguments?.length > 0 ? node.arguments : null;
   const params = args
     ? '(' +
-      args.map((n) => `\$${n.name.value}: ${gqlKind(n.type)}`).join(', ') +
-      ')'
+    args.map((n) => `\$${n.name.value}: ${gqlKind(n.type)}`).join(', ') +
+    ')'
     : '';
   const queryParams = args
     ? '(' +
-      args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
-      ')'
+    args.map((n) => `${n.name.value}: \$${n.name.value}`).join(', ') +
+    ')'
     : '';
   const fields = resolveReturnValue(node);
 
   return `query ${capitalize(node.name.value)}${params} {
   ${node.name.value}${queryParams} ${fields}
 }`;
-}
-
-/***
- * Generate graphql string for field
- * @param {import('graphql').FieldDefinitionNode['type']} nodeType
- * @returns Boolean
- */
-function isPrimitive(nodeType) {
-  // TODO: only NamedType
-  switch (nodeType) {
-    case 'String':
-    case 'Boolean':
-    case 'Int':
-    case 'Float':
-      return true;
-    default:
-      return false;
-  }
-}
-/***
- * Generate graphql string for field
- * @param {import('graphql').FieldDefinitionNode} node
- */
-function resolveReturnType(node) {
-  const responseType = node.type;
-  switch (responseType.kind) {
-    case Kind.NON_NULL_TYPE:
-      return resolveReturnType(responseType);
-    case Kind.LIST_TYPE:
-      return resolveReturnType(responseType);
-    case Kind.NAMED_TYPE:
-      return grosslyHandleMMNames(responseType.name.value);
-
-    default:
-      exhaustive(responseType.kind);
-  }
 }
 
 /***
@@ -268,7 +157,6 @@ function resolveReturnValue(node) {
     case Kind.LIST_TYPE:
       return resolveReturnValue(responseType);
     case Kind.NAMED_TYPE:
-      // TODO: fields resolver
       if (isPrimitive(responseType.name.value)) {
         return '';
       } else {
@@ -279,62 +167,4 @@ function resolveReturnValue(node) {
     default:
       exhaustive(responseType.kind);
   }
-}
-
-/***
- * Helper to print GraphQL AST node without location information
- */
-function omitLoc(t) {
-  const { loc, ...withoutLoc } = t;
-  return withoutLoc;
-}
-
-function capitalize(str) {
-  return str[0].toUpperCase() + str.slice(1);
-}
-
-/***
- * exhaustive type matcher
- * @param {never} no
- */
-function exhaustive(no) {
-  throw new TypeError('Unexpected value', JSON.stringify(no));
-}
-
-/**
- * Generates jsdoc based typemap for emitted file.
- *
- * @param {ReturnType<import('graphql').GraphQLSchema['getTypeMap']>} typemap
- */
-function jsdocTypemap(typemap) {
-  let scalars = ['/**'];
-  let nonScalars = [];
-  Object.entries(typemap).forEach(([key, type]) => {
-    // TODO: handle multiple descriptions better
-    let description = type.description
-      ? ' - ' + type.description.split('\n')[0]
-      : '';
-    if (type instanceof GraphQLScalarType) {
-      return scalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').Scalars['${key}']['output'] } ${key}${description} `,
-      );
-    } else {
-      // ignore graphql native types
-      if (key.startsWith('__')) return;
-
-      // TODO: Handle double uppercase the same as the builtin codegen
-      return nonScalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description} `,
-      );
-    }
-  });
-  return scalars.join('\n') + '\n *\n' + nonScalars.join('\n') + '\n */\n';
-}
-
-/**
- * @param {String} str
- * @returns {String}
- */
-function grosslyHandleMMNames(str) {
-  return str.replace(/MM/g, 'Mm');
 }
