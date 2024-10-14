@@ -14,6 +14,8 @@ import * as sdk from './sdk.mjs';
  * @returns {typeof sdk}
  */
 export function create(config) {
+  // TODO: update codegen to bind to a config passed in
+  // currently we would not support multitenant which would cause very bad bugs
   createClient(config);
   return sdk;
 }

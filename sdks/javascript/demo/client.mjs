@@ -20,7 +20,9 @@ const createClient = () => {
     'process.env.ARCHITECT_API_SECRET must be defined',
   );
 
-  return new Client({ host, apiKey, apiSecret });
+  const config = { host, apiKey, apiSecret };
+  console.log('config', config);
+  return new Client(config);
 };
 
 export const client = createClient();

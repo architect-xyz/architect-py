@@ -19,19 +19,41 @@
  * * Push tag to github
  * * Push release to npm
  */
-import { execSync } from 'child_process';
+import { $ } from 'zx';
 
-function validateEnvironment() {
-  // validate releasing from `main` branch
-  // validate synced with remote/HEAD
+function fail(message) {
+  console.log(message);
+  process.exit(1);
 }
+
+async function validateEnvironment() {
+  const onMain = (await $`git rev-parse --abbrev-ref HEAD`) === 'main';
+  const remoteHead = await $`git fetch origin main && git rev-parse origin/main`;
+  const localHead = await $`git rev-parse HEAD`;
+  const upToDate = remoteHead === localHead;
+  if (onMain === false) {
+    fail('Must be on main to release');
+  } else if (upToDate === false) {
+    fail('local main is not up to date with origin/main');
+  } else {
+    return true;
+  }
+}
+
 function validateAnalysis() {
   // validate types
   // validate code formatting
-  const r = execSync('npm run typecheck', {
-    cwd: process.cwd(),
+  return Promise.all([
+    $`npm run typecheck`,
+    // TODO biome doesn’t support this option like prettier...probably fine
+    // $`biome format --check`
+  ]).catch(err => {
+    if (err.stdout.includes('tsc --noEmit')) {
+      fail('Types are not valid. Ensure `tsc --noEmit` passes cleanly.');
+    } else {
+      throw err;
+    }
   });
-  console.log(r.toString('utf8'));
 }
 
 function validateQuality() {
@@ -47,7 +69,8 @@ try {
   ]);
   console.log('Release validated');
 } catch (err) {
-  console.error('Error validating release');
+  console.error('Error validating release', err.message);
 }
 
 // Build
+

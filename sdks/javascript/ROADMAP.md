@@ -1,9 +1,12 @@
+## Future
+* Ensure support for additional runtimes (node, bun, deno, edge)
+
 ## Next
 
 Goals
 * Resolve mutations were gql.tada thinks the return type is `unkown`
 * Implement subscriptions
-* **[Stretch]** Support custom GraphQL clients
+* **[Stretch]** Support user-provided GraphQL clients
 * **[Stretch]** Support RPC interface
 
 ## v0.1.0 | Initial Release
