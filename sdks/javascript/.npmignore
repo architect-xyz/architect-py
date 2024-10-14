@@ -1,0 +1,7 @@
+./codegen/**/*
+./demo/**/*
+./scripts/**/*
+./tests/**/*
+./codegen.ts
+./biome.json
+

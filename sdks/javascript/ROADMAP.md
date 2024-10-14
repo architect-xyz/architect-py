@@ -11,7 +11,7 @@ Goals
 Goals
 * Sufficiently useful initial release for API capabilities
 * Foundations of the development process
-* - [ ] Ensure apiKeys and apiSecret is working
+* Ensure apiKey and apiSecret are working
 * - [ ] Foundations of the docs-build process
 * - [ ] Foundations of the release process
 

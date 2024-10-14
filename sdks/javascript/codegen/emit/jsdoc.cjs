@@ -1,7 +1,7 @@
 /**
  * JSDoc emitter module
  * @module JSDoc Emitters
- * @see module:scripts/emit/jsdoc
+ * @see module:codegen/emit/jsdoc
  */
 const { Kind, GraphQLScalarType } = require('graphql');
 const {
@@ -71,9 +71,7 @@ function docblock(node) {
   let code = ['/**', node.description?.value].filter(Boolean);
 
   if (!isScalar) {
-    code.push(
-      `@template {keyof ${returnType}} Fields`,
-    );
+    code.push(`@template {keyof ${returnType}} Fields`);
     code.push(
       `@param {Array<Fields>} fields Fields to select in response type`,
     );

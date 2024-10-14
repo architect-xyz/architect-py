@@ -1,3 +1,8 @@
+/**
+ * GraphQL emitter module
+ * @module Graphql Emitters
+ * @see module:codegen/emit/gql
+ */
 const { Kind } = require('graphql');
 const {
   resolveArgs,

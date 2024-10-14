@@ -11,7 +11,8 @@
     "codegen": "graphql-codegen",
     "format": "biome format --write",
     "typecheck": "tsc --noEmit",
-    "test": "node --env-file=../../.env --test"
+    "test": "node --env-file=../../.env --test",
+    "prerelease": "node ./scripts/prerelease.mjs"
   },
   "author": "Architect Financial Technologies, Inc. <hello@architect.xyz>",
   "license": "Apache-2.0",
