@@ -15,6 +15,7 @@ const config: CodegenConfig = {
         documentMode: 'string',
         scalars: {
           // TODO: add additional scalar mapping
+          Date: 'string',
           DateTime: 'string',
           Decimal: 'string',
           AccountId: 'string',
@@ -24,6 +25,9 @@ const config: CodegenConfig = {
           VenueId: 'string',
           RouteId: 'string',
           ProductId: 'string',
+          ComponentId: 'string',
+          FillId: 'string',
+
           Dir: "'buy' | 'sell'",
           Str: 'string',
           OrderSource: 'string',
