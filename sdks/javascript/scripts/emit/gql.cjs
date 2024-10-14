@@ -4,7 +4,6 @@ const {
   isPrimitive,
   capitalize,
   exhaustive,
-  grosslyHandleMMNames,
 } = require('./shared.cjs');
 
 /***
@@ -38,12 +37,10 @@ function resolveReturnValue(node) {
 function kind(t) {
   switch (t.kind) {
     case Kind.NON_NULL_TYPE: {
-      // console.log(t, omitLoc(t));
       // TODO: if not required, emit `[paramName]` syntax
       return `${kind(t.type)}!`;
     }
     case Kind.LIST_TYPE: {
-      // console.log(t, omitLoc(t));
       return `[${kind(t.type)}]`;
     }
     case Kind.NAMED_TYPE:

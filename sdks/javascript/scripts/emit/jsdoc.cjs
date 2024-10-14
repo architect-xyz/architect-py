@@ -72,7 +72,7 @@ function docblock(node) {
 
   if (!isScalar) {
     code.push(
-      `@template {keyof import('../src/graphql/graphql.ts').${returnType}} Fields`,
+      `@template {keyof ${returnType}} Fields`,
     );
     code.push(
       `@param {Array<Fields>} fields Fields to select in response type`,

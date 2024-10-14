@@ -140,7 +140,7 @@ export function version() {
 
 /**
  * Return the current user's authentication information.
- * @template {keyof import('../src/graphql/graphql.ts').Me} Fields
+ * @template {keyof Me} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Me, Fields | '__typename'>>}
  **/
@@ -156,7 +156,7 @@ export function me(fields) {
 
 /**
  * List the API keys associated with the current user.
- * @template {keyof import('../src/graphql/graphql.ts').ApiKey} Fields
+ * @template {keyof ApiKey} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<ApiKey, Fields | '__typename'>[]>}
  **/
@@ -171,7 +171,7 @@ export function listApiKeys(fields) {
 }
 
 /**
- * @template {keyof import('../src/graphql/graphql.ts').CptyInfo} Fields
+ * @template {keyof CptyInfo} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<CptyInfo, Fields | '__typename'>[]>}
  **/
@@ -190,7 +190,7 @@ export function cptys(fields) {
 
 Accounts are generally defined by exchange connectors or their respective exchange configs.
 Refer to the User Guide for more information on how Architect names and manages accounts.
- * @template {keyof import('../src/graphql/graphql.ts').Account} Fields
+ * @template {keyof Account} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Account, Fields | '__typename'>[]>}
  **/
@@ -207,7 +207,7 @@ export function accounts(fields) {
 /**
  * List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
 route IDs are fully determined by their string names as UUIDv5.
- * @template {keyof import('../src/graphql/graphql.ts').Route} Fields
+ * @template {keyof Route} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Route, Fields | '__typename'>[]>}
  **/
@@ -223,7 +223,7 @@ export function routes(fields) {
 
 /**
  * Find a route by its ID.
- * @template {keyof import('../src/graphql/graphql.ts').Route} Fields
+ * @template {keyof Route} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {RouteId} id
  * @returns {Promise<Pick<Route, Fields | '__typename'>>}
@@ -242,7 +242,7 @@ export function route(fields, id) {
 /**
  * List all known venues in symbology.  Venues are uniquely identified by their names or IDs;
 venue IDs are fully determined by their string names as UUIDv5.
- * @template {keyof import('../src/graphql/graphql.ts').Venue} Fields
+ * @template {keyof Venue} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Venue, Fields | '__typename'>[]>}
  **/
@@ -258,7 +258,7 @@ export function venues(fields) {
 
 /**
  * Find a venue by its ID.
- * @template {keyof import('../src/graphql/graphql.ts').Venue} Fields
+ * @template {keyof Venue} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {VenueId} id
  * @returns {Promise<Pick<Venue, Fields | '__typename'>>}
@@ -277,7 +277,7 @@ export function venue(fields, id) {
 /**
  * Find products and their details by their IDs.  Products are uniquely identified by their
 names or IDs; product IDs are fully determined by their string names as UUIDv5.
- * @template {keyof import('../src/graphql/graphql.ts').Product} Fields
+ * @template {keyof Product} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {ProductId[]} id
  * @returns {Promise<Pick<Product, Fields | '__typename'>[]>}
@@ -295,7 +295,7 @@ export function products(fields, id) {
 
 /**
  * Find a product and its details by its ID.
- * @template {keyof import('../src/graphql/graphql.ts').Product} Fields
+ * @template {keyof Product} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {ProductId} id
  * @returns {Promise<Pick<Product, Fields | '__typename'>>}
@@ -314,7 +314,7 @@ export function product(fields, id) {
 /**
  * Find markets and their details by their IDs.  Markets are uniquely identified by their
 names or IDs; market IDs are fully determined by their string names as UUIDv5.
- * @template {keyof import('../src/graphql/graphql.ts').Market} Fields
+ * @template {keyof Market} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {MarketId[]} id
  * @returns {Promise<Pick<Market, Fields | '__typename'>[]>}
@@ -332,7 +332,7 @@ export function markets(fields, id) {
 
 /**
  * Find a market and its details by its ID.
- * @template {keyof import('../src/graphql/graphql.ts').Market} Fields
+ * @template {keyof Market} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {MarketId} id
  * @returns {Promise<Pick<Market, Fields | '__typename'>>}
@@ -350,7 +350,7 @@ export function market(fields, id) {
 
 /**
  * Find markets and their details by some filtering criteria.
- * @template {keyof import('../src/graphql/graphql.ts').Market} Fields
+ * @template {keyof Market} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {MarketFilter} filter
  * @returns {Promise<Pick<Market, Fields | '__typename'>[]>}
@@ -367,7 +367,7 @@ export function filterMarkets(fields, filter) {
 }
 
 /**
- * @template {keyof import('../src/graphql/graphql.ts').Book} Fields
+ * @template {keyof Book} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {Int} numLevels
  * @param {MarketId} market
@@ -397,7 +397,7 @@ export function bookSnapshot(
 /**
  * Get a snapshot of the marketdata for a given market, at a given time.  If no
 latest_at_or_before is provided, the most recent snapshot is returned.
- * @template {keyof import('../src/graphql/graphql.ts').MarketSnapshot} Fields
+ * @template {keyof MarketSnapshot} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {MarketId} market
  * @param {DateTime} [latestAtOrBefore]
@@ -417,7 +417,7 @@ export function marketSnapshot(fields, market, latestAtOrBefore) {
 /**
  * Get snapshots of all markets for the given time.  If no latest_at_or_before is provided,
 the most recent snapshots are returned.
- * @template {keyof import('../src/graphql/graphql.ts').MarketSnapshot} Fields
+ * @template {keyof MarketSnapshot} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {DateTime} [latestAtOrBefore]
  * @returns {Promise<Pick<MarketSnapshot, Fields | '__typename'>[]>}
@@ -435,7 +435,7 @@ export function marketsSnapshots(fields, latestAtOrBefore) {
 
 /**
  * Get a snapshot of the options data for a given underlying, at a given time.
- * @template {keyof import('../src/graphql/graphql.ts').OptionsMarketSnapshot} Fields
+ * @template {keyof OptionsMarketSnapshot} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {ProductId} underlying
  * @param {DateTime} [latestAtOrBefore]
@@ -454,7 +454,7 @@ export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
 
 /**
  * Get the current known balances and positions for a given counterparty.
- * @template {keyof import('../src/graphql/graphql.ts').AccountSummaries} Fields
+ * @template {keyof AccountSummaries} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {RouteId} route
  * @param {VenueId} venue
@@ -473,7 +473,7 @@ export function accountSummariesForCpty(fields, route, venue) {
 
 /**
  * Get all current known balances and positions for all counterparties.
- * @template {keyof import('../src/graphql/graphql.ts').AccountSummaries} Fields
+ * @template {keyof AccountSummaries} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<AccountSummaries, Fields | '__typename'>[]>}
  **/
@@ -489,7 +489,7 @@ export function accountSummaries(fields) {
 
 /**
  * Get all fills for a given venue, route, base, and quote.
- * @template {keyof import('../src/graphql/graphql.ts').Fills} Fields
+ * @template {keyof Fills} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {VenueId} [venue]
  * @param {RouteId} [route]
@@ -510,7 +510,7 @@ export function fills(fields, venue, route, base, quote) {
 
 /**
  * Find order details by order ID from the OMS.
- * @template {keyof import('../src/graphql/graphql.ts').OrderLog} Fields
+ * @template {keyof OrderLog} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<OrderLog, Fields | '__typename'>>}
@@ -528,7 +528,7 @@ export function order(fields, orderId) {
 
 /**
  * List all open orders known to the OMS.
- * @template {keyof import('../src/graphql/graphql.ts').OrderLog} Fields
+ * @template {keyof OrderLog} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<OrderLog, Fields | '__typename'>[]>}
  **/
@@ -544,7 +544,7 @@ export function openOrders(fields) {
 
 /**
  * List all recently outed orders known to the OMS.
- * @template {keyof import('../src/graphql/graphql.ts').OrderLog} Fields
+ * @template {keyof OrderLog} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {DateTime} [fromInclusive]
  * @param {DateTime} [toExclusive]
@@ -563,7 +563,7 @@ export function outedOrders(fields, fromInclusive, toExclusive) {
 
 /**
  * Query historical OHLCV candles for a given market, candle width, and time range.
- * @template {keyof import('../src/graphql/graphql.ts').CandleV1} Fields
+ * @template {keyof CandleV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {CandleWidth} width
  * @param {DateTime} end
@@ -584,7 +584,7 @@ export function historicalCandles(fields, width, end, start, id) {
 
 /**
  * Query TCA pnl / marks stats, id is an optional field but the dates are required
- * @template {keyof import('../src/graphql/graphql.ts').TcaMarksV1} Fields
+ * @template {keyof TcaMarksV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {DateTime} toExclusive
  * @param {DateTime} fromInclusive
@@ -604,7 +604,7 @@ export function tcaMarks(fields, toExclusive, fromInclusive, id) {
 
 /**
  * Query TCA summary stats, id is an optional field but the dates are required
- * @template {keyof import('../src/graphql/graphql.ts').TcaSummaryV1} Fields
+ * @template {keyof TcaSummaryV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {DateTime} toExclusive
  * @param {DateTime} fromInclusive
@@ -630,7 +630,7 @@ If no venue is provided then all venues will be included
 If use_purchasing_power is false or not provided then we will use
   the balance column in the table. If it's true then we will use
   the purchasing power column. This is needed for the rfb environment
- * @template {keyof import('../src/graphql/graphql.ts').TcaBalancePnlV1} Fields
+ * @template {keyof TcaBalancePnlV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {AccountId} accountId
  * @param {VenueId} [venueId]
@@ -656,7 +656,7 @@ then the timeseries will return hourly data points for the range provided
 If use_purchasing_power is false or not provided then we will use
   the balance column in the table. If it's true then we will use
   the purchasing power column. This is needed for the rfb environment
- * @template {keyof import('../src/graphql/graphql.ts').TcaPnlV1} Fields
+ * @template {keyof TcaPnlV1} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {VenueId} venueId
  * @param {AccountId} accountId
@@ -685,7 +685,7 @@ export function tcaBalancePnlTimeseries(
 
 /**
  * Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap.
- * @template {keyof import('../src/graphql/graphql.ts').CoinInfo} Fields
+ * @template {keyof CoinInfo} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<CoinInfo, Fields | '__typename'>[]>}
  **/
@@ -701,7 +701,7 @@ export function coinInfos(fields) {
 
 /**
  * Get token info for a given product.
- * @template {keyof import('../src/graphql/graphql.ts').CoinInfo} Fields
+ * @template {keyof CoinInfo} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {ProductId} product
  * @returns {Promise<Pick<CoinInfo, Fields | '__typename'>>}
@@ -719,7 +719,7 @@ export function coinInfo(fields, product) {
 
 /**
  * Get CME product group info.
- * @template {keyof import('../src/graphql/graphql.ts').CmeProductGroupInfo} Fields
+ * @template {keyof CmeProductGroupInfo} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<CmeProductGroupInfo, Fields | '__typename'>[]>}
  **/
@@ -735,7 +735,7 @@ export function cmeProductGroupInfos(fields) {
 
 /**
  * Find a generic algo order and its details by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').AlgoOrder} Fields
+ * @template {keyof AlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<AlgoOrder, Fields | '__typename'>>}
@@ -753,7 +753,7 @@ export function algoOrder(fields, orderId) {
 
 /**
  * Find and return generic algo order status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').AlgoStatus} Fields
+ * @template {keyof AlgoStatus} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<AlgoStatus, Fields | '__typename'>[]>}
@@ -771,7 +771,7 @@ export function algoStatus(fields, orderId) {
 
 /**
  * Find and return generic algo logs by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').AlgoLog} Fields
+ * @template {keyof AlgoLog} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<AlgoLog, Fields | '__typename'>>}
@@ -789,7 +789,7 @@ export function algoLog(fields, orderId) {
 
 /**
  * Find and return TWAP algo order details by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').TwapOrder} Fields
+ * @template {keyof TwapOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<TwapOrder, Fields | '__typename'>>}
@@ -807,7 +807,7 @@ export function twapOrder(fields, orderId) {
 
 /**
  * Find and return TWAP algo status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').TwapStatus} Fields
+ * @template {keyof TwapStatus} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<TwapStatus, Fields | '__typename'>[]>}
@@ -825,7 +825,7 @@ export function twapStatus(fields, orderId) {
 
 /**
  * Find and return POV order details by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').PovAlgoOrder} Fields
+ * @template {keyof PovAlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<PovAlgoOrder, Fields | '__typename'>>}
@@ -843,7 +843,7 @@ export function povOrder(fields, orderId) {
 
 /**
  * Find and return POV algo status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').PovAlgoStatus} Fields
+ * @template {keyof PovAlgoStatus} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<PovAlgoStatus, Fields | '__typename'>[]>}
@@ -861,7 +861,7 @@ export function povStatus(fields, orderId) {
 
 /**
  * Find and return SOR order details by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').SmartOrderRouterOrder} Fields
+ * @template {keyof SmartOrderRouterOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<SmartOrderRouterOrder, Fields | '__typename'>>}
@@ -879,7 +879,7 @@ export function smartOrderRouterOrder(fields, orderId) {
 
 /**
  * Find and return SOR algo status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').SmartOrderRouterStatus} Fields
+ * @template {keyof SmartOrderRouterStatus} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<SmartOrderRouterStatus, Fields | '__typename'>[]>}
@@ -897,7 +897,7 @@ export function smartOrderRouterStatus(fields, orderId) {
 
 /**
  * Find and return MM algo order details by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').MmAlgoOrder} Fields
+ * @template {keyof MmAlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'>>}
@@ -915,7 +915,7 @@ export function mmAlgoOrder(fields, orderId) {
 
 /**
  * Find and return spread algo status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').MmAlgoOrder} Fields
+ * @template {keyof MmAlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
  * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'>>}
@@ -933,7 +933,7 @@ export function spreadAlgoOrder(fields, orderId) {
 
 /**
  * Find and return MM algo status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').MmAlgoStatus} Fields
+ * @template {keyof MmAlgoStatus} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<MmAlgoStatus, Fields | '__typename'>[]>}
@@ -951,7 +951,7 @@ export function mmAlgoStatus(fields, orderId) {
 
 /**
  * Find and return spread algo status by parent order ID.
- * @template {keyof import('../src/graphql/graphql.ts').MmAlgoStatus} Fields
+ * @template {keyof MmAlgoStatus} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<MmAlgoStatus, Fields | '__typename'>[]>}
@@ -969,7 +969,7 @@ export function spreadAlgoStatus(fields, orderId) {
 
 /**
  * Create a new API key
- * @template {keyof import('../src/graphql/graphql.ts').ApiKey} Fields
+ * @template {keyof ApiKey} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<ApiKey, Fields | '__typename'>>}
  **/
@@ -988,7 +988,7 @@ export function createApiKey(fields) {
 
 /**
  * Create a new API key for Telegram
- * @template {keyof import('../src/graphql/graphql.ts').ApiKey} Fields
+ * @template {keyof ApiKey} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {String} telegramId
  * @returns {Promise<Pick<ApiKey, Fields | '__typename'>>}
@@ -1065,7 +1065,7 @@ export function setCredentials(credentials, componentId) {
 
 /**
  * Set/unset market favorited by current user.
- * @template {keyof import('../src/graphql/graphql.ts').Market} Fields
+ * @template {keyof Market} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {UpdateMarket} payload
  * @returns {Promise<Pick<Market, Fields | '__typename'>>}
@@ -1239,7 +1239,7 @@ export function createPovAlgo(povAlgo) {
 
 /**
  * Preview the execution of an SOR algo.
- * @template {keyof import('../src/graphql/graphql.ts').AlgoPreview} Fields
+ * @template {keyof AlgoPreview} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {CreateSmartOrderRouterAlgo} algo
  * @returns {Promise<Pick<AlgoPreview, Fields | '__typename'>>}
