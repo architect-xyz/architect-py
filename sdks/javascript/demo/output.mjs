@@ -132,8 +132,8 @@ export function version() {
   return client
     .execute(
       graphql(`query Version {
-  version
-}`),
+        version
+      }`),
     )
     .then((results) => results['version']);
 }
@@ -148,8 +148,8 @@ export function me(fields) {
   return client
     .execute(
       graphql(`query Me {
-  me { __typename ${fields.join(' ')} }
-}`),
+        me { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['me']);
 }
@@ -164,8 +164,8 @@ export function listApiKeys(fields) {
   return client
     .execute(
       graphql(`query ListApiKeys {
-  listApiKeys { __typename ${fields.join(' ')} }
-}`),
+        listApiKeys { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['listApiKeys']);
 }
@@ -179,8 +179,8 @@ export function cptys(fields) {
   return client
     .execute(
       graphql(`query Cptys {
-  cptys { __typename ${fields.join(' ')} }
-}`),
+        cptys { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['cptys']);
 }
@@ -198,8 +198,8 @@ export function accounts(fields) {
   return client
     .execute(
       graphql(`query Accounts {
-  accounts { __typename ${fields.join(' ')} }
-}`),
+        accounts { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['accounts']);
 }
@@ -215,8 +215,8 @@ export function routes(fields) {
   return client
     .execute(
       graphql(`query Routes {
-  routes { __typename ${fields.join(' ')} }
-}`),
+        routes { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['routes']);
 }
@@ -232,8 +232,8 @@ export function route(fields, id) {
   return client
     .execute(
       graphql(`query Route($id: RouteId!) {
-  route(id: $id) { __typename ${fields.join(' ')} }
-}`),
+        route(id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { id },
     )
     .then((results) => results['route']);
@@ -250,8 +250,8 @@ export function venues(fields) {
   return client
     .execute(
       graphql(`query Venues {
-  venues { __typename ${fields.join(' ')} }
-}`),
+        venues { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['venues']);
 }
@@ -267,8 +267,8 @@ export function venue(fields, id) {
   return client
     .execute(
       graphql(`query Venue($id: VenueId!) {
-  venue(id: $id) { __typename ${fields.join(' ')} }
-}`),
+        venue(id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { id },
     )
     .then((results) => results['venue']);
@@ -286,8 +286,8 @@ export function products(fields, id) {
   return client
     .execute(
       graphql(`query Products($id: [ProductId!]!) {
-  products(id: $id) { __typename ${fields.join(' ')} }
-}`),
+        products(id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { id },
     )
     .then((results) => results['products']);
@@ -304,8 +304,8 @@ export function product(fields, id) {
   return client
     .execute(
       graphql(`query Product($id: ProductId!) {
-  product(id: $id) { __typename ${fields.join(' ')} }
-}`),
+        product(id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { id },
     )
     .then((results) => results['product']);
@@ -323,8 +323,8 @@ export function markets(fields, id) {
   return client
     .execute(
       graphql(`query Markets($id: [MarketId!]!) {
-  markets(id: $id) { __typename ${fields.join(' ')} }
-}`),
+        markets(id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { id },
     )
     .then((results) => results['markets']);
@@ -341,8 +341,8 @@ export function market(fields, id) {
   return client
     .execute(
       graphql(`query Market($id: MarketId!) {
-  market(id: $id) { __typename ${fields.join(' ')} }
-}`),
+        market(id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { id },
     )
     .then((results) => results['market']);
@@ -359,8 +359,8 @@ export function filterMarkets(fields, filter) {
   return client
     .execute(
       graphql(`query FilterMarkets($filter: MarketFilter!) {
-  filterMarkets(filter: $filter) { __typename ${fields.join(' ')} }
-}`),
+        filterMarkets(filter: $filter) { __typename ${fields.join(' ')} }
+      }`),
       { filter },
     )
     .then((results) => results['filterMarkets']);
@@ -387,8 +387,8 @@ export function bookSnapshot(
   return client
     .execute(
       graphql(`query BookSnapshot($numLevels: Int!, $market: MarketId!, $precision: Decimal, $retainSubscriptionForNSeconds: Int, $delayed: Boolean) {
-  bookSnapshot(numLevels: $numLevels, market: $market, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
-}`),
+        bookSnapshot(numLevels: $numLevels, market: $market, precision: $precision, retainSubscriptionForNSeconds: $retainSubscriptionForNSeconds, delayed: $delayed) { __typename ${fields.join(' ')} }
+      }`),
       { numLevels, market, precision, retainSubscriptionForNSeconds, delayed },
     )
     .then((results) => results['bookSnapshot']);
@@ -407,8 +407,8 @@ export function marketSnapshot(fields, market, latestAtOrBefore) {
   return client
     .execute(
       graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
-  marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
-}`),
+        marketSnapshot(market: $market, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
+      }`),
       { market, latestAtOrBefore },
     )
     .then((results) => results['marketSnapshot']);
@@ -426,8 +426,8 @@ export function marketsSnapshots(fields, latestAtOrBefore) {
   return client
     .execute(
       graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
-  marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
-}`),
+        marketsSnapshots(latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
+      }`),
       { latestAtOrBefore },
     )
     .then((results) => results['marketsSnapshots']);
@@ -445,8 +445,8 @@ export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
   return client
     .execute(
       graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
-  optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
-}`),
+        optionsMarketSnapshots(underlying: $underlying, latestAtOrBefore: $latestAtOrBefore) { __typename ${fields.join(' ')} }
+      }`),
       { underlying, latestAtOrBefore },
     )
     .then((results) => results['optionsMarketSnapshots']);
@@ -464,8 +464,8 @@ export function accountSummariesForCpty(fields, route, venue) {
   return client
     .execute(
       graphql(`query AccountSummariesForCpty($route: RouteId!, $venue: VenueId!) {
-  accountSummariesForCpty(route: $route, venue: $venue) { __typename ${fields.join(' ')} }
-}`),
+        accountSummariesForCpty(route: $route, venue: $venue) { __typename ${fields.join(' ')} }
+      }`),
       { route, venue },
     )
     .then((results) => results['accountSummariesForCpty']);
@@ -481,8 +481,8 @@ export function accountSummaries(fields) {
   return client
     .execute(
       graphql(`query AccountSummaries {
-  accountSummaries { __typename ${fields.join(' ')} }
-}`),
+        accountSummaries { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['accountSummaries']);
 }
@@ -501,8 +501,8 @@ export function fills(fields, venue, route, base, quote) {
   return client
     .execute(
       graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
-  fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename ${fields.join(' ')} }
-}`),
+        fills(venue: $venue, route: $route, base: $base, quote: $quote) { __typename ${fields.join(' ')} }
+      }`),
       { venue, route, base, quote },
     )
     .then((results) => results['fills']);
@@ -519,8 +519,8 @@ export function order(fields, orderId) {
   return client
     .execute(
       graphql(`query Order($orderId: OrderId!) {
-  order(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        order(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['order']);
@@ -536,8 +536,8 @@ export function openOrders(fields) {
   return client
     .execute(
       graphql(`query OpenOrders {
-  openOrders { __typename ${fields.join(' ')} }
-}`),
+        openOrders { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['openOrders']);
 }
@@ -554,8 +554,8 @@ export function outedOrders(fields, fromInclusive, toExclusive) {
   return client
     .execute(
       graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
-  outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
-}`),
+        outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) { __typename ${fields.join(' ')} }
+      }`),
       { fromInclusive, toExclusive },
     )
     .then((results) => results['outedOrders']);
@@ -575,8 +575,8 @@ export function historicalCandles(fields, width, end, start, id) {
   return client
     .execute(
       graphql(`query HistoricalCandles($width: CandleWidth!, $end: DateTime!, $start: DateTime!, $id: MarketId!) {
-  historicalCandles(width: $width, end: $end, start: $start, id: $id) { __typename ${fields.join(' ')} }
-}`),
+        historicalCandles(width: $width, end: $end, start: $start, id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { width, end, start, id },
     )
     .then((results) => results['historicalCandles']);
@@ -595,8 +595,8 @@ export function tcaMarks(fields, toExclusive, fromInclusive, id) {
   return client
     .execute(
       graphql(`query TcaMarks($toExclusive: DateTime!, $fromInclusive: DateTime!, $id: MarketId) {
-  tcaMarks(toExclusive: $toExclusive, fromInclusive: $fromInclusive, id: $id) { __typename ${fields.join(' ')} }
-}`),
+        tcaMarks(toExclusive: $toExclusive, fromInclusive: $fromInclusive, id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { toExclusive, fromInclusive, id },
     )
     .then((results) => results['tcaMarks']);
@@ -616,8 +616,8 @@ export function tcaSummary(fields, toExclusive, fromInclusive, currency, id) {
   return client
     .execute(
       graphql(`query TcaSummary($toExclusive: DateTime!, $fromInclusive: DateTime!, $currency: String, $id: MarketId) {
-  tcaSummary(toExclusive: $toExclusive, fromInclusive: $fromInclusive, currency: $currency, id: $id) { __typename ${fields.join(' ')} }
-}`),
+        tcaSummary(toExclusive: $toExclusive, fromInclusive: $fromInclusive, currency: $currency, id: $id) { __typename ${fields.join(' ')} }
+      }`),
       { toExclusive, fromInclusive, currency, id },
     )
     .then((results) => results['tcaSummary']);
@@ -641,8 +641,8 @@ export function tcaBalancePnl(fields, accountId, venueId, usePurchasingPower) {
   return client
     .execute(
       graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
-  tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
-}`),
+        tcaBalancePnl(accountId: $accountId, venueId: $venueId, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
+      }`),
       { accountId, venueId, usePurchasingPower },
     )
     .then((results) => results['tcaBalancePnl']);
@@ -676,8 +676,8 @@ export function tcaBalancePnlTimeseries(
   return client
     .execute(
       graphql(`query TcaBalancePnlTimeseries($venueId: VenueId!, $accountId: AccountId!, $fromInclusive: DateTime, $toExclusive: DateTime, $usePurchasingPower: Boolean) {
-  tcaBalancePnlTimeseries(venueId: $venueId, accountId: $accountId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
-}`),
+        tcaBalancePnlTimeseries(venueId: $venueId, accountId: $accountId, fromInclusive: $fromInclusive, toExclusive: $toExclusive, usePurchasingPower: $usePurchasingPower) { __typename ${fields.join(' ')} }
+      }`),
       { venueId, accountId, fromInclusive, toExclusive, usePurchasingPower },
     )
     .then((results) => results['tcaBalancePnlTimeseries']);
@@ -693,8 +693,8 @@ export function coinInfos(fields) {
   return client
     .execute(
       graphql(`query CoinInfos {
-  coinInfos { __typename ${fields.join(' ')} }
-}`),
+        coinInfos { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['coinInfos']);
 }
@@ -710,8 +710,8 @@ export function coinInfo(fields, product) {
   return client
     .execute(
       graphql(`query CoinInfo($product: ProductId!) {
-  coinInfo(product: $product) { __typename ${fields.join(' ')} }
-}`),
+        coinInfo(product: $product) { __typename ${fields.join(' ')} }
+      }`),
       { product },
     )
     .then((results) => results['coinInfo']);
@@ -727,8 +727,8 @@ export function cmeProductGroupInfos(fields) {
   return client
     .execute(
       graphql(`query CmeProductGroupInfos {
-  cmeProductGroupInfos { __typename ${fields.join(' ')} }
-}`),
+        cmeProductGroupInfos { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => results['cmeProductGroupInfos']);
 }
@@ -744,8 +744,8 @@ export function algoOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query AlgoOrder($orderId: OrderId!) {
-  algoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        algoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['algoOrder']);
@@ -762,8 +762,8 @@ export function algoStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query AlgoStatus($orderId: OrderId) {
-  algoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        algoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['algoStatus']);
@@ -780,8 +780,8 @@ export function algoLog(fields, orderId) {
   return client
     .execute(
       graphql(`query AlgoLog($orderId: OrderId!) {
-  algoLog(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        algoLog(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['algoLog']);
@@ -798,8 +798,8 @@ export function twapOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query TwapOrder($orderId: OrderId!) {
-  twapOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        twapOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['twapOrder']);
@@ -816,8 +816,8 @@ export function twapStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query TwapStatus($orderId: OrderId) {
-  twapStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        twapStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['twapStatus']);
@@ -834,8 +834,8 @@ export function povOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query PovOrder($orderId: OrderId!) {
-  povOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        povOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['povOrder']);
@@ -852,8 +852,8 @@ export function povStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query PovStatus($orderId: OrderId) {
-  povStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        povStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['povStatus']);
@@ -870,8 +870,8 @@ export function smartOrderRouterOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
-  smartOrderRouterOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        smartOrderRouterOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['smartOrderRouterOrder']);
@@ -888,8 +888,8 @@ export function smartOrderRouterStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
-  smartOrderRouterStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        smartOrderRouterStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['smartOrderRouterStatus']);
@@ -906,8 +906,8 @@ export function mmAlgoOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query MmAlgoOrder($orderId: OrderId!) {
-  mmAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        mmAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['mmAlgoOrder']);
@@ -924,8 +924,8 @@ export function spreadAlgoOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
-  spreadAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        spreadAlgoOrder(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['spreadAlgoOrder']);
@@ -942,8 +942,8 @@ export function mmAlgoStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query MmAlgoStatus($orderId: OrderId) {
-  mmAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        mmAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['mmAlgoStatus']);
@@ -960,8 +960,8 @@ export function spreadAlgoStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query SpreadAlgoStatus($orderId: OrderId) {
-  spreadAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
-}`),
+        spreadAlgoStatus(orderId: $orderId) { __typename ${fields.join(' ')} }
+      }`),
       { orderId },
     )
     .then((results) => results['spreadAlgoStatus']);
@@ -977,8 +977,8 @@ export function createApiKey(fields) {
   return client
     .execute(
       graphql(`mutation CreateApiKey {
-  createApiKey { __typename ${fields.join(' ')} }
-}`),
+        createApiKey { __typename ${fields.join(' ')} }
+      }`),
     )
     .then((results) => {
       /** @type {Awaited<ApiKey>} */
@@ -997,8 +997,8 @@ export function createTelegramApiKey(fields, telegramId) {
   return client
     .execute(
       graphql(`mutation CreateTelegramApiKey($telegramId: String!) {
-  createTelegramApiKey(telegramId: $telegramId) { __typename ${fields.join(' ')} }
-}`),
+        createTelegramApiKey(telegramId: $telegramId) { __typename ${fields.join(' ')} }
+      }`),
       { telegramId },
     )
     .then((results) => {
@@ -1015,8 +1015,8 @@ export function removeTelegramApiKeys() {
   return client
     .execute(
       graphql(`mutation RemoveTelegramApiKeys {
-  removeTelegramApiKeys
-}`),
+        removeTelegramApiKeys
+      }`),
     )
     .then((results) => {
       /** @type {Awaited<Boolean>} */
@@ -1033,8 +1033,8 @@ export function removeApiKey(apiKey) {
   return client
     .execute(
       graphql(`mutation RemoveApiKey($apiKey: String!) {
-  removeApiKey(apiKey: $apiKey)
-}`),
+        removeApiKey(apiKey: $apiKey)
+      }`),
       { apiKey },
     )
     .then((results) => {
@@ -1053,8 +1053,8 @@ export function setCredentials(credentials, componentId) {
   return client
     .execute(
       graphql(`mutation SetCredentials($credentials: String!, $componentId: ComponentId!) {
-  setCredentials(credentials: $credentials, componentId: $componentId)
-}`),
+        setCredentials(credentials: $credentials, componentId: $componentId)
+      }`),
       { credentials, componentId },
     )
     .then((results) => {
@@ -1074,8 +1074,8 @@ export function updateMarket(fields, payload) {
   return client
     .execute(
       graphql(`mutation UpdateMarket($payload: UpdateMarket!) {
-  updateMarket(payload: $payload) { __typename ${fields.join(' ')} }
-}`),
+        updateMarket(payload: $payload) { __typename ${fields.join(' ')} }
+      }`),
       { payload },
     )
     .then((results) => {
@@ -1093,8 +1093,8 @@ export function createOrder(order) {
   return client
     .execute(
       graphql(`mutation CreateOrder($order: CreateOrder!) {
-  createOrder(order: $order)
-}`),
+        createOrder(order: $order)
+      }`),
       { order },
     )
     .then((results) => {
@@ -1112,8 +1112,8 @@ export function createOrders(orders) {
   return client
     .execute(
       graphql(`mutation CreateOrders($orders: [CreateOrder!]!) {
-  createOrders(orders: $orders)
-}`),
+        createOrders(orders: $orders)
+      }`),
       { orders },
     )
     .then((results) => {
@@ -1131,8 +1131,8 @@ export function cancelOrder(orderId) {
   return client
     .execute(
       graphql(`mutation CancelOrder($orderId: OrderId!) {
-  cancelOrder(orderId: $orderId)
-}`),
+        cancelOrder(orderId: $orderId)
+      }`),
       { orderId },
     )
     .then((results) => {
@@ -1150,8 +1150,8 @@ export function cancelOrders(orderIds) {
   return client
     .execute(
       graphql(`mutation CancelOrders($orderIds: [OrderId!]!) {
-  cancelOrders(orderIds: $orderIds)
-}`),
+        cancelOrders(orderIds: $orderIds)
+      }`),
       { orderIds },
     )
     .then((results) => {
@@ -1170,8 +1170,8 @@ export function cancelAllOrders(venueId) {
   return client
     .execute(
       graphql(`mutation CancelAllOrders($venueId: VenueId) {
-  cancelAllOrders(venueId: $venueId)
-}`),
+        cancelAllOrders(venueId: $venueId)
+      }`),
       { venueId },
     )
     .then((results) => {
@@ -1189,8 +1189,8 @@ export function sendAlgoControlCommand(command, orderId) {
   return client
     .execute(
       graphql(`mutation SendAlgoControlCommand($command: AlgoControlCommand!, $orderId: OrderId!) {
-  sendAlgoControlCommand(command: $command, orderId: $orderId)
-}`),
+        sendAlgoControlCommand(command: $command, orderId: $orderId)
+      }`),
       { command, orderId },
     )
     .then((results) => {
@@ -1208,8 +1208,8 @@ export function createTwapAlgo(twapAlgo) {
   return client
     .execute(
       graphql(`mutation CreateTwapAlgo($twapAlgo: CreateTwapAlgo!) {
-  createTwapAlgo(twapAlgo: $twapAlgo)
-}`),
+        createTwapAlgo(twapAlgo: $twapAlgo)
+      }`),
       { twapAlgo },
     )
     .then((results) => {
@@ -1227,8 +1227,8 @@ export function createPovAlgo(povAlgo) {
   return client
     .execute(
       graphql(`mutation CreatePovAlgo($povAlgo: CreatePovAlgo!) {
-  createPovAlgo(povAlgo: $povAlgo)
-}`),
+        createPovAlgo(povAlgo: $povAlgo)
+      }`),
       { povAlgo },
     )
     .then((results) => {
@@ -1248,8 +1248,8 @@ export function previewSmartOrderRouterAlgo(fields, algo) {
   return client
     .execute(
       graphql(`mutation PreviewSmartOrderRouterAlgo($algo: CreateSmartOrderRouterAlgo!) {
-  previewSmartOrderRouterAlgo(algo: $algo) { __typename ${fields.join(' ')} }
-}`),
+        previewSmartOrderRouterAlgo(algo: $algo) { __typename ${fields.join(' ')} }
+      }`),
       { algo },
     )
     .then((results) => {
@@ -1267,8 +1267,8 @@ export function createSmartOrderRouterAlgo(algo) {
   return client
     .execute(
       graphql(`mutation CreateSmartOrderRouterAlgo($algo: CreateSmartOrderRouterAlgo!) {
-  createSmartOrderRouterAlgo(algo: $algo)
-}`),
+        createSmartOrderRouterAlgo(algo: $algo)
+      }`),
       { algo },
     )
     .then((results) => {
@@ -1286,8 +1286,8 @@ export function createMmAlgo(mmAlgo) {
   return client
     .execute(
       graphql(`mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
-  createMmAlgo(mmAlgo: $mmAlgo)
-}`),
+        createMmAlgo(mmAlgo: $mmAlgo)
+      }`),
       { mmAlgo },
     )
     .then((results) => {
@@ -1305,8 +1305,8 @@ export function createSpreadAlgo(spreadAlgo) {
   return client
     .execute(
       graphql(`mutation CreateSpreadAlgo($spreadAlgo: CreateSpreadAlgo!) {
-  createSpreadAlgo(spreadAlgo: $spreadAlgo)
-}`),
+        createSpreadAlgo(spreadAlgo: $spreadAlgo)
+      }`),
       { spreadAlgo },
     )
     .then((results) => {

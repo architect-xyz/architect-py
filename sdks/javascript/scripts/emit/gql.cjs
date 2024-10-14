@@ -68,8 +68,8 @@ function template(node) {
   const fields = resolveReturnValue(node);
 
   return `${capitalize(node.name.value)}${params} {
-  ${node.name.value}${queryParams}${fields ? ' ' + fields : ''}
-}`;
+        ${node.name.value}${queryParams}${fields ? ' ' + fields : ''}
+      }`;
 }
 
 module.exports = {
