@@ -48,7 +48,7 @@ function createVisitor(queryType) {
             ? `results => results['${node.name.value}']`
             : queryType === 'mutation'
               ? `results => {
-    /** @type {Awaited<ReturnType<typeof ${node.name.value}>>} */
+    /** @type {Awaited<${resolveReturnType(node)}>} */
     return results['${node.name.value}'];
   }`
               : 'TODO';

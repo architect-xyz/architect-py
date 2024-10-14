@@ -19,7 +19,12 @@ console.log('apiKeys\n', a, '\n');
 
 // Mutations
 /*  */
-const key = await sdk.createApiKey(['apiSecret', 'apiKey', 'subject', 'created']);
+const key = await sdk.createApiKey([
+  'apiSecret',
+  'apiKey',
+  'subject',
+  'created',
+]);
 console.log('api key', key);
 /*
 api key {
@@ -32,18 +37,27 @@ api key {
 */
 const deleteKey = await sdk.removeApiKey(key.apiKey);
 console.log('delete key?', deleteKey);
-console.log('apiKeys\n',
+console.log(
+  'apiKeys\n',
   await sdk.listApiKeys([
     '__typename',
     'apiKey',
     'created',
     'subject',
     'apiSecret',
-  ]), '\n');
+  ]),
+  '\n',
+);
 
 try {
-  const h = await sdk.createTelegramApiKey(['apiKey', 'created', 'subject', 'apiSecret'], 'heyo');
+  const h = await sdk.createTelegramApiKey(
+    ['apiKey', 'created', 'subject', 'apiSecret'],
+    'heyo',
+  );
   console.log('telegram', h);
 } catch (e) {
-  console.log('Telegram failed like expected', e.message)
+  console.log(
+    'Telegram failed like expected',
+    e && typeof e === 'object' && 'message' in e ? e.message : e,
+  );
 }
