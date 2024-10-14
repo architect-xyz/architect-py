@@ -29,14 +29,15 @@ export class Client {
    * @param {Config} config API client config
    */
   constructor(config) {
-    this.config = config;
+    // Resolve host to the graphql endpoint
+    const host = config.host.includes('4567') ? config.host : config.host.replace(/\/$/, ':4567/')
     /**
      * GraphQL client that can execute queries against the GraphQL Server
      * @type {ReturnType<typeof createGraphqlClient>}
      * @public
      */
     this.client = createGraphqlClient({
-      url: `${config.host}api/graphql`,
+      url: `${host}graphql`,
       headers: {
         Authorization: `Basic ${config.apiKey} ${config.apiSecret}`,
       },
