@@ -8,7 +8,6 @@ const config: CodegenConfig = {
     afterAllFileWrite: ['biome format --write'],
   },
   generates: {
-    /*
     './src/graphql/': {
       preset: 'client',
       config: {
@@ -34,7 +33,6 @@ const config: CodegenConfig = {
         },
       },
     },
-    */
     './schema.graphql': {
       plugins: ['schema-ast'],
       config: {

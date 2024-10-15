@@ -28,7 +28,8 @@ function fail(message) {
 
 async function validateEnvironment() {
   const onMain = (await $`git rev-parse --abbrev-ref HEAD`) === 'main';
-  const remoteHead = await $`git fetch origin main && git rev-parse origin/main`;
+  const remoteHead =
+    await $`git fetch origin main && git rev-parse origin/main`;
   const localHead = await $`git rev-parse HEAD`;
   const upToDate = remoteHead === localHead;
   if (onMain === false) {
@@ -47,7 +48,7 @@ function validateAnalysis() {
     $`npm run typecheck`,
     // TODO biome doesn’t support this option like prettier...probably fine
     // $`biome format --check`
-  ]).catch(err => {
+  ]).catch((err) => {
     if (err.stdout.includes('tsc --noEmit')) {
       fail('Types are not valid. Ensure `tsc --noEmit` passes cleanly.');
     } else {
@@ -73,4 +74,3 @@ try {
 }
 
 // Build
-

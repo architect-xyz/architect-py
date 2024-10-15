@@ -33,6 +33,7 @@ export class Client {
     const host = config.host.includes('4567')
       ? config.host
       : config.host.replace(/\/$/, ':4567/');
+
     /**
      * GraphQL client that can execute queries against the GraphQL Server
      * @type {ReturnType<typeof createGraphqlClient>}
