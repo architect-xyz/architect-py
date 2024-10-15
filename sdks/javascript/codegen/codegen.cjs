@@ -9,20 +9,18 @@ const {
 
 /**
  * @typedef {Object} Config
- * @property {{[key: string]: string}} scalars scalar mapping
+ * @property {'debugging' | 'production'} mode Emitting mode
  */
 
-/*
-const PREFIX = `/**
+const PROD_PREFIX = `/**
  * Copyright (c) Architect Financial Technologies, Inc. and affiliates.
  *
  * This source code is licensed under the Apache 2.0 license found in the
  *
  * LICENSE file in the root directory of this source tree.
- *`;
-*/
+ */`;
 
-const PREFIX = `/**
+const DEBUG_PREFIX = `/**
  * Temp file for iteratively building the JS SDK codegen
  */`;
 
@@ -68,10 +66,12 @@ module.exports = {
   /***
    * @param {import('graphql').GraphQLSchema} schema
    * @param {import('graphql').DocumentNode} documents
-   * @param {Config} _config Plugin configuration
+   * @param {Config} config Plugin configuration
    * @param {unknown} info
    */
-  plugin(schema, _documents, _config) {
+  plugin(schema, _documents, config) {
+    const PREFIX = config.mode === 'production' ? PROD_PREFIX : DEBUG_PREFIX;
+
     const typeMap = schema.getTypeMap();
 
     const queries = visit(

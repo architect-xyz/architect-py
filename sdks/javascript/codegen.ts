@@ -41,8 +41,14 @@ const config: CodegenConfig = {
         includeDirectives: true,
       },
     },
-    './src/sdk.mjs': { plugins: ['./scripts/codegen.cjs'] },
-    './demo/output.mjs': { plugins: ['./scripts/codegen.cjs'] },
+    './src/sdk.mjs': {
+      plugins: ['./codegen/codegen.cjs'],
+      config: { mode: 'production' },
+    },
+    './demo/output.mjs': {
+      plugins: ['./codegen/codegen.cjs'],
+      config: { mode: 'debugging' },
+    },
   },
 };
 

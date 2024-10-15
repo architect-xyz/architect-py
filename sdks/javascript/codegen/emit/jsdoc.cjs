@@ -26,7 +26,7 @@ function typemap(typemap) {
       : '';
     if (type instanceof GraphQLScalarType) {
       return scalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').Scalars['${key}']['output'] } ${key}${description} `,
+        ` * @typedef { import('../src/graphql/graphql.ts').Scalars['${key}']['output'] } ${key}${description}`,
       );
     } else {
       // ignore graphql native types
@@ -34,7 +34,7 @@ function typemap(typemap) {
 
       // TODO: Handle double uppercase the same as the builtin codegen
       return nonScalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description} `,
+        ` * @typedef { import('../src/graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description}`,
       );
     }
   });

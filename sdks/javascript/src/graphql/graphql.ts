@@ -44,7 +44,7 @@ export type Scalars = {
    * * `0x0` -- None/executor/broadcast
    * * `0xFFFF` -- Self/loopback
    */
-  ComponentId: { input: any; output: any };
+  ComponentId: { input: string; output: string };
   /**
    * Date in the proleptic Gregorian calendar (without time zone).
    *
@@ -58,7 +58,7 @@ export type Scalars = {
    * [1]: https://graphql-scalars.dev/docs/scalars/date
    * [2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
    */
-  Date: { input: any; output: any };
+  Date: { input: string; output: string };
   /**
    * Combined date and time (with time zone) in [RFC 3339][0] format.
    *
@@ -97,7 +97,7 @@ export type Scalars = {
    */
   Dir: { input: 'buy' | 'sell'; output: 'buy' | 'sell' };
   /** The ID of a fill */
-  FillId: { input: any; output: any };
+  FillId: { input: string; output: string };
   /**
    * Wrapper type around a UUIDv5 for a given namespace.  These types are
    * parseable from either the UUIDv5 string representation, or from the
