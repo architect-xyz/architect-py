@@ -106,13 +106,23 @@ class JsonWsServer:
 
         while True:
             response = method()
-            await websocket.send(json.dumps(response))
+            await websocket.send(
+                json.dumps(
+                    {
+                        "id": id,
+                        "type": "update",
+                        "data": response,
+                    }
+                )
+            )
             await asyncio.sleep(5)
 
     def match_method(self, method: str) -> Optional[Callable]:
+        # for queries
         raise NotImplementedError
 
     def match_topic(self, topic: str) -> Optional[Callable]:
+        # for subscriptions
         raise NotImplementedError
 
     def get_symbology_snapshot(self) -> Dict[str, Any]:
