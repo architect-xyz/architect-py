@@ -230,7 +230,7 @@ export async function routes(fields) {
  * @template {keyof Route} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {RouteId} id
- * @returns {Promise<Pick<Route, Fields | '__typename'>>}
+ * @returns {Promise<Pick<Route, Fields | '__typename'> | null>}
  **/
 export async function route(fields, id) {
   return client
@@ -265,7 +265,7 @@ export async function venues(fields) {
  * @template {keyof Venue} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {VenueId} id
- * @returns {Promise<Pick<Venue, Fields | '__typename'>>}
+ * @returns {Promise<Pick<Venue, Fields | '__typename'> | null>}
  **/
 export async function venue(fields, id) {
   return client
@@ -302,7 +302,7 @@ export async function products(fields, id) {
  * @template {keyof Product} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {ProductId} id
- * @returns {Promise<Pick<Product, Fields | '__typename'>>}
+ * @returns {Promise<Pick<Product, Fields | '__typename'> | null>}
  **/
 export async function product(fields, id) {
   return client
@@ -339,7 +339,7 @@ export async function markets(fields, id) {
  * @template {keyof Market} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {MarketId} id
- * @returns {Promise<Pick<Market, Fields | '__typename'>>}
+ * @returns {Promise<Pick<Market, Fields | '__typename'> | null>}
  **/
 export async function market(fields, id) {
   return client
@@ -405,7 +405,7 @@ latest_at_or_before is provided, the most recent snapshot is returned.
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {MarketId} market
  * @param {DateTime} [latestAtOrBefore]
- * @returns {Promise<Pick<MarketSnapshot, Fields | '__typename'>>}
+ * @returns {Promise<Pick<MarketSnapshot, Fields | '__typename'> | null>}
  **/
 export async function marketSnapshot(fields, market, latestAtOrBefore) {
   return client
@@ -521,7 +521,7 @@ export async function fills(fields, venue, route, base, quote) {
  * @template {keyof OrderLog} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<OrderLog, Fields | '__typename'>>}
+ * @returns {Promise<Pick<OrderLog, Fields | '__typename'> | null>}
  **/
 export async function order(fields, orderId) {
   return client
@@ -723,7 +723,7 @@ export async function coinInfos(fields) {
  * @template {keyof CoinInfo} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {ProductId} product
- * @returns {Promise<Pick<CoinInfo, Fields | '__typename'>>}
+ * @returns {Promise<Pick<CoinInfo, Fields | '__typename'> | null>}
  **/
 export async function coinInfo(fields, product) {
   return client
@@ -757,7 +757,7 @@ export async function cmeProductGroupInfos(fields) {
  * @template {keyof AlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<AlgoOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<AlgoOrder, Fields | '__typename'> | null>}
  **/
 export async function algoOrder(fields, orderId) {
   return client
@@ -793,7 +793,7 @@ export async function algoStatus(fields, orderId) {
  * @template {keyof AlgoLog} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<AlgoLog, Fields | '__typename'>>}
+ * @returns {Promise<Pick<AlgoLog, Fields | '__typename'> | null>}
  **/
 export async function algoLog(fields, orderId) {
   return client
@@ -811,7 +811,7 @@ export async function algoLog(fields, orderId) {
  * @template {keyof TwapOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<TwapOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<TwapOrder, Fields | '__typename'> | null>}
  **/
 export async function twapOrder(fields, orderId) {
   return client
@@ -847,7 +847,7 @@ export async function twapStatus(fields, orderId) {
  * @template {keyof PovAlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<PovAlgoOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<PovAlgoOrder, Fields | '__typename'> | null>}
  **/
 export async function povOrder(fields, orderId) {
   return client
@@ -883,7 +883,7 @@ export async function povStatus(fields, orderId) {
  * @template {keyof SmartOrderRouterOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<SmartOrderRouterOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<SmartOrderRouterOrder, Fields | '__typename'> | null>}
  **/
 export async function smartOrderRouterOrder(fields, orderId) {
   return client
@@ -919,7 +919,7 @@ export async function smartOrderRouterStatus(fields, orderId) {
  * @template {keyof MmAlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'> | null>}
  **/
 export async function mmAlgoOrder(fields, orderId) {
   return client
@@ -937,7 +937,7 @@ export async function mmAlgoOrder(fields, orderId) {
  * @template {keyof MmAlgoOrder} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {OrderId} orderId
- * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'>>}
+ * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'> | null>}
  **/
 export async function spreadAlgoOrder(fields, orderId) {
   return client
@@ -999,10 +999,7 @@ export async function createApiKey(fields) {
         createApiKey { __typename ${fields.join(' ')} }
       }`),
     )
-    .then((results) => {
-      /** @type {Awaited<ApiKey>} */
-      return results['createApiKey'];
-    });
+    .then((results) => results['createApiKey']);
 }
 
 /**
@@ -1020,10 +1017,7 @@ export async function createTelegramApiKey(fields, telegramId) {
       }`),
       { telegramId },
     )
-    .then((results) => {
-      /** @type {Awaited<ApiKey>} */
-      return results['createTelegramApiKey'];
-    });
+    .then((results) => results['createTelegramApiKey']);
 }
 
 /**
@@ -1037,10 +1031,7 @@ export async function removeTelegramApiKeys() {
         removeTelegramApiKeys
       }`),
     )
-    .then((results) => {
-      /** @type {Awaited<Boolean>} */
-      return results['removeTelegramApiKeys'];
-    });
+    .then((results) => results['removeTelegramApiKeys']);
 }
 
 /**
@@ -1056,10 +1047,7 @@ export async function removeApiKey(apiKey) {
       }`),
       { apiKey },
     )
-    .then((results) => {
-      /** @type {Awaited<Boolean>} */
-      return results['removeApiKey'];
-    });
+    .then((results) => results['removeApiKey']);
 }
 
 /**
@@ -1076,10 +1064,7 @@ export async function setCredentials(credentials, componentId) {
       }`),
       { credentials, componentId },
     )
-    .then((results) => {
-      /** @type {Awaited<Boolean>} */
-      return results['setCredentials'];
-    });
+    .then((results) => results['setCredentials']);
 }
 
 /**
@@ -1087,7 +1072,7 @@ export async function setCredentials(credentials, componentId) {
  * @template {keyof Market} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {UpdateMarket} payload
- * @returns {Promise<Pick<Market, Fields | '__typename'>>}
+ * @returns {Promise<Pick<Market, Fields | '__typename'> | null>}
  **/
 export async function updateMarket(fields, payload) {
   return client
@@ -1097,10 +1082,7 @@ export async function updateMarket(fields, payload) {
       }`),
       { payload },
     )
-    .then((results) => {
-      /** @type {Awaited<Market>} */
-      return results['updateMarket'];
-    });
+    .then((results) => results['updateMarket']);
 }
 
 /**
@@ -1116,10 +1098,7 @@ export async function createOrder(order) {
       }`),
       { order },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createOrder'];
-    });
+    .then((results) => results['createOrder']);
 }
 
 /**
@@ -1135,10 +1114,7 @@ export async function createOrders(orders) {
       }`),
       { orders },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createOrders'];
-    });
+    .then((results) => results['createOrders']);
 }
 
 /**
@@ -1154,10 +1130,7 @@ export async function cancelOrder(orderId) {
       }`),
       { orderId },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['cancelOrder'];
-    });
+    .then((results) => results['cancelOrder']);
 }
 
 /**
@@ -1173,17 +1146,14 @@ export async function cancelOrders(orderIds) {
       }`),
       { orderIds },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['cancelOrders'];
-    });
+    .then((results) => results['cancelOrders']);
 }
 
 /**
  * Cancel all orders on component, regardless of architect order state
 If venue is specified it will act as filter if the component manages multiple counterparties (oms for example)
  * @param {VenueId} [venueId]
- * @returns {Promise<VenueId>}
+ * @returns {Promise<VenueId | null>}
  **/
 export async function cancelAllOrders(venueId) {
   return client
@@ -1193,10 +1163,7 @@ export async function cancelAllOrders(venueId) {
       }`),
       { venueId },
     )
-    .then((results) => {
-      /** @type {Awaited<VenueId>} */
-      return results['cancelAllOrders'];
-    });
+    .then((results) => results['cancelAllOrders']);
 }
 
 /**
@@ -1212,10 +1179,7 @@ export async function sendAlgoControlCommand(command, orderId) {
       }`),
       { command, orderId },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['sendAlgoControlCommand'];
-    });
+    .then((results) => results['sendAlgoControlCommand']);
 }
 
 /**
@@ -1231,10 +1195,7 @@ export async function createTwapAlgo(twapAlgo) {
       }`),
       { twapAlgo },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createTwapAlgo'];
-    });
+    .then((results) => results['createTwapAlgo']);
 }
 
 /**
@@ -1250,10 +1211,7 @@ export async function createPovAlgo(povAlgo) {
       }`),
       { povAlgo },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createPovAlgo'];
-    });
+    .then((results) => results['createPovAlgo']);
 }
 
 /**
@@ -1261,7 +1219,7 @@ export async function createPovAlgo(povAlgo) {
  * @template {keyof AlgoPreview} Fields
  * @param {Array<Fields>} fields Fields to select in response type
  * @param {CreateSmartOrderRouterAlgo} algo
- * @returns {Promise<Pick<AlgoPreview, Fields | '__typename'>>}
+ * @returns {Promise<Pick<AlgoPreview, Fields | '__typename'> | null>}
  **/
 export async function previewSmartOrderRouterAlgo(fields, algo) {
   return client
@@ -1271,10 +1229,7 @@ export async function previewSmartOrderRouterAlgo(fields, algo) {
       }`),
       { algo },
     )
-    .then((results) => {
-      /** @type {Awaited<AlgoPreview>} */
-      return results['previewSmartOrderRouterAlgo'];
-    });
+    .then((results) => results['previewSmartOrderRouterAlgo']);
 }
 
 /**
@@ -1290,10 +1245,7 @@ export async function createSmartOrderRouterAlgo(algo) {
       }`),
       { algo },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createSmartOrderRouterAlgo'];
-    });
+    .then((results) => results['createSmartOrderRouterAlgo']);
 }
 
 /**
@@ -1309,10 +1261,7 @@ export async function createMmAlgo(mmAlgo) {
       }`),
       { mmAlgo },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createMmAlgo'];
-    });
+    .then((results) => results['createMmAlgo']);
 }
 
 /**
@@ -1328,8 +1277,5 @@ export async function createSpreadAlgo(spreadAlgo) {
       }`),
       { spreadAlgo },
     )
-    .then((results) => {
-      /** @type {Awaited<OrderId>} */
-      return results['createSpreadAlgo'];
-    });
+    .then((results) => results['createSpreadAlgo']);
 }

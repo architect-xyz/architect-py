@@ -8,6 +8,11 @@ const config: CodegenConfig = {
     afterAllFileWrite: ['biome format --write'],
   },
   generates: {
+    /**
+     * This emitter has a bug that we have to manually patch. Only need to
+     * enable it whenever updating the schema.
+     * https://github.com/dotansimha/graphql-code-generator/issues/10176
+     *
     './src/graphql/': {
       preset: 'client',
       config: {
@@ -32,6 +37,7 @@ const config: CodegenConfig = {
         },
       },
     },
+    */
     './schema.graphql': {
       plugins: ['schema-ast'],
       config: {

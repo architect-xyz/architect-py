@@ -46,15 +46,7 @@ function createVisitor(queryType) {
         const returnType = resolveReturnType(node);
         const fields = isPrimitive(returnType) ? '' : 'fields, ';
         const vars = variables(node);
-        const deserializer =
-          queryType === 'query'
-            ? `results => results['${node.name.value}']`
-            : queryType === 'mutation'
-              ? `results => {
-    /** @type {Awaited<${returnType}>} */
-    return results['${node.name.value}'];
-  }`
-              : 'TODO';
+        const deserializer = `results => results['${node.name.value}']`;
 
         return `${jsdoc.docblock(node)}
 export async function ${node.name.value}(${fields}${args(node)}) {

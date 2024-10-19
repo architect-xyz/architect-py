@@ -32,8 +32,6 @@ export { readFragment } from 'gql.tada';
  **/
 export const graphql = initGraphQLTada();
 
-
-
 /**
  * @typedef {Object} Config API client config
  * @property {string} host API Host

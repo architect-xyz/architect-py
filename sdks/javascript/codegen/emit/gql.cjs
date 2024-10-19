@@ -41,17 +41,14 @@ function resolveReturnValue(node) {
  */
 function kind(t) {
   switch (t.kind) {
-    case Kind.NON_NULL_TYPE: {
-      // TODO: if not required, emit `[paramName]` syntax
+    case Kind.NON_NULL_TYPE:
       return `${kind(t.type)}!`;
-    }
-    case Kind.LIST_TYPE: {
+    case Kind.LIST_TYPE:
       return `[${kind(t.type)}]`;
-    }
     case Kind.NAMED_TYPE:
       return t.name.value;
     default:
-      throw new TypeError(`Unexpected kind type k`);
+      exhaustive(t);
   }
 }
 

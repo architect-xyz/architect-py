@@ -32,7 +32,6 @@ function typemap(typemap) {
       // ignore graphql native types
       if (key.startsWith('__')) return;
 
-      // TODO: Handle double uppercase the same as the builtin codegen
       return nonScalars.push(
         ` * @typedef { import('../src/graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description}`,
       );
@@ -65,6 +64,7 @@ function docblock(node) {
     node.type.kind === Kind.LIST_TYPE ||
     (node.type.kind === Kind.NON_NULL_TYPE &&
       node.type.type.kind === Kind.LIST_TYPE);
+  const isNullable = node.type.kind !== Kind.NON_NULL_TYPE;
 
   const returnType = resolveReturnType(node);
   const isScalar = isPrimitive(returnType);
@@ -82,11 +82,12 @@ function docblock(node) {
     code.push(...args.map(param));
   }
 
-  // TODO: update to this sort of syntax to reuse the other codegen emit
+  // TODO: consider updating to the sort of syntax to reuse the other codegen emit
   // * @returns {Promise<import('../src/graphql/graphql.ts').MutationRoot['createMmAlgo']>}
   const returnTypeDef = isScalar
-    ? `@returns {Promise<${returnType}${isList ? '[]' : ''}>}`
-    : `@returns {Promise<Pick<${returnType}, Fields | '__typename'>${isList ? '[]' : ''}>}`;
+    ? `@returns {Promise<${returnType}${isList ? '[]' : ''}${isNullable ? ' | null' : ''}>}`
+    : `@returns {Promise<Pick<${returnType}, Fields | '__typename'>${isList ? '[]' : ''}${isNullable ? ' | null' : ''}>}`;
+
   code.push(returnTypeDef);
 
   return code.join('\n * ') + '\n **/';
@@ -99,12 +100,10 @@ function docblock(node) {
 function kind(t) {
   switch (t.kind) {
     case Kind.NON_NULL_TYPE: {
-      // console.log(t, omitLoc(t));
       // TODO: if not required, emit `[paramName]` syntax
       return kind(t.type);
     }
     case Kind.LIST_TYPE: {
-      // console.log(t, omitLoc(t));
       return `${kind(t.type)}[]`;
     }
     case Kind.NAMED_TYPE:

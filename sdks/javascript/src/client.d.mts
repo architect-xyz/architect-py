@@ -2,27 +2,30 @@
  * @param {Config} config API client config
  */
 export function createClient(config: Config): void;
-export const graphql: ReturnType<typeof initGraphQLTada<{
-  introspection: introspection;
-  scalars: {
-    Date: string;
-    DateTime: string;
-    Decimal: string;
-    AccountId: string;
-    UserId: string;
-    OrderId: string;
-    MarketId: string;
-    VenueId: string;
-    RouteId: string;
-    ProductId: string;
-    ComponentId: string;
-    FillId: string;
-    Dir: "buy" | "sell";
-    Str: string;
-    OrderSource: string;
-  };
-}>>;
-export { readFragment } from "gql.tada";
+export const graphql: ReturnType<
+  typeof initGraphQLTada<{
+    introspection: introspection;
+    scalars: {
+      Date: string;
+      DateTime: string;
+      Decimal: string;
+      AccountId: string;
+      UserId: string;
+      OrderId: string;
+      MarketId: string;
+      VenueId: string;
+      RouteId: string;
+      ProductId: string;
+      ComponentId: string;
+      FillId: string;
+      Dir: 'buy' | 'sell';
+      Str: string;
+      OrderSource: string;
+    };
+  }>
+>;
+export { readFragment } from 'gql.tada';
+
 /**
  * @typedef {Object} Config API client config
  * @property {string} host API Host
@@ -62,9 +65,12 @@ export class Client {
    * @param {Variables} [variables] query variables
    * @returns {Promise<Result>}
    */
-  execute<Result, Variables>(query: import("gql.tada").TadaDocumentNode<Result, Variables>, variables?: Variables | undefined): Promise<Result>;
+  execute<Result, Variables>(
+    query: import('gql.tada').TadaDocumentNode<Result, Variables>,
+    variables?: Variables | undefined,
+  ): Promise<Result>;
 }
-export type introspection = import("./graphql-env.d.ts").introspection;
+export type introspection = import('./graphql-env.d.ts').introspection;
 /**
  * API client config
  */

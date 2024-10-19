@@ -36,7 +36,7 @@ function exhaustive(no) {
 function once(fn) {
   let called = false;
   let result;
-  return function (...args) {
+  return function(...args) {
     if (called) {
       return result;
     }
@@ -53,7 +53,6 @@ function once(fn) {
  * @returns Boolean
  */
 function isPrimitive(nodeType) {
-  // TODO: only NamedType
   switch (nodeType) {
     case 'String':
     case 'Boolean':
