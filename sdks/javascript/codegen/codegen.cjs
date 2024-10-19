@@ -12,6 +12,10 @@ const {
  * @property {'debugging' | 'production'} mode Emitting mode
  */
 
+/**
+ * TODO: these comment prefixes are primarily to confirm config and emit
+ * differences. Cleanup before releasing.
+ */
 const PROD_PREFIX = `/**
  * Copyright (c) Architect Financial Technologies, Inc. and affiliates.
  *
@@ -39,14 +43,15 @@ function createVisitor(queryType) {
        * @param {import('graphql').FieldDefinitionNode} node
        */
       FieldDefinition(node) {
-        const fields = isPrimitive(resolveReturnType(node)) ? '' : 'fields, ';
+        const returnType = resolveReturnType(node);
+        const fields = isPrimitive(returnType) ? '' : 'fields, ';
         const vars = variables(node);
         const deserializer =
           queryType === 'query'
             ? `results => results['${node.name.value}']`
             : queryType === 'mutation'
               ? `results => {
-    /** @type {Awaited<${resolveReturnType(node)}>} */
+    /** @type {Awaited<${returnType}>} */
     return results['${node.name.value}'];
   }`
               : 'TODO';

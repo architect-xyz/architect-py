@@ -1,0 +1,1496 @@
+schema {
+  query: QueryRoot
+  mutation: MutationRoot
+  subscription: SubscriptionRoot
+}
+
+"""
+Fills which we received but couldn't parse fully, return details
+best effort
+"""
+type AberrantFill {
+  accountId: AccountId
+  dir: Dir
+  fee: Fee
+  fillId: FillId!
+  isMaker: Boolean
+  kind: FillKind
+  market: MarketId
+  orderId: OrderId
+  price: Decimal
+  quantity: Decimal
+  recvTime: DateTime
+  tradeTime: DateTime
+  trader: UserId
+}
+
+type Account {
+  id: AccountId!
+  name: String!
+  venue: Venue
+  venueId: VenueId!
+}
+
+"""
+Wrapper type around a UUIDv5 for a given namespace.  These types are
+parseable from either the UUIDv5 string representation, or from the
+name itself, as they are 1-1.
+"""
+scalar AccountId
+
+type AccountSummaries {
+  byAccount: [AccountSummary!]!
+  snapshotTs: DateTime!
+}
+
+type AccountSummary {
+  account: Account
+  accountId: AccountId!
+  balances: [Balance!]!
+  positions: [Position!]!
+  profitLoss: Decimal
+  venue: Venue
+  venueId: VenueId!
+}
+
+type Ack {
+  order: Order
+  orderId: OrderId!
+}
+
+enum AlgoControlCommand {
+  PAUSE
+  START
+  STOP
+}
+
+enum AlgoKind {
+  CHASER
+  MARKET_MAKER
+  POV
+  SMART_ORDER_ROUTER
+  SPREAD
+  TWAP
+}
+
+type AlgoLog {
+  aberrantFills: [AberrantFill!]!
+  fills: [Fill!]!
+  orderId: OrderId!
+  rejects: [Reject!]!
+}
+
+type AlgoOrder {
+  account: AccountId
+  algo: AlgoKind!
+  markets: [MarketId!]!
+  orderId: OrderId!
+  parentOrderId: OrderId
+  trader: UserId!
+}
+
+type AlgoPreview {
+  orders: [Order!]!
+}
+
+enum AlgoRunningStatus {
+  DONE
+  PAUSED
+  RUNNING
+}
+
+type AlgoStatus {
+  creationTime: DateTime!
+  fractionComplete: Float
+  lastStatusChange: DateTime!
+  order: AlgoOrder
+  orderId: OrderId!
+  status: AlgoRunningStatus!
+}
+
+type ApiKey {
+  apiKey: String!
+  apiSecret: String!
+  created: DateTime!
+  subject: String!
+}
+
+type Balance {
+  account: Account
+  accountId: AccountId!
+  amount: Decimal
+  cashExcess: Decimal
+  marginExcess: Decimal
+  positionMargin: Decimal
+  product: Product
+  productId: ProductId!
+  purchasingPower: Decimal
+  totalMargin: Decimal
+  venue: Venue
+  venueId: VenueId!
+  yesterdayBalance: Decimal
+}
+
+type Book {
+  asks: [BookLevel!]!
+  bids: [BookLevel!]!
+  market: MarketId!
+  timestamp: DateTime!
+}
+
+type BookLevel {
+  amount: Decimal!
+  price: Decimal!
+  total: Decimal!
+}
+
+type Cancel {
+  order: Order
+  orderId: OrderId!
+}
+
+type CancelAll {
+  venueId: VenueId
+}
+
+"""
+NB: buy_volume + sell_volume <> volume; volume may count trades
+that don't have a discernible direction.
+"""
+type CandleV1 {
+  buyVolume: Decimal!
+  close: Decimal!
+  high: Decimal!
+  low: Decimal!
+  open: Decimal!
+  sellVolume: Decimal!
+  time: DateTime!
+  volume: Decimal!
+}
+
+enum CandleWidth {
+  FIFTEEN_MINUTE
+  FIVE_SECOND
+  ONE_DAY
+  ONE_HOUR
+  ONE_MINUTE
+  ONE_SECOND
+}
+
+type CmeProductGroupInfo {
+  altGlobexMinTick: String
+  altGlobexTickConstraint: String
+  altMinQuoteLife: String
+  assetClass: String
+  assetSubClass: String
+  assignmentMethod: String
+  blockTradeEligible: String
+  calendarTickRules: String
+  category: String
+  clearingCabPx: String
+  clearingOrgId: String
+  clearingSymbol: String
+  clearportEligible: String
+  clearportSchedule: String
+  commodityStandards: String
+  contractNotionalAmount: Decimal
+  contraryInstructionsAllowed: String
+  dailyFlag: String
+  daysOrHours: String
+  defaultListingRules: String
+  defaultMinTick: String
+  dirtyPriceRounding: String
+  dirtyPriceTick: String
+  ebfEligible: String
+  efpEligible: String
+  efrEligible: String
+  exchangeClearing: String
+  exchangeGlobex: String
+  exerciseStyle: String
+  exerciseStyleAmericanEuropean: String
+  fixedPayout: Float
+  fixingSource: String
+  fixingTimeZone: String
+  flexEligible: String
+  floorCallSymbol: String
+  floorEligible: String
+  floorListingRules: String
+  floorPutSymbol: String
+  floorSchedule: String
+  fractional: String
+  gcBasketIdentifier: String
+  globexCabPx: String
+  globexDisplayFactor: String
+  globexEligible: String
+  globexGroupCode: String
+  globexGroupDescr: String
+  globexGtEligible: String
+  globexListingRules: String
+  globexMatchAlgo: String
+  globexMinTick: String
+  globexProductCode: String
+  globexSchedule: String
+  goodForSession: String
+  ilinkEligible: String
+  isBticProduct: String
+  isDerivedBlockEligible: String
+  isEfixProduct: String
+  isPmEligible: String
+  isSyntheticProduct: String
+  isTacoProduct: String
+  isTamProduct: String
+  isTasProduct: String
+  isTmacProduct: String
+  itcCode: String
+  itmOtm: String
+  lastDeliveryRules: String
+  lastUpdated: String
+  limitRules: String
+  mainFraction: Int
+  markerStlmtRules: String
+  marketData: String
+  marketSegmentId: Int
+  massQuoteEligible: String
+  masterSymbol: String
+  maxBidAskConstraint: String
+  maxGlobexOrdQty: String
+  mdp3Channel: String
+  midcurveOptionsRules: String
+  midcurveTickRules: String
+  minCabinetTickRules: String
+  minClearportFloorTick: String
+  minClearportTick: String
+  minDaysToMat: String
+  minGlobexOrdQty: String
+  minIncrementalOrder: String
+  minOutrightTick: String
+  minQtrlySerialTick: String
+  minimumHalfTick: String
+  minimumTickNote: String
+  negativePxEligible: String
+  negativeStrikeEligible: String
+  onMtf: String
+  onSef: String
+  optStyle: String
+  otcEligible: String
+  parOrMoney: String
+  priceBand: String
+  priceMultiplier: Decimal
+  pricePrecision: String
+  priceQuotation: String
+  productGuid: String
+  productName: String
+  pxQuoteMethod: String
+  pxUnitOfMeasure: String
+  pxUnitOfMeasureQty: Int
+  quarterlyListingRules: String
+  rbtEligibleInd: String
+  reducedTickNotes: String
+  regularListingRules: String
+  repoYearDays: String
+  reportablePositions: String
+  rfqCrossEligible: String
+  sector: String
+  securityType: CmeSecurityType!
+  serialListingRules: String
+  settlCcy: String
+  settleMethod: String
+  settlePxCcy: String
+  settleUsingFixingPx: String
+  settlementAtExpiration: String
+  settlementLocale: String
+  settlementProcedure: String
+  settlementType: String
+  sizePriorityQty: String
+  spreadPricingConvention: String
+  stdTradingHours: String
+  strategyType: String
+  strikePriceInterval: String
+  subCategory: String
+  subSector: String
+  subfraction: String
+  subtype: String
+  topEligible: String
+  totClearport: String
+  totDefault: String
+  totFloor: String
+  totGlobex: String
+  totLtd: String
+  totMidcurve: String
+  totQuarterly: String
+  totSerial: String
+  tradeCloseOffSet: String
+  tradePxCcy: String
+  tradingCutOffTime: String
+  unitOfMeasure: String
+  unitOfMeasureQty: Decimal
+  url: String
+  valuationMethod: String
+  varCabPxHigh: String
+  varCabPxLow: String
+  variableQtyFlag: String
+}
+
+enum CmeSecurityType {
+  CASH
+  COMBO
+  FRA
+  FUT
+  FWD
+  IDX
+  INDEX
+  IRS
+  OOC
+  OOF
+}
+
+type CoinInfo {
+  circulatingSupply: Decimal
+  fullyDilutedMarketCap: Decimal
+  infiniteSupply: Boolean!
+  marketCap: Decimal
+  maxSupply: Decimal
+  name: String!
+  percentChange1h: Decimal
+  percentChange7d: Decimal
+  percentChange24h: Decimal
+  percentChange30d: Decimal
+  percentChange60d: Decimal
+  percentChange90d: Decimal
+  price: Decimal
+  symbol: String!
+  tags: [String!]!
+  totalSupply: Decimal
+  volume24h: Decimal
+  volumeChange24h: Decimal
+}
+
+"""
+Components within an Architect installation are uniquely identified by a 16-bit integer
+in the range `1..<0xFFFF`.
+
+The integers 0 and 0xFFFF are reserved as special values and MUST NOT be used as component IDs.
+
+Canonical meanings of special values:
+
+* `0x0` -- None/executor/broadcast
+* `0xFFFF` -- Self/loopback
+"""
+scalar ComponentId
+
+type CptyInfo {
+  canSetCredentials: Boolean!
+  componentId: ComponentId!
+  route: Route!
+  venue: Venue!
+}
+
+input CreateMMAlgo {
+  account: AccountId
+  buyQuantity: Decimal!
+  fillLockoutMs: Int!
+  market: MarketId!
+  maxImproveBbo: Decimal!
+  maxPosition: Decimal!
+  minPosition: Decimal!
+  name: Str!
+  orderLockoutMs: Int!
+  positionTilt: Decimal!
+  refDistFrac: Decimal!
+  referencePrice: ReferencePrice!
+  rejectLockoutMs: Int!
+  sellQuantity: Decimal!
+  toleranceFrac: Decimal!
+}
+
+input CreateOrder {
+  account: AccountId
+  dir: Dir!
+  limitPrice: Decimal
+  market: MarketId!
+  orderType: CreateOrderType!
+  postOnly: Boolean
+  quantity: Decimal!
+  quoteId: Str
+  source: OrderSource
+  timeInForce: CreateTimeInForce!
+  triggerPrice: Decimal
+}
+
+enum CreateOrderType {
+  LIMIT
+  STOP_LOSS_LIMIT
+  TAKE_PROFIT_LIMIT
+}
+
+input CreatePovAlgo {
+  account: AccountId
+  dir: Dir!
+  endTime: DateTime!
+  market: MarketId!
+  maxQuantity: Decimal!
+  minOrderQuantity: Decimal!
+  name: Str!
+  orderLockoutMs: Int!
+  takeThroughFrac: Decimal
+  targetVolumeFrac: Decimal!
+}
+
+input CreateSmartOrderRouterAlgo {
+  base: ProductId!
+  dir: Dir!
+  executionTimeLimitMs: Int!
+  limitPrice: Decimal!
+  markets: [MarketId!]!
+  quote: ProductId!
+  targetSize: Decimal!
+}
+
+input CreateSpreadAlgo {
+  account: AccountId
+  buyQuantity: Decimal!
+  fillLockoutMs: Int!
+  hedgeMarket: CreateSpreadAlgoHedgeMarket!
+  market: MarketId!
+  maxImproveBbo: Decimal!
+  maxPosition: Decimal!
+  minPosition: Decimal!
+  name: Str!
+  orderLockoutMs: Int!
+  positionTilt: Decimal!
+  refDistFrac: Decimal!
+  referencePrice: ReferencePrice!
+  rejectLockoutMs: Int!
+  sellQuantity: Decimal!
+  toleranceFrac: Decimal!
+}
+
+input CreateSpreadAlgoHedgeMarket {
+  conversionRatio: Decimal!
+  hedgeFrac: Decimal!
+  market: MarketId!
+  premium: Decimal!
+}
+
+input CreateTimeInForce {
+  goodTilDate: DateTime
+  instruction: CreateTimeInForceInstruction!
+}
+
+enum CreateTimeInForceInstruction {
+  GTC
+  GTD
+  IOC
+}
+
+input CreateTwapAlgo {
+  account: AccountId
+  dir: Dir!
+  endTime: DateTime!
+  intervalMs: Int!
+  market: MarketId!
+  name: Str!
+  quantity: Decimal!
+  rejectLockoutMs: Int!
+  takeThroughFrac: Decimal
+}
+
+"""
+Date in the proleptic Gregorian calendar (without time zone).
+
+Represents a description of the date (as used for birthdays, for example).
+It cannot represent an instant on the time-line.
+
+[`Date` scalar][1] compliant.
+
+See also [`chrono::NaiveDate`][2] for details.
+
+[1]: https://graphql-scalars.dev/docs/scalars/date
+[2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
+"""
+scalar Date
+
+"""
+Combined date and time (with time zone) in [RFC 3339][0] format.
+
+Represents a description of an exact instant on the time-line (such as the
+instant that a user account was created).
+
+[`DateTime` scalar][1] compliant.
+
+See also [`chrono::DateTime`][2] for details.
+
+[0]: https://datatracker.ietf.org/doc/html/rfc3339#section-5
+[1]: https://graphql-scalars.dev/docs/scalars/date-time
+[2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
+"""
+scalar DateTime
+
+"""
+128 bit representation of a fixed-precision decimal number.
+
+The finite set of values of `Decimal` scalar are of the form
+m / 10<sup>e</sup>, where m is an integer such that
+-2<sup>96</sup> < m < 2<sup>96</sup>, and e is an integer between 0 and 28
+inclusive.
+
+Always serializes as `String`. But may be deserialized from `Int` and
+`Float` values too. It's not recommended to deserialize from a `Float`
+directly, as the floating point representation may be unexpected.
+
+See also [`rust_decimal`] crate for details.
+
+[`rust_decimal`]: https://docs.rs/rust_decimal
+"""
+scalar Decimal
+
+"""
+An order side/direction or a trade execution side/direction.
+In GraphQL these are serialized as "buy" or "sell".
+"""
+scalar Dir
+
+type Environment {
+  id: String!
+  kind: EnvironmentKind!
+}
+
+enum EnvironmentKind {
+  BROKERAGE
+  PLATFORM
+}
+
+type ExchangeMarketKind {
+  base: Product!
+  quote: Product!
+}
+
+type ExchangeSpecificUpdate {
+  field: String!
+  market: Market!
+  value: Decimal
+}
+
+type Fee {
+  amount: Decimal!
+  feeCurrency: ProductId!
+}
+
+type Fill {
+  dir: Dir!
+  fillId: FillId!
+  kind: FillKind!
+  market: Market!
+  marketId: MarketId!
+  orderId: OrderId
+  price: Decimal!
+  quantity: Decimal!
+  recvTime: DateTime
+  tradeTime: DateTime!
+}
+
+"""
+The ID of a fill
+"""
+scalar FillId
+
+enum FillKind {
+  CORRECTION
+  NORMAL
+  REVERSAL
+}
+
+type Fills {
+  aberrant: [AberrantFill!]!
+  normal: [Fill!]!
+}
+
+type HedgeMarket {
+  conversionRatio: Decimal!
+  hedgeFrac: Decimal!
+  market: MarketId!
+  premium: Decimal!
+}
+
+type License {
+  expiry: DateTime
+  tier: LicenseTier
+  user: UserId!
+}
+
+enum LicenseTier {
+  BASIC
+  PROFESSIONAL
+}
+
+type LimitOrderType {
+  limitPrice: Decimal!
+  postOnly: Boolean!
+}
+
+union MMAlgoDecision =
+  | MMAlgoDecisionCancel
+  | MMAlgoDecisionDoNothing
+  | MMAlgoDecisionSend
+
+type MMAlgoDecisionCancel {
+  orderId: OrderId!
+  reasons: [Reason!]!
+}
+
+type MMAlgoDecisionDoNothing {
+  reasons: [Reason!]!
+}
+
+type MMAlgoDecisionSend {
+  price: Decimal!
+  quantity: Decimal!
+}
+
+enum MMAlgoKind {
+  MM
+  SPREAD
+}
+
+type MMAlgoOpenOrder {
+  cancelPending: Boolean!
+  orderId: OrderId!
+  price: Decimal!
+  quantity: Decimal!
+}
+
+type MMAlgoOrder {
+  account: AccountId
+  hedgeMarket: HedgeMarket
+  market: Market
+  marketId: MarketId!
+  maxImproveBbo: Decimal!
+  maxPosition: Decimal!
+  minPosition: Decimal!
+  name: String!
+  orderId: OrderId!
+  positionTilt: Decimal!
+  quantityBuy: Decimal!
+  quantitySell: Decimal!
+  refDistFrac: Decimal!
+  referencePrice: ReferencePrice!
+  toleranceFrac: Decimal!
+}
+
+type MMAlgoSide {
+  lastDecision: MMAlgoDecision!
+  lastFillTime: DateTime!
+  lastOrderTime: DateTime!
+  lastRejectTime: DateTime!
+  openOrder: MMAlgoOpenOrder
+  referencePrice: Decimal
+}
+
+type MMAlgoStatus {
+  buyStatus: MMAlgoSide!
+  creationTime: DateTime!
+  effectiveSpread: Decimal
+  hedgePosition: Decimal!
+  kind: MMAlgoKind!
+  missRatio: Decimal!
+  order: MMAlgoOrder
+  orderId: OrderId!
+  position: Decimal!
+  sellStatus: MMAlgoSide!
+  status: AlgoRunningStatus!
+}
+
+type Market {
+  cmeProductGroupInfo: CmeProductGroupInfo
+  exchangeSymbol: String!
+  firstNoticeDate: DateTime
+  id: MarketId!
+  initialMargin: Decimal
+  isDelisted: Boolean!
+  isFavorite: Boolean!
+  kind: MarketKind!
+  lastTradingDate: DateTime
+  maintenanceMargin: Decimal
+  minOrderQuantity: Decimal!
+  minOrderQuantityUnit: MinOrderQuantityUnit!
+  name: String!
+  route: Route!
+  stepSize: Decimal!
+  tickSize: Decimal!
+  venue: Venue!
+}
+
+input MarketFilter {
+  base: Str
+  includeDelisted: Boolean
+  maxResults: Int
+  onlyFavorites: Boolean
+  quote: Str
+  resultsOffset: Int
+  route: Str
+  searchString: Str
+  sortByVolumeDesc: Boolean
+  underlying: Str
+  venue: Str
+}
+
+"""
+Wrapper type around a UUIDv5 for a given namespace.  These types are
+parseable from either the UUIDv5 string representation, or from the
+name itself, as they are 1-1.
+"""
+scalar MarketId
+
+union MarketKind = ExchangeMarketKind | PoolMarketKind | UnknownMarketKind
+
+type MarketSnapshot {
+  askPrice: Decimal
+  bidPrice: Decimal
+  high24h: Decimal
+  lastPrice: Decimal
+  low24h: Decimal
+  market: Market
+  marketId: MarketId!
+  open24h: Decimal
+  volume24h: Decimal
+}
+
+type Me {
+  email: String!
+  environment: Environment!
+  isStaff: Boolean!
+  license: License
+  userId: UserId!
+}
+
+enum MinOrderQuantityUnit {
+  BASE
+  QUOTE
+}
+
+type MutationRoot {
+  """
+  Cancel all orders on component, regardless of architect order state
+  If venue is specified it will act as filter if the component manages multiple counterparties (oms for example)
+  """
+  cancelAllOrders(venueId: VenueId): VenueId
+  """
+  Cancel an Architect order.
+  """
+  cancelOrder(orderId: OrderId!): OrderId!
+  """
+  Cancel multiple Architect orders.
+  """
+  cancelOrders(orderIds: [OrderId!]!): [OrderId!]!
+  """
+  Create a new API key
+  """
+  createApiKey: ApiKey!
+  """
+  Create a new MM algo order.
+  """
+  createMmAlgo(mmAlgo: CreateMMAlgo!): OrderId!
+  """
+  Send an order to Architect.
+  """
+  createOrder(order: CreateOrder!): OrderId!
+  """
+  Send multiple orders to Architect.
+  """
+  createOrders(orders: [CreateOrder!]!): [OrderId!]!
+  """
+  Create a new POV algo order.
+  """
+  createPovAlgo(povAlgo: CreatePovAlgo!): OrderId!
+  """
+  Create a new SOR algo order.
+  """
+  createSmartOrderRouterAlgo(algo: CreateSmartOrderRouterAlgo!): OrderId!
+  """
+  Create a new Spread algo order.
+  """
+  createSpreadAlgo(spreadAlgo: CreateSpreadAlgo!): OrderId!
+  """
+  Create a new API key for Telegram
+  """
+  createTelegramApiKey(telegramId: String!): ApiKey!
+  """
+  Create a new TWAP algo order.
+  """
+  createTwapAlgo(twapAlgo: CreateTwapAlgo!): OrderId!
+  """
+  Preview the execution of an SOR algo.
+  """
+  previewSmartOrderRouterAlgo(algo: CreateSmartOrderRouterAlgo!): AlgoPreview
+  """
+  Remove an API key
+  """
+  removeApiKey(apiKey: String!): Boolean!
+  """
+  Remove all Telegram API keys
+  """
+  removeTelegramApiKeys: Boolean!
+  sendAlgoControlCommand(
+    command: AlgoControlCommand!
+    orderId: OrderId!
+  ): OrderId!
+  """
+  Set credentials for a given component id.
+  """
+  setCredentials(componentId: ComponentId!, credentials: String!): Boolean!
+  """
+  Set/unset market favorited by current user.
+  """
+  updateMarket(payload: UpdateMarket!): Market
+}
+
+type OmsOrderUpdate {
+  avgFillPrice: Decimal
+  filledQty: Decimal!
+  orderId: OrderId!
+  state: [OrderStateFlags!]!
+}
+
+type OptionsMarketSnapshot {
+  askIv: Decimal
+  bidIv: Decimal
+  delta: Decimal
+  gamma: Decimal
+  market: Market
+  marketId: MarketId!
+  openInterest: Decimal
+  rho: Decimal
+  theta: Decimal
+  undPrice: Decimal
+  underlying: Product
+  underlyingId: ProductId!
+  vega: Decimal
+}
+
+type Order {
+  accountId: AccountId
+  dir: Dir!
+  id: OrderId!
+  market: Market!
+  marketId: MarketId!
+  orderType: OrderType!
+  quantity: Decimal!
+  quoteId: Str
+  source: OrderSource!
+  timeInForce: TimeInForce!
+}
+
+"""
+System-unique, persistent order identifiers
+"""
+scalar OrderId
+
+type OrderLog {
+  avgFillPrice: Decimal
+  filledQty: Decimal!
+  order: Order!
+  orderState: [OrderStateFlags!]!
+  rejectReason: String
+  timestamp: DateTime!
+}
+
+enum OrderSource {
+  ALGO
+  API
+  CLI
+  EXTERNAL
+  GUI
+  OTHER
+  TELEGRAM
+}
+
+"""
+The state of an order
+"""
+enum OrderStateFlags {
+  ACKED
+  CANCELED
+  CANCELING
+  FILLED
+  OPEN
+  OUT
+  REJECTED
+  STALE
+}
+
+union OrderType =
+  | LimitOrderType
+  | StopLossLimitOrderType
+  | TakeProfitLimitOrderType
+
+union Orderflow =
+  | AberrantFill
+  | Ack
+  | Cancel
+  | CancelAll
+  | Fill
+  | OmsOrderUpdate
+  | Order
+  | Out
+  | Reject
+
+type Out {
+  order: Order
+  orderId: OrderId!
+}
+
+type PoolMarketKind {
+  products: [Product!]!
+}
+
+type Position {
+  account: Account
+  accountId: AccountId!
+  averagePrice: Decimal
+  breakEvenPrice: Decimal
+  dir: Dir!
+  liquidationPrice: Decimal
+  market: Market
+  marketId: MarketId!
+  quantity: Decimal
+  tradeDate: Date
+  tradeTime: DateTime
+  venue: Venue
+  venueId: VenueId!
+}
+
+type PovAlgoOrder {
+  accountId: AccountId
+  dir: Dir!
+  endTime: DateTime!
+  market: Market
+  marketId: MarketId!
+  maxQuantity: Decimal!
+  minOrderQuantity: Decimal!
+  name: String!
+  orderId: OrderId!
+  takeThroughFrac: Decimal
+  targetVolumeFrac: Decimal!
+}
+
+type PovAlgoStatus {
+  creationTime: DateTime!
+  fractionComplete: Float
+  marketVolume: Decimal!
+  order: PovAlgoOrder
+  orderId: OrderId!
+  quantityFilled: Decimal!
+  realizedVolumeFrac: Decimal
+  status: AlgoRunningStatus!
+}
+
+type Product {
+  expiration: DateTime
+  id: ProductId!
+  kind: String!
+  markUsd: Decimal
+  multiplier: Decimal!
+  name: String!
+  optionType: String
+  strike: String
+  underlying: Product
+}
+
+"""
+Wrapper type around a UUIDv5 for a given namespace.  These types are
+parseable from either the UUIDv5 string representation, or from the
+name itself, as they are 1-1.
+"""
+scalar ProductId
+
+type QueryRoot {
+  """
+  Get all current known balances and positions for all counterparties.
+  """
+  accountSummaries: [AccountSummaries!]!
+  """
+  Get the current known balances and positions for a given counterparty.
+  """
+  accountSummariesForCpty(route: RouteId!, venue: VenueId!): AccountSummaries!
+  """
+  List all known/mapped accounts relevant to the logged-in user.
+
+  Accounts are generally defined by exchange connectors or their respective exchange configs.
+  Refer to the User Guide for more information on how Architect names and manages accounts.
+  """
+  accounts: [Account!]!
+  """
+  Find and return generic algo logs by parent order ID.
+  """
+  algoLog(orderId: OrderId!): AlgoLog
+  """
+  Find a generic algo order and its details by parent order ID.
+  """
+  algoOrder(orderId: OrderId!): AlgoOrder
+  """
+  Find and return generic algo order status by parent order ID.
+  """
+  algoStatus(orderId: OrderId): [AlgoStatus!]!
+  bookSnapshot(
+    delayed: Boolean
+    market: MarketId!
+    numLevels: Int!
+    precision: Decimal
+    retainSubscriptionForNSeconds: Int
+  ): Book!
+  """
+  Get CME product group info.
+  """
+  cmeProductGroupInfos: [CmeProductGroupInfo!]!
+  """
+  Get token info for a given product.
+  """
+  coinInfo(product: ProductId!): CoinInfo
+  """
+  Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap.
+  """
+  coinInfos: [CoinInfo!]!
+  cptys: [CptyInfo!]!
+  """
+  Get all fills for a given venue, route, base, and quote.
+  """
+  fills(
+    base: ProductId
+    quote: ProductId
+    route: RouteId
+    venue: VenueId
+  ): Fills!
+  """
+  Find markets and their details by some filtering criteria.
+  """
+  filterMarkets(filter: MarketFilter!): [Market!]!
+  """
+  Query historical OHLCV candles for a given market, candle width, and time range.
+  """
+  historicalCandles(
+    end: DateTime!
+    id: MarketId!
+    start: DateTime!
+    width: CandleWidth!
+  ): [CandleV1!]!
+  """
+  List the API keys associated with the current user.
+  """
+  listApiKeys: [ApiKey!]!
+  """
+  Find a market and its details by its ID.
+  """
+  market(id: MarketId!): Market
+  """
+  Get a snapshot of the marketdata for a given market, at a given time.  If no
+  latest_at_or_before is provided, the most recent snapshot is returned.
+  """
+  marketSnapshot(latestAtOrBefore: DateTime, market: MarketId!): MarketSnapshot
+  """
+  Find markets and their details by their IDs.  Markets are uniquely identified by their
+  names or IDs; market IDs are fully determined by their string names as UUIDv5.
+  """
+  markets(id: [MarketId!]!): [Market]!
+  """
+  Get snapshots of all markets for the given time.  If no latest_at_or_before is provided,
+  the most recent snapshots are returned.
+  """
+  marketsSnapshots(latestAtOrBefore: DateTime): [MarketSnapshot!]!
+  """
+  Return the current user's authentication information.
+  """
+  me: Me!
+  """
+  Find and return MM algo order details by parent order ID.
+  """
+  mmAlgoOrder(orderId: OrderId!): MMAlgoOrder
+  """
+  Find and return MM algo status by parent order ID.
+  """
+  mmAlgoStatus(orderId: OrderId): [MMAlgoStatus!]!
+  """
+  List all open orders known to the OMS.
+  """
+  openOrders: [OrderLog!]!
+  """
+  Get a snapshot of the options data for a given underlying, at a given time.
+  """
+  optionsMarketSnapshots(
+    latestAtOrBefore: DateTime
+    underlying: ProductId!
+  ): [OptionsMarketSnapshot!]!
+  """
+  Find order details by order ID from the OMS.
+  """
+  order(orderId: OrderId!): OrderLog
+  """
+  List all recently outed orders known to the OMS.
+  """
+  outedOrders(fromInclusive: DateTime, toExclusive: DateTime): [OrderLog!]!
+  """
+  Find and return POV order details by parent order ID.
+  """
+  povOrder(orderId: OrderId!): PovAlgoOrder
+  """
+  Find and return POV algo status by parent order ID.
+  """
+  povStatus(orderId: OrderId): [PovAlgoStatus!]!
+  """
+  Find a product and its details by its ID.
+  """
+  product(id: ProductId!): Product
+  """
+  Find products and their details by their IDs.  Products are uniquely identified by their
+  names or IDs; product IDs are fully determined by their string names as UUIDv5.
+  """
+  products(id: [ProductId!]!): [Product]!
+  """
+  Find a route by its ID.
+  """
+  route(id: RouteId!): Route
+  """
+  List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
+  route IDs are fully determined by their string names as UUIDv5.
+  """
+  routes: [Route!]!
+  """
+  Find and return SOR order details by parent order ID.
+  """
+  smartOrderRouterOrder(orderId: OrderId!): SmartOrderRouterOrder
+  """
+  Find and return SOR algo status by parent order ID.
+  """
+  smartOrderRouterStatus(orderId: OrderId): [SmartOrderRouterStatus!]!
+  """
+  Find and return spread algo status by parent order ID.
+  """
+  spreadAlgoOrder(orderId: OrderId!): MMAlgoOrder
+  """
+  Find and return spread algo status by parent order ID.
+  """
+  spreadAlgoStatus(orderId: OrderId): [MMAlgoStatus!]!
+  """
+  Query TCA balance pnl stats, the account_id is a required field.
+  The following filtering is allowed ..
+  If no venue is provided then all venues will be included
+  If use_purchasing_power is false or not provided then we will use
+    the balance column in the table. If it's true then we will use
+    the purchasing power column. This is needed for the rfb environment
+  """
+  tcaBalancePnl(
+    accountId: AccountId!
+    usePurchasingPower: Boolean
+    venueId: VenueId
+  ): [TcaBalancePnlV1!]!
+  """
+  Query TCA balance pnl timeseries, the account_id and venue_id are
+  required fields. If both date ranges are not valid then we will return
+  the timeseries for the last rolling 24 hours. If they are both provided
+  then the timeseries will return hourly data points for the range provided
+  If use_purchasing_power is false or not provided then we will use
+    the balance column in the table. If it's true then we will use
+    the purchasing power column. This is needed for the rfb environment
+  """
+  tcaBalancePnlTimeseries(
+    accountId: AccountId!
+    fromInclusive: DateTime
+    toExclusive: DateTime
+    usePurchasingPower: Boolean
+    venueId: VenueId!
+  ): [TcaPnlV1!]!
+  """
+  Query TCA pnl / marks stats, id is an optional field but the dates are required
+  """
+  tcaMarks(
+    fromInclusive: DateTime!
+    id: MarketId
+    toExclusive: DateTime!
+  ): [TcaMarksV1!]!
+  """
+  Query TCA summary stats, id is an optional field but the dates are required
+  """
+  tcaSummary(
+    currency: String
+    fromInclusive: DateTime!
+    id: MarketId
+    toExclusive: DateTime!
+  ): [TcaSummaryV1!]!
+  """
+  Find and return TWAP algo order details by parent order ID.
+  """
+  twapOrder(orderId: OrderId!): TwapOrder
+  """
+  Find and return TWAP algo status by parent order ID.
+  """
+  twapStatus(orderId: OrderId): [TwapStatus!]!
+  """
+  Find a venue by its ID.
+  """
+  venue(id: VenueId!): Venue
+  """
+  List all known venues in symbology.  Venues are uniquely identified by their names or IDs;
+  venue IDs are fully determined by their string names as UUIDv5.
+  """
+  venues: [Venue!]!
+  version: String!
+}
+
+enum Reason {
+  ALGO_PAUSED
+  ALGO_STOPPED
+  CANCEL_PENDING
+  MAX_POSITION
+  MIN_POSITION
+  NO_ASK
+  NO_BID
+  NO_REFERENCE_PRICE
+  NO_REFERENCE_SIZE
+  OPEN_ORDER_OUTSIDE_TOLERANCE
+  OPEN_ORDER_WITHIN_TOLERANCE
+  WITHIN_FILL_LOCKOUT
+  WITHIN_ORDER_LOCKOUT
+  WITHIN_REJECT_LOCKOUT
+}
+
+enum ReferencePrice {
+  BID_ASK
+  HEDGE_MARKET_BID_ASK
+  MID
+}
+
+type Reject {
+  order: Order
+  orderId: OrderId!
+  reason: String!
+}
+
+type RfqResponse {
+  buy: RfqResponseSide
+  market: Market
+  marketId: MarketId!
+  sell: RfqResponseSide
+}
+
+type RfqResponseSide {
+  price: Decimal!
+  quantity: Decimal!
+  quoteId: String
+}
+
+type Route {
+  id: RouteId!
+  name: Str!
+}
+
+"""
+Wrapper type around a UUIDv5 for a given namespace.  These types are
+parseable from either the UUIDv5 string representation, or from the
+name itself, as they are 1-1.
+"""
+scalar RouteId
+
+type SmartOrderRouterOrder {
+  base: Product!
+  dir: Dir!
+  executionTimeLimitMs: Int!
+  limitPrice: Decimal!
+  markets: [Market!]!
+  orderId: OrderId!
+  parentOrderId: OrderId
+  quote: Product!
+  targetSize: Decimal!
+}
+
+type SmartOrderRouterStatus {
+  order: SmartOrderRouterOrder
+  status: AlgoStatus!
+}
+
+type StopLossLimitOrderType {
+  limitPrice: Decimal!
+  triggerPrice: Decimal!
+}
+
+"""
+A String type
+"""
+scalar Str
+
+type SubscriptionRoot {
+  """
+  Subscribe to the orderbook feed of a market.
+  """
+  book(delayed: Boolean, market: MarketId!, precision: Decimal): Book!
+  """
+  Subscribe to the candle feed of a market.
+  """
+  candles(
+    candleWidth: CandleWidth!
+    delayed: Boolean
+    finalized: Boolean
+    market: MarketId!
+  ): CandleV1!
+  """
+  Subscribe to exchange-specific data from markets.  This is a multiplexed stream.
+  """
+  exchangeSpecific(
+    delayed: Boolean
+    fields: [String!]!
+    markets: [MarketId!]!
+  ): [ExchangeSpecificUpdate!]!
+  """
+  Subscribe to all fills
+  """
+  fills: Fill!
+  """
+  Subscribe to all orderflow.
+  """
+  orderflow: Orderflow!
+  pollAccountSummaries(pollIntervalMs: Int!): [AccountSummaries!]!
+  pollAlgoStatus(orderId: OrderId, pollIntervalMs: Int!): [AlgoStatus!]!
+  pollFills(
+    base: ProductId
+    pollIntervalMs: Int!
+    quote: ProductId
+    route: RouteId
+    venue: VenueId
+  ): Fills!
+  pollMmAlgoStatus(orderId: OrderId, pollIntervalMs: Int!): [MMAlgoStatus!]!
+  pollOpenOrders(pollIntervalMs: Int!): [OrderLog!]!
+  pollSorAlgoStatus(
+    orderId: OrderId
+    pollIntervalMs: Int!
+  ): [SmartOrderRouterStatus!]!
+  pollSpreadAlgoStatus(orderId: OrderId, pollIntervalMs: Int!): [MMAlgoStatus!]!
+  pollTwapAlgoStatus(orderId: OrderId, pollIntervalMs: Int!): [TwapStatus!]!
+  """
+  Subscribe to an RFQ feed.
+  """
+  rfqs(
+    base: ProductId!
+    quantity: Decimal!
+    quote: ProductId!
+    venues: [VenueId!]!
+  ): [RfqResponse!]!
+  """
+  Subscribe to the trade feed of a market.
+  """
+  trades(delayed: Boolean, market: MarketId!): TradeV1!
+}
+
+type TakeProfitLimitOrderType {
+  limitPrice: Decimal!
+  triggerPrice: Decimal!
+}
+
+type TcaBalancePnlV1 {
+  balanceNow: Decimal!
+  balancePast: Decimal!
+  pnl: Decimal!
+  tsNow: DateTime!
+  tsPast: DateTime!
+  venue: String!
+  venueId: VenueId!
+}
+
+type TcaData {
+  markPrice: Decimal!
+  tcaType: String!
+  tcaValue: Decimal!
+}
+
+type TcaMarksV1 {
+  dir: Dir!
+  feeCurrency: String
+  fees: Decimal
+  fillId: FillId!
+  market: String!
+  marketId: MarketId!
+  multiplier: Decimal!
+  orderId: OrderId
+  price: Decimal!
+  quantity: Decimal!
+  source: String
+  tcaValues: [TcaData!]!
+  tradeTime: DateTime!
+}
+
+type TcaPnlV1 {
+  pnl: Decimal!
+  ts: DateTime!
+}
+
+type TcaSummaryV1 {
+  buyNotionalTraded: Decimal!
+  fees: Decimal!
+  label: String!
+  numberOfFills: Int!
+  pnlBps: Decimal!
+  pnlPriceCurrency: Decimal!
+  sellNotionalTraded: Decimal!
+  totalNotionalTraded: Decimal!
+}
+
+type TimeInForce {
+  goodTilDate: DateTime
+  instruction: String!
+}
+
+type TradeV1 {
+  direction: Dir
+  price: Decimal!
+  size: Decimal!
+  time: DateTime
+}
+
+type TwapOrder {
+  accountId: AccountId
+  dir: Dir!
+  endTime: DateTime!
+  intervalMs: Int!
+  market: Market
+  marketId: MarketId!
+  name: String!
+  orderId: OrderId!
+  quantity: Decimal!
+  rejectLockoutMs: Int!
+  takeThroughFrac: Decimal
+}
+
+type TwapStatus {
+  creationTime: DateTime!
+  fractionComplete: Float
+  order: TwapOrder
+  orderId: OrderId!
+  quantityFilled: Decimal!
+  realizedTwap: Decimal
+  status: AlgoRunningStatus!
+}
+
+type UnknownMarketKind {
+  unused: Boolean!
+}
+
+input UpdateMarket {
+  isFavorite: Boolean!
+  marketId: MarketId!
+}
+
+"""
+Wrapper type around a UUIDv5 for a given namespace.  These types are
+parseable from either the UUIDv5 string representation, or from the
+name itself, as they are 1-1.
+"""
+scalar UserId
+
+type Venue {
+  id: VenueId!
+  name: Str!
+}
+
+"""
+Wrapper type around a UUIDv5 for a given namespace.  These types are
+parseable from either the UUIDv5 string representation, or from the
+name itself, as they are 1-1.
+"""
+scalar VenueId

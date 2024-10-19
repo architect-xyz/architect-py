@@ -13,7 +13,6 @@ const config: CodegenConfig = {
       config: {
         documentMode: 'string',
         scalars: {
-          // TODO: add additional scalar mapping
           Date: 'string',
           DateTime: 'string',
           Decimal: 'string',
