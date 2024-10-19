@@ -1,27 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import { Client, graphql } from '../src/client.mjs';
-
-const createClient = () => {
-  const host = process.env.ARCHITECT_HOST;
-  const apiKey = process.env.ARCHITECT_API_KEY;
-  const apiSecret = process.env.ARCHITECT_API_SECRET;
-  assert(
-    typeof host === 'string',
-    'process.env.ARCHITECT_HOST must be defined',
-  );
-  assert(
-    typeof apiKey === 'string',
-    'process.env.ARCHITECT_API_KEY must be defined',
-  );
-  assert(
-    typeof apiSecret === 'string',
-    'process.env.ARCHITECT_API_SECRET must be defined',
-  );
-
-  return new Client({ host, apiKey, apiSecret });
-};
+import {
+  __createClientWithProcessVars as createClient,
+  graphql,
+} from '../src/client.mjs';
 
 describe('Client', () => {
   test('can query with types, even though we’re only using javascript', async () => {
@@ -149,14 +132,3 @@ describe('Client', () => {
     */
   });
 });
-
-/***
- * FIXME: this is getting an inferred type of with an unknown response value
- * TadaDocumentNode<{ createMmAlgo: unknown; }, { ...CreateMMAlgo }>;
- */
-const g = graphql(`
-mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
-  createMmAlgo(mmAlgo: $mmAlgo)
-}`);
-g;
-// const r = await createClient().execute(g, { mmAlgo: {} });

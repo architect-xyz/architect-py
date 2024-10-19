@@ -10,9 +10,9 @@
     "ignore": []
   },
   "formatter": {
+    "ignore": ["tsconfig.emit.json"],
     "enabled": true,
     "formatWithErrors": true,
-    "ignore": [],
     "attributePosition": "auto",
     "indentStyle": "space",
     "indentWidth": 2,

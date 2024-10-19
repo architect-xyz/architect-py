@@ -36,7 +36,7 @@ function exhaustive(no) {
 function once(fn) {
   let called = false;
   let result;
-  return function(...args) {
+  return function (...args) {
     if (called) {
       return result;
     }

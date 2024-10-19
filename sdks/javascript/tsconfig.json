@@ -4,7 +4,13 @@
   "exclude": ["./node_modules"],
   "compilerOptions": {
     "strict": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "alwaysStrict": true,
     "checkJs": true,
+    "allowJs": true,
     "module": "preserve",
     "moduleResolution": "bundler",
     "skipLibCheck": true,

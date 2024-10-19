@@ -120,14 +120,24 @@ export class Client {
   }
 }
 
-/*
-const c = new Client({});
-const q = graphql(`query Route($id: RouteId!) {
-  route (id: $id) {
-    __typename
-    id 
-    name
+/**
+ * This is primarily used for internal library testing purposes
+ * @private
+ */
+export function __createClientWithProcessVars() {
+  const host = process.env.ARCHITECT_HOST;
+  const apiKey = process.env.ARCHITECT_API_KEY;
+  const apiSecret = process.env.ARCHITECT_API_SECRET;
+  if (typeof host !== 'string') {
+    throw new TypeError('process.env.ARCHITECT_HOST must be defined');
   }
-}`)
-const b = await c.execute(q, { id: 'nah' });
-*/
+  if (typeof apiKey === 'string') {
+    throw new TypeError('process.env.ARCHITECT_API_KEY must be defined');
+  }
+  if (typeof apiSecret === 'string') {
+    throw new TypeError('process.env.ARCHITECT_API_SECRET must be defined');
+  }
+
+  // @ts-expect-error ts doesn’t hold all the refinements above
+  return new Client({ host, apiKey, apiSecret });
+}

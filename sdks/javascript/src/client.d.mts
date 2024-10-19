@@ -2,6 +2,37 @@
  * @param {Config} config API client config
  */
 export function createClient(config: Config): void;
+/**
+ * This is primarily used for internal library testing purposes
+ * @private
+ */
+export function __createClientWithProcessVars(): Client;
+export { readFragment } from 'gql.tada';
+/**
+ * @typedef { import('./graphql-env.d.ts').introspection } introspection
+ */
+/**
+ * @type {ReturnType<typeof initGraphQLTada<{
+ *   introspection: introspection;
+ *   scalars: {
+ *     Date: string;
+ *     DateTime: string;
+ *     Decimal: string;
+ *     AccountId: string;
+ *     UserId: string;
+ *     OrderId: string;
+ *     MarketId: string;
+ *     VenueId: string;
+ *     RouteId: string;
+ *     ProductId: string;
+ *     ComponentId: string;
+ *     FillId: string;
+ *     Dir: 'buy' | 'sell';
+ *     Str: string;
+ *     OrderSource: string;
+ *   }
+ * }>>}
+ **/
 export const graphql: ReturnType<
   typeof initGraphQLTada<{
     introspection: introspection;
@@ -24,8 +55,6 @@ export const graphql: ReturnType<
     };
   }>
 >;
-export { readFragment } from 'gql.tada';
-
 /**
  * @typedef {Object} Config API client config
  * @property {string} host API Host
