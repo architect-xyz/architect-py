@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
 import { Client, graphql } from '../src/client.mjs';
-import { removeApiKey } from '../demo/output.mjs';
 
 const createClient = () => {
   const host = process.env.ARCHITECT_HOST;
@@ -133,7 +132,7 @@ describe('Client', () => {
       order: {
         dir: 'sell',
         market: 'CME',
-        quantity: 1,
+        quantity: '1',
         orderType: 'LIMIT',
         timeInForce: { instruction: 'GTD' },
       },
@@ -155,7 +154,9 @@ describe('Client', () => {
  * FIXME: this is getting an inferred type of with an unknown response value
  * TadaDocumentNode<{ createMmAlgo: unknown; }, { ...CreateMMAlgo }>;
  */
-const g = graphql(`mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
+const g = graphql(`
+mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
   createMmAlgo(mmAlgo: $mmAlgo)
 }`);
 g;
+// const r = await createClient().execute(g, { mmAlgo: {} });

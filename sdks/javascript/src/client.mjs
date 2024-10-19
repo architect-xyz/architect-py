@@ -2,7 +2,37 @@
  */
 import { createClient as createGraphqlClient } from 'graphql-http';
 import { print } from 'graphql';
-import { graphql } from 'gql.tada';
+import { initGraphQLTada } from 'gql.tada';
+export { readFragment } from 'gql.tada';
+/**
+ * @typedef { import('./graphql-env.d.ts').introspection } introspection
+ */
+
+/**
+ * @type {ReturnType<typeof initGraphQLTada<{
+ *   introspection: introspection;
+ *   scalars: {
+ *     Date: string;
+ *     DateTime: string;
+ *     Decimal: string;
+ *     AccountId: string;
+ *     UserId: string;
+ *     OrderId: string;
+ *     MarketId: string;
+ *     VenueId: string;
+ *     RouteId: string;
+ *     ProductId: string;
+ *     ComponentId: string;
+ *     FillId: string;
+ *     Dir: 'buy' | 'sell';
+ *     Str: string;
+ *     OrderSource: string;
+ *   }
+ * }>>}
+ **/
+export const graphql = initGraphQLTada();
+
+
 
 /**
  * @typedef {Object} Config API client config
@@ -10,8 +40,6 @@ import { graphql } from 'gql.tada';
  * @property {string} apiKey API Key
  * @property {string} apiSecret API Secret
  */
-
-export { graphql };
 
 /** @type {Client} */
 export let client;
