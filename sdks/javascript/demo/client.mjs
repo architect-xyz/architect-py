@@ -21,7 +21,6 @@ const createClient = () => {
   );
 
   const config = { host, apiKey, apiSecret };
-  console.log('config', config);
   return new Client(config);
 };
 

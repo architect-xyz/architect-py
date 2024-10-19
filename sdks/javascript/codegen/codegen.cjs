@@ -52,7 +52,7 @@ function createVisitor(queryType) {
               : 'TODO';
 
         return `${jsdoc.docblock(node)}
-export function ${node.name.value}(${fields}${args(node)}) {
+export async function ${node.name.value}(${fields}${args(node)}) {
   return client.execute(
     graphql(\`${queryType} ${gql.template(node)}\`)${vars ? `,\n${vars}\n` : ''}
   ).then(${deserializer});
@@ -106,7 +106,9 @@ ${mutations.fields.join('\n\n')}`;
     if ('mode' in config) {
       // validate `mode` is of a valid type
       if (config.mode !== 'debugging' && config.mode !== 'production') {
-        errors.push(`Invalid option provided for "mode". Received "${config.mode}", expected one of ("debugging" | "production")`);
+        errors.push(
+          `Invalid option provided for "mode". Received "${config.mode}", expected one of ("debugging" | "production")`,
+        );
       }
     }
     if (errors.length > 0) {

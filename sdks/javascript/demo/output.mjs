@@ -128,7 +128,7 @@ import { client, graphql } from './client.mjs';
 /**
  * @returns {Promise<String>}
  **/
-export function version() {
+export async function version() {
   return client
     .execute(
       graphql(`query Version {
@@ -144,7 +144,7 @@ export function version() {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Me, Fields | '__typename'>>}
  **/
-export function me(fields) {
+export async function me(fields) {
   return client
     .execute(
       graphql(`query Me {
@@ -160,7 +160,7 @@ export function me(fields) {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<ApiKey, Fields | '__typename'>[]>}
  **/
-export function listApiKeys(fields) {
+export async function listApiKeys(fields) {
   return client
     .execute(
       graphql(`query ListApiKeys {
@@ -175,7 +175,7 @@ export function listApiKeys(fields) {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<CptyInfo, Fields | '__typename'>[]>}
  **/
-export function cptys(fields) {
+export async function cptys(fields) {
   return client
     .execute(
       graphql(`query Cptys {
@@ -194,7 +194,7 @@ Refer to the User Guide for more information on how Architect names and manages 
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Account, Fields | '__typename'>[]>}
  **/
-export function accounts(fields) {
+export async function accounts(fields) {
   return client
     .execute(
       graphql(`query Accounts {
@@ -211,7 +211,7 @@ route IDs are fully determined by their string names as UUIDv5.
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Route, Fields | '__typename'>[]>}
  **/
-export function routes(fields) {
+export async function routes(fields) {
   return client
     .execute(
       graphql(`query Routes {
@@ -228,7 +228,7 @@ export function routes(fields) {
  * @param {RouteId} id
  * @returns {Promise<Pick<Route, Fields | '__typename'>>}
  **/
-export function route(fields, id) {
+export async function route(fields, id) {
   return client
     .execute(
       graphql(`query Route($id: RouteId!) {
@@ -246,7 +246,7 @@ venue IDs are fully determined by their string names as UUIDv5.
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<Venue, Fields | '__typename'>[]>}
  **/
-export function venues(fields) {
+export async function venues(fields) {
   return client
     .execute(
       graphql(`query Venues {
@@ -263,7 +263,7 @@ export function venues(fields) {
  * @param {VenueId} id
  * @returns {Promise<Pick<Venue, Fields | '__typename'>>}
  **/
-export function venue(fields, id) {
+export async function venue(fields, id) {
   return client
     .execute(
       graphql(`query Venue($id: VenueId!) {
@@ -282,7 +282,7 @@ names or IDs; product IDs are fully determined by their string names as UUIDv5.
  * @param {ProductId[]} id
  * @returns {Promise<Pick<Product, Fields | '__typename'>[]>}
  **/
-export function products(fields, id) {
+export async function products(fields, id) {
   return client
     .execute(
       graphql(`query Products($id: [ProductId!]!) {
@@ -300,7 +300,7 @@ export function products(fields, id) {
  * @param {ProductId} id
  * @returns {Promise<Pick<Product, Fields | '__typename'>>}
  **/
-export function product(fields, id) {
+export async function product(fields, id) {
   return client
     .execute(
       graphql(`query Product($id: ProductId!) {
@@ -319,7 +319,7 @@ names or IDs; market IDs are fully determined by their string names as UUIDv5.
  * @param {MarketId[]} id
  * @returns {Promise<Pick<Market, Fields | '__typename'>[]>}
  **/
-export function markets(fields, id) {
+export async function markets(fields, id) {
   return client
     .execute(
       graphql(`query Markets($id: [MarketId!]!) {
@@ -337,7 +337,7 @@ export function markets(fields, id) {
  * @param {MarketId} id
  * @returns {Promise<Pick<Market, Fields | '__typename'>>}
  **/
-export function market(fields, id) {
+export async function market(fields, id) {
   return client
     .execute(
       graphql(`query Market($id: MarketId!) {
@@ -355,7 +355,7 @@ export function market(fields, id) {
  * @param {MarketFilter} filter
  * @returns {Promise<Pick<Market, Fields | '__typename'>[]>}
  **/
-export function filterMarkets(fields, filter) {
+export async function filterMarkets(fields, filter) {
   return client
     .execute(
       graphql(`query FilterMarkets($filter: MarketFilter!) {
@@ -376,7 +376,7 @@ export function filterMarkets(fields, filter) {
  * @param {Boolean} [delayed]
  * @returns {Promise<Pick<Book, Fields | '__typename'>>}
  **/
-export function bookSnapshot(
+export async function bookSnapshot(
   fields,
   numLevels,
   market,
@@ -403,7 +403,7 @@ latest_at_or_before is provided, the most recent snapshot is returned.
  * @param {DateTime} [latestAtOrBefore]
  * @returns {Promise<Pick<MarketSnapshot, Fields | '__typename'>>}
  **/
-export function marketSnapshot(fields, market, latestAtOrBefore) {
+export async function marketSnapshot(fields, market, latestAtOrBefore) {
   return client
     .execute(
       graphql(`query MarketSnapshot($market: MarketId!, $latestAtOrBefore: DateTime) {
@@ -422,7 +422,7 @@ the most recent snapshots are returned.
  * @param {DateTime} [latestAtOrBefore]
  * @returns {Promise<Pick<MarketSnapshot, Fields | '__typename'>[]>}
  **/
-export function marketsSnapshots(fields, latestAtOrBefore) {
+export async function marketsSnapshots(fields, latestAtOrBefore) {
   return client
     .execute(
       graphql(`query MarketsSnapshots($latestAtOrBefore: DateTime) {
@@ -441,7 +441,11 @@ export function marketsSnapshots(fields, latestAtOrBefore) {
  * @param {DateTime} [latestAtOrBefore]
  * @returns {Promise<Pick<OptionsMarketSnapshot, Fields | '__typename'>[]>}
  **/
-export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
+export async function optionsMarketSnapshots(
+  fields,
+  underlying,
+  latestAtOrBefore,
+) {
   return client
     .execute(
       graphql(`query OptionsMarketSnapshots($underlying: ProductId!, $latestAtOrBefore: DateTime) {
@@ -460,7 +464,7 @@ export function optionsMarketSnapshots(fields, underlying, latestAtOrBefore) {
  * @param {VenueId} venue
  * @returns {Promise<Pick<AccountSummaries, Fields | '__typename'>>}
  **/
-export function accountSummariesForCpty(fields, route, venue) {
+export async function accountSummariesForCpty(fields, route, venue) {
   return client
     .execute(
       graphql(`query AccountSummariesForCpty($route: RouteId!, $venue: VenueId!) {
@@ -477,7 +481,7 @@ export function accountSummariesForCpty(fields, route, venue) {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<AccountSummaries, Fields | '__typename'>[]>}
  **/
-export function accountSummaries(fields) {
+export async function accountSummaries(fields) {
   return client
     .execute(
       graphql(`query AccountSummaries {
@@ -497,7 +501,7 @@ export function accountSummaries(fields) {
  * @param {ProductId} [quote]
  * @returns {Promise<Pick<Fills, Fields | '__typename'>>}
  **/
-export function fills(fields, venue, route, base, quote) {
+export async function fills(fields, venue, route, base, quote) {
   return client
     .execute(
       graphql(`query Fills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
@@ -515,7 +519,7 @@ export function fills(fields, venue, route, base, quote) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<OrderLog, Fields | '__typename'>>}
  **/
-export function order(fields, orderId) {
+export async function order(fields, orderId) {
   return client
     .execute(
       graphql(`query Order($orderId: OrderId!) {
@@ -532,7 +536,7 @@ export function order(fields, orderId) {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<OrderLog, Fields | '__typename'>[]>}
  **/
-export function openOrders(fields) {
+export async function openOrders(fields) {
   return client
     .execute(
       graphql(`query OpenOrders {
@@ -550,7 +554,7 @@ export function openOrders(fields) {
  * @param {DateTime} [toExclusive]
  * @returns {Promise<Pick<OrderLog, Fields | '__typename'>[]>}
  **/
-export function outedOrders(fields, fromInclusive, toExclusive) {
+export async function outedOrders(fields, fromInclusive, toExclusive) {
   return client
     .execute(
       graphql(`query OutedOrders($fromInclusive: DateTime, $toExclusive: DateTime) {
@@ -571,7 +575,7 @@ export function outedOrders(fields, fromInclusive, toExclusive) {
  * @param {MarketId} id
  * @returns {Promise<Pick<CandleV1, Fields | '__typename'>[]>}
  **/
-export function historicalCandles(fields, width, end, start, id) {
+export async function historicalCandles(fields, width, end, start, id) {
   return client
     .execute(
       graphql(`query HistoricalCandles($width: CandleWidth!, $end: DateTime!, $start: DateTime!, $id: MarketId!) {
@@ -591,7 +595,7 @@ export function historicalCandles(fields, width, end, start, id) {
  * @param {MarketId} [id]
  * @returns {Promise<Pick<TcaMarksV1, Fields | '__typename'>[]>}
  **/
-export function tcaMarks(fields, toExclusive, fromInclusive, id) {
+export async function tcaMarks(fields, toExclusive, fromInclusive, id) {
   return client
     .execute(
       graphql(`query TcaMarks($toExclusive: DateTime!, $fromInclusive: DateTime!, $id: MarketId) {
@@ -612,7 +616,13 @@ export function tcaMarks(fields, toExclusive, fromInclusive, id) {
  * @param {MarketId} [id]
  * @returns {Promise<Pick<TcaSummaryV1, Fields | '__typename'>[]>}
  **/
-export function tcaSummary(fields, toExclusive, fromInclusive, currency, id) {
+export async function tcaSummary(
+  fields,
+  toExclusive,
+  fromInclusive,
+  currency,
+  id,
+) {
   return client
     .execute(
       graphql(`query TcaSummary($toExclusive: DateTime!, $fromInclusive: DateTime!, $currency: String, $id: MarketId) {
@@ -637,7 +647,12 @@ If use_purchasing_power is false or not provided then we will use
  * @param {Boolean} [usePurchasingPower]
  * @returns {Promise<Pick<TcaBalancePnlV1, Fields | '__typename'>[]>}
  **/
-export function tcaBalancePnl(fields, accountId, venueId, usePurchasingPower) {
+export async function tcaBalancePnl(
+  fields,
+  accountId,
+  venueId,
+  usePurchasingPower,
+) {
   return client
     .execute(
       graphql(`query TcaBalancePnl($accountId: AccountId!, $venueId: VenueId, $usePurchasingPower: Boolean) {
@@ -665,7 +680,7 @@ If use_purchasing_power is false or not provided then we will use
  * @param {Boolean} [usePurchasingPower]
  * @returns {Promise<Pick<TcaPnlV1, Fields | '__typename'>[]>}
  **/
-export function tcaBalancePnlTimeseries(
+export async function tcaBalancePnlTimeseries(
   fields,
   venueId,
   accountId,
@@ -689,7 +704,7 @@ export function tcaBalancePnlTimeseries(
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<CoinInfo, Fields | '__typename'>[]>}
  **/
-export function coinInfos(fields) {
+export async function coinInfos(fields) {
   return client
     .execute(
       graphql(`query CoinInfos {
@@ -706,7 +721,7 @@ export function coinInfos(fields) {
  * @param {ProductId} product
  * @returns {Promise<Pick<CoinInfo, Fields | '__typename'>>}
  **/
-export function coinInfo(fields, product) {
+export async function coinInfo(fields, product) {
   return client
     .execute(
       graphql(`query CoinInfo($product: ProductId!) {
@@ -723,7 +738,7 @@ export function coinInfo(fields, product) {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<CmeProductGroupInfo, Fields | '__typename'>[]>}
  **/
-export function cmeProductGroupInfos(fields) {
+export async function cmeProductGroupInfos(fields) {
   return client
     .execute(
       graphql(`query CmeProductGroupInfos {
@@ -740,7 +755,7 @@ export function cmeProductGroupInfos(fields) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<AlgoOrder, Fields | '__typename'>>}
  **/
-export function algoOrder(fields, orderId) {
+export async function algoOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query AlgoOrder($orderId: OrderId!) {
@@ -758,7 +773,7 @@ export function algoOrder(fields, orderId) {
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<AlgoStatus, Fields | '__typename'>[]>}
  **/
-export function algoStatus(fields, orderId) {
+export async function algoStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query AlgoStatus($orderId: OrderId) {
@@ -776,7 +791,7 @@ export function algoStatus(fields, orderId) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<AlgoLog, Fields | '__typename'>>}
  **/
-export function algoLog(fields, orderId) {
+export async function algoLog(fields, orderId) {
   return client
     .execute(
       graphql(`query AlgoLog($orderId: OrderId!) {
@@ -794,7 +809,7 @@ export function algoLog(fields, orderId) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<TwapOrder, Fields | '__typename'>>}
  **/
-export function twapOrder(fields, orderId) {
+export async function twapOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query TwapOrder($orderId: OrderId!) {
@@ -812,7 +827,7 @@ export function twapOrder(fields, orderId) {
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<TwapStatus, Fields | '__typename'>[]>}
  **/
-export function twapStatus(fields, orderId) {
+export async function twapStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query TwapStatus($orderId: OrderId) {
@@ -830,7 +845,7 @@ export function twapStatus(fields, orderId) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<PovAlgoOrder, Fields | '__typename'>>}
  **/
-export function povOrder(fields, orderId) {
+export async function povOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query PovOrder($orderId: OrderId!) {
@@ -848,7 +863,7 @@ export function povOrder(fields, orderId) {
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<PovAlgoStatus, Fields | '__typename'>[]>}
  **/
-export function povStatus(fields, orderId) {
+export async function povStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query PovStatus($orderId: OrderId) {
@@ -866,7 +881,7 @@ export function povStatus(fields, orderId) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<SmartOrderRouterOrder, Fields | '__typename'>>}
  **/
-export function smartOrderRouterOrder(fields, orderId) {
+export async function smartOrderRouterOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query SmartOrderRouterOrder($orderId: OrderId!) {
@@ -884,7 +899,7 @@ export function smartOrderRouterOrder(fields, orderId) {
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<SmartOrderRouterStatus, Fields | '__typename'>[]>}
  **/
-export function smartOrderRouterStatus(fields, orderId) {
+export async function smartOrderRouterStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query SmartOrderRouterStatus($orderId: OrderId) {
@@ -902,7 +917,7 @@ export function smartOrderRouterStatus(fields, orderId) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'>>}
  **/
-export function mmAlgoOrder(fields, orderId) {
+export async function mmAlgoOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query MmAlgoOrder($orderId: OrderId!) {
@@ -920,7 +935,7 @@ export function mmAlgoOrder(fields, orderId) {
  * @param {OrderId} orderId
  * @returns {Promise<Pick<MmAlgoOrder, Fields | '__typename'>>}
  **/
-export function spreadAlgoOrder(fields, orderId) {
+export async function spreadAlgoOrder(fields, orderId) {
   return client
     .execute(
       graphql(`query SpreadAlgoOrder($orderId: OrderId!) {
@@ -938,7 +953,7 @@ export function spreadAlgoOrder(fields, orderId) {
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<MmAlgoStatus, Fields | '__typename'>[]>}
  **/
-export function mmAlgoStatus(fields, orderId) {
+export async function mmAlgoStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query MmAlgoStatus($orderId: OrderId) {
@@ -956,7 +971,7 @@ export function mmAlgoStatus(fields, orderId) {
  * @param {OrderId} [orderId]
  * @returns {Promise<Pick<MmAlgoStatus, Fields | '__typename'>[]>}
  **/
-export function spreadAlgoStatus(fields, orderId) {
+export async function spreadAlgoStatus(fields, orderId) {
   return client
     .execute(
       graphql(`query SpreadAlgoStatus($orderId: OrderId) {
@@ -973,7 +988,7 @@ export function spreadAlgoStatus(fields, orderId) {
  * @param {Array<Fields>} fields Fields to select in response type
  * @returns {Promise<Pick<ApiKey, Fields | '__typename'>>}
  **/
-export function createApiKey(fields) {
+export async function createApiKey(fields) {
   return client
     .execute(
       graphql(`mutation CreateApiKey {
@@ -993,7 +1008,7 @@ export function createApiKey(fields) {
  * @param {String} telegramId
  * @returns {Promise<Pick<ApiKey, Fields | '__typename'>>}
  **/
-export function createTelegramApiKey(fields, telegramId) {
+export async function createTelegramApiKey(fields, telegramId) {
   return client
     .execute(
       graphql(`mutation CreateTelegramApiKey($telegramId: String!) {
@@ -1011,7 +1026,7 @@ export function createTelegramApiKey(fields, telegramId) {
  * Remove all Telegram API keys
  * @returns {Promise<Boolean>}
  **/
-export function removeTelegramApiKeys() {
+export async function removeTelegramApiKeys() {
   return client
     .execute(
       graphql(`mutation RemoveTelegramApiKeys {
@@ -1029,7 +1044,7 @@ export function removeTelegramApiKeys() {
  * @param {String} apiKey
  * @returns {Promise<Boolean>}
  **/
-export function removeApiKey(apiKey) {
+export async function removeApiKey(apiKey) {
   return client
     .execute(
       graphql(`mutation RemoveApiKey($apiKey: String!) {
@@ -1049,7 +1064,7 @@ export function removeApiKey(apiKey) {
  * @param {ComponentId} componentId
  * @returns {Promise<Boolean>}
  **/
-export function setCredentials(credentials, componentId) {
+export async function setCredentials(credentials, componentId) {
   return client
     .execute(
       graphql(`mutation SetCredentials($credentials: String!, $componentId: ComponentId!) {
@@ -1070,7 +1085,7 @@ export function setCredentials(credentials, componentId) {
  * @param {UpdateMarket} payload
  * @returns {Promise<Pick<Market, Fields | '__typename'>>}
  **/
-export function updateMarket(fields, payload) {
+export async function updateMarket(fields, payload) {
   return client
     .execute(
       graphql(`mutation UpdateMarket($payload: UpdateMarket!) {
@@ -1089,7 +1104,7 @@ export function updateMarket(fields, payload) {
  * @param {CreateOrder} order
  * @returns {Promise<OrderId>}
  **/
-export function createOrder(order) {
+export async function createOrder(order) {
   return client
     .execute(
       graphql(`mutation CreateOrder($order: CreateOrder!) {
@@ -1108,7 +1123,7 @@ export function createOrder(order) {
  * @param {CreateOrder[]} orders
  * @returns {Promise<OrderId[]>}
  **/
-export function createOrders(orders) {
+export async function createOrders(orders) {
   return client
     .execute(
       graphql(`mutation CreateOrders($orders: [CreateOrder!]!) {
@@ -1127,7 +1142,7 @@ export function createOrders(orders) {
  * @param {OrderId} orderId
  * @returns {Promise<OrderId>}
  **/
-export function cancelOrder(orderId) {
+export async function cancelOrder(orderId) {
   return client
     .execute(
       graphql(`mutation CancelOrder($orderId: OrderId!) {
@@ -1146,7 +1161,7 @@ export function cancelOrder(orderId) {
  * @param {OrderId[]} orderIds
  * @returns {Promise<OrderId[]>}
  **/
-export function cancelOrders(orderIds) {
+export async function cancelOrders(orderIds) {
   return client
     .execute(
       graphql(`mutation CancelOrders($orderIds: [OrderId!]!) {
@@ -1166,7 +1181,7 @@ If venue is specified it will act as filter if the component manages multiple co
  * @param {VenueId} [venueId]
  * @returns {Promise<VenueId>}
  **/
-export function cancelAllOrders(venueId) {
+export async function cancelAllOrders(venueId) {
   return client
     .execute(
       graphql(`mutation CancelAllOrders($venueId: VenueId) {
@@ -1185,7 +1200,7 @@ export function cancelAllOrders(venueId) {
  * @param {OrderId} orderId
  * @returns {Promise<OrderId>}
  **/
-export function sendAlgoControlCommand(command, orderId) {
+export async function sendAlgoControlCommand(command, orderId) {
   return client
     .execute(
       graphql(`mutation SendAlgoControlCommand($command: AlgoControlCommand!, $orderId: OrderId!) {
@@ -1204,7 +1219,7 @@ export function sendAlgoControlCommand(command, orderId) {
  * @param {CreateTwapAlgo} twapAlgo
  * @returns {Promise<OrderId>}
  **/
-export function createTwapAlgo(twapAlgo) {
+export async function createTwapAlgo(twapAlgo) {
   return client
     .execute(
       graphql(`mutation CreateTwapAlgo($twapAlgo: CreateTwapAlgo!) {
@@ -1223,7 +1238,7 @@ export function createTwapAlgo(twapAlgo) {
  * @param {CreatePovAlgo} povAlgo
  * @returns {Promise<OrderId>}
  **/
-export function createPovAlgo(povAlgo) {
+export async function createPovAlgo(povAlgo) {
   return client
     .execute(
       graphql(`mutation CreatePovAlgo($povAlgo: CreatePovAlgo!) {
@@ -1244,7 +1259,7 @@ export function createPovAlgo(povAlgo) {
  * @param {CreateSmartOrderRouterAlgo} algo
  * @returns {Promise<Pick<AlgoPreview, Fields | '__typename'>>}
  **/
-export function previewSmartOrderRouterAlgo(fields, algo) {
+export async function previewSmartOrderRouterAlgo(fields, algo) {
   return client
     .execute(
       graphql(`mutation PreviewSmartOrderRouterAlgo($algo: CreateSmartOrderRouterAlgo!) {
@@ -1263,7 +1278,7 @@ export function previewSmartOrderRouterAlgo(fields, algo) {
  * @param {CreateSmartOrderRouterAlgo} algo
  * @returns {Promise<OrderId>}
  **/
-export function createSmartOrderRouterAlgo(algo) {
+export async function createSmartOrderRouterAlgo(algo) {
   return client
     .execute(
       graphql(`mutation CreateSmartOrderRouterAlgo($algo: CreateSmartOrderRouterAlgo!) {
@@ -1282,7 +1297,7 @@ export function createSmartOrderRouterAlgo(algo) {
  * @param {CreateMmAlgo} mmAlgo
  * @returns {Promise<OrderId>}
  **/
-export function createMmAlgo(mmAlgo) {
+export async function createMmAlgo(mmAlgo) {
   return client
     .execute(
       graphql(`mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
@@ -1301,7 +1316,7 @@ export function createMmAlgo(mmAlgo) {
  * @param {CreateSpreadAlgo} spreadAlgo
  * @returns {Promise<OrderId>}
  **/
-export function createSpreadAlgo(spreadAlgo) {
+export async function createSpreadAlgo(spreadAlgo) {
   return client
     .execute(
       graphql(`mutation CreateSpreadAlgo($spreadAlgo: CreateSpreadAlgo!) {

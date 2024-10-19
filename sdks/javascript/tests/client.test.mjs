@@ -156,6 +156,6 @@ describe('Client', () => {
  * TadaDocumentNode<{ createMmAlgo: unknown; }, { ...CreateMMAlgo }>;
  */
 const g = graphql(`mutation CreateMmAlgo($mmAlgo: CreateMMAlgo!) {
-  createMmAlgo(mmAlgo: $mmAlgo) 
+  createMmAlgo(mmAlgo: $mmAlgo)
 }`);
 g;

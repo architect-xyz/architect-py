@@ -92,7 +92,7 @@ export type introspection_types = {
       };
     };
   };
-  AccountId: string;
+  AccountId: unknown;
   AccountSummaries: {
     kind: 'OBJECT';
     name: 'AccountSummaries';
