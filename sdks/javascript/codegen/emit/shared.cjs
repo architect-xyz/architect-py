@@ -58,9 +58,23 @@ function isPrimitive(nodeType) {
     case 'Boolean':
     case 'Int':
     case 'Float':
+    case 'Decimal':
+    case 'Dir':
+    case 'Str':
+    case 'OrderSource':
+    case 'Date':
+    case 'DateTime':
 
+    case 'AccountId':
+    case 'UserId':
     case 'OrderId':
+    case 'MarketId':
     case 'VenueId':
+    case 'RouteId':
+    case 'ProductId':
+    case 'ComponentId':
+    case 'FillId':
+      // enum "'buy' | 'sell'",
       return true;
     default:
       return false;
