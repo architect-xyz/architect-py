@@ -93,6 +93,26 @@ ${queries.fields.join('\n\n')}
 
 ${mutations.fields.join('\n\n')}`;
   },
+
+  /**
+   * @param {import('graphql').GraphQLSchema} _schema
+   * @param {import('graphql').DocumentNode} _documents
+   * @param {Config} config Plugin configuration
+   * @param {string} _outputFile The name of the output file
+   * @param {unknown[]} _allPlugins all plugins requested in this specific output file
+   */
+  validate(_schema, _documents, config, _outputFile, _allPlugins) {
+    const errors = [];
+    if ('mode' in config) {
+      // validate `mode` is of a valid type
+      if (config.mode !== 'debugging' && config.mode !== 'production') {
+        errors.push(`Invalid option provided for "mode". Received "${config.mode}", expected one of ("debugging" | "production")`);
+      }
+    }
+    if (errors.length > 0) {
+      throw new Error(errors.join('\n\n'));
+    }
+  },
 };
 
 /***
