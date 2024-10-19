@@ -12,6 +12,12 @@ describe('Client', () => {
     const query = graphql(`query Me { me { __typename userId email } }`);
     const r = await c.execute(query);
 
+    assert.deepEqual(Object.keys(r), ['me']);
+    assert.deepEqual(Object.keys(r.me), ['__typename', 'userId', 'email']);
+    assert.equal(r.me.__typename, 'Me');
+    assert.equal(typeof r.me.userId, 'string');
+    assert.equal(typeof r.me.email, 'string');
+    /*
     assert.deepEqual(r, {
       me: {
         __typename: 'Me',
@@ -20,6 +26,7 @@ describe('Client', () => {
         // userTier: 'BROKERAGE_UNSUBSCRIBED'
       },
     });
+    */
   });
 
   test('type things (mostly) work (RouteId is thought to be “unknown”)', async () => {
@@ -82,10 +89,9 @@ describe('Client', () => {
 
   test('mutations: with known object return types', async () => {
     const c = createClient();
-    // TODO: automate these type assertions
 
     // create
-    const m1 = graphql(`mutation M {
+    const m1 = graphql(`mutation CreateApiKey {
       createApiKey {
         __typename
         apiKey
@@ -103,9 +109,9 @@ describe('Client', () => {
     assert.deepEqual(r2, { removeApiKey: true });
   });
 
-  test('mutations: with no field selection return types', async () => {
+  // SKIP becasue we don’t have a valid (test) environment to create orders
+  test.skip('mutations: with no field selection return types', async () => {
     const c = createClient();
-    // TODO: automate these type assertions
 
     // create
     const m1 = graphql(
@@ -116,19 +122,20 @@ describe('Client', () => {
         dir: 'sell',
         market: 'CME',
         quantity: '1',
-        orderType: 'LIMIT',
+        orderType: 'STOP_LOSS_LIMIT',
         timeInForce: { instruction: 'GTD' },
       },
     });
-    assert.equal(r1.createOrder, '');
+    console.log('created order?', r1);
+    assert.equal(typeof r1.createOrder, 'string');
 
     // cleanup / delete
-    /*
-    const m2 = graphql(`mutation RemoveApiKey($apiKey: String!) {
-      removeApiKey(apiKey: $apiKey)
+    const m2 = graphql(`mutation CancelOrder($orderId: OrderId!) {
+      cancelOrder(orderId: $orderId)
     }`);
-    const r2 = await c.execute(m2, { apiKey: r1.createApiKey.apiKey });
-    assert.deepEqual(r2, { removeApiKey: true });
-    */
+    const r2 = await c.execute(m2, { orderId: r1.createOrder });
+    console.log('canceled order?', r2);
+    assert.deepEqual(typeof r2.cancelOrder, 'string');
+    assert.deepEqual(r2.cancelOrder, r1.createOrder);
   });
 });

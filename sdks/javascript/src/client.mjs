@@ -91,7 +91,7 @@ export class Client {
    * @template Variables [Variables=any]
    *
    * @param {import('gql.tada').TadaDocumentNode<Result, Variables>} query GraphQL document string
-   * @param {Variables} [variables] query variables
+   * @param {Variables} variables query variables
    * @returns {Promise<Result>}
    */
   async execute(query, variables) {
@@ -131,13 +131,12 @@ export function __createClientWithProcessVars() {
   if (typeof host !== 'string') {
     throw new TypeError('process.env.ARCHITECT_HOST must be defined');
   }
-  if (typeof apiKey === 'string') {
+  if (typeof apiKey !== 'string') {
     throw new TypeError('process.env.ARCHITECT_API_KEY must be defined');
   }
-  if (typeof apiSecret === 'string') {
+  if (typeof apiSecret !== 'string') {
     throw new TypeError('process.env.ARCHITECT_API_SECRET must be defined');
   }
 
-  // @ts-expect-error ts doesn’t hold all the refinements above
   return new Client({ host, apiKey, apiSecret });
 }
