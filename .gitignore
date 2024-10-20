@@ -7,3 +7,6 @@ scratch*.py.*
 .env*
 .DS_Store
 node_modules
+*.d.cts*
+*.d.mts*
+*.d.ts*
