@@ -59,6 +59,7 @@ function validateAnalysis() {
 
 function validateQuality() {
   // ensure tests pass
+  // validate `npm pack` + `npm install` on demo app has types + passes
 }
 
 // Validation stage
