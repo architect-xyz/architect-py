@@ -86,12 +86,11 @@ export class Client {
   /**
    * Execute a GraphQL query with typed response
    *
-   *
    * @template Result [Result=any]
    * @template Variables [Variables=any]
    *
    * @param {import('gql.tada').TadaDocumentNode<Result, Variables>} query GraphQL document string
-   * @param {Variables} variables query variables
+   * @param {Variables} [variables] query variables
    * @returns {Promise<Result>}
    */
   async execute(query, variables) {

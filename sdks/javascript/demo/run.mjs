@@ -1,4 +1,10 @@
-import * as sdk from './output.mjs';
+import { create as createClient } from '../src/index.mjs';
+const config = {
+  host: /** @type {string} */ (process.env.ARCHITECT_HOST),
+  apiKey: /** @type {string} */ (process.env.ARCHITECT_API_KEY),
+  apiSecret: /** @type {string} */ (process.env.ARCHITECT_API_SECRET),
+};
+const sdk = await createClient(config);
 
 // Queries
 const v = await sdk.version();
@@ -19,7 +25,7 @@ const a = await sdk.listApiKeys([
 console.log('apiKeys\n', a, '\n');
 
 // Mutations
-/*  */
+/* 
 const key = await sdk.createApiKey([
   'apiSecret',
   'apiKey',
@@ -36,6 +42,7 @@ api key {
   created: '2024-10-13T14:52:43.835195612Z'
 }
 */
+/*
 const deleteKey = await sdk.removeApiKey(key.apiKey);
 console.log('delete key?', deleteKey);
 console.log(
@@ -62,3 +69,4 @@ try {
     e && typeof e === 'object' && 'message' in e ? e.message : e,
   );
 }
+*/
