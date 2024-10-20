@@ -4,7 +4,7 @@ const config = {
   apiKey: /** @type {string} */ (process.env.ARCHITECT_API_KEY),
   apiSecret: /** @type {string} */ (process.env.ARCHITECT_API_SECRET),
 };
-const sdk = await createClient(config);
+const sdk = createClient(config);
 
 // Queries
 const v = await sdk.version();

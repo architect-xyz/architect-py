@@ -75,3 +75,6 @@ try {
 }
 
 // Build
+// TODO: rewrite src/index.d.mts to hoist `import * as sdk from './sdk.mjs'` to program start before packing
+//
+//

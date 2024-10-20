@@ -1,4 +1,5 @@
 import { createClient } from './client.mjs';
+import * as sdk from './sdk.mjs';
 /**
  * @typedef {Object} Config API client config
  * @property {string} host API Host
@@ -11,9 +12,9 @@ let instantiated = false;
  * Create API config
  *
  * @param {Config} config client config
- * @returns {Promise<typeof sdk>}
+ * @returns {typeof sdk}
  */
-export async function create(config) {
+export function create(config) {
   // TODO: update codegen to bind to a config passed in to remove this error
   // case
   // currently we would not support multitenant which would cause very bad bugs
@@ -27,5 +28,5 @@ export async function create(config) {
   instantiated = true;
   createClient(config);
 
-  return import('./sdk.mjs');
+  return sdk;
 }
