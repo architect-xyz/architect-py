@@ -29,7 +29,7 @@ describe('Client', () => {
     */
   });
 
-  test('type things (mostly) work (RouteId is thought to be “unknown”)', async () => {
+  test('type things work (RouteId is thought to be “string”)', async () => {
     const c = createClient();
     const query = graphql(`query Route($id: RouteId!) {
       route(id: $id) {
@@ -38,7 +38,7 @@ describe('Client', () => {
         name
       }
     }`);
-    const r = await c.execute(query, { id: 'hey' });
+    const r = await c.execute(query, { id: 'invalid-route' });
     assert.deepEqual(r, { route: null });
   });
 
