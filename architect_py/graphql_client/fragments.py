@@ -241,6 +241,7 @@ class OrderLogFieldsOrder(BaseModel):
         "OrderLogFieldsOrderOrderTypeStopLossLimitOrderType",
         "OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType",
     ] = Field(alias="orderType", discriminator="typename__")
+    time_in_force: "OrderLogFieldsOrderTimeInForce" = Field(alias="timeInForce")
 
 
 class OrderLogFieldsOrderMarket(MarketFields):
@@ -262,6 +263,11 @@ class OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType(BaseModel):
     typename__: Literal["TakeProfitLimitOrderType"] = Field(alias="__typename")
     limit_price: Any = Field(alias="limitPrice")
     trigger_price: Any = Field(alias="triggerPrice")
+
+
+class OrderLogFieldsOrderTimeInForce(BaseModel):
+    instruction: str
+    good_til_date: Optional[Any] = Field(alias="goodTilDate")
 
 
 ProductFields.model_rebuild()
