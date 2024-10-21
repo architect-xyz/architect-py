@@ -169,5 +169,11 @@ async def test_cancel_all_orders():
     await client.cancel_all_orders()
 
 
+async def main():
+    await test_send_order()
+
+
 if __name__ == "__main__":
-    asyncio.run(test_send_order())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main())
