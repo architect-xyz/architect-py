@@ -22,12 +22,24 @@ it may not have all the information that the specific get_algo functions have
 import logging
 import dns.asyncresolver
 import grpc.aio
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, AsyncIterator, Optional, TypeAlias, Union
 
 import grpc.aio
+
+from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
+from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.utils.balance_and_positions import (
+    Balance,
+    BalancesAndPositions,
+    SimplePosition,
+)
+from architect_py.utils.dt import (
+    convert_datetime_to_utc_str,
+    get_expiration_from_CME_name,
+)
 
 from .async_graphql_client import AsyncGraphQLClient
 from .async_graphql_client.enums import (
@@ -35,7 +47,10 @@ from .async_graphql_client.enums import (
     OrderSource,
     ReferencePrice,
 )
-from .async_graphql_client.fragments import OrderFields
+from .async_graphql_client.fragments import (
+    MarketFieldsKindExchangeMarketKind,
+    OrderFields,
+)
 from .async_graphql_client.get_order import GetOrderOrder
 from .async_graphql_client.input_types import (
     CreateMMAlgo,
@@ -86,7 +101,7 @@ class AsyncClient(AsyncGraphQLClient):
         srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
         if len(srv_records) == 0:
             raise Exception(f"No SRV records found for {endpoint}")
-        connect_str = f"{srv_records[0].target}:{srv_records[0].port}"
+        connect_str = f"{srv_records[0].target}:{srv_records[0].port}"  # type: ignore
         return grpc.aio.insecure_channel(connect_str)
 
     def configure_marketdata(self, *, cpty, url):
@@ -104,7 +119,7 @@ class AsyncClient(AsyncGraphQLClient):
         self.market_names_by_route = {}
         if not self.no_gql:
             logger.info("Loading symbology...")
-            markets = await self.get_filtered_markets()
+            markets = await self.search_markets()
             logger.info("Loaded %d markets", len(markets))
             for market in markets:
                 if market.route.name not in self.market_names_by_route:
@@ -178,6 +193,8 @@ class AsyncClient(AsyncGraphQLClient):
             client = self.marketdata[cpty]
             market_id = Market.derive_id(market)
             return await client.get_l2_book_snapshot(market_id)
+        else:
+            raise ValueError(f"cpty {cpty} not configured for L2 marketdata")
 
     async def get_l3_book_snapshot(self, market: str) -> L3BookSnapshot:
         [_, cpty] = market.split("*", 1)
@@ -185,8 +202,12 @@ class AsyncClient(AsyncGraphQLClient):
             client = self.marketdata[cpty]
             market_id = Market.derive_id(market)
             return await client.get_l3_book_snapshot(market_id)
+        else:
+            raise ValueError(f"cpty {cpty} not configured for L3 marketdata")
 
-    def subscribe_trades(self, market: str, *args, **kwargs) -> AsyncIterator[TradeV1]:
+    def subscribe_trades(
+        self, market: str, *args, **kwargs
+    ) -> AsyncIterator[SubscribeTradesTrades]:
         [_, cpty] = market.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
@@ -233,8 +254,8 @@ class AsyncClient(AsyncGraphQLClient):
         market: str,
         dir: OrderDirection,
         quantity: DecimalLike,
-        order_type: CreateOrderType = CreateOrderType.LIMIT,
         limit_price: DecimalLike,
+        order_type: CreateOrderType = CreateOrderType.LIMIT,
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
@@ -462,17 +483,108 @@ class AsyncClient(AsyncGraphQLClient):
             )
         )
 
-
-def convert_datetime_to_utc_str(dt: datetime):
-    if dt.tzinfo is None:
-        raise ValueError(
-            "in sent_limit_order, the good_til_date must be timezone-aware. Try \n"
-            "import pytz\n"
-            "datetime(..., tzinfo={your_local_timezone})\n"
-            "# examples of local timezones: pytz.timezone('US/Eastern'), "
-            "pytz.timezone('US/Pacific'), pytz.timezone('US/Central')"
+    async def get_cme_futures_series(
+        self, series: str
+    ) -> list[tuple[date, SearchMarketsFilterMarkets]]:
+        markets = await self.search_markets(
+            search_string=series,
+            venue="CME",
         )
-    utc_str = dt.astimezone(timezone.utc).isoformat()[:-6]
-    # [:-6] removes the utc offset
 
-    return f"{utc_str}Z"
+        filtered_markets = [
+            (get_expiration_from_CME_name(market.kind.base.name), market)
+            for market in markets
+            if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
+            and market.kind.base.name.startswith(series)
+        ]
+
+        filtered_markets.sort(key=lambda x: x[0])
+
+        return filtered_markets
+
+    async def get_cme_future_from_root_month_year(
+        self, root: str, month: int, year: int
+    ) -> SearchMarketsFilterMarkets:
+
+        [market] = [
+            market
+            for market in await self.search_markets(
+                search_string=f"^{root} {year}{month}",
+                venue="CME",
+            )
+            if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
+            and market.kind.base.name.startswith(root)
+        ]
+
+        return market
+
+    async def get_balances_and_positions(self) -> list["BalancesAndPositions"]:
+        # returns data in the shape account => venue => { usd_balance: xxx, ...usd margin info, then product: balance, etc. }
+        summaries = await self.get_account_summaries()
+
+        bps = []
+
+        for summary in summaries:
+            for account in summary.by_account:
+                if account.account is None:
+                    continue
+                name = account.account.name
+
+                usd = None
+                for balance in account.balances:
+                    if balance.product is None:
+                        continue
+                    if balance.product.name == "USD":
+                        usd_amount = Decimal(balance.amount)  # type: ignore
+                        total_margin = Decimal(balance.total_margin)  # type: ignore
+                        position_margin = Decimal(balance.position_margin)  # type: ignore
+                        purchasing_power = Decimal(balance.purchasing_power)  # type: ignore
+                        cash_excess = Decimal(balance.cash_excess)  # type: ignore
+                        yesterday_balance = Decimal(balance.yesterday_balance)  # type: ignore
+
+                        usd = Balance(
+                            usd_amount,
+                            total_margin,
+                            position_margin,
+                            purchasing_power,
+                            cash_excess,
+                            yesterday_balance,
+                        )
+
+                if usd is None:
+                    raise ValueError(f"Account {name} has no USD balance")
+
+                positions = {}
+                for position in account.positions:
+                    if position.market is None:
+                        continue
+
+                    quantity: Decimal = Decimal(position.quantity)  # type: ignore
+                    quantity = quantity if position.dir == "buy" else -quantity
+                    average_price = Decimal(position.average_price)  # type: ignore
+
+                    if isinstance(
+                        position.market.kind, MarketFieldsKindExchangeMarketKind
+                    ):
+                        if position.market.kind.base.mark_usd is None:
+                            mark = None
+                        else:
+                            try:
+                                mark = Decimal(position.market.kind.base.mark_usd)
+                            except Exception:
+                                mark = None
+                    else:
+                        mark = None
+
+                    positions[position.market.name] = SimplePosition(
+                        quantity, average_price, mark
+                    )
+
+                bps.append(
+                    BalancesAndPositions(
+                        name,
+                        usd_balance=usd,
+                        positions=positions,
+                    )
+                )
+        return bps
