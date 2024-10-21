@@ -57,6 +57,8 @@ class CreateTimeInForceInstruction(str, Enum):
     GTC = "GTC"
     GTD = "GTD"
     IOC = "IOC"
+    DAY = "DAY"
+    FOK = "FOK"
 
 
 class EnvironmentKind(str, Enum):
