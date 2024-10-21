@@ -17,7 +17,8 @@ Goals
 - [x] Ensure apiKey and apiSecret are working
 - [x] Ensure queries and mutations are typed correctly
       * Resolve mutations were gql.tada thinks the return type is `unkown`
-- [ ] Ensure module install has standard sdk integration
+- [x] Ensure module install has standard sdk integration
+- [x] Support creating multiple client auths in one runtime
 - [ ] Foundations of the docs-build process
 - [ ] Foundations of the release process
 

@@ -1,10 +1,10 @@
-import { create as createClient } from '../src/index.mjs';
+import { create } from '../src/index.mjs';
 const config = {
   host: /** @type {string} */ (process.env.ARCHITECT_HOST),
   apiKey: /** @type {string} */ (process.env.ARCHITECT_API_KEY),
   apiSecret: /** @type {string} */ (process.env.ARCHITECT_API_SECRET),
 };
-const sdk = createClient(config);
+const sdk = create(config);
 
 // Queries
 const v = await sdk.version();

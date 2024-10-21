@@ -29,7 +29,8 @@ const DEBUG_PREFIX = `/**
  */`;
 
 const IMPORTS = `
-import { client, graphql } from './client.mjs';
+import { print } from 'graphql';
+import { graphql } from './client.mjs';
 `;
 
 /**
@@ -49,15 +50,94 @@ function createVisitor(queryType) {
         const deserializer = `results => results['${node.name.value}']`;
 
         return `${jsdoc.docblock(node)}
-export async function ${node.name.value}(${fields}${args(node)}) {
-  return client.execute(
-    graphql(\`${queryType} ${gql.template(node)}\`)${vars ? `,\n${vars}\n` : ''}
-  ).then(${deserializer});
-}`;
+  async ${node.name.value}(${fields}${args(node)}) {
+    return this.execute(
+      graphql(\`${queryType} ${gql.template(node)}\`)${vars ? `,\n${vars}\n` : ''}
+    ).then(${deserializer});
+  }`;
       },
     },
   };
 }
+const apiOpeningBlock = `
+/**
+ * @typedef {Object} Config API client config
+ * @property {string} host API Host
+ * @property {string} apiKey API Key
+ * @property {string} apiSecret API Secret
+ */
+
+export class Client {
+  /**
+   * Architect Client SDK class
+   *
+   * @param {Config} config API client config
+   * @param {import('graphql-http')['createClient']} createGraphqlClient
+   */
+  constructor(config, createGraphqlClient) {
+    // Resolve host to the graphql endpoint
+    const host = config.host.includes('4567')
+      ? config.host
+      : config.host.replace(/\\/$/, ':4567/');
+
+    /**
+     * GraphQL client that can execute queries against the GraphQL Server
+     * @type {import('graphql-http').Client} client
+     * @public
+     */
+    this.client = createGraphqlClient({
+      url: \`\${host}graphql\`,
+      headers: {
+        Authorization: \`Basic \${config.apiKey} \${config.apiSecret}\`,
+      },
+    });
+  }
+
+  /**
+   * Typed GraphQL query parser
+   *
+   * @param {Parameters<typeof graphql>[0]} query GraphQL document string
+   * @returns {ReturnType<typeof graphql>}
+   */
+  parse(query) {
+    return graphql(query);
+  }
+
+  /**
+   * Execute a GraphQL query with typed response
+   *
+   * @template Result [Result=any]
+   * @template Variables [Variables=any]
+   *
+   * @param {import('gql.tada').TadaDocumentNode<Result, Variables>} query GraphQL document string
+   * @param {Variables} [variables] query variables
+   * @returns {Promise<Result>}
+   */
+  async execute(query, variables) {
+    let cancel = () => { };
+    return new Promise((resolve, reject) => {
+      /**
+       * @type {Result}
+       */
+      let result;
+      cancel = this.client.subscribe(
+        {
+          query: print(query),
+          // @ts-expect-error Variables type is not quite the same
+          variables,
+        },
+        {
+          next: (resp) => {
+            // @ts-expect-error resp.data may not be provided in error cases
+            result = resp.data;
+          },
+          error: (err) => reject(err),
+          complete: () => resolve(result),
+        },
+      );
+    });
+  }
+`;
 
 module.exports = {
   /***
@@ -86,9 +166,13 @@ module.exports = {
 
 ${jsdoc.typemap(typeMap)}
 
-${queries.fields.join('\n\n')}
+${apiOpeningBlock}
 
-${mutations.fields.join('\n\n')}`;
+  ${queries.fields.join('\n\n')}
+
+  ${mutations.fields.join('\n\n')}
+}
+`;
   },
 
   /**

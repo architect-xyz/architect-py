@@ -48,10 +48,6 @@ const config: CodegenConfig = {
       plugins: ['./codegen/codegen.cjs'],
       config: { mode: 'production' },
     },
-    './demo/output.mjs': {
-      plugins: ['./codegen/codegen.cjs'],
-      config: { mode: 'debugging' },
-    },
   },
 };
 

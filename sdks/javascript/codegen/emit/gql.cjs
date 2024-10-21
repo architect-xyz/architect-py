@@ -71,6 +71,4 @@ function template(node) {
       }`;
 }
 
-module.exports = {
-  template,
-};
+module.exports = { template };

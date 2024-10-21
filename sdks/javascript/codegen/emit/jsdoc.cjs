@@ -26,14 +26,14 @@ function typemap(typemap) {
       : '';
     if (type instanceof GraphQLScalarType) {
       return scalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').Scalars['${key}']['output'] } ${key}${description}`,
+        ` * @typedef { import('./graphql/graphql.ts').Scalars['${key}']['output'] } ${key}${description}`,
       );
     } else {
       // ignore graphql native types
       if (key.startsWith('__')) return;
 
       return nonScalars.push(
-        ` * @typedef { import('../src/graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description}`,
+        ` * @typedef { import('./graphql/graphql.ts').${grosslyHandleMMNames(key)} } ${grosslyHandleMMNames(key)}${description}`,
       );
     }
   });
@@ -83,7 +83,7 @@ function docblock(node) {
   }
 
   // TODO: consider updating to the sort of syntax to reuse the other codegen emit
-  // * @returns {Promise<import('../src/graphql/graphql.ts').MutationRoot['createMmAlgo']>}
+  // * @returns {Promise<import('./graphql/graphql.ts').MutationRoot['createMmAlgo']>}
   const returnTypeDef = isScalar
     ? `@returns {Promise<${returnType}${isList ? '[]' : ''}${isNullable ? ' | null' : ''}>}`
     : `@returns {Promise<Pick<${returnType}, Fields | '__typename'>${isList ? '[]' : ''}${isNullable ? ' | null' : ''}>}`;

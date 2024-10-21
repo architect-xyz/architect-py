@@ -1,4 +1,5 @@
-import { __createClientWithProcessVars, graphql } from '../src/client.mjs';
+import { graphql } from '../src/client.mjs';
+import { __createClientWithProcessVars } from '../src/debugging.mjs';
 
 const c = __createClientWithProcessVars();
 

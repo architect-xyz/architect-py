@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import {
-  __createClientWithProcessVars as createClient,
-  graphql,
-} from '../src/client.mjs';
+import { graphql } from '../src/client.mjs';
+import { __createClientWithProcessVars as createClient } from '../src/debugging.mjs';
 
 describe('Client', () => {
   test('can query with types, even though we’re only using javascript', async () => {
