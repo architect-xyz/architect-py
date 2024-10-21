@@ -58,6 +58,7 @@ enum CreateTimeInForceInstruction {
   GTD
   IOC
   DAY
+  FOK
 }
 
 enum EnvironmentKind {
