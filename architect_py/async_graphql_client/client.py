@@ -32,6 +32,7 @@ from .get_balances_for_cpty import (
 from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotBookSnapshot
 from .get_fills import GetFills, GetFillsFills
 from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
+from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateMarket
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
@@ -429,6 +430,28 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         )
         data = self.get_data(response)
         return SearchMarkets.model_validate(data).filter_markets
+
+    async def get_first_notice_date(
+        self, id: Any, **kwargs: Any
+    ) -> Optional[GetFirstNoticeDateMarket]:
+        query = gql(
+            """
+            query GetFirstNoticeDate($id: MarketId!) {
+              market(id: $id) {
+                firstNoticeDate
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"id": id}
+        response = await self.execute(
+            query=query,
+            operation_name="GetFirstNoticeDate",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetFirstNoticeDate.model_validate(data).market
 
     async def get_market_snapshot(
         self, id: Any, **kwargs: Any

@@ -108,6 +108,7 @@ from .get_fills import (
     GetFillsFillsNormalMarket,
 )
 from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
+from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateMarket
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
@@ -283,6 +284,8 @@ __all__ = [
     "GetFillsFillsNormalMarket",
     "GetFilteredMarkets",
     "GetFilteredMarketsFilterMarkets",
+    "GetFirstNoticeDate",
+    "GetFirstNoticeDateMarket",
     "GetMarket",
     "GetMarketMarket",
     "GetMarketSnapshot",
