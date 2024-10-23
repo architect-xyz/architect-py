@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "architect-py"
-version = "1.4.0"
+version = "1.5.0"
 description = "Client library for the Architect trading platform."
 authors = ["Architect Financial Technologies, Inc. <hello@architect.xyz>"]
 readme = "README.md"
@@ -8,14 +8,14 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: Apache Software License",
-    "Development Status :: 3 - Alpha"
+    "Development Status :: 3 - Alpha",
 ]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
 asyncio = "^3"
 dnspython = "^2"
-gql = {extras = ["all"], version = "^3.5.0"}
+gql = { extras = ["all"], version = "^3.5.0" }
 grpcio = "^1.66.1"
 httpx = "^0.27.0"
 msgspec = "^0.18.6"
@@ -24,7 +24,7 @@ pydantic = "^2.6.4"
 websockets = "^11"
 
 [tool.poetry.group.dev.dependencies]
-ariadne-codegen = {extras = ["subscriptions"], version = "^0.13.0"}
+ariadne-codegen = { extras = ["subscriptions"], version = "^0.13.0" }
 black = "^24"
 python-dotenv = "^1.0.1"
 simplewebsocketserver = "^0.1.2"
