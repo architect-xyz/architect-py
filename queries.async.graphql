@@ -259,6 +259,12 @@ query SearchMarkets(
   }
 }
 
+query GetFirstNoticeDate($id: MarketId!) {
+  market(id: $id) {
+    firstNoticeDate
+  }
+}
+
 query GetMarketSnapshot($id: MarketId!) {
   marketSnapshot(market: $id) {
     ...MarketSnapshotFields
