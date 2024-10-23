@@ -25,6 +25,7 @@ from .get_all_market_snapshots import (
 from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOpenOrders
 from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotBookSnapshot
 from .get_fills import GetFills, GetFillsFills
+from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateMarket
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
@@ -307,6 +308,28 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return SearchMarkets.model_validate(data).filter_markets
+
+    def get_first_notice_date(
+        self, id: Any, **kwargs: Any
+    ) -> Optional[GetFirstNoticeDateMarket]:
+        query = gql(
+            """
+            query GetFirstNoticeDate($id: MarketId!) {
+              market(id: $id) {
+                firstNoticeDate
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"id": id}
+        response = self.execute(
+            query=query,
+            operation_name="GetFirstNoticeDate",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetFirstNoticeDate.model_validate(data).market
 
     def get_market_snapshot(
         self, id: Any, **kwargs: Any

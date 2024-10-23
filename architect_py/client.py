@@ -532,3 +532,14 @@ class Client(GraphQLClient):
                     )
                 )
         return bps
+
+    def get_cme_first_notice_date(self, market: str) -> Optional[date]:
+        markets = self.get_first_notice_date(
+            market
+        )
+
+        for m in markets:
+            if m.kind.base.name == market:
+                return get_expiration_from_CME_name(m.kind.base.name)
+
+        return None
