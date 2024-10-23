@@ -60,6 +60,7 @@ from .fragments import (
     OrderLogFieldsOrderOrderTypeLimitOrderType,
     OrderLogFieldsOrderOrderTypeStopLossLimitOrderType,
     OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType,
+    OrderLogFieldsOrderTimeInForce,
     ProductFields,
 )
 from .get_account_summaries import (
@@ -306,6 +307,7 @@ __all__ = [
     "OrderLogFieldsOrderOrderTypeLimitOrderType",
     "OrderLogFieldsOrderOrderTypeStopLossLimitOrderType",
     "OrderLogFieldsOrderOrderTypeTakeProfitLimitOrderType",
+    "OrderLogFieldsOrderTimeInForce",
     "OrderSource",
     "OrderStateFlags",
     "PreviewSmartOrderRouterAlgoRequest",

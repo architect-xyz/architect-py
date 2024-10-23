@@ -703,6 +703,10 @@ class GraphQLClient(JuniperBaseClient):
                     triggerPrice
                   }
                 }
+                timeInForce {
+                  instruction
+                  goodTilDate
+                }
               }
               orderState
               filledQty
@@ -808,6 +812,10 @@ class GraphQLClient(JuniperBaseClient):
                     triggerPrice
                   }
                 }
+                timeInForce {
+                  instruction
+                  goodTilDate
+                }
               }
               orderState
               filledQty
@@ -910,6 +918,10 @@ class GraphQLClient(JuniperBaseClient):
                     limitPrice
                     triggerPrice
                   }
+                }
+                timeInForce {
+                  instruction
+                  goodTilDate
                 }
               }
               orderState

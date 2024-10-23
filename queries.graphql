@@ -132,6 +132,10 @@ fragment OrderLogFields on OrderLog {
         triggerPrice
       }
     }
+    timeInForce {
+      instruction
+      goodTilDate
+    }
   }
   orderState
   filledQty
