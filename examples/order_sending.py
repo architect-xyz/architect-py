@@ -13,12 +13,23 @@ from architect_py.async_graphql_client.fragments import (
 
 import logging
 
-LOGGER = logging.getLogger(__name__)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
+LOGGER = logging.getLogger("httpx")
+LOGGER.setLevel(logging.WARN)
+
+HOST = "app.architect.co"
+ACCOUNT = "DORMAN:1234567890"
 api_key = None
 api_secret = None
-HOST = None
-ACCOUNT = None
+
+
+logging.critical(
+    f"HOST: {HOST}, ACCOUNT: {ACCOUNT}, API_KEY: {api_key}, API_SECRET: {api_secret}"
+)
 
 
 if api_key is None or api_secret is None or HOST is None or ACCOUNT is None:
@@ -31,10 +42,13 @@ client = AsyncClient(host=HOST, api_key=api_key, api_secret=api_secret)
 
 
 async def get_market() -> SearchMarketsFilterMarkets:
+    venue = "CME"
+
     markets = await client.search_markets(
-        search_string="", venue="CME", sort_by_volume_desc=True
+        search_string="", venue=venue, sort_by_volume_desc=True
     )
     market = markets[0]
+    logging.critical(f"Market: {market.name}")
     return market
 
 
@@ -49,19 +63,29 @@ async def test_send_order():
     if snapshot.ask_price is None or snapshot.bid_price is None:
         return ValueError(f"Market snapshot for {market.name} is None")
 
-    order_type: CreateOrderType = CreateOrderType.LIMIT
+    logging.info(f"snapshot: {snapshot}")
+
+    limit_price = (
+        float(snapshot.bid_price)
+        - (float(snapshot.ask_price) - float(snapshot.bid_price)) * 10
+    )
 
     order = await client.send_limit_order(
         market=market_id,
         dir=OrderDirection.BUY,
         quantity=1,
-        order_type=order_type,
-        post_only=True,
-        limit_price=float(snapshot.bid_price)
-        - (float(snapshot.ask_price) - float(snapshot.bid_price)) * 10,
+        order_type=CreateOrderType.LIMIT,
+        post_only=False,
+        limit_price=limit_price,
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.IOC,
     )
+    logging.critical(f"ORDER TEST: {order}")
+
+    assert order is not None
+
+    await asyncio.sleep(1)
+    order = await client.get_order(order.order.id)
     logging.critical(f"ORDER TEST: {order}")
 
     assert order is not None
@@ -177,3 +201,4 @@ if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(main())
+    # loop.run_forever()
