@@ -16,14 +16,12 @@ async def main():
         markets_by_id[UUID(market.id)] = market
     print(f"Loaded {len(markets)} markets")
 
-    channel = await c.grpc_channel("binance-futures-usd-m.marketdata.architect.co")
-    stub = JsonMarketdataStub(channel)
-    req = SubscribeL1BookSnapshotsRequest(
+    async for snap in c.subscribe_l1_book_snapshots(
+        "binance-futures-usd-m.marketdata.architect.co",
         market_ids=[
             "POPCAT-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"
-        ]
-    )
-    async for snap in stub.SubscribeL1BookSnapshots(req):
+        ],
+    ):
         market_name = "<unknown>"
         if snap.market_id in markets_by_id:
             market = markets_by_id[snap.market_id]
