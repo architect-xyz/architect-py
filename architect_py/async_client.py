@@ -64,7 +64,14 @@ from .async_graphql_client.input_types import (
     CreateTwapAlgo,
 )
 from .json_ws_client import JsonWsClient
-from .protocol.marketdata import L2BookSnapshot, L3BookSnapshot, TradeV1
+from .protocol.marketdata import (
+    JsonMarketdataStub,
+    L1BookSnapshot,
+    L2BookSnapshot,
+    L3BookSnapshot,
+    SubscribeL1BookSnapshotsRequest,
+    TradeV1,
+)
 from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
@@ -186,6 +193,14 @@ class AsyncClient(AsyncGraphQLClient):
             return []
         by_quote = by_base.get(base, {})
         return list(by_quote.values())
+
+    async def subscribe_l1_book_snapshots(
+        self, endpoint: str, market_ids: list[str] | None = None
+    ) -> AsyncIterator[L1BookSnapshot]:
+        channel = await self.grpc_channel(endpoint)
+        stub = JsonMarketdataStub(channel)
+        req = SubscribeL1BookSnapshotsRequest(market_ids=market_ids)
+        return stub.SubscribeL1BookSnapshots(req)
 
     async def get_l2_book_snapshot(self, market: str) -> L2BookSnapshot:
         [_, cpty] = market.split("*", 1)
