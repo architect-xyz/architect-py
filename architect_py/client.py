@@ -259,6 +259,60 @@ class Client(GraphQLClient):
                 time.sleep(0.1)
         return self.get_order(order_id=order)
 
+    def send_market_pro_order(
+            self,
+            *,
+            market: str,
+            dir: OrderDirection,
+            quantity: DecimalLike,
+            trigger_price: Optional[DecimalLike] = None,
+            time_in_force: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
+            account: Optional[str] = None,
+            source: OrderSource = OrderSource.API,
+            quote_id: Optional[str] = None,
+            percent_through_market: int = 2
+    ) -> Optional[GetOrderOrder]:
+
+        # Check for GQL failures
+        bbo_snapshot = self.get_market_snapshot(market)
+        if bbo_snapshot is None:
+            raise ValueError("Failed to send market order with reason: no market snapshot for {market}")
+        
+        market_details = self.get_market(market)
+        if market_details is None:
+            raise ValueError("Failed to send market order with reason: no market details for {market}")
+
+        best_bid = bbo_snapshot.bid_price
+        best_offer = bbo_snapshot.ask_price
+        last_price = bbo_snapshot.last_price
+        
+        limit_price = best_offer * (1 - percent_through_market/100) if dir == OrderDirection.BUY else best_bid * (1 + percent_through_market/100)
+
+        # Avoid sending limits outside CME's price bands
+        if market_details.venue == "CME":
+            price_band = market_details.cme_product_group_info.price_band
+            if price_band is None:
+                raise ValueError("Failed to send market order for: no CME price band for {market}")
+            
+            if dir == OrderDirection.BUY:
+                limit_price = min(limit_price, last_price + price_band)  
+            else:
+                limit_price = max(limit_price, last_price + price_band)
+
+        return self.send_limit_order(            
+            market=market,
+            dir=dir.value,
+            quantity=str(quantity),
+            account=account,
+            orderType=CreateOrderType.LIMIT,
+            limitPrice=str(limit_price),
+            postOnly=False,
+            triggerPrice=str(trigger_price) if trigger_price is not None else None,
+            timeInForce=time_in_force,
+            quoteId=quote_id,
+            source=source
+        )
+
     def send_twap_algo(
         self,
         *,

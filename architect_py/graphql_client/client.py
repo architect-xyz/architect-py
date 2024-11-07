@@ -99,6 +99,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -170,6 +171,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -253,6 +255,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -477,6 +480,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -598,6 +602,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -672,6 +677,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -781,6 +787,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -888,6 +895,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -1464,6 +1472,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -1608,6 +1617,7 @@ class GraphQLClient(JuniperBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {

@@ -50,6 +50,7 @@ class MarketFieldsCmeProductGroupInfo(BaseModel):
     category: Optional[str]
     sub_category: Optional[str] = Field(alias="subCategory")
     main_fraction: Optional[int] = Field(alias="mainFraction")
+    price_band: Optional[str] = Field(alias="priceBand")
 
 
 class MarketFieldsKindExchangeMarketKind(BaseModel):
