@@ -10,3 +10,5 @@ base_client_file_path = "./templates/juniper_base_client.py"
 files_to_include = ["./templates/exceptions.py"]
 plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
 
+[tool.ariadne-codegen.scalars.Decimal]
+type = "decimal.Decimal"
