@@ -140,6 +140,7 @@ from .get_spread_status import (
     GetSpreadStatusSpreadAlgoStatusSellStatus,
     GetSpreadStatusSpreadAlgoStatusSellStatusOpenOrder,
 )
+from .get_tick_size import GetTickSize, GetTickSizeMarket
 from .get_twap_order import GetTwapOrder, GetTwapOrderTwapOrder
 from .get_twap_status import (
     GetTwapStatus,
@@ -275,6 +276,8 @@ __all__ = [
     "GetSpreadStatusSpreadAlgoStatusOrder",
     "GetSpreadStatusSpreadAlgoStatusSellStatus",
     "GetSpreadStatusSpreadAlgoStatusSellStatusOpenOrder",
+    "GetTickSize",
+    "GetTickSizeMarket",
     "GetTwapOrder",
     "GetTwapOrderTwapOrder",
     "GetTwapStatus",

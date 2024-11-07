@@ -39,6 +39,7 @@ from architect_py.utils.dt import (
     convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
+from architect_py.utils.nearest_tick import TickRoundMethod, get_tick_size
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
     CreateOrderType,
@@ -192,6 +193,7 @@ class Client(GraphQLClient):
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
+        round_tick: Optional[TickRoundMethod] = None,
         wait_for_confirm: bool = False,
     ) -> Optional[GetOrderOrder]:
         """
@@ -202,6 +204,11 @@ class Client(GraphQLClient):
             good_til_date_str = convert_datetime_to_utc_str(good_til_date)
         else:
             good_til_date_str = None
+
+        if round_tick is not None:
+            if not isinstance(limit_price, Decimal):
+                limit_price = Decimal(limit_price)
+            tick_size = get_tick_size(market, self)
 
         order: str = self.send_order(
             CreateOrder(
@@ -532,14 +539,3 @@ class Client(GraphQLClient):
                     )
                 )
         return bps
-
-    def get_cme_first_notice_date(self, market: str) -> Optional[date]:
-        markets = self.get_first_notice_date(
-            market
-        )
-
-        for m in markets:
-            if m.kind.base.name == market:
-                return get_expiration_from_CME_name(m.kind.base.name)
-
-        return None

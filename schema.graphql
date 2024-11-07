@@ -6,11 +6,6 @@ schema {
   subscription: SubscriptionRoot
 }
 
-enum Dir {
-  BUY
-  SELL
-}
-
 enum AlgoControlCommand {
   START
   PAUSE

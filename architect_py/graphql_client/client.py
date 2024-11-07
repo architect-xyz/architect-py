@@ -46,6 +46,7 @@ from .get_smart_order_router_status import (
 )
 from .get_spread_order import GetSpreadOrder, GetSpreadOrderSpreadAlgoOrder
 from .get_spread_status import GetSpreadStatus, GetSpreadStatusSpreadAlgoStatus
+from .get_tick_size import GetTickSize, GetTickSizeMarket
 from .get_twap_order import GetTwapOrder, GetTwapOrderTwapOrder
 from .get_twap_status import GetTwapStatus, GetTwapStatusTwapStatus
 from .input_types import (
@@ -1819,7 +1820,7 @@ class GraphQLClient(JuniperBaseClient):
         self,
         market: Any,
         num_levels: int,
-        precision: Union[Optional[Any], UnsetType] = UNSET,
+        precision: Union[Optional[Decimal], UnsetType] = UNSET,
         retain_seconds: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
     ) -> GetBookSnapshotBookSnapshot:
@@ -1876,3 +1877,20 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetAccounts.model_validate(data).accounts
+
+    def get_tick_size(self, market: Any, **kwargs: Any) -> Optional[GetTickSizeMarket]:
+        query = gql(
+            """
+            query GetTickSize($market: MarketId!) {
+              market(id: $market) {
+                tickSize
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"market": market}
+        response = self.execute(
+            query=query, operation_name="GetTickSize", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetTickSize.model_validate(data).market
