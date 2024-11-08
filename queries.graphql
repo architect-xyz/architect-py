@@ -682,10 +682,3 @@ query GetAccounts {
     name
   }
 }
-
-
-query GetTickSize($market: MarketId!) {
-  market(id: $market) {
-    tickSize
-  }
-}
