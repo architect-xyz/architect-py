@@ -17,29 +17,32 @@ from decimal import (
 
 from enum import Enum
 
-from functools import partial, lru_cache
+from functools import partial
+from typing import Union
 
-from architect_py.async_client import AsyncClient
-from architect_py.client import Client
+import architect_py.async_graphql_client.fragments as sync_fragments
+import architect_py.graphql_client.fragments as async_fragments
 
 
-@lru_cache(maxsize=10, typed=False)
-def get_tick_size(market_id: str, client: Client) -> Decimal:
-    market = client.get_market(market_id)
-    if market is None:
-        raise ValueError(f"Market {market_id} not found")
+def get_tick_size(
+    market: Union[async_fragments.MarketFields, sync_fragments.MarketFields]
+) -> Decimal:
+    """
+    SYNC CLIENT EXAMPLE:
+        market = client.get_market(market_id)
+        if market is None:
+            raise ValueError(f"Market {market_id} not found")
+        get_tick_size(market)
+
+    ASYNC CLIENT EXAMPLE:
+        market = await client.get_market(market_id)
+        if market is None:
+            raise ValueError(f"Market {market_id} not found")
+        get_tick_size(market)
+    """
     return Decimal(market.tick_size)
 
 
-@lru_cache(maxsize=10, typed=False)
-async def get_tick_size_async(market_id: str, client: AsyncClient) -> Decimal:
-    market = await client.get_market(market_id)
-    if market is None:
-        raise ValueError(f"Market {market_id} not found")
-    return Decimal(market.tick_size)
-
-
-# Define the rounding functions
 def round_method(value: Decimal, tick_size: Decimal) -> Decimal:
     """
     ROUND: Round to the nearest tick. If the remainder is >= half the tick size, round up; otherwise, round down.
