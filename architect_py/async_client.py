@@ -21,6 +21,7 @@ it may not have all the information that the specific get_algo functions have
 
 import logging
 import dns.asyncresolver
+import dns.name
 import grpc.aio
 from datetime import date, datetime, timezone
 from decimal import Decimal
@@ -94,17 +95,36 @@ DecimalLike: TypeAlias = Union[int, float, Decimal, str]
 
 
 class AsyncClient(AsyncGraphQLClient):
-    def __init__(self, *args, no_gql: bool = False, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, no_gql: bool = False, **kwargs):
+        """
+        Please see the AsyncGraphQLClient class for the full list of arguments.
+        """
+        if kwargs["api_key"] is None:
+            raise ValueError("API key is required")
+        elif kwargs["api_secret"] is None:
+            raise ValueError("API secret is required")
+        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+            raise ValueError(
+                "API key and secret cannot contain spaces, please double check your credentials"
+            )
+        elif kwargs["api_secret"][-1] != "=":
+            raise ValueError(
+                "API secret must end with an equals sign, please double check your credentials"
+            )
+        elif kwargs["api_key"].len() <= 24 or kwargs["api_secret"].len() <= 44:
+            raise ValueError(
+                "API key and secret are too short, please double check your credentials"
+            )
+
+        super().__init__(**kwargs)
         self.no_gql = no_gql
-        self.marketdata = {}  # cpty => JsonWsClient
         self.route_by_id = {}
         self.venue_by_id = {}
         self.product_by_id = {}
         self.market_by_id = {}
         self.market_names_by_route = {}  # route => venue => base => quote => market
 
-    async def grpc_channel(self, endpoint: Any):
+    async def grpc_channel(self, endpoint: Union[dns.name.Name, str]):
         srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
         if len(srv_records) == 0:
             raise Exception(f"No SRV records found for {endpoint}")
@@ -135,10 +155,12 @@ class AsyncClient(AsyncGraphQLClient):
                 if market.venue.name not in by_venue:
                     by_venue[market.venue.name] = {}
                 by_base = by_venue[market.venue.name]
-                if market.kind.base.name not in by_base:  # type: ignore
-                    by_base[market.kind.base.name] = {}  # type: ignore
-                by_quote = by_base[market.kind.base.name]  # type: ignore
-                by_quote[market.kind.quote.name] = market.name  # type: ignore
+
+                if market.kind is MarketFieldsKindExchangeMarketKind:
+                    if market.kind.base.name not in by_base:
+                        by_base[market.kind.base.name] = {}
+                    by_quote = by_base[market.kind.base.name]
+                    by_quote[market.kind.quote.name] = market.name
             logger.info("Indexed %d markets", len(markets))
         # get symbology from marketdata clients
         clients = []
@@ -200,7 +222,7 @@ class AsyncClient(AsyncGraphQLClient):
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
         req = SubscribeL1BookSnapshotsRequest(market_ids=market_ids)
-        return stub.SubscribeL1BookSnapshots(req)
+        return stub.SubscribeL1BookSnapshots(req)  # type: ignore
 
     async def get_l2_book_snapshot(self, market: str) -> L2BookSnapshot:
         [_, cpty] = market.split("*", 1)
@@ -550,12 +572,18 @@ class AsyncClient(AsyncGraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount)  # type: ignore
-                        total_margin = Decimal(balance.total_margin)  # type: ignore
-                        position_margin = Decimal(balance.position_margin)  # type: ignore
-                        purchasing_power = Decimal(balance.purchasing_power)  # type: ignore
-                        cash_excess = Decimal(balance.cash_excess)  # type: ignore
-                        yesterday_balance = Decimal(balance.yesterday_balance)  # type: ignore
+                        usd_amount = Decimal(getattr(balance, "amount", "NaN"))
+                        total_margin = Decimal(getattr(balance, "total_margin", "NaN"))
+                        position_margin = Decimal(
+                            getattr(balance, "position_margin", "NaN")
+                        )
+                        purchasing_power = Decimal(
+                            getattr(balance, "purchasing_power", "NaN")
+                        )
+                        cash_excess = Decimal(getattr(balance, "cash_excess", "NaN"))
+                        yesterday_balance = Decimal(
+                            getattr(balance, "yesterday_balance", "NaN")
+                        )
 
                         usd = Balance(
                             usd_amount,
@@ -574,9 +602,9 @@ class AsyncClient(AsyncGraphQLClient):
                     if position.market is None:
                         continue
 
-                    quantity: Decimal = Decimal(position.quantity)  # type: ignore
+                    quantity: Decimal = Decimal(getattr(position, "quantity", "NaN"))
                     quantity = quantity if position.dir == "buy" else -quantity
-                    average_price = Decimal(position.average_price)  # type: ignore
+                    average_price = Decimal(getattr(position, "average_price", "NaN"))
 
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind
@@ -603,3 +631,10 @@ class AsyncClient(AsyncGraphQLClient):
                     )
                 )
         return bps
+
+    async def get_cme_first_notice_date(self, market: str) -> Optional[date]:
+        notice = await self.get_first_notice_date(market)
+        if notice is None or notice.first_notice_date is None:
+            return None
+
+        return datetime.strptime(notice.first_notice_date, "%Y-%m-%d").date()
