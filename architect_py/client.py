@@ -140,10 +140,11 @@ class Client(GraphQLClient):
                 if market.venue.name not in by_venue:
                     by_venue[market.venue.name] = {}
                 by_base = by_venue[market.venue.name]
-                if market.kind.base.name not in by_base:  # type: ignore
-                    by_base[market.kind.base.name] = {}  # type: ignore
-                by_quote = by_base[market.kind.base.name]  # type: ignore
-                by_quote[market.kind.quote.name] = market.name  # type: ignore
+                if market.kind is MarketFieldsKindExchangeMarketKind:
+                    if market.kind.base.name not in by_base:
+                        by_base[market.kind.base.name] = {}
+                    by_quote = by_base[market.kind.base.name]
+                    by_quote[market.kind.quote.name] = market.name
             logger.info("Indexed %d markets", len(markets))
 
     # CR alee: make base, venue, route optional, and add optional quote.
@@ -499,12 +500,18 @@ class Client(GraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount)  # type: ignore
-                        total_margin = Decimal(balance.total_margin)  # type: ignore
-                        position_margin = Decimal(balance.position_margin)  # type: ignore
-                        purchasing_power = Decimal(balance.purchasing_power)  # type: ignore
-                        cash_excess = Decimal(balance.cash_excess)  # type: ignore
-                        yesterday_balance = Decimal(balance.yesterday_balance)  # type: ignore
+                        usd_amount = Decimal(getattr(balance, "amount", "NaN"))
+                        total_margin = Decimal(getattr(balance, "total_margin", "NaN"))
+                        position_margin = Decimal(
+                            getattr(balance, "position_margin", "NaN")
+                        )
+                        purchasing_power = Decimal(
+                            getattr(balance, "purchasing_power", "NaN")
+                        )
+                        cash_excess = Decimal(getattr(balance, "cash_excess", "NaN"))
+                        yesterday_balance = Decimal(
+                            getattr(balance, "yesterday_balance", "NaN")
+                        )
 
                         usd = Balance(
                             usd_amount,
@@ -523,9 +530,9 @@ class Client(GraphQLClient):
                     if position.market is None:
                         continue
 
-                    quantity: Decimal = Decimal(position.quantity)  # type: ignore
+                    quantity: Decimal = Decimal(getattr(position, "quantity", "NaN"))
                     quantity = quantity if position.dir == "buy" else -quantity
-                    average_price = Decimal(position.average_price)  # type: ignore
+                    average_price = Decimal(getattr(position, "average_price", "NaN"))
 
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind

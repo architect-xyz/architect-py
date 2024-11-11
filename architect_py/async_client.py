@@ -118,6 +118,7 @@ class AsyncClient(AsyncGraphQLClient):
 
         super().__init__(**kwargs)
         self.no_gql = no_gql
+        self.marketdata = {}  # cpty => JsonWsClient
         self.route_by_id = {}
         self.venue_by_id = {}
         self.product_by_id = {}
