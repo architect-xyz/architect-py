@@ -5,11 +5,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
-from typing import Any, Generic, Literal, Optional, TypeVar
+from typing import Any, Literal, Optional, Union
 
 
 class JsonMarketdataStub(object):
-    def __init__(self, channel: grpc.Channel):
+    def __init__(self, channel: Union[grpc.Channel, grpc.aio.Channel]):
         self.SubscribeL1BookSnapshots = channel.unary_stream(
             "/json.architect.Marketdata/SubscribeL1BookSnapshots",
             request_serializer=msgspec.json.encode,
