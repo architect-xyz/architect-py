@@ -84,8 +84,28 @@ DecimalLike: TypeAlias = Union[int, float, Decimal, str]
 
 
 class Client(GraphQLClient):
-    def __init__(self, *args, no_gql: bool = False, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, no_gql: bool = False, **kwargs):
+        """
+        Please see the GraphQLClient class for the full list of arguments.
+        """
+        if kwargs["api_key"] is None:
+            raise ValueError("API key is required")
+        elif kwargs["api_secret"] is None:
+            raise ValueError("API secret is required")
+        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+            raise ValueError(
+                "API key and secret cannot contain spaces, please double check your credentials"
+            )
+        elif kwargs["api_secret"][-1] != "=":
+            raise ValueError(
+                "API secret must end with an equals sign, please double check your credentials"
+            )
+        elif kwargs["api_key"].len() <= 24 or kwargs["api_secret"].len() <= 44:
+            raise ValueError(
+                "API key and secret are too short, please double check your credentials"
+            )
+
+        super().__init__(**kwargs)
         self.no_gql = no_gql
         self.route_by_id = {}
         self.venue_by_id = {}
