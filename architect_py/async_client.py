@@ -371,7 +371,7 @@ class AsyncClient(AsyncGraphQLClient):
         if price_round_method is not None:
             market_info = await self.get_market(market)
             if market_info is not None:
-                tick_size = market_info.tick_size
+                tick_size = Decimal(market_info.tick_size)
                 limit_price = nearest_tick(
                     limit_price, method=price_round_method, tick_size=tick_size
                 )
