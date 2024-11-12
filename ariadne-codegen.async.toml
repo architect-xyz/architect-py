@@ -9,5 +9,13 @@ base_client_file_path = "./templates/juniper_async_base_client.py"
 files_to_include = ["./templates/exceptions.py"]
 plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
 
-[tool.ariadne-codegen.scalars.Decimal]
-type = "decimal.Decimal"
+[tool.ariadne-codegen.scalars]
+Decimal.type = "decimal.Decimal"
+
+AccountId.type = "architect_py.scalars.AccountId"
+AccountId.serialize = "architect_py.scalars.serialize"
+AccountId.deserialize = "architect_py.scalars.deserialize"
+
+Dir.type = "architect_py.scalars.Dir"
+Dir.serialize = "architect_py.scalars.serialize"
+Dir.deserialize = "architect_py.scalars.deserialize"

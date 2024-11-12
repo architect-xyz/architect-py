@@ -26,7 +26,7 @@ import re
 import dns.asyncresolver
 import dns.name
 import grpc.aio
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any, AsyncIterator, List, Optional, Sequence, TypeAlias, Union
@@ -37,6 +37,7 @@ from architect_py.async_graphql_client.base_model import UNSET, UnsetType
 from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.scalars import AccountId, Dir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
@@ -77,27 +78,10 @@ from .protocol.marketdata import (
     L2BookSnapshot,
     L3BookSnapshot,
     SubscribeL1BookSnapshotsRequest,
-    TradeV1,
 )
 from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
-
-
-class OrderDirection(Enum):
-    BUY = "buy"
-    SELL = "sell"
-
-    def __int__(self):
-        if self == OrderDirection.BUY:
-            return 1
-        elif self == OrderDirection.SELL:
-            return -1
-        else:
-            raise ValueError(f"Unknown OrderDirection: {self}")
-
-
-DecimalLike: TypeAlias = Union[int, float, Decimal, str]
 
 
 class AsyncClient(AsyncGraphQLClient):
@@ -258,7 +242,7 @@ class AsyncClient(AsyncGraphQLClient):
         base: str,
         venue: str,
         route: str = "DIRECT",
-    ):
+    ) -> list:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
         and symbology to be loaded and indexed.
@@ -347,16 +331,16 @@ class AsyncClient(AsyncGraphQLClient):
         self,
         *,
         market: str,
-        dir: OrderDirection,
-        quantity: DecimalLike,
-        limit_price: DecimalLike,
+        dir: Dir,
+        quantity: Decimal,
+        limit_price: Decimal,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
         price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
-        account: Optional[str] = None,
+        account: Optional[AccountId] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
     ) -> Optional[GetOrderOrder]:
@@ -388,7 +372,7 @@ class AsyncClient(AsyncGraphQLClient):
         order: str = await self.send_order(
             CreateOrder(
                 market=market,
-                dir=dir.value,
+                dir=dir,
                 quantity=quantity,
                 account=account,
                 orderType=order_type,
@@ -411,13 +395,13 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        dir: OrderDirection,
-        quantity: DecimalLike,
+        dir: Dir,
+        quantity: Decimal,
         interval_ms: int,
         reject_lockout_ms: int,
         end_time: datetime,
-        account: Optional[str] = None,
-        take_through_frac: Optional[DecimalLike] = None,
+        account: Optional[AccountId] = None,
+        take_through_frac: Optional[Decimal] = None,
     ) -> str:
 
         end_time_str = convert_datetime_to_utc_str(end_time)
@@ -425,7 +409,7 @@ class AsyncClient(AsyncGraphQLClient):
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                dir=dir.value,
+                dir=dir,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
@@ -440,24 +424,24 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        dir: OrderDirection,
-        target_volume_frac: DecimalLike,
-        min_order_quantity: DecimalLike,
-        max_quantity: DecimalLike,
+        dir: Dir,
+        target_volume_frac: Decimal,
+        min_order_quantity: Decimal,
+        max_quantity: Decimal,
         order_lockout_ms: int,
         end_time: datetime,
-        account: Optional[str] = None,
-        take_through_frac: Optional[DecimalLike] = None,
+        account: Optional[AccountId] = None,
+        take_through_frac: Optional[Decimal] = None,
     ) -> str:
         end_time_str = convert_datetime_to_utc_str(end_time)
         return await self.send_pov_algo_request(
             CreatePovAlgo(
                 name=name,
                 market=market,
-                dir=dir.value,
-                targetVolumeFrac=str(target_volume_frac),
-                minOrderQuantity=str(min_order_quantity),
-                maxQuantity=str(max_quantity),
+                dir=dir,
+                targetVolumeFrac=target_volume_frac,
+                minOrderQuantity=min_order_quantity,
+                maxQuantity=max_quantity,
                 orderLockoutMs=order_lockout_ms,
                 endTime=end_time_str,
                 account=account,
@@ -473,9 +457,9 @@ class AsyncClient(AsyncGraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: OrderDirection,
-        limit_price: DecimalLike,
-        target_size: DecimalLike,
+        dir: Dir,
+        limit_price: Decimal,
+        target_size: Decimal,
         execution_time_limit_ms: int,
     ) -> str:
         return await self.send_smart_order_router_algo_request(
@@ -483,9 +467,9 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir.value,
-                limitPrice=str(limit_price),
-                targetSize=str(target_size),
+                dir=dir,
+                limitPrice=limit_price,
+                targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
             )
         )
@@ -496,9 +480,9 @@ class AsyncClient(AsyncGraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: OrderDirection,
-        limit_price: DecimalLike,
-        target_size: DecimalLike,
+        dir: Dir,
+        limit_price: Decimal,
+        target_size: Decimal,
         execution_time_limit_ms: int,
     ) -> Optional[Sequence[OrderFields]]:
         algo = await self.preview_smart_order_router_algo_request(
@@ -506,9 +490,9 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir.value,
-                limitPrice=str(limit_price),
-                targetSize=str(target_size),
+                dir=dir,
+                limitPrice=limit_price,
+                targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
             )
         )
@@ -523,13 +507,13 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        account: Optional[str] = None,
-        buy_quantity: DecimalLike,
-        sell_quantity: DecimalLike,
-        min_position: DecimalLike,
-        max_position: DecimalLike,
-        max_improve_bbo: DecimalLike,
-        position_tilt: DecimalLike,
+        account: Optional[AccountId] = None,
+        buy_quantity: Decimal,
+        sell_quantity: Decimal,
+        min_position: Decimal,
+        max_position: Decimal,
+        max_improve_bbo: Decimal,
+        position_tilt: Decimal,
         reference_price: ReferencePrice,
         ref_dist_frac: DecimalLike,
         tolerance_frac: DecimalLike,
@@ -575,7 +559,7 @@ class AsyncClient(AsyncGraphQLClient):
         fill_lockout_ms: int,
         order_lockout_ms: int,
         reject_lockout_ms: int,
-        account: Optional[str] = None,
+        account: Optional[AccountId] = None,
     ) -> str:
         return await self.send_spread_algo_request(
             CreateSpreadAlgo(

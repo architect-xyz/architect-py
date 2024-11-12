@@ -2,9 +2,11 @@
 # Source: schema.graphql
 
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Annotated, Any, List, Optional
 
-from pydantic import Field
+from pydantic import Field, PlainSerializer
+
+from architect_py.scalars import AccountId, Dir, serialize
 
 from .base_model import BaseModel
 from .enums import (
@@ -18,7 +20,7 @@ from .enums import (
 class CreateMMAlgo(BaseModel):
     name: Any
     market: Any
-    account: Optional[Any] = None
+    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
     buy_quantity: Decimal = Field(alias="buyQuantity")
     sell_quantity: Decimal = Field(alias="sellQuantity")
     min_position: Decimal = Field(alias="minPosition")
@@ -35,9 +37,9 @@ class CreateMMAlgo(BaseModel):
 
 class CreateOrder(BaseModel):
     market: Any
-    dir: Any
+    dir: Annotated[Dir, PlainSerializer(serialize)]
     quantity: Decimal
-    account: Optional[Any] = None
+    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
     order_type: CreateOrderType = Field(alias="orderType")
     limit_price: Optional[Decimal] = Field(alias="limitPrice", default=None)
     post_only: Optional[bool] = Field(alias="postOnly", default=None)
@@ -50,13 +52,13 @@ class CreateOrder(BaseModel):
 class CreatePovAlgo(BaseModel):
     name: Any
     market: Any
-    dir: Any
+    dir: Annotated[Dir, PlainSerializer(serialize)]
     target_volume_frac: Decimal = Field(alias="targetVolumeFrac")
     min_order_quantity: Decimal = Field(alias="minOrderQuantity")
     max_quantity: Decimal = Field(alias="maxQuantity")
     order_lockout_ms: int = Field(alias="orderLockoutMs")
     end_time: Any = Field(alias="endTime")
-    account: Optional[Any] = None
+    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac", default=None)
 
 
@@ -64,7 +66,7 @@ class CreateSmartOrderRouterAlgo(BaseModel):
     markets: List[Any]
     base: Any
     quote: Any
-    dir: Any
+    dir: Annotated[Dir, PlainSerializer(serialize)]
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
     execution_time_limit_ms: int = Field(alias="executionTimeLimitMs")
@@ -73,7 +75,7 @@ class CreateSmartOrderRouterAlgo(BaseModel):
 class CreateSpreadAlgo(BaseModel):
     name: Any
     market: Any
-    account: Optional[Any] = None
+    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
     buy_quantity: Decimal = Field(alias="buyQuantity")
     sell_quantity: Decimal = Field(alias="sellQuantity")
     min_position: Decimal = Field(alias="minPosition")
@@ -104,12 +106,12 @@ class CreateTimeInForce(BaseModel):
 class CreateTwapAlgo(BaseModel):
     name: Any
     market: Any
-    dir: Any
+    dir: Annotated[Dir, PlainSerializer(serialize)]
     quantity: Decimal
     interval_ms: int = Field(alias="intervalMs")
     reject_lockout_ms: int = Field(alias="rejectLockoutMs")
     end_time: Any = Field(alias="endTime")
-    account: Optional[Any] = None
+    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac", default=None)
 
 

@@ -6,6 +6,8 @@ from typing import Any, List, Literal, Optional, Union
 
 from pydantic import Field
 
+from architect_py.scalars import AccountId, Dir
+
 from .base_model import BaseModel
 from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderSource, OrderStateFlags
 
@@ -98,7 +100,7 @@ class AccountSummariesFieldsByAccount(BaseModel):
 
 
 class AccountSummariesFieldsByAccountAccount(BaseModel):
-    id: Any
+    id: AccountId
     name: str
 
 
@@ -119,7 +121,7 @@ class AccountSummariesFieldsByAccountBalancesProduct(ProductFields):
 
 
 class AccountSummariesFieldsByAccountBalancesAccount(BaseModel):
-    id: Any
+    id: AccountId
     name: str
 
 
@@ -132,7 +134,7 @@ class AccountSummariesFieldsByAccountPositions(BaseModel):
     account: Optional["AccountSummariesFieldsByAccountPositionsAccount"]
     venue: Optional["AccountSummariesFieldsByAccountPositionsVenue"]
     market: Optional["AccountSummariesFieldsByAccountPositionsMarket"]
-    dir: Any
+    dir: Dir
     quantity: Optional[Decimal]
     average_price: Optional[Decimal] = Field(alias="averagePrice")
     trade_date: Optional[Any] = Field(alias="tradeDate")
@@ -140,7 +142,7 @@ class AccountSummariesFieldsByAccountPositions(BaseModel):
 
 
 class AccountSummariesFieldsByAccountPositionsAccount(BaseModel):
-    id: Any
+    id: AccountId
     name: str
 
 
@@ -183,9 +185,9 @@ class OrderFields(BaseModel):
     id: Any
     market_id: Any = Field(alias="marketId")
     market: "OrderFieldsMarket"
-    dir: Any
+    dir: Dir
     quantity: Decimal
-    account_id: Optional[Any] = Field(alias="accountId")
+    account_id: Optional[AccountId] = Field(alias="accountId")
     order_type: Union[
         "OrderFieldsOrderTypeLimitOrderType",
         "OrderFieldsOrderTypeStopLossLimitOrderType",
@@ -236,7 +238,7 @@ class OrderLogFields(BaseModel):
 class OrderLogFieldsOrder(BaseModel):
     id: Any
     market: "OrderLogFieldsOrderMarket"
-    dir: Any
+    dir: Dir
     quantity: Decimal
     order_type: Union[
         "OrderLogFieldsOrderOrderTypeLimitOrderType",

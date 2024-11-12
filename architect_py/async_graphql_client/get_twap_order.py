@@ -6,6 +6,8 @@ from typing import Any, Optional
 
 from pydantic import Field
 
+from architect_py.scalars import AccountId, Dir
+
 from .base_model import BaseModel
 
 
@@ -17,10 +19,10 @@ class GetTwapOrderTwapOrder(BaseModel):
     name: str
     order_id: Any = Field(alias="orderId")
     market_id: Any = Field(alias="marketId")
-    dir: Any
+    dir: Dir
     quantity: Decimal
     end_time: Any = Field(alias="endTime")
-    account_id: Optional[Any] = Field(alias="accountId")
+    account_id: Optional[AccountId] = Field(alias="accountId")
     interval_ms: int = Field(alias="intervalMs")
     reject_lockout_ms: int = Field(alias="rejectLockoutMs")
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac")

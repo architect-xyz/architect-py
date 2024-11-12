@@ -6,6 +6,8 @@ from typing import Any, Optional
 
 from pydantic import Field
 
+from architect_py.scalars import AccountId
+
 from .base_model import BaseModel
 from .enums import ReferencePrice
 
@@ -27,7 +29,7 @@ class GetMmOrderMmAlgoOrder(BaseModel):
     reference_price: ReferencePrice = Field(alias="referencePrice")
     ref_dist_frac: Decimal = Field(alias="refDistFrac")
     tolerance_frac: Decimal = Field(alias="toleranceFrac")
-    account: Optional[Any]
+    account: Optional[AccountId]
 
 
 GetMmOrder.model_rebuild()

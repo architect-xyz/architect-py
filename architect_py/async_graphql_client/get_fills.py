@@ -6,6 +6,8 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
+from architect_py.scalars import Dir
+
 from .base_model import BaseModel
 from .enums import FillKind
 from .fragments import MarketFields
@@ -24,7 +26,7 @@ class GetFillsFillsNormal(BaseModel):
     fill_id: Any = Field(alias="fillId")
     order_id: Optional[Any] = Field(alias="orderId")
     market: "GetFillsFillsNormalMarket"
-    dir: Any
+    dir: Dir
     price: Decimal
     quantity: Decimal
     recv_time: Optional[Any] = Field(alias="recvTime")
