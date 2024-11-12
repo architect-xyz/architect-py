@@ -708,4 +708,4 @@ class AsyncClient(AsyncGraphQLClient):
         if notice is None or notice.first_notice_date is None:
             return None
 
-        return datetime.strptime(notice.first_notice_date, "%Y-%m-%d").date()
+        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()
