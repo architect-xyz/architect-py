@@ -19,7 +19,10 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
+import fnmatch
+from functools import lru_cache
 import logging
+import re
 import dns.asyncresolver
 import dns.name
 import grpc.aio
@@ -114,7 +117,7 @@ class AsyncClient(AsyncGraphQLClient):
             raise ValueError(
                 "API secret must end with an equals sign, please double check your credentials"
             )
-        elif kwargs["api_key"].len() <= 24 or kwargs["api_secret"].len() <= 44:
+        elif len(kwargs["api_key"]) < 24 or len(kwargs["api_secret"]) < 44:
             raise ValueError(
                 "API key and secret are too short, please double check your credentials"
             )
@@ -140,6 +143,61 @@ class AsyncClient(AsyncGraphQLClient):
 
     async def start_session(self):
         await self.load_and_index_symbology()
+
+    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+        return await self._get_cached_market(id, **kwargs)
+
+    @lru_cache(maxsize=10)
+    async def _get_cached_market(
+        self, id: str, **kwargs: Any
+    ) -> Optional[GetMarketMarket]:
+        return await super().get_market(id, **kwargs)
+
+    async def search_markets(
+        self,
+        venue: str | None | UnsetType = UNSET,
+        base: str | None | UnsetType = UNSET,
+        quote: str | None | UnsetType = UNSET,
+        underlying: str | None | UnsetType = UNSET,
+        max_results: int | None | UnsetType = UNSET,
+        results_offset: int | None | UnsetType = UNSET,
+        search_string: str | None | UnsetType = UNSET,
+        only_favorites: bool | None | UnsetType = UNSET,
+        sort_by_volume_desc: bool | None | UnsetType = UNSET,
+        glob: str | None = None,
+        regex: str | None = None,
+        **kwargs: Any,
+    ) -> List[SearchMarketsFilterMarkets]:
+        markets = await super().search_markets(
+            venue,
+            base,
+            quote,
+            underlying,
+            max_results,
+            results_offset,
+            search_string,
+            only_favorites,
+            sort_by_volume_desc,
+            **kwargs,
+        )
+
+        if glob is not None:
+            markets = [
+                market
+                for market in markets
+                if any(
+                    fnmatch.fnmatch(market.name, pattern) for pattern in glob.split(",")
+                )
+            ]
+
+        if regex is not None:
+            markets = [
+                market
+                for market in markets
+                if any(re.match(regex, market.name) for pattern in regex.split(","))
+            ]
+
+        return markets
 
     async def load_and_index_symbology(self, cpty: Optional[str] = None):
         # TODO: consider locking
