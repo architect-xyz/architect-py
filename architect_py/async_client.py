@@ -26,10 +26,12 @@ import grpc.aio
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, AsyncIterator, Optional, TypeAlias, Union
+from typing import Any, AsyncIterator, List, Optional, TypeAlias, Union
 
 import grpc.aio
 
+from architect_py.async_graphql_client.base_model import UNSET, UnsetType
+from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.utils.balance_and_positions import (
@@ -41,6 +43,7 @@ from architect_py.utils.dt import (
     convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
+from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
 
 from .async_graphql_client import AsyncGraphQLClient
 from .async_graphql_client.enums import (
@@ -297,6 +300,7 @@ class AsyncClient(AsyncGraphQLClient):
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
+        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
@@ -311,14 +315,30 @@ class AsyncClient(AsyncGraphQLClient):
         else:
             good_til_date_str = None
 
+        if not isinstance(limit_price, Decimal):
+            limit_price = Decimal(limit_price)
+
+        if price_round_method is not None:
+            market_info = await self.get_market(market)
+            if market_info is not None:
+                tick_size = market_info.tick_size
+                limit_price = nearest_tick(
+                    limit_price, method=price_round_method, tick_size=tick_size
+                )
+            else:
+                raise ValueError(f"Could not find market information for {market}")
+
+        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
+            trigger_price = Decimal(trigger_price)
+
         order: str = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=dir.value,
-                quantity=str(quantity),
+                quantity=quantity,
                 account=account,
                 orderType=order_type,
-                limitPrice=str(limit_price),
+                limitPrice=limit_price,
                 postOnly=post_only,
                 triggerPrice=str(trigger_price) if trigger_price is not None else None,
                 timeInForce=CreateTimeInForce(
