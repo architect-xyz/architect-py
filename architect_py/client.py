@@ -166,19 +166,11 @@ class Client(GraphQLClient):
 
         if glob is not None:
             markets = [
-                market
-                for market in markets
-                if any(
-                    fnmatch.fnmatch(market.name, pattern) for pattern in glob.split(",")
-                )
+                market for market in markets if fnmatch.fnmatch(market.name, glob)
             ]
 
         if regex is not None:
-            markets = [
-                market
-                for market in markets
-                if any(re.match(regex, market.name) for pattern in regex.split(","))
-            ]
+            markets = [market for market in markets if re.match(regex, market.name)]
 
         return markets
 
