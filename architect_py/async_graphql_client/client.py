@@ -1825,7 +1825,10 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
             yield FillsSubscription.model_validate(data).fills
 
     async def subscribe_book(
-        self, id: Any, precision: Union[Optional[Any], UnsetType] = UNSET, **kwargs: Any
+        self,
+        id: Any,
+        precision: Union[Optional[Decimal], UnsetType] = UNSET,
+        **kwargs: Any
     ) -> AsyncIterator[SubscribeBookBook]:
         query = gql(
             """
@@ -2320,7 +2323,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         self,
         market: Any,
         num_levels: int,
-        precision: Union[Optional[Any], UnsetType] = UNSET,
+        precision: Union[Optional[Decimal], UnsetType] = UNSET,
         retain_seconds: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
     ) -> GetBookSnapshotBookSnapshot:

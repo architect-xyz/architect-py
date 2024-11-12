@@ -4,6 +4,8 @@
 from decimal import Decimal
 from typing import Any, Optional
 
+from architect_py.scalars import Dir
+
 from .base_model import BaseModel
 
 
@@ -15,7 +17,7 @@ class SubscribeTradesTrades(BaseModel):
     time: Optional[Any]
     price: Decimal
     size: Decimal
-    direction: Optional[Any]
+    direction: Optional[Dir]
 
 
 SubscribeTrades.model_rebuild()

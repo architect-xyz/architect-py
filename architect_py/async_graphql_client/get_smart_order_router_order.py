@@ -6,6 +6,8 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
+from architect_py.scalars import Dir
+
 from .base_model import BaseModel
 
 
@@ -18,7 +20,7 @@ class GetSmartOrderRouterOrder(BaseModel):
 class GetSmartOrderRouterOrderSmartOrderRouterOrder(BaseModel):
     order_id: Any = Field(alias="orderId")
     markets: List["GetSmartOrderRouterOrderSmartOrderRouterOrderMarkets"]
-    dir: Any
+    dir: Dir
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
     execution_time_limit_ms: int = Field(alias="executionTimeLimitMs")

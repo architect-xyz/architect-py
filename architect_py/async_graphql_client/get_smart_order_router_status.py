@@ -6,6 +6,8 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
+from architect_py.scalars import AccountId, Dir
+
 from .base_model import BaseModel
 from .enums import AlgoKind, AlgoRunningStatus
 
@@ -33,7 +35,7 @@ class GetSmartOrderRouterStatusSmartOrderRouterStatusStatus(BaseModel):
 class GetSmartOrderRouterStatusSmartOrderRouterStatusStatusOrder(BaseModel):
     order_id: Any = Field(alias="orderId")
     trader: Any
-    account: Optional[Any]
+    account: Optional[AccountId]
     algo: AlgoKind
     parent_order_id: Optional[Any] = Field(alias="parentOrderId")
     markets: List[Any]
@@ -42,7 +44,7 @@ class GetSmartOrderRouterStatusSmartOrderRouterStatusStatusOrder(BaseModel):
 class GetSmartOrderRouterStatusSmartOrderRouterStatusOrder(BaseModel):
     order_id: Any = Field(alias="orderId")
     markets: List["GetSmartOrderRouterStatusSmartOrderRouterStatusOrderMarkets"]
-    dir: Any
+    dir: Dir
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
     execution_time_limit_ms: int = Field(alias="executionTimeLimitMs")

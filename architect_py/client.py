@@ -35,6 +35,7 @@ from typing import Any, List, Optional, Sequence, TypeAlias, Union
 from architect_py.graphql_client.base_model import UNSET, UnsetType
 from architect_py.graphql_client.get_market import GetMarketMarket
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.scalars import Dir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
@@ -71,19 +72,6 @@ from .graphql_client.input_types import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class OrderDirection(Enum):
-    BUY = "buy"
-    SELL = "sell"
-
-    def __int__(self):
-        if self == OrderDirection.BUY:
-            return 1
-        elif self == OrderDirection.SELL:
-            return -1
-        else:
-            raise ValueError(f"Unknown OrderDirection: {self}")
 
 
 class Client(GraphQLClient):
@@ -206,7 +194,7 @@ class Client(GraphQLClient):
         base: str,
         venue: str,
         route: str = "DIRECT",
-    ):
+    ) -> list:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
         and symbology to be loaded and indexed.
@@ -254,7 +242,7 @@ class Client(GraphQLClient):
         self,
         *,
         market: str,
-        dir: OrderDirection,
+        dir: Dir,
         quantity: Decimal,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
         limit_price: Decimal,
@@ -383,7 +371,7 @@ class Client(GraphQLClient):
         *,
         name: str,
         market: str,
-        dir: OrderDirection,
+        dir: Dir,
         quantity: Decimal,
         interval_ms: int,
         reject_lockout_ms: int,
@@ -412,7 +400,7 @@ class Client(GraphQLClient):
         *,
         name: str,
         market: str,
-        dir: OrderDirection,
+        dir: Dir,
         target_volume_frac: Decimal,
         min_order_quantity: Decimal,
         max_quantity: Decimal,
@@ -443,7 +431,7 @@ class Client(GraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: OrderDirection,
+        dir: Dir,
         limit_price: Decimal,
         target_size: Decimal,
         execution_time_limit_ms: int,
@@ -466,7 +454,7 @@ class Client(GraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: OrderDirection,
+        dir: Dir,
         limit_price: Decimal,
         target_size: Decimal,
         execution_time_limit_ms: int,

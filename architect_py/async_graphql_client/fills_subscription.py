@@ -6,6 +6,8 @@ from typing import Any, Optional
 
 from pydantic import Field
 
+from architect_py.scalars import Dir
+
 from .base_model import BaseModel
 from .enums import FillKind
 from .fragments import MarketFields
@@ -16,7 +18,7 @@ class FillsSubscription(BaseModel):
 
 
 class FillsSubscriptionFills(BaseModel):
-    dir: Any
+    dir: Dir
     fill_id: Any = Field(alias="fillId")
     kind: FillKind
     market_id: Any = Field(alias="marketId")

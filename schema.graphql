@@ -1,5 +1,3 @@
-scalar Decimal
-
 schema {
   query: QueryRoot
   mutation: MutationRoot
