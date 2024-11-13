@@ -26,3 +26,6 @@ Str.type = "str"
 Dir.type = "architect_py.scalars.Dir"
 Dir.serialize = "architect_py.scalars.serialize"
 Dir.deserialize = "architect_py.scalars.deserialize"
+
+DateTime.type = "datetime.datetime"
+DateTime.serialize = "architect_py.utils.dt.convert_datetime_to_utc_str"
