@@ -1829,7 +1829,7 @@ class GraphQLClient(JuniperBaseClient):
         self,
         market: Any,
         num_levels: int,
-        precision: Union[Optional[Any], UnsetType] = UNSET,
+        precision: Union[Optional[Decimal], UnsetType] = UNSET,
         retain_seconds: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
     ) -> GetBookSnapshotBookSnapshot:
