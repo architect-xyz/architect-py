@@ -19,16 +19,14 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-from dataclasses import dataclass
 import fnmatch
 from functools import lru_cache
 import logging
 import re
 import dns.resolver
 import grpc
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from decimal import Decimal
-from enum import Enum
 import time
 from typing import Any, List, Optional, Sequence, TypeAlias, Union
 
@@ -249,8 +247,8 @@ class Client(GraphQLClient):
         post_only: bool = False,
         trigger_price: Optional[Decimal] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
-        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
+        price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
@@ -260,10 +258,6 @@ class Client(GraphQLClient):
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
         """
-        if good_til_date is not None:
-            good_til_date_str = convert_datetime_to_utc_str(good_til_date)
-        else:
-            good_til_date_str = None
 
         if price_round_method is not None:
             market_info = self.get_market(market)
@@ -279,7 +273,7 @@ class Client(GraphQLClient):
         order: str = self.send_order(
             CreateOrder(
                 market=market,
-                dir=dir.value,
+                dir=dir,
                 quantity=quantity,
                 account=account,
                 orderType=order_type,
@@ -288,7 +282,7 @@ class Client(GraphQLClient):
                 triggerPrice=trigger_price,
                 timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
-                    goodTilDate=good_til_date_str,
+                    goodTilDate=good_til_date,
                 ),
                 quoteId=quote_id,
                 source=source,
@@ -320,29 +314,39 @@ class Client(GraphQLClient):
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        percent_through_market: Decimal = 0.02
+        percent_through_market: Decimal = 0.02,
     ) -> Optional[GetOrderOrder]:
 
         # Check for GQL failures
         bbo_snapshot = self.get_market_snapshot(market)
         if bbo_snapshot is None:
-            raise ValueError("Failed to send market order with reason: no market snapshot for {market}")
-        
+            raise ValueError(
+                "Failed to send market order with reason: no market snapshot for {market}"
+            )
+
         market_details = self.get_market(market)
         if market_details is None:
-            raise ValueError("Failed to send market order with reason: no market details for {market}")
+            raise ValueError(
+                "Failed to send market order with reason: no market details for {market}"
+            )
 
         best_bid = float(bbo_snapshot.bid_price)
         best_ask = float(bbo_snapshot.ask_price)
         last_price = float(bbo_snapshot.last_price)
-        
-        limit_price = best_ask * (1 + percent_through_market) if dir == OrderDirection.BUY else best_bid * (1 - percent_through_market)
+
+        limit_price = (
+            best_ask * (1 + percent_through_market)
+            if dir == OrderDirection.BUY
+            else best_bid * (1 - percent_through_market)
+        )
 
         # Avoid sending price outside CME's price bands
         if market_details.venue.name == "CME":
             price_band = market_details.cme_product_group_info.price_band
             if price_band is None:
-                raise ValueError("Failed to send market order with reason: no CME price band for {market}")
+                raise ValueError(
+                    "Failed to send market order with reason: no CME price band for {market}"
+                )
             else:
                 price_band = float(price_band)
 
@@ -350,10 +354,14 @@ class Client(GraphQLClient):
                 limit_price = min(limit_price, last_price + price_band)
             else:
                 limit_price = max(limit_price, last_price - price_band)
-    
+
         # Conservatively round price to nearest tick
-        tick_round_method = TickRoundMethod.FLOOR if dir == OrderDirection.BUY else TickRoundMethod.CEIL
-        limit_price = nearest_tick(Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size))
+        tick_round_method = (
+            TickRoundMethod.FLOOR if dir == OrderDirection.BUY else TickRoundMethod.CEIL
+        )
+        limit_price = nearest_tick(
+            Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size)
+        )
 
         return self.send_limit_order(
             market=market,
@@ -363,7 +371,7 @@ class Client(GraphQLClient):
             order_type=CreateOrderType.LIMIT,
             limit_price=str(limit_price),
             time_in_force_instruction=time_in_force_instruction,
-            source=source
+            source=source,
         )
 
     def send_twap_algo(
@@ -385,11 +393,11 @@ class Client(GraphQLClient):
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                dir=dir.value,
+                dir=dir,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
-                endTime=end_time_str,
+                endTime=end_time,
                 account=account,
                 takeThroughFrac=take_through_frac,
             )
@@ -414,12 +422,12 @@ class Client(GraphQLClient):
             CreatePovAlgo(
                 name=name,
                 market=market,
-                dir=dir.value,
+                dir=dir,
                 targetVolumeFrac=target_volume_frac,
                 minOrderQuantity=min_order_quantity,
                 maxQuantity=max_quantity,
                 orderLockoutMs=order_lockout_ms,
-                endTime=end_time_str,
+                endTime=end_time,
                 account=account,
                 takeThroughFrac=(take_through_frac),
             )
@@ -441,7 +449,7 @@ class Client(GraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir.value,
+                dir=dir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -464,7 +472,7 @@ class Client(GraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir.value,
+                dir=dir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -686,5 +694,4 @@ class Client(GraphQLClient):
         notice = self.get_first_notice_date(market)
         if notice is None or notice.first_notice_date is None:
             return None
-
-        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()
+        return notice.first_notice_date.date()
