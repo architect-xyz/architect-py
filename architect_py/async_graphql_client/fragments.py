@@ -6,7 +6,7 @@ from typing import Any, List, Literal, Optional, Union
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId, Dir
+from architect_py.scalars import Dir
 
 from .base_model import BaseModel
 from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderSource, OrderStateFlags
@@ -14,7 +14,7 @@ from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderSource, OrderStat
 
 class ProductFields(BaseModel):
     typename__: str = Field(alias="__typename")
-    id: Any
+    id: str
     name: str
     kind: str
     mark_usd: Optional[Decimal] = Field(alias="markUsd")
@@ -24,7 +24,7 @@ class MarketFields(BaseModel):
     typename__: str = Field(alias="__typename")
     venue: "MarketFieldsVenue"
     exchange_symbol: str = Field(alias="exchangeSymbol")
-    id: Any
+    id: str
     cme_product_group_info: Optional["MarketFieldsCmeProductGroupInfo"] = Field(
         alias="cmeProductGroupInfo"
     )
@@ -43,8 +43,8 @@ class MarketFields(BaseModel):
 
 
 class MarketFieldsVenue(BaseModel):
-    id: Any
-    name: Any
+    id: str
+    name: str
 
 
 class MarketFieldsCmeProductGroupInfo(BaseModel):
@@ -84,8 +84,8 @@ class MarketFieldsKindUnknownMarketKind(BaseModel):
 
 
 class MarketFieldsRoute(BaseModel):
-    id: Any
-    name: Any
+    id: str
+    name: str
 
 
 class AccountSummariesFields(BaseModel):
@@ -100,7 +100,7 @@ class AccountSummariesFieldsByAccount(BaseModel):
 
 
 class AccountSummariesFieldsByAccountAccount(BaseModel):
-    id: AccountId
+    id: str
     name: str
 
 
@@ -121,13 +121,13 @@ class AccountSummariesFieldsByAccountBalancesProduct(ProductFields):
 
 
 class AccountSummariesFieldsByAccountBalancesAccount(BaseModel):
-    id: AccountId
+    id: str
     name: str
 
 
 class AccountSummariesFieldsByAccountBalancesVenue(BaseModel):
-    id: Any
-    name: Any
+    id: str
+    name: str
 
 
 class AccountSummariesFieldsByAccountPositions(BaseModel):
@@ -142,13 +142,13 @@ class AccountSummariesFieldsByAccountPositions(BaseModel):
 
 
 class AccountSummariesFieldsByAccountPositionsAccount(BaseModel):
-    id: AccountId
+    id: str
     name: str
 
 
 class AccountSummariesFieldsByAccountPositionsVenue(BaseModel):
-    id: Any
-    name: Any
+    id: str
+    name: str
 
 
 class AccountSummariesFieldsByAccountPositionsMarket(MarketFields):
@@ -166,7 +166,7 @@ class CandleFields(BaseModel):
 
 class MarketSnapshotFields(BaseModel):
     typename__: str = Field(alias="__typename")
-    market_id: Any = Field(alias="marketId")
+    market_id: str = Field(alias="marketId")
     market: Optional["MarketSnapshotFieldsMarket"]
     high_24_h: Optional[Decimal] = Field(alias="high24h")
     last_price: Optional[Decimal] = Field(alias="lastPrice")
@@ -182,19 +182,19 @@ class MarketSnapshotFieldsMarket(BaseModel):
 
 
 class OrderFields(BaseModel):
-    id: Any
-    market_id: Any = Field(alias="marketId")
+    id: str
+    market_id: str = Field(alias="marketId")
     market: "OrderFieldsMarket"
     dir: Dir
     quantity: Decimal
-    account_id: Optional[AccountId] = Field(alias="accountId")
+    account_id: Optional[str] = Field(alias="accountId")
     order_type: Union[
         "OrderFieldsOrderTypeLimitOrderType",
         "OrderFieldsOrderTypeStopLossLimitOrderType",
         "OrderFieldsOrderTypeTakeProfitLimitOrderType",
     ] = Field(alias="orderType", discriminator="typename__")
     time_in_force: "OrderFieldsTimeInForce" = Field(alias="timeInForce")
-    quote_id: Optional[Any] = Field(alias="quoteId")
+    quote_id: Optional[str] = Field(alias="quoteId")
     source: OrderSource
 
 
@@ -236,7 +236,7 @@ class OrderLogFields(BaseModel):
 
 
 class OrderLogFieldsOrder(BaseModel):
-    id: Any
+    id: str
     market: "OrderLogFieldsOrderMarket"
     dir: Dir
     quantity: Decimal

@@ -6,7 +6,7 @@ from typing import Annotated, Any, List, Optional
 
 from pydantic import Field, PlainSerializer
 
-from architect_py.scalars import AccountId, Dir, serialize
+from architect_py.scalars import Dir, serialize
 
 from .base_model import BaseModel
 from .enums import (
@@ -18,9 +18,9 @@ from .enums import (
 
 
 class CreateMMAlgo(BaseModel):
-    name: Any
-    market: Any
-    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
+    name: str
+    market: str
+    account: Optional[str] = None
     buy_quantity: Decimal = Field(alias="buyQuantity")
     sell_quantity: Decimal = Field(alias="sellQuantity")
     min_position: Decimal = Field(alias="minPosition")
@@ -36,36 +36,36 @@ class CreateMMAlgo(BaseModel):
 
 
 class CreateOrder(BaseModel):
-    market: Any
+    market: str
     dir: Annotated[Dir, PlainSerializer(serialize)]
     quantity: Decimal
-    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
+    account: Optional[str] = None
     order_type: CreateOrderType = Field(alias="orderType")
     limit_price: Optional[Decimal] = Field(alias="limitPrice", default=None)
     post_only: Optional[bool] = Field(alias="postOnly", default=None)
     trigger_price: Optional[Decimal] = Field(alias="triggerPrice", default=None)
     time_in_force: "CreateTimeInForce" = Field(alias="timeInForce")
-    quote_id: Optional[Any] = Field(alias="quoteId", default=None)
+    quote_id: Optional[str] = Field(alias="quoteId", default=None)
     source: Optional[OrderSource] = None
 
 
 class CreatePovAlgo(BaseModel):
-    name: Any
-    market: Any
+    name: str
+    market: str
     dir: Annotated[Dir, PlainSerializer(serialize)]
     target_volume_frac: Decimal = Field(alias="targetVolumeFrac")
     min_order_quantity: Decimal = Field(alias="minOrderQuantity")
     max_quantity: Decimal = Field(alias="maxQuantity")
     order_lockout_ms: int = Field(alias="orderLockoutMs")
     end_time: Any = Field(alias="endTime")
-    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
+    account: Optional[str] = None
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac", default=None)
 
 
 class CreateSmartOrderRouterAlgo(BaseModel):
-    markets: List[Any]
-    base: Any
-    quote: Any
+    markets: List[str]
+    base: str
+    quote: str
     dir: Annotated[Dir, PlainSerializer(serialize)]
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
@@ -73,9 +73,9 @@ class CreateSmartOrderRouterAlgo(BaseModel):
 
 
 class CreateSpreadAlgo(BaseModel):
-    name: Any
-    market: Any
-    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
+    name: str
+    market: str
+    account: Optional[str] = None
     buy_quantity: Decimal = Field(alias="buyQuantity")
     sell_quantity: Decimal = Field(alias="sellQuantity")
     min_position: Decimal = Field(alias="minPosition")
@@ -92,7 +92,7 @@ class CreateSpreadAlgo(BaseModel):
 
 
 class CreateSpreadAlgoHedgeMarket(BaseModel):
-    market: Any
+    market: str
     conversion_ratio: Decimal = Field(alias="conversionRatio")
     premium: Decimal
     hedge_frac: Decimal = Field(alias="hedgeFrac")
@@ -104,24 +104,24 @@ class CreateTimeInForce(BaseModel):
 
 
 class CreateTwapAlgo(BaseModel):
-    name: Any
-    market: Any
+    name: str
+    market: str
     dir: Annotated[Dir, PlainSerializer(serialize)]
     quantity: Decimal
     interval_ms: int = Field(alias="intervalMs")
     reject_lockout_ms: int = Field(alias="rejectLockoutMs")
     end_time: Any = Field(alias="endTime")
-    account: Optional[Annotated[AccountId, PlainSerializer(serialize)]] = None
+    account: Optional[str] = None
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac", default=None)
 
 
 class MarketFilter(BaseModel):
-    search_string: Optional[Any] = Field(alias="searchString", default=None)
-    base: Optional[Any] = None
-    quote: Optional[Any] = None
-    venue: Optional[Any] = None
-    route: Optional[Any] = None
-    underlying: Optional[Any] = None
+    search_string: Optional[str] = Field(alias="searchString", default=None)
+    base: Optional[str] = None
+    quote: Optional[str] = None
+    venue: Optional[str] = None
+    route: Optional[str] = None
+    underlying: Optional[str] = None
     max_results: Optional[int] = Field(alias="maxResults", default=None)
     results_offset: Optional[int] = Field(alias="resultsOffset", default=None)
     only_favorites: Optional[bool] = Field(alias="onlyFavorites", default=None)
@@ -130,7 +130,7 @@ class MarketFilter(BaseModel):
 
 
 class UpdateMarket(BaseModel):
-    market_id: Any = Field(alias="marketId")
+    market_id: str = Field(alias="marketId")
     is_favorite: bool = Field(alias="isFavorite")
 
 

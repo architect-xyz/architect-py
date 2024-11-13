@@ -14,60 +14,7 @@ def serialize(value):
 
 
 def deserialize(value):
-    return AccountId.deserialize(value)
-
-
-class AccountId:
-    def __init__(self, value: str):
-        if not isinstance(value, str):
-            raise ValueError("AccountId must be a string.")
-        self.value = value
-
-    def __str__(self):
-        return self.value
-
-    def __repr__(self):
-        return f"AccountId({self.value})"
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-    def to_string(self):
-        return str(self.value)
-
-    @classmethod
-    def from_string(cls, value):
-        return cls(value)
-
-    @classmethod
-    def deserialize(cls, value):
-        return cls(value)
-
-    def serialize(self):
-        return self.value
-
-
-class OrderId:
-    def __init__(self, value: str):
-        if not isinstance(value, str):
-            raise ValueError("OrderId must be a string.")
-        self.value = value
-
-    def __str__(self):
-        return self.value
-
-    def __repr__(self):
-        return f"OrderId({self.value})"
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-    def to_string(self):
-        return str(self.value)
-
-    @classmethod
-    def from_string(cls, value):
-        return cls(value)
+    return value.deserialize(value)
 
 
 class Dir(Enum):

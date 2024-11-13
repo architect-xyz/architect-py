@@ -6,7 +6,7 @@ from typing import Any, List, Literal, Optional, Union
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId, Dir
+from architect_py.scalars import Dir
 
 from .base_model import BaseModel
 from .enums import FillKind, OrderSource, OrderStateFlags
@@ -28,11 +28,11 @@ class SubscribeOrderflow(BaseModel):
 
 class SubscribeOrderflowOrderflowOrder(BaseModel):
     typename__: Literal["Order"] = Field(alias="__typename")
-    id: Any
-    market_id: Any = Field(alias="marketId")
+    id: str
+    market_id: str = Field(alias="marketId")
     dir: Dir
     quantity: Decimal
-    account_id: Optional[AccountId] = Field(alias="accountId")
+    account_id: Optional[str] = Field(alias="accountId")
     order_type: Union[
         "SubscribeOrderflowOrderflowOrderOrderTypeLimitOrderType",
         "SubscribeOrderflowOrderflowOrderOrderTypeStopLossLimitOrderType",
@@ -41,7 +41,7 @@ class SubscribeOrderflowOrderflowOrder(BaseModel):
     time_in_force: "SubscribeOrderflowOrderflowOrderTimeInForce" = Field(
         alias="timeInForce"
     )
-    quote_id: Optional[Any] = Field(alias="quoteId")
+    quote_id: Optional[str] = Field(alias="quoteId")
     source: OrderSource
 
 
@@ -70,7 +70,7 @@ class SubscribeOrderflowOrderflowOrderTimeInForce(BaseModel):
 
 class SubscribeOrderflowOrderflowOmsOrderUpdate(BaseModel):
     typename__: Literal["OmsOrderUpdate"] = Field(alias="__typename")
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     order_state: List[OrderStateFlags] = Field(alias="orderState")
     filled_qty: Decimal = Field(alias="filledQty")
     avg_fill_price: Optional[Decimal] = Field(alias="avgFillPrice")
@@ -86,20 +86,20 @@ class SubscribeOrderflowOrderflowCancelAll(BaseModel):
 
 class SubscribeOrderflowOrderflowAck(BaseModel):
     typename__: Literal["Ack"] = Field(alias="__typename")
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
 
 
 class SubscribeOrderflowOrderflowReject(BaseModel):
     typename__: Literal["Reject"] = Field(alias="__typename")
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     reason: str
 
 
 class SubscribeOrderflowOrderflowFill(BaseModel):
     typename__: Literal["Fill"] = Field(alias="__typename")
-    fill_order_id: Optional[Any] = Field(alias="fillOrderId")
+    fill_order_id: Optional[str] = Field(alias="fillOrderId")
     fill_kind: FillKind = Field(alias="fillKind")
-    market_id: Any = Field(alias="marketId")
+    market_id: str = Field(alias="marketId")
     dir: Dir
     price: Decimal
     quantity: Decimal
@@ -112,7 +112,7 @@ class SubscribeOrderflowOrderflowAberrantFill(BaseModel):
 
 class SubscribeOrderflowOrderflowOut(BaseModel):
     typename__: Literal["Out"] = Field(alias="__typename")
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
 
 
 SubscribeOrderflow.model_rebuild()

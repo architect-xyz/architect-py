@@ -12,9 +12,16 @@ plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
 [tool.ariadne-codegen.scalars]
 Decimal.type = "decimal.Decimal"
 
-AccountId.type = "architect_py.scalars.AccountId"
-AccountId.serialize = "architect_py.scalars.serialize"
-AccountId.deserialize = "architect_py.scalars.deserialize"
+AccountId.type = "str"
+ComponentId.type = "str"
+FillId.type = "str"
+MarketId.type = "str"
+OrderId.type = "str"
+ProductId.type = "str"
+RouteId.type = "str"
+UserId.type = "str"
+VenueId.type = "str"
+Str.type = "str"
 
 Dir.type = "architect_py.scalars.Dir"
 Dir.serialize = "architect_py.scalars.serialize"

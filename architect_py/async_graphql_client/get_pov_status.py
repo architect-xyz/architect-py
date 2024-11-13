@@ -6,7 +6,7 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId, Dir
+from architect_py.scalars import Dir
 
 from .base_model import BaseModel
 from .enums import AlgoRunningStatus
@@ -17,7 +17,7 @@ class GetPovStatus(BaseModel):
 
 
 class GetPovStatusPovStatus(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     order: Optional["GetPovStatusPovStatusOrder"]
     creation_time: Any = Field(alias="creationTime")
     status: AlgoRunningStatus
@@ -29,14 +29,14 @@ class GetPovStatusPovStatus(BaseModel):
 
 class GetPovStatusPovStatusOrder(BaseModel):
     name: str
-    order_id: Any = Field(alias="orderId")
-    market_id: Any = Field(alias="marketId")
+    order_id: str = Field(alias="orderId")
+    market_id: str = Field(alias="marketId")
     dir: Dir
     target_volume_frac: Decimal = Field(alias="targetVolumeFrac")
     min_order_quantity: Decimal = Field(alias="minOrderQuantity")
     max_quantity: Decimal = Field(alias="maxQuantity")
     end_time: Any = Field(alias="endTime")
-    account_id: Optional[AccountId] = Field(alias="accountId")
+    account_id: Optional[str] = Field(alias="accountId")
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac")
 
 

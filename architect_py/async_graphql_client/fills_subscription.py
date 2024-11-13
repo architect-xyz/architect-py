@@ -19,10 +19,10 @@ class FillsSubscription(BaseModel):
 
 class FillsSubscriptionFills(BaseModel):
     dir: Dir
-    fill_id: Any = Field(alias="fillId")
+    fill_id: str = Field(alias="fillId")
     kind: FillKind
-    market_id: Any = Field(alias="marketId")
-    order_id: Optional[Any] = Field(alias="orderId")
+    market_id: str = Field(alias="marketId")
+    order_id: Optional[str] = Field(alias="orderId")
     price: Decimal
     quantity: Decimal
     recv_time: Optional[Any] = Field(alias="recvTime")

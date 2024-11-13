@@ -5,8 +5,6 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId
-
 from .base_model import BaseModel
 from .enums import AlgoKind, AlgoRunningStatus
 
@@ -16,7 +14,7 @@ class GetAlgoStatus(BaseModel):
 
 
 class GetAlgoStatusAlgoStatus(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     order: Optional["GetAlgoStatusAlgoStatusOrder"]
     creation_time: Any = Field(alias="creationTime")
     status: AlgoRunningStatus
@@ -25,12 +23,12 @@ class GetAlgoStatusAlgoStatus(BaseModel):
 
 
 class GetAlgoStatusAlgoStatusOrder(BaseModel):
-    order_id: Any = Field(alias="orderId")
-    trader: Any
-    account: Optional[AccountId]
+    order_id: str = Field(alias="orderId")
+    trader: str
+    account: Optional[str]
     algo: AlgoKind
-    parent_order_id: Optional[Any] = Field(alias="parentOrderId")
-    markets: List[Any]
+    parent_order_id: Optional[str] = Field(alias="parentOrderId")
+    markets: List[str]
 
 
 GetAlgoStatus.model_rebuild()
