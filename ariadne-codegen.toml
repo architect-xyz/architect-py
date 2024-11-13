@@ -10,5 +10,23 @@ base_client_file_path = "./templates/juniper_base_client.py"
 files_to_include = ["./templates/exceptions.py"]
 plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
 
-[tool.ariadne-codegen.scalars.Decimal]
-type = "decimal.Decimal"
+[tool.ariadne-codegen.scalars]
+Decimal.type = "decimal.Decimal"
+
+AccountId.type = "str"
+ComponentId.type = "str"
+FillId.type = "str"
+MarketId.type = "str"
+OrderId.type = "str"
+ProductId.type = "str"
+RouteId.type = "str"
+UserId.type = "str"
+VenueId.type = "str"
+Str.type = "str"
+
+Dir.type = "architect_py.scalars.Dir"
+Dir.serialize = "architect_py.scalars.serialize"
+Dir.deserialize = "architect_py.scalars.deserialize"
+
+DateTime.type = "datetime.datetime"
+DateTime.serialize = "architect_py.utils.dt.convert_datetime_to_utc_str"
