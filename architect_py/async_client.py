@@ -44,7 +44,6 @@ from architect_py.utils.balance_and_positions import (
     SimplePosition,
 )
 from architect_py.utils.dt import (
-    convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
 from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
@@ -338,8 +337,8 @@ class AsyncClient(AsyncGraphQLClient):
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
-        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
+        price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
@@ -348,14 +347,6 @@ class AsyncClient(AsyncGraphQLClient):
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
         """
-        if good_til_date is not None:
-            good_til_date_str = convert_datetime_to_utc_str(good_til_date)
-        else:
-            good_til_date_str = None
-
-        if not isinstance(limit_price, Decimal):
-            limit_price = Decimal(limit_price)
-
         if price_round_method is not None:
             market_info = await self.get_market(market)
             if market_info is not None:
@@ -381,7 +372,7 @@ class AsyncClient(AsyncGraphQLClient):
                 triggerPrice=str(trigger_price) if trigger_price is not None else None,
                 timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
-                    goodTilDate=good_til_date_str,
+                    goodTilDate=good_til_date,
                 ),
                 quoteId=quote_id,
                 source=source,
@@ -404,7 +395,6 @@ class AsyncClient(AsyncGraphQLClient):
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
 
-        end_time_str = convert_datetime_to_utc_str(end_time)
         return await self.send_twap_algo_request(
             CreateTwapAlgo(
                 name=name,
@@ -413,7 +403,7 @@ class AsyncClient(AsyncGraphQLClient):
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
-                endTime=end_time_str,
+                endTime=end_time,
                 account=account,
                 takeThroughFrac=take_through_frac,
             )
@@ -433,7 +423,6 @@ class AsyncClient(AsyncGraphQLClient):
         account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
-        end_time_str = convert_datetime_to_utc_str(end_time)
         return await self.send_pov_algo_request(
             CreatePovAlgo(
                 name=name,
@@ -443,7 +432,7 @@ class AsyncClient(AsyncGraphQLClient):
                 minOrderQuantity=min_order_quantity,
                 maxQuantity=max_quantity,
                 orderLockoutMs=order_lockout_ms,
-                endTime=end_time_str,
+                endTime=end_time,
                 account=account,
                 takeThroughFrac=(
                     str(take_through_frac) if take_through_frac is not None else None
@@ -715,5 +704,4 @@ class AsyncClient(AsyncGraphQLClient):
         notice = await self.get_first_notice_date(market)
         if notice is None or notice.first_notice_date is None:
             return None
-
-        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()
+        return notice.first_notice_date.date()
