@@ -6,7 +6,7 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId, Dir
+from architect_py.scalars import Dir
 
 from .base_model import BaseModel
 from .enums import AlgoRunningStatus
@@ -17,7 +17,7 @@ class GetTwapStatus(BaseModel):
 
 
 class GetTwapStatusTwapStatus(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     order: Optional["GetTwapStatusTwapStatusOrder"]
     creation_time: Any = Field(alias="creationTime")
     status: AlgoRunningStatus
@@ -28,12 +28,12 @@ class GetTwapStatusTwapStatus(BaseModel):
 
 class GetTwapStatusTwapStatusOrder(BaseModel):
     name: str
-    order_id: Any = Field(alias="orderId")
-    market_id: Any = Field(alias="marketId")
+    order_id: str = Field(alias="orderId")
+    market_id: str = Field(alias="marketId")
     dir: Dir
     quantity: Decimal
     end_time: Any = Field(alias="endTime")
-    account_id: Optional[AccountId] = Field(alias="accountId")
+    account_id: Optional[str] = Field(alias="accountId")
     interval_ms: int = Field(alias="intervalMs")
     reject_lockout_ms: int = Field(alias="rejectLockoutMs")
     take_through_frac: Optional[Decimal] = Field(alias="takeThroughFrac")

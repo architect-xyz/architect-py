@@ -23,8 +23,8 @@ class GetFillsFills(BaseModel):
 
 class GetFillsFillsNormal(BaseModel):
     kind: FillKind
-    fill_id: Any = Field(alias="fillId")
-    order_id: Optional[Any] = Field(alias="orderId")
+    fill_id: str = Field(alias="fillId")
+    order_id: Optional[str] = Field(alias="orderId")
     market: "GetFillsFillsNormalMarket"
     dir: Dir
     price: Decimal

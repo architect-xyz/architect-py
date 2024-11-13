@@ -37,7 +37,7 @@ from architect_py.async_graphql_client.base_model import UNSET, UnsetType
 from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
-from architect_py.scalars import AccountId, Dir
+from architect_py.scalars import Dir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
@@ -340,7 +340,7 @@ class AsyncClient(AsyncGraphQLClient):
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
         price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
-        account: Optional[AccountId] = None,
+        account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
     ) -> Optional[GetOrderOrder]:
@@ -400,7 +400,7 @@ class AsyncClient(AsyncGraphQLClient):
         interval_ms: int,
         reject_lockout_ms: int,
         end_time: datetime,
-        account: Optional[AccountId] = None,
+        account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
 
@@ -430,7 +430,7 @@ class AsyncClient(AsyncGraphQLClient):
         max_quantity: Decimal,
         order_lockout_ms: int,
         end_time: datetime,
-        account: Optional[AccountId] = None,
+        account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
         end_time_str = convert_datetime_to_utc_str(end_time)
@@ -507,7 +507,7 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        account: Optional[AccountId] = None,
+        account: Optional[str] = None,
         buy_quantity: Decimal,
         sell_quantity: Decimal,
         min_position: Decimal,
@@ -559,7 +559,7 @@ class AsyncClient(AsyncGraphQLClient):
         fill_lockout_ms: int,
         order_lockout_ms: int,
         reject_lockout_ms: int,
-        account: Optional[AccountId] = None,
+        account: Optional[str] = None,
     ) -> str:
         return await self.send_spread_algo_request(
             CreateSpreadAlgo(

@@ -103,7 +103,7 @@ def gql(q: str) -> str:
 
 
 class AsyncGraphQLClient(JuniperAsyncBaseClient):
-    async def get_market(self, id: Any, **kwargs: Any) -> Optional[GetMarketMarket]:
+    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
         query = gql(
             """
             query GetMarket($id: MarketId!) {
@@ -174,7 +174,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetMarket.model_validate(data).market
 
     async def get_markets(
-        self, ids: List[Any], **kwargs: Any
+        self, ids: List[str], **kwargs: Any
     ) -> List[Optional[GetMarketsMarkets]]:
         query = gql(
             """
@@ -247,13 +247,13 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def get_filtered_markets(
         self,
-        venue: Union[Optional[Any], UnsetType] = UNSET,
-        base: Union[Optional[Any], UnsetType] = UNSET,
-        quote: Union[Optional[Any], UnsetType] = UNSET,
-        underlying: Union[Optional[Any], UnsetType] = UNSET,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        base: Union[Optional[str], UnsetType] = UNSET,
+        quote: Union[Optional[str], UnsetType] = UNSET,
+        underlying: Union[Optional[str], UnsetType] = UNSET,
         max_results: Union[Optional[int], UnsetType] = UNSET,
         results_offset: Union[Optional[int], UnsetType] = UNSET,
-        search_string: Union[Optional[Any], UnsetType] = UNSET,
+        search_string: Union[Optional[str], UnsetType] = UNSET,
         only_favorites: Union[Optional[bool], UnsetType] = UNSET,
         sort_by_volume_desc: Union[Optional[bool], UnsetType] = UNSET,
         **kwargs: Any
@@ -344,13 +344,13 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def search_markets(
         self,
-        venue: Union[Optional[Any], UnsetType] = UNSET,
-        base: Union[Optional[Any], UnsetType] = UNSET,
-        quote: Union[Optional[Any], UnsetType] = UNSET,
-        underlying: Union[Optional[Any], UnsetType] = UNSET,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        base: Union[Optional[str], UnsetType] = UNSET,
+        quote: Union[Optional[str], UnsetType] = UNSET,
+        underlying: Union[Optional[str], UnsetType] = UNSET,
         max_results: Union[Optional[int], UnsetType] = UNSET,
         results_offset: Union[Optional[int], UnsetType] = UNSET,
-        search_string: Union[Optional[Any], UnsetType] = UNSET,
+        search_string: Union[Optional[str], UnsetType] = UNSET,
         only_favorites: Union[Optional[bool], UnsetType] = UNSET,
         sort_by_volume_desc: Union[Optional[bool], UnsetType] = UNSET,
         **kwargs: Any
@@ -437,7 +437,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return SearchMarkets.model_validate(data).filter_markets
 
     async def get_first_notice_date(
-        self, id: Any, **kwargs: Any
+        self, id: str, **kwargs: Any
     ) -> Optional[GetFirstNoticeDateMarket]:
         query = gql(
             """
@@ -459,7 +459,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetFirstNoticeDate.model_validate(data).market
 
     async def get_market_snapshot(
-        self, id: Any, **kwargs: Any
+        self, id: str, **kwargs: Any
     ) -> Optional[GetMarketSnapshotMarketSnapshot]:
         query = gql(
             """
@@ -655,7 +655,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetAccountSummaries.model_validate(data).account_summaries
 
     async def get_account_summaries_for_cpty(
-        self, venue: Any, route: Any, **kwargs: Any
+        self, venue: str, route: str, **kwargs: Any
     ) -> GetAccountSummariesForCptyAccountSummariesForCpty:
         query = gql(
             """
@@ -779,7 +779,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         ).account_summaries_for_cpty
 
     async def get_balances_for_cpty(
-        self, venue: Any, route: Any, **kwargs: Any
+        self, venue: str, route: str, **kwargs: Any
     ) -> GetBalancesForCptyAccountSummariesForCpty:
         query = gql(
             """
@@ -1036,7 +1036,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return GetOutOrders.model_validate(data).outed_orders
 
-    async def get_order(self, order_id: Any, **kwargs: Any) -> Optional[GetOrderOrder]:
+    async def get_order(self, order_id: str, **kwargs: Any) -> Optional[GetOrderOrder]:
         query = gql(
             """
             query GetOrder($orderId: OrderId!) {
@@ -1142,7 +1142,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetOrder.model_validate(data).order
 
     async def get_algo_status(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> List[GetAlgoStatusAlgoStatus]:
         query = gql(
             """
@@ -1173,7 +1173,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetAlgoStatus.model_validate(data).algo_status
 
     async def get_algo_order(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> Optional[GetAlgoOrderAlgoOrder]:
         query = gql(
             """
@@ -1197,7 +1197,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetAlgoOrder.model_validate(data).algo_order
 
     async def get_twap_status(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> List[GetTwapStatusTwapStatus]:
         query = gql(
             """
@@ -1233,7 +1233,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetTwapStatus.model_validate(data).twap_status
 
     async def get_twap_order(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> Optional[GetTwapOrderTwapOrder]:
         query = gql(
             """
@@ -1261,7 +1261,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetTwapOrder.model_validate(data).twap_order
 
     async def get_pov_status(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> List[GetPovStatusPovStatus]:
         query = gql(
             """
@@ -1298,7 +1298,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetPovStatus.model_validate(data).pov_status
 
     async def get_pov_order(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> Optional[GetPovOrderPovOrder]:
         query = gql(
             """
@@ -1326,7 +1326,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetPovOrder.model_validate(data).pov_order
 
     async def get_smart_order_router_status(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> List[GetSmartOrderRouterStatusSmartOrderRouterStatus]:
         query = gql(
             """
@@ -1373,7 +1373,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetSmartOrderRouterStatus.model_validate(data).smart_order_router_status
 
     async def get_smart_order_router_order(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> Optional[GetSmartOrderRouterOrderSmartOrderRouterOrder]:
         query = gql(
             """
@@ -1403,7 +1403,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetSmartOrderRouterOrder.model_validate(data).smart_order_router_order
 
     async def get_mm_status(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> List[GetMmStatusMmAlgoStatus]:
         query = gql(
             """
@@ -1468,7 +1468,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetMmStatus.model_validate(data).mm_algo_status
 
     async def get_mm_order(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> Optional[GetMmOrderMmAlgoOrder]:
         query = gql(
             """
@@ -1499,7 +1499,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetMmOrder.model_validate(data).mm_algo_order
 
     async def get_spread_status(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> List[GetSpreadStatusSpreadAlgoStatus]:
         query = gql(
             """
@@ -1564,7 +1564,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetSpreadStatus.model_validate(data).spread_algo_status
 
     async def get_spread_order(
-        self, order_id: Any, **kwargs: Any
+        self, order_id: str, **kwargs: Any
     ) -> Optional[GetSpreadOrderSpreadAlgoOrder]:
         query = gql(
             """
@@ -1596,10 +1596,10 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def get_fills(
         self,
-        venue: Union[Optional[Any], UnsetType] = UNSET,
-        route: Union[Optional[Any], UnsetType] = UNSET,
-        base: Union[Optional[Any], UnsetType] = UNSET,
-        quote: Union[Optional[Any], UnsetType] = UNSET,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        route: Union[Optional[str], UnsetType] = UNSET,
+        base: Union[Optional[str], UnsetType] = UNSET,
+        quote: Union[Optional[str], UnsetType] = UNSET,
         **kwargs: Any
     ) -> GetFillsFills:
         query = gql(
@@ -1689,7 +1689,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return GetFills.model_validate(data).fills
 
     async def subscribe_trades(
-        self, market: Any, **kwargs: Any
+        self, market: str, **kwargs: Any
     ) -> AsyncIterator[SubscribeTradesTrades]:
         query = gql(
             """
@@ -1710,7 +1710,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
             yield SubscribeTrades.model_validate(data).trades
 
     async def subscribe_candles(
-        self, id: Any, width: CandleWidth, **kwargs: Any
+        self, id: str, width: CandleWidth, **kwargs: Any
     ) -> AsyncIterator[SubscribeCandlesCandles]:
         query = gql(
             """
@@ -1826,7 +1826,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def subscribe_book(
         self,
-        id: Any,
+        id: str,
         precision: Union[Optional[Decimal], UnsetType] = UNSET,
         **kwargs: Any
     ) -> AsyncIterator[SubscribeBookBook]:
@@ -1856,7 +1856,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
             yield SubscribeBook.model_validate(data).book
 
     async def subscribe_exchange_specific(
-        self, markets: List[Any], fields: List[str], **kwargs: Any
+        self, markets: List[str], fields: List[str], **kwargs: Any
     ) -> AsyncIterator[List[SubscribeExchangeSpecificExchangeSpecific]]:
         query = gql(
             """
@@ -1933,7 +1933,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         ):
             yield SubscribeExchangeSpecific.model_validate(data).exchange_specific
 
-    async def send_order(self, order: CreateOrder, **kwargs: Any) -> Any:
+    async def send_order(self, order: CreateOrder, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendOrder($order: CreateOrder!) {
@@ -1948,7 +1948,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return SendOrder.model_validate(data).create_order
 
-    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[Any]:
+    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[str]:
         query = gql(
             """
             mutation SendOrders($orders: [CreateOrder!]!) {
@@ -1963,7 +1963,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return SendOrders.model_validate(data).create_orders
 
-    async def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> Any:
+    async def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
@@ -1981,7 +1981,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return SendTwapAlgoRequest.model_validate(data).create_twap_algo
 
-    async def send_pov_algo_request(self, algo: CreatePovAlgo, **kwargs: Any) -> Any:
+    async def send_pov_algo_request(self, algo: CreatePovAlgo, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
@@ -2112,7 +2112,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def send_smart_order_router_algo_request(
         self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
-    ) -> Any:
+    ) -> str:
         query = gql(
             """
             mutation SendSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
@@ -2132,7 +2132,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
             data
         ).create_smart_order_router_algo
 
-    async def send_mm_algo_request(self, algo: CreateMMAlgo, **kwargs: Any) -> Any:
+    async def send_mm_algo_request(self, algo: CreateMMAlgo, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
@@ -2152,7 +2152,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def send_spread_algo_request(
         self, algo: CreateSpreadAlgo, **kwargs: Any
-    ) -> Any:
+    ) -> str:
         query = gql(
             """
             mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
@@ -2170,7 +2170,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return SendSpreadAlgoRequest.model_validate(data).create_spread_algo
 
-    async def cancel_order(self, order_id: Any, **kwargs: Any) -> Any:
+    async def cancel_order(self, order_id: str, **kwargs: Any) -> str:
         query = gql(
             """
             mutation CancelOrder($orderId: OrderId!) {
@@ -2185,7 +2185,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         data = self.get_data(response)
         return CancelOrder.model_validate(data).cancel_order
 
-    async def cancel_orders(self, order_ids: List[Any], **kwargs: Any) -> List[Any]:
+    async def cancel_orders(self, order_ids: List[str], **kwargs: Any) -> List[str]:
         query = gql(
             """
             mutation CancelOrders($orderIds: [OrderId!]!) {
@@ -2201,8 +2201,8 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
         return CancelOrders.model_validate(data).cancel_orders
 
     async def cancel_all_orders(
-        self, venue: Union[Optional[Any], UnsetType] = UNSET, **kwargs: Any
-    ) -> Optional[Any]:
+        self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
+    ) -> Optional[str]:
         query = gql(
             """
             mutation CancelAllOrders($venue: VenueId) {
@@ -2321,7 +2321,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
 
     async def get_book_snapshot(
         self,
-        market: Any,
+        market: str,
         num_levels: int,
         precision: Union[Optional[Decimal], UnsetType] = UNSET,
         retain_seconds: Union[Optional[int], UnsetType] = UNSET,

@@ -2,7 +2,7 @@
 # Source: queries.async.graphql
 
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from pydantic import Field
 
@@ -18,17 +18,17 @@ class GetSmartOrderRouterOrder(BaseModel):
 
 
 class GetSmartOrderRouterOrderSmartOrderRouterOrder(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     markets: List["GetSmartOrderRouterOrderSmartOrderRouterOrderMarkets"]
     dir: Dir
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
     execution_time_limit_ms: int = Field(alias="executionTimeLimitMs")
-    parent_order_id: Optional[Any] = Field(alias="parentOrderId")
+    parent_order_id: Optional[str] = Field(alias="parentOrderId")
 
 
 class GetSmartOrderRouterOrderSmartOrderRouterOrderMarkets(BaseModel):
-    id: Any
+    id: str
 
 
 GetSmartOrderRouterOrder.model_rebuild()

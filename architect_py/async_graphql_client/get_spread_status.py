@@ -6,8 +6,6 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId
-
 from .base_model import BaseModel
 from .enums import AlgoRunningStatus, MMAlgoKind, ReferencePrice
 
@@ -19,7 +17,7 @@ class GetSpreadStatus(BaseModel):
 
 
 class GetSpreadStatusSpreadAlgoStatus(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     order: Optional["GetSpreadStatusSpreadAlgoStatusOrder"]
     creation_time: Any = Field(alias="creationTime")
     status: AlgoRunningStatus
@@ -34,8 +32,8 @@ class GetSpreadStatusSpreadAlgoStatus(BaseModel):
 
 class GetSpreadStatusSpreadAlgoStatusOrder(BaseModel):
     name: str
-    order_id: Any = Field(alias="orderId")
-    market_id: Any = Field(alias="marketId")
+    order_id: str = Field(alias="orderId")
+    market_id: str = Field(alias="marketId")
     quantity_buy: Decimal = Field(alias="quantityBuy")
     quantity_sell: Decimal = Field(alias="quantitySell")
     min_position: Decimal = Field(alias="minPosition")
@@ -45,7 +43,7 @@ class GetSpreadStatusSpreadAlgoStatusOrder(BaseModel):
     reference_price: ReferencePrice = Field(alias="referencePrice")
     ref_dist_frac: Decimal = Field(alias="refDistFrac")
     tolerance_frac: Decimal = Field(alias="toleranceFrac")
-    account: Optional[AccountId]
+    account: Optional[str]
 
 
 class GetSpreadStatusSpreadAlgoStatusBuyStatus(BaseModel):
@@ -59,7 +57,7 @@ class GetSpreadStatusSpreadAlgoStatusBuyStatus(BaseModel):
 
 
 class GetSpreadStatusSpreadAlgoStatusBuyStatusOpenOrder(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     price: Decimal
     quantity: Decimal
     cancel_pending: bool = Field(alias="cancelPending")
@@ -76,7 +74,7 @@ class GetSpreadStatusSpreadAlgoStatusSellStatus(BaseModel):
 
 
 class GetSpreadStatusSpreadAlgoStatusSellStatusOpenOrder(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     price: Decimal
     quantity: Decimal
     cancel_pending: bool = Field(alias="cancelPending")

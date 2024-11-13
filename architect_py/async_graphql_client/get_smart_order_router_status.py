@@ -6,7 +6,7 @@ from typing import Any, List, Optional
 
 from pydantic import Field
 
-from architect_py.scalars import AccountId, Dir
+from architect_py.scalars import Dir
 
 from .base_model import BaseModel
 from .enums import AlgoKind, AlgoRunningStatus
@@ -24,7 +24,7 @@ class GetSmartOrderRouterStatusSmartOrderRouterStatus(BaseModel):
 
 
 class GetSmartOrderRouterStatusSmartOrderRouterStatusStatus(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     order: Optional["GetSmartOrderRouterStatusSmartOrderRouterStatusStatusOrder"]
     creation_time: Any = Field(alias="creationTime")
     status: AlgoRunningStatus
@@ -33,26 +33,26 @@ class GetSmartOrderRouterStatusSmartOrderRouterStatusStatus(BaseModel):
 
 
 class GetSmartOrderRouterStatusSmartOrderRouterStatusStatusOrder(BaseModel):
-    order_id: Any = Field(alias="orderId")
-    trader: Any
-    account: Optional[AccountId]
+    order_id: str = Field(alias="orderId")
+    trader: str
+    account: Optional[str]
     algo: AlgoKind
-    parent_order_id: Optional[Any] = Field(alias="parentOrderId")
-    markets: List[Any]
+    parent_order_id: Optional[str] = Field(alias="parentOrderId")
+    markets: List[str]
 
 
 class GetSmartOrderRouterStatusSmartOrderRouterStatusOrder(BaseModel):
-    order_id: Any = Field(alias="orderId")
+    order_id: str = Field(alias="orderId")
     markets: List["GetSmartOrderRouterStatusSmartOrderRouterStatusOrderMarkets"]
     dir: Dir
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
     execution_time_limit_ms: int = Field(alias="executionTimeLimitMs")
-    parent_order_id: Optional[Any] = Field(alias="parentOrderId")
+    parent_order_id: Optional[str] = Field(alias="parentOrderId")
 
 
 class GetSmartOrderRouterStatusSmartOrderRouterStatusOrderMarkets(BaseModel):
-    id: Any
+    id: str
 
 
 GetSmartOrderRouterStatus.model_rebuild()

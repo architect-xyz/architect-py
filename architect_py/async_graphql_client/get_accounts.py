@@ -3,8 +3,6 @@
 
 from typing import List
 
-from architect_py.scalars import AccountId
-
 from .base_model import BaseModel
 
 
@@ -13,7 +11,7 @@ class GetAccounts(BaseModel):
 
 
 class GetAccountsAccounts(BaseModel):
-    id: AccountId
+    id: str
     name: str
 
 
