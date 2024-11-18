@@ -109,7 +109,7 @@ class AsyncClient(AsyncGraphQLClient):
             raise ValueError("API key is required.")
         elif kwargs["api_secret"] is None:
             raise ValueError("API secret is required.")
-        elif kwargs["api_key"].isalnum() is False:
+        elif not kwargs["api_key"].isalnum():
             raise ValueError(
                 "API key must be alphanumeric, please double check your credentials."
             )
