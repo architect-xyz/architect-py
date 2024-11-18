@@ -46,7 +46,7 @@ within the shell are not persisted.
 ## Maintainers
 
 to make additions:
-- schema.graphql: add any relevant types
+- schema.graphql: add any relevant types to the rust types
 - queries.graphql / queries.async.graphql: add the query/mutation
 - ariadne-codegen.toml / ariadne-codegen.async.toml: add the python type conversion for any scalars
 
