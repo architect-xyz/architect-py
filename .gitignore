@@ -6,3 +6,5 @@ scratch*.py.*
 .env
 .env*
 .DS_Store
+
+pytest.ini
