@@ -40,9 +40,9 @@ class Dir(Enum):
 
     @classmethod
     def from_string(cls, value):
-        if value == "buy":
+        if value.lower() == "buy":
             return cls.BUY
-        elif value == "sell":
+        elif value.lower() == "sell":
             return cls.SELL
         else:
             raise ValueError(f"Unknown Dir: {value}")
