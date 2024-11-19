@@ -4,11 +4,6 @@ schema {
   subscription: SubscriptionRoot
 }
 
-enum Dir {
-  BUY
-  SELL
-}
-
 enum AlgoControlCommand {
   START
   PAUSE
@@ -356,7 +351,7 @@ name itself, as they are 1-1.
 """
 scalar RouteId
 
-"""A String type. This is kept distinct from String because it is a separate custom type in the Rust backend."""
+"""A String type"""
 scalar Str
 
 """
