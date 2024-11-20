@@ -20,15 +20,20 @@ it may not have all the information that the specific get_algo functions have
 """
 
 from dataclasses import dataclass
+import fnmatch
+from functools import lru_cache
 import logging
+import re
 import dns.resolver
 import grpc
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 import time
-from typing import Any, Optional, TypeAlias, Union
+from typing import Any, List, Optional, Sequence, TypeAlias, Union
 
+from architect_py.graphql_client.base_model import UNSET, UnsetType
+from architect_py.graphql_client.get_market import GetMarketMarket
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.utils.balance_and_positions import (
     Balance,
@@ -39,6 +44,7 @@ from architect_py.utils.dt import (
     convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
+from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
     CreateOrderType,
@@ -84,8 +90,28 @@ DecimalLike: TypeAlias = Union[int, float, Decimal, str]
 
 
 class Client(GraphQLClient):
-    def __init__(self, *args, no_gql: bool = False, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, no_gql: bool = False, **kwargs):
+        """
+        Please see the GraphQLClient class for the full list of arguments.
+        """
+        if kwargs["api_key"] is None:
+            raise ValueError("API key is required")
+        elif kwargs["api_secret"] is None:
+            raise ValueError("API secret is required")
+        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+            raise ValueError(
+                "API key and secret cannot contain spaces, please double check your credentials"
+            )
+        elif kwargs["api_secret"][-1] != "=":
+            raise ValueError(
+                "API secret must end with an equals sign, please double check your credentials"
+            )
+        elif len(kwargs["api_key"]) < 24 or len(kwargs["api_secret"]) < 44:
+            raise ValueError(
+                "API key and secret are too short, please double check your credentials"
+            )
+
+        super().__init__(**kwargs)
         self.no_gql = no_gql
         self.route_by_id = {}
         self.venue_by_id = {}
@@ -102,6 +128,51 @@ class Client(GraphQLClient):
 
     def start_session(self):
         self.load_and_index_symbology()
+
+    def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+        return self._get_cached_market(id, **kwargs)
+
+    @lru_cache(maxsize=10)
+    def _get_cached_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+        return super().get_market(id, **kwargs)
+
+    def search_markets(
+        self,
+        venue: str | None | UnsetType = UNSET,
+        base: str | None | UnsetType = UNSET,
+        quote: str | None | UnsetType = UNSET,
+        underlying: str | None | UnsetType = UNSET,
+        max_results: int | None | UnsetType = UNSET,
+        results_offset: int | None | UnsetType = UNSET,
+        search_string: str | None | UnsetType = UNSET,
+        only_favorites: bool | None | UnsetType = UNSET,
+        sort_by_volume_desc: bool | None | UnsetType = UNSET,
+        glob: str | None = None,
+        regex: str | None = None,
+        **kwargs: Any,
+    ) -> List[SearchMarketsFilterMarkets]:
+        markets = super().search_markets(
+            venue,
+            base,
+            quote,
+            underlying,
+            max_results,
+            results_offset,
+            search_string,
+            only_favorites,
+            sort_by_volume_desc,
+            **kwargs,
+        )
+
+        if glob is not None:
+            markets = [
+                market for market in markets if fnmatch.fnmatch(market.name, glob)
+            ]
+
+        if regex is not None:
+            markets = [market for market in markets if re.match(regex, market.name)]
+
+        return markets
 
     def load_and_index_symbology(self, cpty: Optional[str] = None):
         self.route_by_id = {}
@@ -120,10 +191,11 @@ class Client(GraphQLClient):
                 if market.venue.name not in by_venue:
                     by_venue[market.venue.name] = {}
                 by_base = by_venue[market.venue.name]
-                if market.kind.base.name not in by_base:  # type: ignore
-                    by_base[market.kind.base.name] = {}  # type: ignore
-                by_quote = by_base[market.kind.base.name]  # type: ignore
-                by_quote[market.kind.quote.name] = market.name  # type: ignore
+                if market.kind is MarketFieldsKindExchangeMarketKind:
+                    if market.kind.base.name not in by_base:
+                        by_base[market.kind.base.name] = {}
+                    by_quote = by_base[market.kind.base.name]
+                    by_quote[market.kind.quote.name] = market.name
             logger.info("Indexed %d markets", len(markets))
 
     # CR alee: make base, venue, route optional, and add optional quote.
@@ -188,6 +260,7 @@ class Client(GraphQLClient):
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
+        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
@@ -203,6 +276,22 @@ class Client(GraphQLClient):
         else:
             good_til_date_str = None
 
+        if not isinstance(limit_price, Decimal):
+            limit_price = Decimal(limit_price)
+
+        if price_round_method is not None:
+            market_info = self.get_market(market)
+            if market_info is not None:
+                tick_size = Decimal(market_info.tick_size)
+                limit_price = nearest_tick(
+                    limit_price, method=price_round_method, tick_size=tick_size
+                )
+            else:
+                raise ValueError(f"Could not find market information for {market}")
+
+        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
+            trigger_price = Decimal(trigger_price)
+
         order: str = self.send_order(
             CreateOrder(
                 market=market,
@@ -210,7 +299,7 @@ class Client(GraphQLClient):
                 quantity=str(quantity),
                 account=account,
                 orderType=order_type,
-                limitPrice=str(limit_price),
+                limitPrice=limit_price,
                 postOnly=post_only,
                 triggerPrice=str(trigger_price) if trigger_price is not None else None,
                 timeInForce=CreateTimeInForce(
@@ -332,7 +421,7 @@ class Client(GraphQLClient):
         limit_price: DecimalLike,
         target_size: DecimalLike,
         execution_time_limit_ms: int,
-    ) -> Optional[list[OrderFields]]:
+    ) -> Optional[Sequence[OrderFields]]:
         algo = self.preview_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
@@ -345,7 +434,10 @@ class Client(GraphQLClient):
             )
         )
 
-        return getattr(algo, "orders", None)
+        if algo is None:
+            return None
+        else:
+            return algo.orders
 
     def send_mm_algo(
         self,
@@ -479,12 +571,32 @@ class Client(GraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount)  # type: ignore
-                        total_margin = Decimal(balance.total_margin)  # type: ignore
-                        position_margin = Decimal(balance.position_margin)  # type: ignore
-                        purchasing_power = Decimal(balance.purchasing_power)  # type: ignore
-                        cash_excess = Decimal(balance.cash_excess)  # type: ignore
-                        yesterday_balance = Decimal(balance.yesterday_balance)  # type: ignore
+                        usd_amount = Decimal(balance.amount) if balance.amount else None
+                        total_margin = (
+                            Decimal(balance.total_margin)
+                            if balance.total_margin
+                            else None
+                        )
+                        position_margin = (
+                            Decimal(balance.position_margin)
+                            if balance.position_margin
+                            else None
+                        )
+                        purchasing_power = (
+                            Decimal(balance.purchasing_power)
+                            if balance.purchasing_power
+                            else None
+                        )
+                        cash_excess = (
+                            Decimal(balance.cash_excess)
+                            if balance.cash_excess
+                            else None
+                        )
+                        yesterday_balance = (
+                            Decimal(balance.yesterday_balance)
+                            if balance.yesterday_balance
+                            else None
+                        )
 
                         usd = Balance(
                             usd_amount,
@@ -503,9 +615,9 @@ class Client(GraphQLClient):
                     if position.market is None:
                         continue
 
-                    quantity: Decimal = Decimal(position.quantity)  # type: ignore
+                    quantity: Decimal = Decimal(getattr(position, "quantity", "NaN"))
                     quantity = quantity if position.dir == "buy" else -quantity
-                    average_price = Decimal(position.average_price)  # type: ignore
+                    average_price = Decimal(getattr(position, "average_price", "NaN"))
 
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind
@@ -532,3 +644,10 @@ class Client(GraphQLClient):
                     )
                 )
         return bps
+
+    def get_cme_first_notice_date(self, market: str) -> Optional[date]:
+        notice = self.get_first_notice_date(market)
+        if notice is None or notice.first_notice_date is None:
+            return None
+
+        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()
