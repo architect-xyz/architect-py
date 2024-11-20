@@ -20,16 +20,20 @@ it may not have all the information that the specific get_algo functions have
 """
 
 from dataclasses import dataclass
+import fnmatch
+from functools import lru_cache
 import logging
-from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
+import re
 import dns.resolver
 import grpc
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 import time
-from typing import Any, Optional, TypeAlias, Union
+from typing import Any, List, Optional, Sequence, TypeAlias, Union
 
+from architect_py.graphql_client.base_model import UNSET, UnsetType
+from architect_py.graphql_client.get_market import GetMarketMarket
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.utils.balance_and_positions import (
     Balance,
@@ -40,6 +44,7 @@ from architect_py.utils.dt import (
     convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
+from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
     CreateOrderType,
@@ -101,7 +106,7 @@ class Client(GraphQLClient):
             raise ValueError(
                 "API secret must end with an equals sign, please double check your credentials"
             )
-        elif kwargs["api_key"].len() <= 24 or kwargs["api_secret"].len() <= 44:
+        elif len(kwargs["api_key"]) < 24 or len(kwargs["api_secret"]) < 44:
             raise ValueError(
                 "API key and secret are too short, please double check your credentials"
             )
@@ -123,6 +128,51 @@ class Client(GraphQLClient):
 
     def start_session(self):
         self.load_and_index_symbology()
+
+    def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+        return self._get_cached_market(id, **kwargs)
+
+    @lru_cache(maxsize=10)
+    def _get_cached_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+        return super().get_market(id, **kwargs)
+
+    def search_markets(
+        self,
+        venue: str | None | UnsetType = UNSET,
+        base: str | None | UnsetType = UNSET,
+        quote: str | None | UnsetType = UNSET,
+        underlying: str | None | UnsetType = UNSET,
+        max_results: int | None | UnsetType = UNSET,
+        results_offset: int | None | UnsetType = UNSET,
+        search_string: str | None | UnsetType = UNSET,
+        only_favorites: bool | None | UnsetType = UNSET,
+        sort_by_volume_desc: bool | None | UnsetType = UNSET,
+        glob: str | None = None,
+        regex: str | None = None,
+        **kwargs: Any,
+    ) -> List[SearchMarketsFilterMarkets]:
+        markets = super().search_markets(
+            venue,
+            base,
+            quote,
+            underlying,
+            max_results,
+            results_offset,
+            search_string,
+            only_favorites,
+            sort_by_volume_desc,
+            **kwargs,
+        )
+
+        if glob is not None:
+            markets = [
+                market for market in markets if fnmatch.fnmatch(market.name, glob)
+            ]
+
+        if regex is not None:
+            markets = [market for market in markets if re.match(regex, market.name)]
+
+        return markets
 
     def load_and_index_symbology(self, cpty: Optional[str] = None):
         self.route_by_id = {}
@@ -210,6 +260,7 @@ class Client(GraphQLClient):
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
+        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
@@ -225,6 +276,22 @@ class Client(GraphQLClient):
         else:
             good_til_date_str = None
 
+        if not isinstance(limit_price, Decimal):
+            limit_price = Decimal(limit_price)
+
+        if price_round_method is not None:
+            market_info = self.get_market(market)
+            if market_info is not None:
+                tick_size = Decimal(market_info.tick_size)
+                limit_price = nearest_tick(
+                    limit_price, method=price_round_method, tick_size=tick_size
+                )
+            else:
+                raise ValueError(f"Could not find market information for {market}")
+
+        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
+            trigger_price = Decimal(trigger_price)
+
         order: str = self.send_order(
             CreateOrder(
                 market=market,
@@ -232,7 +299,7 @@ class Client(GraphQLClient):
                 quantity=str(quantity),
                 account=account,
                 orderType=order_type,
-                limitPrice=str(limit_price),
+                limitPrice=limit_price,
                 postOnly=post_only,
                 triggerPrice=str(trigger_price) if trigger_price is not None else None,
                 timeInForce=CreateTimeInForce(
@@ -410,7 +477,7 @@ class Client(GraphQLClient):
         limit_price: DecimalLike,
         target_size: DecimalLike,
         execution_time_limit_ms: int,
-    ) -> Optional[list[OrderFields]]:
+    ) -> Optional[Sequence[OrderFields]]:
         algo = self.preview_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
@@ -423,7 +490,10 @@ class Client(GraphQLClient):
             )
         )
 
-        return getattr(algo, "orders", None)
+        if algo is None:
+            return None
+        else:
+            return algo.orders
 
     def send_mm_algo(
         self,
@@ -557,17 +627,31 @@ class Client(GraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(getattr(balance, "amount", "NaN"))
-                        total_margin = Decimal(getattr(balance, "total_margin", "NaN"))
-                        position_margin = Decimal(
-                            getattr(balance, "position_margin", "NaN")
+                        usd_amount = Decimal(balance.amount) if balance.amount else None
+                        total_margin = (
+                            Decimal(balance.total_margin)
+                            if balance.total_margin
+                            else None
                         )
-                        purchasing_power = Decimal(
-                            getattr(balance, "purchasing_power", "NaN")
+                        position_margin = (
+                            Decimal(balance.position_margin)
+                            if balance.position_margin
+                            else None
                         )
-                        cash_excess = Decimal(getattr(balance, "cash_excess", "NaN"))
-                        yesterday_balance = Decimal(
-                            getattr(balance, "yesterday_balance", "NaN")
+                        purchasing_power = (
+                            Decimal(balance.purchasing_power)
+                            if balance.purchasing_power
+                            else None
+                        )
+                        cash_excess = (
+                            Decimal(balance.cash_excess)
+                            if balance.cash_excess
+                            else None
+                        )
+                        yesterday_balance = (
+                            Decimal(balance.yesterday_balance)
+                            if balance.yesterday_balance
+                            else None
                         )
 
                         usd = Balance(
@@ -618,12 +702,8 @@ class Client(GraphQLClient):
         return bps
 
     def get_cme_first_notice_date(self, market: str) -> Optional[date]:
-        markets = self.get_first_notice_date(
-            market
-        )
+        notice = self.get_first_notice_date(market)
+        if notice is None or notice.first_notice_date is None:
+            return None
 
-        for m in markets:
-            if m.kind.base.name == market:
-                return get_expiration_from_CME_name(m.kind.base.name)
-
-        return None
+        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()

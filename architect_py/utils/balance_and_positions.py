@@ -6,39 +6,45 @@ from typing import Optional
 
 @dataclass
 class SimplePosition:
-    quantity: Decimal
-    average_price: Decimal
+    quantity: Optional[Decimal]
+    average_price: Optional[Decimal]
     mark: Optional[Decimal]
 
     @property
     def pnl(self) -> Optional[Decimal]:
-        if self.mark is None:
+        if self.mark is None or self.average_price is None or self.quantity is None:
             return None
         return self.quantity * (self.mark - self.average_price)
 
     @property
     def notional(self) -> Optional[Decimal]:
-        if self.mark is None:
+        if self.mark is None or self.quantity is None:
             return None
         return self.quantity * self.mark
 
 
 @dataclass
 class Balance:
-    amount: Decimal
-    total_margin: Decimal
-    position_margin: Decimal
-    purchasing_power: Decimal
-    cash_excess: Decimal
-    yesterday_balance: Decimal
+    amount: Optional[Decimal]
+    total_margin: Optional[Decimal]
+    position_margin: Optional[Decimal]
+    purchasing_power: Optional[Decimal]
+    cash_excess: Optional[Decimal]
+    yesterday_balance: Optional[Decimal]
 
     @property
-    def change_in_balance(self) -> Decimal:
-        return self.amount - self.yesterday_balance
+    def change_in_balance(self) -> Optional[Decimal]:
+        if self.amount and self.yesterday_balance:
+            return self.amount - self.yesterday_balance
+        else:
+            return None
 
     @property
-    def order_margin(self) -> Decimal:
-        return self.total_margin - self.position_margin
+    def order_margin(self) -> Optional[Decimal]:
+        if self.total_margin and self.position_margin:
+            return self.total_margin - self.position_margin
+        else:
+            return None
 
 
 @dataclass
@@ -48,14 +54,16 @@ class BalancesAndPositions:
     positions: dict[str, SimplePosition]
 
     @property
-    def total_pnl_of_positions(self) -> Decimal:
+    def total_pnl_of_positions(self) -> tuple[Decimal, bool]:
         # this ignores positions with no mark
-        pnls = [
-            position.pnl
-            for position in self.positions.values()
-            if position.pnl is not None
-        ]
-        if len(pnls) == 0:
-            return Decimal(0)
-        else:
-            return sum(pnls)  # type: ignore
+
+        total_pnl = Decimal(0)
+        exists_none_pnl = False
+
+        for position in self.positions.values():
+            if position.pnl is None:
+                exists_none_pnl = True
+            else:
+                total_pnl += position.pnl
+
+        return total_pnl, exists_none_pnl

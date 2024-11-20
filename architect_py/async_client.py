@@ -19,18 +19,22 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
+import fnmatch
+from functools import lru_cache
 import logging
-from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
+import re
 import dns.asyncresolver
 import dns.name
 import grpc.aio
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, AsyncIterator, Optional, TypeAlias, Union
+from typing import Any, AsyncIterator, List, Optional, Sequence, TypeAlias, Union
 
 import grpc.aio
 
+from architect_py.async_graphql_client.base_model import UNSET, UnsetType
+from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.utils.balance_and_positions import (
@@ -42,6 +46,7 @@ from architect_py.utils.dt import (
     convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
+from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
 
 from .async_graphql_client import AsyncGraphQLClient
 from .async_graphql_client.enums import (
@@ -101,20 +106,20 @@ class AsyncClient(AsyncGraphQLClient):
         Please see the AsyncGraphQLClient class for the full list of arguments.
         """
         if kwargs["api_key"] is None:
-            raise ValueError("API key is required")
+            raise ValueError("API key is required.")
         elif kwargs["api_secret"] is None:
-            raise ValueError("API secret is required")
-        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+            raise ValueError("API secret is required.")
+        elif not kwargs["api_key"].isalnum():
             raise ValueError(
-                "API key and secret cannot contain spaces, please double check your credentials"
+                "API key must be alphanumeric, please double check your credentials."
             )
-        elif kwargs["api_secret"][-1] != "=":
+        elif " " in kwargs["api_secret"]:
             raise ValueError(
-                "API secret must end with an equals sign, please double check your credentials"
+                "API key and secret cannot contain spaces, please double check your credentials."
             )
-        elif kwargs["api_key"].len() <= 24 or kwargs["api_secret"].len() <= 44:
+        elif len(kwargs["api_key"]) != 24 or len(kwargs["api_secret"]) != 44:
             raise ValueError(
-                "API key and secret are too short, please double check your credentials"
+                "API key and secret are not the correct length, please double check your credentials."
             )
 
         super().__init__(**kwargs)
@@ -138,6 +143,53 @@ class AsyncClient(AsyncGraphQLClient):
 
     async def start_session(self):
         await self.load_and_index_symbology()
+
+    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+        return await self._get_cached_market(id, **kwargs)
+
+    @lru_cache(maxsize=10)
+    async def _get_cached_market(
+        self, id: str, **kwargs: Any
+    ) -> Optional[GetMarketMarket]:
+        return await super().get_market(id, **kwargs)
+
+    async def search_markets(
+        self,
+        venue: str | None | UnsetType = UNSET,
+        base: str | None | UnsetType = UNSET,
+        quote: str | None | UnsetType = UNSET,
+        underlying: str | None | UnsetType = UNSET,
+        max_results: int | None | UnsetType = UNSET,
+        results_offset: int | None | UnsetType = UNSET,
+        search_string: str | None | UnsetType = UNSET,
+        only_favorites: bool | None | UnsetType = UNSET,
+        sort_by_volume_desc: bool | None | UnsetType = UNSET,
+        glob: str | None = None,
+        regex: str | None = None,
+        **kwargs: Any,
+    ) -> List[SearchMarketsFilterMarkets]:
+        markets = await super().search_markets(
+            venue,
+            base,
+            quote,
+            underlying,
+            max_results,
+            results_offset,
+            search_string,
+            only_favorites,
+            sort_by_volume_desc,
+            **kwargs,
+        )
+
+        if glob is not None:
+            markets = [
+                market for market in markets if fnmatch.fnmatch(market.name, glob)
+            ]
+
+        if regex is not None:
+            markets = [market for market in markets if re.match(regex, market.name)]
+
+        return markets
 
     async def load_and_index_symbology(self, cpty: Optional[str] = None):
         # TODO: consider locking
@@ -298,6 +350,7 @@ class AsyncClient(AsyncGraphQLClient):
         post_only: bool = False,
         trigger_price: Optional[DecimalLike] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
+        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
@@ -312,14 +365,30 @@ class AsyncClient(AsyncGraphQLClient):
         else:
             good_til_date_str = None
 
+        if not isinstance(limit_price, Decimal):
+            limit_price = Decimal(limit_price)
+
+        if price_round_method is not None:
+            market_info = await self.get_market(market)
+            if market_info is not None:
+                tick_size = Decimal(market_info.tick_size)
+                limit_price = nearest_tick(
+                    limit_price, method=price_round_method, tick_size=tick_size
+                )
+            else:
+                raise ValueError(f"Could not find market information for {market}")
+
+        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
+            trigger_price = Decimal(trigger_price)
+
         order: str = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=dir.value,
-                quantity=str(quantity),
+                quantity=quantity,
                 account=account,
                 orderType=order_type,
-                limitPrice=str(limit_price),
+                limitPrice=limit_price,
                 postOnly=post_only,
                 triggerPrice=str(trigger_price) if trigger_price is not None else None,
                 timeInForce=CreateTimeInForce(
@@ -483,7 +552,7 @@ class AsyncClient(AsyncGraphQLClient):
         limit_price: DecimalLike,
         target_size: DecimalLike,
         execution_time_limit_ms: int,
-    ) -> Optional[list[OrderFields]]:
+    ) -> Optional[Sequence[OrderFields]]:
         algo = await self.preview_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
@@ -496,7 +565,10 @@ class AsyncClient(AsyncGraphQLClient):
             )
         )
 
-        return getattr(algo, "orders", None)
+        if algo:
+            return algo.orders
+        else:
+            return None
 
     async def send_mm_algo(
         self,
@@ -630,17 +702,31 @@ class AsyncClient(AsyncGraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(getattr(balance, "amount", "NaN"))
-                        total_margin = Decimal(getattr(balance, "total_margin", "NaN"))
-                        position_margin = Decimal(
-                            getattr(balance, "position_margin", "NaN")
+                        usd_amount = Decimal(balance.amount) if balance.amount else None
+                        total_margin = (
+                            Decimal(balance.total_margin)
+                            if balance.total_margin
+                            else None
                         )
-                        purchasing_power = Decimal(
-                            getattr(balance, "purchasing_power", "NaN")
+                        position_margin = (
+                            Decimal(balance.position_margin)
+                            if balance.position_margin
+                            else None
                         )
-                        cash_excess = Decimal(getattr(balance, "cash_excess", "NaN"))
-                        yesterday_balance = Decimal(
-                            getattr(balance, "yesterday_balance", "NaN")
+                        purchasing_power = (
+                            Decimal(balance.purchasing_power)
+                            if balance.purchasing_power
+                            else None
+                        )
+                        cash_excess = (
+                            Decimal(balance.cash_excess)
+                            if balance.cash_excess
+                            else None
+                        )
+                        yesterday_balance = (
+                            Decimal(balance.yesterday_balance)
+                            if balance.yesterday_balance
+                            else None
                         )
 
                         usd = Balance(
@@ -660,9 +746,12 @@ class AsyncClient(AsyncGraphQLClient):
                     if position.market is None:
                         continue
 
-                    quantity: Decimal = Decimal(getattr(position, "quantity", "NaN"))
-                    quantity = quantity if position.dir == "buy" else -quantity
-                    average_price = Decimal(getattr(position, "average_price", "NaN"))
+                    quantity = Decimal(position.quantity) if position.quantity else None
+                    if quantity:
+                        quantity = quantity if position.dir == "buy" else -quantity
+                    average_price = (
+                        position.average_price if position.average_price else None
+                    )
 
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind
@@ -695,4 +784,4 @@ class AsyncClient(AsyncGraphQLClient):
         if notice is None or notice.first_notice_date is None:
             return None
 
-        return datetime.strptime(notice.first_notice_date, "%Y-%m-%d").date()
+        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()
