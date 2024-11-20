@@ -30,7 +30,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 import time
-from typing import Any, List, Optional, TypeAlias, Union
+from typing import Any, List, Optional, Sequence, TypeAlias, Union
 
 from architect_py.graphql_client.base_model import UNSET, UnsetType
 from architect_py.graphql_client.get_market import GetMarketMarket
@@ -421,7 +421,7 @@ class Client(GraphQLClient):
         limit_price: DecimalLike,
         target_size: DecimalLike,
         execution_time_limit_ms: int,
-    ) -> Optional[list[OrderFields]]:
+    ) -> Optional[Sequence[OrderFields]]:
         algo = self.preview_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
@@ -434,7 +434,10 @@ class Client(GraphQLClient):
             )
         )
 
-        return getattr(algo, "orders", None)
+        if algo is None:
+            return None
+        else:
+            return algo.orders
 
     def send_mm_algo(
         self,
@@ -568,17 +571,31 @@ class Client(GraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(getattr(balance, "amount", "NaN"))
-                        total_margin = Decimal(getattr(balance, "total_margin", "NaN"))
-                        position_margin = Decimal(
-                            getattr(balance, "position_margin", "NaN")
+                        usd_amount = Decimal(balance.amount) if balance.amount else None
+                        total_margin = (
+                            Decimal(balance.total_margin)
+                            if balance.total_margin
+                            else None
                         )
-                        purchasing_power = Decimal(
-                            getattr(balance, "purchasing_power", "NaN")
+                        position_margin = (
+                            Decimal(balance.position_margin)
+                            if balance.position_margin
+                            else None
                         )
-                        cash_excess = Decimal(getattr(balance, "cash_excess", "NaN"))
-                        yesterday_balance = Decimal(
-                            getattr(balance, "yesterday_balance", "NaN")
+                        purchasing_power = (
+                            Decimal(balance.purchasing_power)
+                            if balance.purchasing_power
+                            else None
+                        )
+                        cash_excess = (
+                            Decimal(balance.cash_excess)
+                            if balance.cash_excess
+                            else None
+                        )
+                        yesterday_balance = (
+                            Decimal(balance.yesterday_balance)
+                            if balance.yesterday_balance
+                            else None
                         )
 
                         usd = Balance(

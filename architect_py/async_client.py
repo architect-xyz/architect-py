@@ -29,7 +29,7 @@ import grpc.aio
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, AsyncIterator, List, Optional, TypeAlias, Union
+from typing import Any, AsyncIterator, List, Optional, Sequence, TypeAlias, Union
 
 import grpc.aio
 
@@ -496,7 +496,7 @@ class AsyncClient(AsyncGraphQLClient):
         limit_price: DecimalLike,
         target_size: DecimalLike,
         execution_time_limit_ms: int,
-    ) -> Optional[list[OrderFields]]:
+    ) -> Optional[Sequence[OrderFields]]:
         algo = await self.preview_smart_order_router_algo_request(
             CreateSmartOrderRouterAlgo(
                 markets=markets,
@@ -509,7 +509,10 @@ class AsyncClient(AsyncGraphQLClient):
             )
         )
 
-        return getattr(algo, "orders", None)
+        if algo:
+            return algo.orders
+        else:
+            return None
 
     async def send_mm_algo(
         self,
@@ -643,17 +646,31 @@ class AsyncClient(AsyncGraphQLClient):
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(getattr(balance, "amount", "NaN"))
-                        total_margin = Decimal(getattr(balance, "total_margin", "NaN"))
-                        position_margin = Decimal(
-                            getattr(balance, "position_margin", "NaN")
+                        usd_amount = Decimal(balance.amount) if balance.amount else None
+                        total_margin = (
+                            Decimal(balance.total_margin)
+                            if balance.total_margin
+                            else None
                         )
-                        purchasing_power = Decimal(
-                            getattr(balance, "purchasing_power", "NaN")
+                        position_margin = (
+                            Decimal(balance.position_margin)
+                            if balance.position_margin
+                            else None
                         )
-                        cash_excess = Decimal(getattr(balance, "cash_excess", "NaN"))
-                        yesterday_balance = Decimal(
-                            getattr(balance, "yesterday_balance", "NaN")
+                        purchasing_power = (
+                            Decimal(balance.purchasing_power)
+                            if balance.purchasing_power
+                            else None
+                        )
+                        cash_excess = (
+                            Decimal(balance.cash_excess)
+                            if balance.cash_excess
+                            else None
+                        )
+                        yesterday_balance = (
+                            Decimal(balance.yesterday_balance)
+                            if balance.yesterday_balance
+                            else None
                         )
 
                         usd = Balance(
@@ -673,9 +690,12 @@ class AsyncClient(AsyncGraphQLClient):
                     if position.market is None:
                         continue
 
-                    quantity: Decimal = Decimal(getattr(position, "quantity", "NaN"))
-                    quantity = quantity if position.dir == "buy" else -quantity
-                    average_price = Decimal(getattr(position, "average_price", "NaN"))
+                    quantity = Decimal(position.quantity) if position.quantity else None
+                    if quantity:
+                        quantity = quantity if position.dir == "buy" else -quantity
+                    average_price = (
+                        position.average_price if position.average_price else None
+                    )
 
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind
