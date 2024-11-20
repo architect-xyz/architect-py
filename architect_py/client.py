@@ -356,7 +356,6 @@ class Client(GraphQLClient):
 
         # Avoid sending price outside CME's price bands
         if market_details.venue.name == "CME":
-            print(market_details.cme_product_group_info)
             price_band = market_details.cme_product_group_info.price_band
             if price_band is None:
                 raise ValueError("Failed to send market order with reason: no CME price band for {market}")
