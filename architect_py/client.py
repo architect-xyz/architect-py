@@ -327,6 +327,61 @@ class Client(GraphQLClient):
                 time.sleep(0.1)
         return self.get_order(order_id=order)
 
+    def send_market_pro_order(
+        self,
+        *,
+        market: str,
+        dir: OrderDirection,
+        quantity: DecimalLike,
+        time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
+        account: Optional[str] = None,
+        source: OrderSource = OrderSource.API,
+        percent_through_market: Decimal = 0.02
+    ) -> Optional[GetOrderOrder]:
+
+        # Check for GQL failures
+        bbo_snapshot = self.get_market_snapshot(market)
+        if bbo_snapshot is None:
+            raise ValueError("Failed to send market order with reason: no market snapshot for {market}")
+        
+        market_details = self.get_market(market)
+        if market_details is None:
+            raise ValueError("Failed to send market order with reason: no market details for {market}")
+
+        best_bid = float(bbo_snapshot.bid_price)
+        best_ask = float(bbo_snapshot.ask_price)
+        last_price = float(bbo_snapshot.last_price)
+        
+        limit_price = best_ask * (1 + percent_through_market) if dir == OrderDirection.BUY else best_bid * (1 - percent_through_market)
+
+        # Avoid sending price outside CME's price bands
+        if market_details.venue.name == "CME":
+            price_band = market_details.cme_product_group_info.price_band
+            if price_band is None:
+                raise ValueError("Failed to send market order with reason: no CME price band for {market}")
+            else:
+                price_band = float(price_band)
+
+            if dir == OrderDirection.BUY:
+                limit_price = min(limit_price, last_price + price_band)
+            else:
+                limit_price = max(limit_price, last_price - price_band)
+    
+        # Conservatively round price to nearest tick
+        tick_round_method = TickRoundMethod.FLOOR if dir == OrderDirection.BUY else TickRoundMethod.CEIL
+        limit_price = nearest_tick(Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size))
+
+        return self.send_limit_order(
+            market=market,
+            dir=dir,
+            quantity=str(quantity),
+            account=account,
+            order_type=CreateOrderType.LIMIT,
+            limit_price=str(limit_price),
+            time_in_force_instruction=time_in_force_instruction,
+            source=source
+        )
+
     def send_twap_algo(
         self,
         *,

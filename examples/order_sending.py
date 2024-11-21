@@ -168,9 +168,21 @@ async def test_create_mm_algo():
 async def test_cancel_all_orders():
     await client.cancel_all_orders()
 
+async def test_send_market_pro_order():
+    market = await get_market()
+    print(market)
+    market_id = market.id
+
+    await client.send_market_pro_order(
+        market=market_id,
+        dir=OrderDirection.BUY,
+        quantity=1,
+        account=ACCOUNT,
+        time_in_force=CreateTimeInForceInstruction.IOC
+    )
 
 async def main():
-    await test_send_order()
+    await test_send_market_pro_order()
 
 
 if __name__ == "__main__":

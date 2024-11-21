@@ -125,6 +125,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -196,6 +197,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -279,6 +281,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -375,6 +378,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -599,6 +603,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -720,6 +725,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -834,6 +840,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -943,6 +950,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -1050,6 +1058,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -1626,6 +1635,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -1764,6 +1774,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -1869,6 +1880,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
@@ -2010,6 +2022,7 @@ class AsyncGraphQLClient(JuniperAsyncBaseClient):
                 category
                 subCategory
                 mainFraction
+                priceBand
               }
               kind {
                 ... on ExchangeMarketKind {
