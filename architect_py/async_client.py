@@ -100,9 +100,9 @@ class AsyncClient(AsyncGraphQLClient):
             raise ValueError(
                 "API key and secret cannot contain commas, please double check your credentials"
             )
-        elif kwargs["api_secret"][-1] != "=":
+        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
             raise ValueError(
-                "API key and secret cannot contain spaces, please double check your credentials."
+                "API key and secret cannot contain spaces, please double check your credentials"
             )
         elif len(kwargs["api_key"]) != 24 or len(kwargs["api_secret"]) != 44:
             raise ValueError(
