@@ -1,11 +1,9 @@
 from enum import Enum
+from typing import Literal
 
 
 """
 Custom Serialize / Deserializing functions for the scalars
-
-Decimal does not need one
-
 """
 
 
@@ -29,6 +27,18 @@ class OrderDir(Enum):
         else:
             raise ValueError(f"Unknown Dir: {self}")
 
+    @classmethod
+    def deserialize(cls, value: str) -> "OrderDir":
+        if value == "buy":
+            return cls.BUY
+        elif value == "sell":
+            return cls.SELL
+        else:
+            raise ValueError(f"Unknown Dir: {value}")
+
+    def serialize(self) -> str:
+        return self.value
+
     def __str__(self) -> str:
         return f"Dir.{self.name}"
 
@@ -39,16 +49,25 @@ class OrderDir(Enum):
         return self.value == other.value
 
     @classmethod
-    def from_string(cls, value):
-        if value.lower() == "buy":
+    def from_string(cls, value: str) -> "OrderDir":
+        lower = value.lower()
+        if lower == "buy":
             return cls.BUY
-        elif value.lower() == "sell":
+        elif lower == "sell":
+            return cls.SELL
+        elif lower == "bid":
+            return cls.BUY
+        elif lower == "ask":
+            return cls.SELL
+        elif lower == "b":
+            return cls.BUY
+        elif lower == "a":
             return cls.SELL
         else:
             raise ValueError(f"Unknown Dir: {value}")
 
     @classmethod
-    def from_unit(cls, value):
+    def from_unit(cls, value: Literal[1, -1]) -> "OrderDir":
         if value == 1:
             return cls.BUY
         elif value == -1:
@@ -57,22 +76,10 @@ class OrderDir(Enum):
             raise ValueError(f"Unknown Dir: {value}")
 
     @classmethod
-    def from_sign(cls, value):
+    def from_sign(cls, value: int) -> "OrderDir":
         if value > 0:
             return cls.BUY
         elif value < 0:
             return cls.SELL
         else:
             raise ValueError(f"Unknown Dir: {value}")
-
-    @classmethod
-    def deserialize(cls, value):
-        if value == "buy":
-            return cls.BUY
-        elif value == "sell":
-            return cls.SELL
-        else:
-            raise ValueError(f"Unknown Dir: {value}")
-
-    def serialize(self):
-        return self.value
