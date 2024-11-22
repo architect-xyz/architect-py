@@ -191,7 +191,7 @@ class Client(GraphQLClient):
         self,
         base: str,
         venue: str,
-        route: str = "odirECT",
+        route: str = "DIRECT",
     ) -> list:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
@@ -216,7 +216,7 @@ class Client(GraphQLClient):
     ):
         """
         Get open orders known to the OMS.  Optionally filter by specific venue (e.g. "COINBASE")
-        or counterparty (e.g. "COINBASE/odirECT").
+        or counterparty (e.g. "COINBASE/DIRECT").
         """
         cpty_venue = None
         cpty_route = None
@@ -393,7 +393,7 @@ class Client(GraphQLClient):
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                odir=odir,
+                dir=odir,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
@@ -422,7 +422,7 @@ class Client(GraphQLClient):
             CreatePovAlgo(
                 name=name,
                 market=market,
-                odir=odir,
+                dir=odir,
                 targetVolumeFrac=target_volume_frac,
                 minOrderQuantity=min_order_quantity,
                 maxQuantity=max_quantity,
@@ -449,7 +449,7 @@ class Client(GraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                odir=odir,
+                dir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -472,7 +472,7 @@ class Client(GraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                odir=odir,
+                dir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -661,7 +661,7 @@ class Client(GraphQLClient):
                         continue
 
                     quantity: Decimal = Decimal(getattr(position, "quantity", "NaN"))
-                    quantity = quantity if position.odir == "buy" else -quantity
+                    quantity = quantity if position.dir == OrderDir.BUY else -quantity
                     average_price = Decimal(getattr(position, "average_price", "NaN"))
 
                     if isinstance(
