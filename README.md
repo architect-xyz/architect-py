@@ -45,6 +45,9 @@ within the shell are not persisted.
 
 ## Maintainers
 
+On any update, please run `update.sh`
+
+
 How to generate the types:
 `poetry run ariadne-codegen --config ariadne-codegen.toml`
 `poetry run ariadne-codegen --config ariadne-codegen.async.toml`
