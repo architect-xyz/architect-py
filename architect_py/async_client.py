@@ -37,7 +37,7 @@ from architect_py.async_graphql_client.base_model import UNSET, UnsetType
 from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
-from architect_py.scalars import odir
+from architect_py.scalars import OrderDir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
@@ -240,7 +240,7 @@ class AsyncClient(AsyncGraphQLClient):
         self,
         base: str,
         venue: str,
-        route: str = "odirECT",
+        route: str = "DIRECT",
     ) -> list:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
@@ -306,7 +306,7 @@ class AsyncClient(AsyncGraphQLClient):
     ):
         """
         Get open orders known to the OMS.  Optionally filter by specific venue (e.g. "COINBASE")
-        or counterparty (e.g. "COINBASE/odirECT").
+        or counterparty (e.g. "COINBASE/DIRECT").
         """
         cpty_venue = None
         cpty_route = None
@@ -335,7 +335,7 @@ class AsyncClient(AsyncGraphQLClient):
         limit_price: Decimal,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
         post_only: bool = False,
-        trigger_price: Optional[DecimalLike] = None,
+        trigger_price: Optional[Decimal] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
         good_til_date: Optional[datetime] = None,
         price_round_method: Optional[TickRoundMethod] = None,
@@ -363,13 +363,13 @@ class AsyncClient(AsyncGraphQLClient):
         order: str = await self.send_order(
             CreateOrder(
                 market=market,
-                odir=odir,
+                dir=odir,
                 quantity=quantity,
                 account=account,
                 orderType=order_type,
                 limitPrice=limit_price,
                 postOnly=post_only,
-                triggerPrice=str(trigger_price) if trigger_price is not None else None,
+                triggerPrice=trigger_price,
                 timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
                     goodTilDate=good_til_date,
@@ -386,7 +386,7 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        order_odir: OrderDir,
+        odir: OrderDir,
         quantity: Decimal,
         interval_ms: int,
         reject_lockout_ms: int,
@@ -398,7 +398,7 @@ class AsyncClient(AsyncGraphQLClient):
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                odir=odir,
+                dir=odir,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
@@ -426,16 +426,14 @@ class AsyncClient(AsyncGraphQLClient):
             CreatePovAlgo(
                 name=name,
                 market=market,
-                odir=odir,
+                dir=odir,
                 targetVolumeFrac=target_volume_frac,
                 minOrderQuantity=min_order_quantity,
                 maxQuantity=max_quantity,
                 orderLockoutMs=order_lockout_ms,
                 endTime=end_time,
                 account=account,
-                takeThroughFrac=(
-                    str(take_through_frac) if take_through_frac is not None else None
-                ),
+                takeThroughFrac=take_through_frac,
             )
         )
 
@@ -455,7 +453,7 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                odir=odir,
+                dir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -478,7 +476,7 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                odir=odir,
+                dir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -503,8 +501,8 @@ class AsyncClient(AsyncGraphQLClient):
         max_improve_bbo: Decimal,
         position_tilt: Decimal,
         reference_price: ReferencePrice,
-        ref_dist_frac: DecimalLike,
-        tolerance_frac: DecimalLike,
+        ref_dist_frac: Decimal,
+        tolerance_frac: Decimal,
         fill_lockout_ms: int,
         order_lockout_ms: int,
         reject_lockout_ms: int,
@@ -534,15 +532,15 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        buy_quantity: DecimalLike,
-        sell_quantity: DecimalLike,
-        min_position: DecimalLike,
-        max_position: DecimalLike,
-        max_improve_bbo: DecimalLike,
-        position_tilt: DecimalLike,
+        buy_quantity: Decimal,
+        sell_quantity: Decimal,
+        min_position: Decimal,
+        max_position: Decimal,
+        max_improve_bbo: Decimal,
+        position_tilt: Decimal,
         reference_price: ReferencePrice,
-        ref_dist_frac: DecimalLike,
-        tolerance_frac: DecimalLike,
+        ref_dist_frac: Decimal,
+        tolerance_frac: Decimal,
         hedge_market: CreateSpreadAlgoHedgeMarket,
         fill_lockout_ms: int,
         order_lockout_ms: int,
@@ -668,7 +666,9 @@ class AsyncClient(AsyncGraphQLClient):
 
                     quantity = Decimal(position.quantity) if position.quantity else None
                     if quantity:
-                        quantity = quantity if position.odir == "buy" else -quantity
+                        quantity = (
+                            quantity if position.dir == OrderDir.SELL else -quantity
+                        )
                     average_price = (
                         position.average_price if position.average_price else None
                     )
