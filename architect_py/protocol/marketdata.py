@@ -94,6 +94,7 @@ class CandleV1:
 
 @dataclass(kw_only=True)
 class TradeV1(SubscribeTradesTrades):
+class TradeV1(SubscribeTradesTrades):
     def __init__(
         self,
         *,
