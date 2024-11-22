@@ -6,6 +6,7 @@ from .cancel_order import CancelOrder
 from .cancel_orders import CancelOrders
 from .client import GraphQLClient
 from .enums import (
+    AccountMode,
     AlgoControlCommand,
     AlgoKind,
     AlgoRunningStatus,
@@ -14,14 +15,17 @@ from .enums import (
     CreateOrderType,
     CreateTimeInForceInstruction,
     EnvironmentKind,
+    EventContractsType,
     FillKind,
     LicenseTier,
     MinOrderQuantityUnit,
     MMAlgoKind,
     OrderSource,
     OrderStateFlags,
+    ParentOrderKind,
     Reason,
     ReferencePrice,
+    UserTier,
 )
 from .fragments import (
     AccountSummariesFields,
@@ -175,6 +179,7 @@ from .send_spread_algo_request import SendSpreadAlgoRequest
 from .send_twap_algo_request import SendTwapAlgoRequest
 
 __all__ = [
+    "AccountMode",
     "AccountSummariesFields",
     "AccountSummariesFieldsByAccount",
     "AccountSummariesFieldsByAccountAccount",
@@ -207,6 +212,7 @@ __all__ = [
     "CreateTimeInForceInstruction",
     "CreateTwapAlgo",
     "EnvironmentKind",
+    "EventContractsType",
     "FillKind",
     "GetAccountSummaries",
     "GetAccountSummariesAccountSummaries",
@@ -313,6 +319,7 @@ __all__ = [
     "OrderLogFieldsOrderTimeInForce",
     "OrderSource",
     "OrderStateFlags",
+    "ParentOrderKind",
     "PreviewSmartOrderRouterAlgoRequest",
     "PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo",
     "PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgoOrders",
@@ -331,4 +338,5 @@ __all__ = [
     "SendTwapAlgoRequest",
     "UpdateMarket",
     "Upload",
+    "UserTier",
 ]
