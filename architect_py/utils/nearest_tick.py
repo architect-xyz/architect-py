@@ -20,21 +20,12 @@ from enum import Enum
 from functools import partial
 from typing import Union
 
-import architect_py.async_graphql_client.fragments as sync_fragments
-import architect_py.graphql_client.fragments as async_fragments
+import architect_py.graphql_client.fragments as fragments
 
 
-def get_tick_size(
-    market: Union[async_fragments.MarketFields, sync_fragments.MarketFields]
-) -> Decimal:
+def get_tick_size(market: fragments.MarketFields) -> Decimal:
     """
-    SYNC CLIENT EXAMPLE:
-        market = client.get_market(market_id)
-        if market is None:
-            raise ValueError(f"Market {market_id} not found")
-        get_tick_size(market)
-
-    ASYNC CLIENT EXAMPLE:
+    CLIENT EXAMPLE:
         market = await client.get_market(market_id)
         if market is None:
             raise ValueError(f"Market {market_id} not found")
