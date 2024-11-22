@@ -82,11 +82,7 @@ class Client(GraphQLClient):
             raise ValueError(
                 "API key must be alphanumeric, please double check your credentials."
             )
-        elif "," in kwargs["api_key"] or "," in kwargs["api_secret"]:
-            raise ValueError(
-                "API key and secret cannot contain commas, please double check your credentials."
-            )
-        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+        elif " " in kwargs["api_secret"]:
             raise ValueError(
                 "API key and secret cannot contain spaces, please double check your credentials."
             )
