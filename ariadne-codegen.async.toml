@@ -23,7 +23,7 @@ UserId.type = "str"
 VenueId.type = "str"
 Str.type = "str"
 
-Dir.type = "architect_py.scalars.Dir"
+Dir.type = "architect_py.scalars.OrderDir"
 Dir.serialize = "architect_py.scalars.serialize"
 Dir.deserialize = "architect_py.scalars.deserialize"
 

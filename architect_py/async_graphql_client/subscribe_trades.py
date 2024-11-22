@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from architect_py.scalars import Dir
+from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 
@@ -18,7 +18,7 @@ class SubscribeTradesTrades(BaseModel):
     time: Optional[datetime]
     price: Decimal
     size: Decimal
-    direction: Optional[Dir]
+    direction: Optional[OrderDir]
 
 
 SubscribeTrades.model_rebuild()

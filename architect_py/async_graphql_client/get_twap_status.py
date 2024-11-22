@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from architect_py.scalars import Dir
+from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 from .enums import AlgoRunningStatus
@@ -31,7 +31,7 @@ class GetTwapStatusTwapStatusOrder(BaseModel):
     name: str
     order_id: str = Field(alias="orderId")
     market_id: str = Field(alias="marketId")
-    dir: Dir
+    dir: OrderDir
     quantity: Decimal
     end_time: datetime = Field(alias="endTime")
     account_id: Optional[str] = Field(alias="accountId")
