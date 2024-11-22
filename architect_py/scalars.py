@@ -63,6 +63,10 @@ class OrderDir(Enum):
             return cls.BUY
         elif lower == "a" or lower == "s":
             return cls.SELL
+        elif value[0].lower() == "b":
+            return cls.BUY
+        elif value[0].lower() == "s":
+            return cls.SELL
         else:
             raise ValueError(f"Unknown Dir: {value}")
 
