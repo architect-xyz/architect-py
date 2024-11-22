@@ -1,7 +1,7 @@
 import uuid
 import grpc
 import msgspec
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
@@ -78,6 +78,16 @@ class L3BookSnapshot:
     seqno: int
     bids: list[L3Order]
     asks: list[L3Order]
+
+    @staticmethod
+    def from_dict(d) -> "L3BookSnapshot":
+        return L3BookSnapshot(
+            timestamp=d["timestamp"],
+            epoch=d["epoch"],
+            seqno=d["seqno"],
+            bids=[L3Order(**b) for b in d["bids"]],
+            asks=[L3Order(**a) for a in d["asks"]],
+        )
 
 
 @dataclass(kw_only=True)
