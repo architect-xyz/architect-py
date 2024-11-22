@@ -7,7 +7,7 @@ from decimal import Decimal
 from uuid import UUID
 from typing import Any, Literal, Optional, Union
 
-from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
+from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
 
 
