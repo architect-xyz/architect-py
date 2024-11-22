@@ -77,7 +77,7 @@ class Product:
 @dataclass(kw_only=True)
 class MarketInfo:
     type: str
-    value: Optional[dict] = None
+    value: Optional[dict[str, Any]] = None
 
     def __init__(
         self,
@@ -152,11 +152,11 @@ class Market:
         exchange_symbol: str,
         # if extra_info is None, the following fields must be provided
         extra_info: Optional[MarketInfo] = None,
-        tick_size: Decimal | str = None,
-        step_size: Decimal | str = None,
+        tick_size: Decimal | str | None = None,
+        step_size: Decimal | str | None = None,
         min_order_quantity: Optional[Decimal | str] = None,
         min_order_quantity_unit: Literal["Base", "Quote"] = "Base",
-        is_delisted: bool = None,
+        is_delisted: bool | None = None,
     ):
         self.id = valid_uuid(id) if id else uuid.uuid5(Market.NS, name)
         self.name = name
@@ -176,7 +176,9 @@ class Market:
         self.exchange_symbol = exchange_symbol
         if extra_info is not None:
             self.extra_info = extra_info
-        else:
+        elif (
+            tick_size is not None and step_size is not None and is_delisted is not None
+        ):
             self.extra_info = MarketInfo(
                 tick_size=valid_decimal(tick_size),
                 step_size=valid_decimal(step_size),
@@ -188,28 +190,46 @@ class Market:
                 min_order_quantity_unit=min_order_quantity_unit,
                 is_delisted=is_delisted,
             )
+        else:
+            raise ValueError(
+                "either extra_info or (tick_size, step_size, is_delisted) must be provided."
+            )
         # TODO: check name matches kind
         # TODO: construct name automatically if ExchangeMarketKind
 
     def base(self) -> uuid.UUID:
+        if self.kind.value is None:
+            raise ValueError("kind is not set")
         return self.kind.value["base"]
 
     def quote(self) -> uuid.UUID:
+        if self.kind.value is None:
+            raise ValueError("kind is not set")
         return self.kind.value["quote"]
 
     def tick_size(self) -> Decimal:
+        if self.extra_info.value is None:
+            raise ValueError("extra_info is not set")
         return self.extra_info.value["tick_size"]
 
     def step_size(self) -> Decimal:
+        if self.extra_info.value is None:
+            raise ValueError("extra_info is not set")
         return self.extra_info.value["step_size"]
 
     def min_order_quantity(self) -> Decimal:
+        if self.extra_info.value is None:
+            raise ValueError("extra_info is not set")
         return self.extra_info.value["min_order_quantity"]
 
     def min_order_quantity_unit(self) -> Literal["Base", "Quote"]:
+        if self.extra_info.value is None:
+            raise ValueError("extra_info is not set")
         return self.extra_info.value["min_order_quantity_unit"]
 
     def is_delisted(self) -> bool:
+        if self.extra_info.value is None:
+            raise ValueError("extra_info is not set")
         return self.extra_info.value["is_delisted"]
 
 
