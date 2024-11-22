@@ -95,22 +95,22 @@ class Client(GraphQLClient):
         Please see the GraphQLClient class for the full list of arguments.
         """
         if kwargs["api_key"] is None:
-            raise ValueError("API key is required")
+            raise ValueError("API key is required.")
         elif kwargs["api_secret"] is None:
-            raise ValueError("API secret is required")
-        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+            raise ValueError("API secret is required.")
+        elif not kwargs["api_key"].isalnum():
             raise ValueError(
-                "API key and secret cannot contain spaces, please double check your credentials"
+                "API key must be alphanumeric, please double check your credentials."
             )
-        elif kwargs["api_secret"][-1] != "=":
+        elif " " in kwargs["api_secret"]:
             raise ValueError(
-                "API secret must end with an equals sign, please double check your credentials"
+                "API key and secret cannot contain spaces, please double check your credentials."
             )
-        elif len(kwargs["api_key"]) < 24 or len(kwargs["api_secret"]) < 44:
+        elif len(kwargs["api_key"]) != 24 or len(kwargs["api_secret"]) != 44:
             raise ValueError(
-                "API key and secret are too short, please double check your credentials"
+                "API key and secret are not the correct length, please double check your credentials."
             )
-
+            
         super().__init__(**kwargs)
         self.no_gql = no_gql
         self.route_by_id = {}
