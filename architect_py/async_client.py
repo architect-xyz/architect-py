@@ -37,7 +37,7 @@ from architect_py.async_graphql_client.base_model import UNSET, UnsetType
 from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
-from architect_py.scalars import Dir
+from architect_py.scalars import odir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
@@ -240,7 +240,7 @@ class AsyncClient(AsyncGraphQLClient):
         self,
         base: str,
         venue: str,
-        route: str = "DIRECT",
+        route: str = "odirECT",
     ) -> list:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
@@ -306,7 +306,7 @@ class AsyncClient(AsyncGraphQLClient):
     ):
         """
         Get open orders known to the OMS.  Optionally filter by specific venue (e.g. "COINBASE")
-        or counterparty (e.g. "COINBASE/DIRECT").
+        or counterparty (e.g. "COINBASE/odirECT").
         """
         cpty_venue = None
         cpty_route = None
@@ -330,7 +330,7 @@ class AsyncClient(AsyncGraphQLClient):
         self,
         *,
         market: str,
-        dir: Dir,
+        odir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
@@ -363,7 +363,7 @@ class AsyncClient(AsyncGraphQLClient):
         order: str = await self.send_order(
             CreateOrder(
                 market=market,
-                dir=dir,
+                odir=odir,
                 quantity=quantity,
                 account=account,
                 orderType=order_type,
@@ -386,7 +386,7 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        dir: Dir,
+        order_odir: OrderDir,
         quantity: Decimal,
         interval_ms: int,
         reject_lockout_ms: int,
@@ -394,12 +394,11 @@ class AsyncClient(AsyncGraphQLClient):
         account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
-
         return await self.send_twap_algo_request(
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                dir=dir,
+                odir=odir,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
@@ -414,7 +413,7 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        dir: Dir,
+        odir: OrderDir,
         target_volume_frac: Decimal,
         min_order_quantity: Decimal,
         max_quantity: Decimal,
@@ -427,7 +426,7 @@ class AsyncClient(AsyncGraphQLClient):
             CreatePovAlgo(
                 name=name,
                 market=market,
-                dir=dir,
+                odir=odir,
                 targetVolumeFrac=target_volume_frac,
                 minOrderQuantity=min_order_quantity,
                 maxQuantity=max_quantity,
@@ -446,7 +445,7 @@ class AsyncClient(AsyncGraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: Dir,
+        odir: OrderDir,
         limit_price: Decimal,
         target_size: Decimal,
         execution_time_limit_ms: int,
@@ -456,7 +455,7 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir,
+                odir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -469,7 +468,7 @@ class AsyncClient(AsyncGraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: Dir,
+        odir: OrderDir,
         limit_price: Decimal,
         target_size: Decimal,
         execution_time_limit_ms: int,
@@ -479,7 +478,7 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir,
+                odir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -669,7 +668,7 @@ class AsyncClient(AsyncGraphQLClient):
 
                     quantity = Decimal(position.quantity) if position.quantity else None
                     if quantity:
-                        quantity = quantity if position.dir == "buy" else -quantity
+                        quantity = quantity if position.odir == "buy" else -quantity
                     average_price = (
                         position.average_price if position.average_price else None
                     )
