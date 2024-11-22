@@ -33,7 +33,7 @@ from typing import Any, List, Optional, Sequence, TypeAlias, Union
 from architect_py.graphql_client.base_model import UNSET, UnsetType
 from architect_py.graphql_client.get_market import GetMarketMarket
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
-from architect_py.scalars import odir
+from architect_py.scalars import OrderDir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
@@ -273,7 +273,7 @@ class Client(GraphQLClient):
         order: str = self.send_order(
             CreateOrder(
                 market=market,
-                odir=odir,
+                dir=odir,
                 quantity=quantity,
                 account=account,
                 orderType=order_type,
@@ -310,11 +310,11 @@ class Client(GraphQLClient):
         *,
         market: str,
         odir: OrderDir,
-        quantity: DecimalLike,
+        quantity: Decimal,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        percent_through_market: Decimal = 0.02,
+        percent_through_market: Decimal = Decimal(0.02),
     ) -> Optional[GetOrderOrder]:
 
         # Check for GQL failures
