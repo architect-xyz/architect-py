@@ -87,7 +87,7 @@ class Client(GraphQLClient):
             )
         elif "," in kwargs["api_key"] or "," in kwargs["api_secret"]:
             raise ValueError(
-                "API key and secret cannot contain commas, please double check your credentials"
+                "API key and secret cannot contain commas, please double check your credentials."
             )
         elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
             raise ValueError(
