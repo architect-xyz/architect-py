@@ -7,7 +7,7 @@ from typing import Any, List, Literal, Optional, Union
 
 from pydantic import Field
 
-from architect_py.scalars import Dir
+from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 from .enums import CmeSecurityType, MinOrderQuantityUnit, OrderSource, OrderStateFlags
@@ -135,7 +135,7 @@ class AccountSummariesFieldsByAccountPositions(BaseModel):
     account: Optional["AccountSummariesFieldsByAccountPositionsAccount"]
     venue: Optional["AccountSummariesFieldsByAccountPositionsVenue"]
     market: Optional["AccountSummariesFieldsByAccountPositionsMarket"]
-    dir: Dir
+    dir: OrderDir
     quantity: Optional[Decimal]
     average_price: Optional[Decimal] = Field(alias="averagePrice")
     trade_date: Optional[Any] = Field(alias="tradeDate")
@@ -186,7 +186,7 @@ class OrderFields(BaseModel):
     id: str
     market_id: str = Field(alias="marketId")
     market: "OrderFieldsMarket"
-    dir: Dir
+    dir: OrderDir
     quantity: Decimal
     account_id: Optional[str] = Field(alias="accountId")
     order_type: Union[
@@ -239,7 +239,7 @@ class OrderLogFields(BaseModel):
 class OrderLogFieldsOrder(BaseModel):
     id: str
     market: "OrderLogFieldsOrderMarket"
-    dir: Dir
+    dir: OrderDir
     quantity: Decimal
     order_type: Union[
         "OrderLogFieldsOrderOrderTypeLimitOrderType",

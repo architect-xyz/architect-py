@@ -7,7 +7,7 @@ from typing import Annotated, List, Optional
 
 from pydantic import Field, PlainSerializer
 
-from architect_py.scalars import Dir, serialize
+from architect_py.scalars import OrderDir, serialize
 from architect_py.utils.dt import convert_datetime_to_utc_str
 
 from .base_model import BaseModel
@@ -39,7 +39,7 @@ class CreateMMAlgo(BaseModel):
 
 class CreateOrder(BaseModel):
     market: str
-    dir: Annotated[Dir, PlainSerializer(serialize)]
+    dir: Annotated[OrderDir, PlainSerializer(serialize)]
     quantity: Decimal
     account: Optional[str] = None
     order_type: CreateOrderType = Field(alias="orderType")
@@ -54,7 +54,7 @@ class CreateOrder(BaseModel):
 class CreatePovAlgo(BaseModel):
     name: str
     market: str
-    dir: Annotated[Dir, PlainSerializer(serialize)]
+    dir: Annotated[OrderDir, PlainSerializer(serialize)]
     target_volume_frac: Decimal = Field(alias="targetVolumeFrac")
     min_order_quantity: Decimal = Field(alias="minOrderQuantity")
     max_quantity: Decimal = Field(alias="maxQuantity")
@@ -70,7 +70,7 @@ class CreateSmartOrderRouterAlgo(BaseModel):
     markets: List[str]
     base: str
     quote: str
-    dir: Annotated[Dir, PlainSerializer(serialize)]
+    dir: Annotated[OrderDir, PlainSerializer(serialize)]
     limit_price: Decimal = Field(alias="limitPrice")
     target_size: Decimal = Field(alias="targetSize")
     execution_time_limit_ms: int = Field(alias="executionTimeLimitMs")
@@ -112,7 +112,7 @@ class CreateTimeInForce(BaseModel):
 class CreateTwapAlgo(BaseModel):
     name: str
     market: str
-    dir: Annotated[Dir, PlainSerializer(serialize)]
+    dir: Annotated[OrderDir, PlainSerializer(serialize)]
     quantity: Decimal
     interval_ms: int = Field(alias="intervalMs")
     reject_lockout_ms: int = Field(alias="rejectLockoutMs")

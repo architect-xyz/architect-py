@@ -17,14 +17,14 @@ def deserialize(value):
     return value.deserialize(value)
 
 
-class Dir(Enum):
+class OrderDir(Enum):
     BUY = "buy"
     SELL = "sell"
 
     def __int__(self):
-        if self == Dir.BUY:
+        if self == OrderDir.BUY:
             return 1
-        elif self == Dir.SELL:
+        elif self == OrderDir.SELL:
             return -1
         else:
             raise ValueError(f"Unknown Dir: {self}")

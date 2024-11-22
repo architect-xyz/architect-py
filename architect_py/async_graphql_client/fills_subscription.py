@@ -7,7 +7,7 @@ from typing import Optional
 
 from pydantic import Field
 
-from architect_py.scalars import Dir
+from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 from .enums import FillKind
@@ -19,7 +19,7 @@ class FillsSubscription(BaseModel):
 
 
 class FillsSubscriptionFills(BaseModel):
-    dir: Dir
+    dir: OrderDir
     fill_id: str = Field(alias="fillId")
     kind: FillKind
     market_id: str = Field(alias="marketId")

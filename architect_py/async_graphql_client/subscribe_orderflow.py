@@ -7,7 +7,7 @@ from typing import List, Literal, Optional, Union
 
 from pydantic import Field
 
-from architect_py.scalars import Dir
+from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 from .enums import FillKind, OrderSource, OrderStateFlags
@@ -31,7 +31,7 @@ class SubscribeOrderflowOrderflowOrder(BaseModel):
     typename__: Literal["Order"] = Field(alias="__typename")
     id: str
     market_id: str = Field(alias="marketId")
-    dir: Dir
+    dir: OrderDir
     quantity: Decimal
     account_id: Optional[str] = Field(alias="accountId")
     order_type: Union[
@@ -101,7 +101,7 @@ class SubscribeOrderflowOrderflowFill(BaseModel):
     fill_order_id: Optional[str] = Field(alias="fillOrderId")
     fill_kind: FillKind = Field(alias="fillKind")
     market_id: str = Field(alias="marketId")
-    dir: Dir
+    dir: OrderDir
     price: Decimal
     quantity: Decimal
     trade_time: datetime = Field(alias="tradeTime")
