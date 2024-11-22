@@ -23,12 +23,12 @@ import fnmatch
 from functools import lru_cache
 import logging
 import re
+from uuid import UUID
 import dns.asyncresolver
 import dns.name
 import grpc.aio
 from datetime import date, datetime
 from decimal import Decimal
-from enum import Enum
 from typing import Any, AsyncIterator, List, Optional, Sequence, TypeAlias, Union
 
 import grpc.aio
@@ -78,7 +78,7 @@ from .protocol.marketdata import (
     L3BookSnapshot,
     SubscribeL1BookSnapshotsRequest,
 )
-from .protocol.symbology import Market
+from .protocol.symbology import Market, Product, Route, Venue
 
 logger = logging.getLogger(__name__)
 
@@ -111,12 +111,14 @@ class AsyncClient(AsyncGraphQLClient):
 
         super().__init__(**kwargs)
         self.no_gql = no_gql
-        self.marketdata = {}  # cpty => JsonWsClient
-        self.route_by_id = {}
-        self.venue_by_id = {}
-        self.product_by_id = {}
-        self.market_by_id = {}
-        self.market_names_by_route = {}  # route => venue => base => quote => market
+        self.marketdata: dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
+        self.route_by_id: dict[UUID, Route] = {}
+        self.venue_by_id: dict[UUID, Venue] = {}
+        self.product_by_id: dict[UUID, Product] = {}
+        self.market_by_id: dict[UUID, Market] = {}
+        self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = (
+            {}
+        )  # route => venue => base => quote => market
 
     async def grpc_channel(self, endpoint: Union[dns.name.Name, str]):
         srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
@@ -125,7 +127,7 @@ class AsyncClient(AsyncGraphQLClient):
         connect_str = f"{srv_records[0].target}:{srv_records[0].port}"  # type: ignore
         return grpc.aio.insecure_channel(connect_str)
 
-    def configure_marketdata(self, *, cpty, url):
+    def configure_marketdata(self, *, cpty: str, url: str):
         self.marketdata[cpty] = JsonWsClient(url=url)
 
     async def start_session(self):

@@ -28,7 +28,7 @@ import grpc
 from datetime import date, datetime
 from decimal import Decimal
 import time
-from typing import Any, List, Optional, Sequence, TypeAlias, Union
+from typing import Any, List, Optional, Sequence
 
 from architect_py.graphql_client.base_model import UNSET, UnsetType
 from architect_py.graphql_client.get_market import GetMarketMarket
@@ -40,7 +40,6 @@ from architect_py.utils.balance_and_positions import (
     SimplePosition,
 )
 from architect_py.utils.dt import (
-    convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
 from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
@@ -51,9 +50,7 @@ from .graphql_client.enums import (
     ReferencePrice,
 )
 from .graphql_client.fragments import (
-    MarketFields,
     MarketFieldsKindExchangeMarketKind,
-    MarketFieldsKindExchangeMarketKindBase,
     OrderFields,
 )
 from .graphql_client.get_order import GetOrderOrder
@@ -383,8 +380,6 @@ class Client(GraphQLClient):
         account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
-
-        end_time_str = convert_datetime_to_utc_str(end_time)
         return self.send_twap_algo_request(
             CreateTwapAlgo(
                 name=name,
@@ -413,7 +408,6 @@ class Client(GraphQLClient):
         account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
-        end_time_str = convert_datetime_to_utc_str(end_time)
         return self.send_pov_algo_request(
             CreatePovAlgo(
                 name=name,

@@ -4,6 +4,11 @@ schema {
   subscription: SubscriptionRoot
 }
 
+enum AccountMode {
+  LIVE
+  PAPER
+}
+
 enum AlgoControlCommand {
   START
   PAUSE
@@ -15,8 +20,9 @@ enum AlgoKind {
   POV
   SMART_ORDER_ROUTER
   TWAP
-  SPREAD
+  SPREADER
   CHASER
+  SPREAD
 }
 
 enum AlgoRunningStatus {
@@ -66,6 +72,11 @@ enum EnvironmentKind {
   BROKERAGE
 }
 
+enum EventContractsType {
+  SINGLE
+  DUAL
+}
+
 enum FillKind {
   NORMAL
   REVERSAL
@@ -97,7 +108,7 @@ enum OrderSource {
   OTHER
 }
 
-"""The state of an order"""
+"The state of an order"
 enum OrderStateFlags {
   OPEN
   REJECTED
@@ -107,6 +118,11 @@ enum OrderStateFlags {
   CANCELED
   OUT
   STALE
+}
+
+enum ParentOrderKind {
+  ALGO
+  ORDER
 }
 
 enum Reason {
@@ -130,6 +146,14 @@ enum ReferencePrice {
   MID
   BID_ASK
   HEDGE_MARKET_BID_ASK
+}
+
+enum UserTier {
+  PLATFORM
+  BROKERAGE_UNSUBSCRIBED
+  BROKERAGE_BASIC
+  BROKERAGE_PROFESSIONAL
+  STAFF
 }
 
 input CreateMMAlgo {
@@ -250,127 +274,127 @@ input UpdateMarket {
 }
 
 """
-Wrapper type around a UUIDv5 for a given namespace.  These types are
-parseable from either the UUIDv5 string representation, or from the
-name itself, as they are 1-1.
+  Wrapper type around a UUIDv5 for a given namespace.  These types are
+  parseable from either the UUIDv5 string representation, or from the
+  name itself, as they are 1-1.
 """
 scalar AccountId
 
 """
-Components within an Architect installation are uniquely identified by a 16-bit integer
-in the range `1..<0xFFFF`.
+  Components within an Architect installation are uniquely identified by a 16-bit integer
+  in the range `1..<0xFFFF`.
 
-The integers 0 and 0xFFFF are reserved as special values and MUST NOT be used as component IDs.
+  The integers 0 and 0xFFFF are reserved as special values and MUST NOT be used as component IDs.
 
-Canonical meanings of special values:
+  Canonical meanings of special values:
 
-* `0x0` -- None/executor/broadcast
-* `0xFFFF` -- Self/loopback
+  * `0x0` -- None/executor/broadcast
+  * `0xFFFF` -- Self/loopback
 """
 scalar ComponentId
 
 """
-Date in the proleptic Gregorian calendar (without time zone).
+  Date in the proleptic Gregorian calendar (without time zone).
 
-Represents a description of the date (as used for birthdays, for example).
-It cannot represent an instant on the time-line.
+  Represents a description of the date (as used for birthdays, for example).
+  It cannot represent an instant on the time-line.
 
-[`Date` scalar][1] compliant.
+  [`Date` scalar][1] compliant.
 
-See also [`chrono::NaiveDate`][2] for details.
+  See also [`chrono::NaiveDate`][2] for details.
 
-[1]: https://graphql-scalars.dev/docs/scalars/date
-[2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
+  [1]: https://graphql-scalars.dev/docs/scalars/date
+  [2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
 """
 scalar Date
 
 """
-Combined date and time (with time zone) in [RFC 3339][0] format.
+  Combined date and time (with time zone) in [RFC 3339][0] format.
 
-Represents a description of an exact instant on the time-line (such as the
-instant that a user account was created).
+  Represents a description of an exact instant on the time-line (such as the
+  instant that a user account was created).
 
-[`DateTime` scalar][1] compliant.
+  [`DateTime` scalar][1] compliant.
 
-See also [`chrono::DateTime`][2] for details.
+  See also [`chrono::DateTime`][2] for details.
 
-[0]: https://datatracker.ietf.org/doc/html/rfc3339#section-5
-[1]: https://graphql-scalars.dev/docs/scalars/date-time
-[2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
+  [0]: https://datatracker.ietf.org/doc/html/rfc3339#section-5
+  [1]: https://graphql-scalars.dev/docs/scalars/date-time
+  [2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
 """
 scalar DateTime
 
 """
-128 bit representation of a fixed-precision decimal number.
+  128 bit representation of a fixed-precision decimal number.
 
-The finite set of values of `Decimal` scalar are of the form
-m / 10<sup>e</sup>, where m is an integer such that
--2<sup>96</sup> < m < 2<sup>96</sup>, and e is an integer between 0 and 28
-inclusive.
+  The finite set of values of `Decimal` scalar are of the form
+  m / 10<sup>e</sup>, where m is an integer such that
+  -2<sup>96</sup> < m < 2<sup>96</sup>, and e is an integer between 0 and 28
+  inclusive.
 
-Always serializes as `String`. But may be deserialized from `Int` and
-`Float` values too. It's not recommended to deserialize from a `Float`
-directly, as the floating point representation may be unexpected.
+  Always serializes as `String`. But may be deserialized from `Int` and
+  `Float` values too. It's not recommended to deserialize from a `Float`
+  directly, as the floating point representation may be unexpected.
 
-See also [`rust_decimal`] crate for details.
+  See also [`rust_decimal`] crate for details.
 
-[`rust_decimal`]: https://docs.rs/rust_decimal
+  [`rust_decimal`]: https://docs.rs/rust_decimal
 """
 scalar Decimal
 
 """
-An order side/direction or a trade execution side/direction.
-In GraphQL these are serialized as "buy" or "sell".
+  An order side/direction or a trade execution side/direction.
+  In GraphQL these are serialized as "buy" or "sell".
 """
 scalar Dir
 
-"""The ID of a fill"""
+"The ID of a fill"
 scalar FillId
 
 """
-Wrapper type around a UUIDv5 for a given namespace.  These types are
-parseable from either the UUIDv5 string representation, or from the
-name itself, as they are 1-1.
+  Wrapper type around a UUIDv5 for a given namespace.  These types are
+  parseable from either the UUIDv5 string representation, or from the
+  name itself, as they are 1-1.
 """
 scalar MarketId
 
-"""System-unique, persistent order identifiers"""
+"System-unique, persistent order identifiers"
 scalar OrderId
 
 """
-Wrapper type around a UUIDv5 for a given namespace.  These types are
-parseable from either the UUIDv5 string representation, or from the
-name itself, as they are 1-1.
+  Wrapper type around a UUIDv5 for a given namespace.  These types are
+  parseable from either the UUIDv5 string representation, or from the
+  name itself, as they are 1-1.
 """
 scalar ProductId
 
 """
-Wrapper type around a UUIDv5 for a given namespace.  These types are
-parseable from either the UUIDv5 string representation, or from the
-name itself, as they are 1-1.
+  Wrapper type around a UUIDv5 for a given namespace.  These types are
+  parseable from either the UUIDv5 string representation, or from the
+  name itself, as they are 1-1.
 """
 scalar RouteId
 
-"""A String type"""
+"A String type"
 scalar Str
 
 """
-Wrapper type around a UUIDv5 for a given namespace.  These types are
-parseable from either the UUIDv5 string representation, or from the
-name itself, as they are 1-1.
+  Wrapper type around a UUIDv5 for a given namespace.  These types are
+  parseable from either the UUIDv5 string representation, or from the
+  name itself, as they are 1-1.
 """
 scalar UserId
 
 """
-Wrapper type around a UUIDv5 for a given namespace.  These types are
-parseable from either the UUIDv5 string representation, or from the
-name itself, as they are 1-1.
+  Wrapper type around a UUIDv5 for a given namespace.  These types are
+  parseable from either the UUIDv5 string representation, or from the
+  name itself, as they are 1-1.
 """
 scalar VenueId
 
 """
-Fills which we received but couldn't parse fully, return details
-best effort
+  Fills which we received but couldn't parse fully, return details
+  best effort
 """
 type AberrantFill {
   kind: FillKind
@@ -393,6 +417,22 @@ type Account {
   name: String!
   venueId: VenueId!
   venue: Venue
+}
+
+type AccountSnapshot {
+  tsNow: DateTime!
+  tsPast: DateTime!
+  pnl: Decimal!
+  balanceNow: Decimal!
+  balancePast: Decimal!
+  venueId: VenueId!
+  venue: String!
+}
+
+type AccountSnapshotHistory {
+  account: AccountId!
+  venue: VenueId!
+  snapshots: [AccountSnapshot!]!
 }
 
 type AccountSummaries {
@@ -490,8 +530,8 @@ type CancelAll {
 }
 
 """
-NB: buy_volume + sell_volume <> volume; volume may count trades
-that don't have a discernible direction.
+  NB: buy_volume + sell_volume <> volume; volume may count trades
+  that don't have a discernible direction.
 """
 type CandleV1 {
   time: DateTime!
@@ -502,6 +542,18 @@ type CandleV1 {
   volume: Decimal!
   buyVolume: Decimal!
   sellVolume: Decimal!
+  midOpen: Decimal
+  midClose: Decimal
+  midHigh: Decimal
+  midLow: Decimal
+  bidOpen: Decimal
+  bidClose: Decimal
+  bidHigh: Decimal
+  bidLow: Decimal
+  askOpen: Decimal
+  askClose: Decimal
+  askHigh: Decimal
+  askLow: Decimal
 }
 
 type CmeProductGroupInfo {
@@ -689,6 +741,53 @@ type CptyInfo {
 type Environment {
   kind: EnvironmentKind!
   id: String!
+  domain: String!
+  accountMode: AccountMode
+}
+
+type Event {
+  series: Product
+  outcomes: [Product!]!
+  mutuallyExclusive: Boolean
+  expiration: DateTime
+  displayCategory: String
+  displayName: String
+}
+
+type EventContractGreeks {
+  eventContractId: ProductId!
+  spot: Float!
+  forward: Float!
+  impliedVolatility: Float!
+  delta: Float!
+  gamma: Float!
+  vega: Float!
+  theta: Float!
+  rho: Float!
+}
+
+type EventContracts {
+  kind: EventContractsType!
+  yes: Product
+  yesAlias: Str
+  no: Product
+  noAlias: Str
+}
+
+type EventGreeks {
+  "Time at which the greeks were calculated"
+  timestamp: DateTime!
+  eventContractsGreeks: [EventContractGreeks!]!
+}
+
+type EventOutcome {
+  contracts: EventContracts!
+  displayOrder: Decimal
+  displayName: String
+}
+
+type EventSeries {
+  displayName: String
 }
 
 type ExchangeMarketKind {
@@ -835,6 +934,7 @@ type MarketSnapshot {
   high24h: Decimal
   low24h: Decimal
   volume24h: Decimal
+  openInterest: Decimal
 }
 
 type Me {
@@ -843,59 +943,51 @@ type Me {
   environment: Environment!
   license: License
   isStaff: Boolean!
+  userTier: UserTier!
 }
 
 type MutationRoot {
-  """Create a new API key"""
-  createApiKey: ApiKey!
-
-  """Create a new API key for Telegram"""
-  createTelegramApiKey(telegramId: String!): ApiKey!
-
-  """Remove all Telegram API keys"""
-  removeTelegramApiKeys: Boolean!
-
-  """Remove an API key"""
-  removeApiKey(apiKey: String!): Boolean!
-
-  """Set credentials for a given component id."""
-  setCredentials(componentId: ComponentId!, credentials: String!): Boolean!
-
-  """Set/unset market favorited by current user."""
-  updateMarket(payload: UpdateMarket!): Market
-
-  """Send an order to Architect."""
-  createOrder(order: CreateOrder!): OrderId!
-
-  """Send multiple orders to Architect."""
-  createOrders(orders: [CreateOrder!]!): [OrderId!]!
-
-  """Cancel an Architect order."""
-  cancelOrder(orderId: OrderId!): OrderId!
-
-  """Cancel multiple Architect orders."""
-  cancelOrders(orderIds: [OrderId!]!): [OrderId!]!
-
   """
-  Cancel all orders on component, regardless of architect order state
-  If venue is specified it will act as filter if the component manages multiple counterparties (oms for example)
+    Create a session JWT to use for authentication with upstream gRPC services.
+
+    Requires `config.tls` to be configured with a certificate and RSA keypair.
+  """
+  createJwt: String!
+  "Create a new API key"
+  createApiKey: ApiKey!
+  "Create a new API key for Telegram"
+  createTelegramApiKey(telegramId: String!): ApiKey!
+  "Remove all Telegram API keys for the current User"
+  removeTelegramApiKeys: Boolean!
+  "Remove an API key"
+  removeApiKey(apiKey: String!): Boolean!
+  "Set credentials for a given component id."
+  setCredentials(componentId: ComponentId!, credentials: String!): Boolean!
+  "Set/unset market favorited by current user."
+  updateMarket(payload: UpdateMarket!): Market
+  "Send an order to Architect."
+  createOrder(order: CreateOrder!): OrderId!
+  "Send multiple orders to Architect."
+  createOrders(orders: [CreateOrder!]!): [OrderId!]!
+  "Cancel an Architect order."
+  cancelOrder(orderId: OrderId!): OrderId!
+  "Cancel multiple Architect orders."
+  cancelOrders(orderIds: [OrderId!]!): [OrderId!]!
+  """
+    Cancel all orders on component, regardless of architect order state
+    If venue is specified it will act as filter if the component manages multiple counterparties (oms for example)
   """
   cancelAllOrders(venueId: VenueId): VenueId
   sendAlgoControlCommand(orderId: OrderId!, command: AlgoControlCommand!): OrderId!
-
-  """Create a new TWAP algo order."""
+  "Create a new TWAP algo order."
   createTwapAlgo(twapAlgo: CreateTwapAlgo!): OrderId!
-
-  """Create a new POV algo order."""
+  "Create a new POV algo order."
   createPovAlgo(povAlgo: CreatePovAlgo!): OrderId!
-
-  """Preview the execution of an SOR algo."""
+  "Preview the execution of an SOR algo."
   previewSmartOrderRouterAlgo(algo: CreateSmartOrderRouterAlgo!): AlgoPreview
-
-  """Create a new SOR algo order."""
+  "Create a new SOR algo order."
   createSmartOrderRouterAlgo(algo: CreateSmartOrderRouterAlgo!): OrderId!
-
-  """Create a new MM algo order."""
+  "Create a new MM algo order."
   createMmAlgo(mmAlgo: CreateMMAlgo!): OrderId!
 
   """Create a new Spread algo order."""
@@ -914,7 +1006,6 @@ type OptionsMarketSnapshot {
   market: Market
   underlyingId: ProductId!
   underlying: Product
-  openInterest: Decimal
   delta: Decimal
   gamma: Decimal
   theta: Decimal
@@ -936,6 +1027,7 @@ type Order {
   timeInForce: TimeInForce!
   quoteId: Str
   source: OrderSource!
+  parentOrder: ParentOrder
 }
 
 type OrderLog {
@@ -950,6 +1042,11 @@ type OrderLog {
 type Out {
   orderId: OrderId!
   order: Order
+}
+
+type ParentOrder {
+  kind: ParentOrderKind!
+  id: OrderId!
 }
 
 type PoolMarketKind {
@@ -1007,185 +1104,138 @@ type Product {
   strike: String
   optionType: String
   markUsd: Decimal
+  eventSeries: EventSeries
+  event: Event
+  eventOutcome: EventOutcome
+  eventContracts: EventContracts
 }
 
 type QueryRoot {
   version: String!
-
-  """Return the current user's authentication information."""
+  "Return the current user's authentication information."
   me: Me!
-
-  """List the API keys associated with the current user."""
+  "List the API keys associated with the current user."
   listApiKeys: [ApiKey!]!
   cptys: [CptyInfo!]!
-
+  availableAlgos: [AlgoKind!]!
   """
-  List all known/mapped accounts relevant to the logged-in user.
-  
-  Accounts are generally defined by exchange connectors or their respective exchange configs.
-  Refer to the User Guide for more information on how Architect names and manages accounts.
+    List all known/mapped accounts relevant to the logged-in user.
+
+    Accounts are generally defined by exchange connectors or their respective exchange configs.
+    Refer to the User Guide for more information on how Architect names and manages accounts.
   """
   accounts: [Account!]!
-
   """
-  List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
-  route IDs are fully determined by their string names as UUIDv5.
+    List all known routes in symbology.  Routes are uniquely identified by their names or IDs;
+    route IDs are fully determined by their string names as UUIDv5.
   """
   routes: [Route!]!
-
-  """Find a route by its ID."""
+  "Find a route by its ID."
   route(id: RouteId!): Route
-
   """
-  List all known venues in symbology.  Venues are uniquely identified by their names or IDs;
-  venue IDs are fully determined by their string names as UUIDv5.
+    List all known venues in symbology.  Venues are uniquely identified by their names or IDs;
+    venue IDs are fully determined by their string names as UUIDv5.
   """
   venues: [Venue!]!
-
-  """Find a venue by its ID."""
+  "Find a venue by its ID."
   venue(id: VenueId!): Venue
-
   """
-  Find products and their details by their IDs.  Products are uniquely identified by their
-  names or IDs; product IDs are fully determined by their string names as UUIDv5.
+    Find products and their details by their IDs.  Products are uniquely identified by their
+    names or IDs; product IDs are fully determined by their string names as UUIDv5.
   """
-  products(id: [ProductId!]!): [Product]!
-
-  """Find a product and its details by its ID."""
+  products(id: [ProductId!]): [Product]!
+  "Find a product and its details by its ID."
   product(id: ProductId!): Product
-
   """
-  Find markets and their details by their IDs.  Markets are uniquely identified by their
-  names or IDs; market IDs are fully determined by their string names as UUIDv5.
+    Return all events (products with kind Event) for the given venue
+    for which markets are active
+  """
+  eventContractEvents(venue: VenueId!): [Product!]!
+  eventContractGreeks(event: ProductId!): EventGreeks!
+  """
+    Find markets and their details by their IDs.  Markets are uniquely identified by their
+    names or IDs; market IDs are fully determined by their string names as UUIDv5.
   """
   markets(id: [MarketId!]!): [Market]!
-
-  """Find a market and its details by its ID."""
+  "Find a market and its details by its ID."
   market(id: MarketId!): Market
-
-  """Find markets and their details by some filtering criteria."""
+  "Find markets and their details by some filtering criteria."
   filterMarkets(filter: MarketFilter!): [Market!]!
   bookSnapshot(market: MarketId!, numLevels: Int!, precision: Decimal, retainSubscriptionForNSeconds: Int, delayed: Boolean): Book!
-
   """
-  Get a snapshot of the marketdata for a given market, at a given time.  If no
-  latest_at_or_before is provided, the most recent snapshot is returned.
+    Get a snapshot of the marketdata for a given market, at a given time.  If no
+    latest_at_or_before is provided, the most recent snapshot is returned.
   """
   marketSnapshot(market: MarketId!, latestAtOrBefore: DateTime): MarketSnapshot
-
   """
-  Get snapshots of all markets for the given time.  If no latest_at_or_before is provided,
-  the most recent snapshots are returned.
+    Get snapshots of all markets for the given time.  If no latest_at_or_before is provided,
+    the most recent snapshots are returned.
   """
   marketsSnapshots(latestAtOrBefore: DateTime): [MarketSnapshot!]!
-
-  """
-  Get a snapshot of the options data for a given underlying, at a given time.
-  """
+  "Get a snapshot of the options data for a given underlying, at a given time."
   optionsMarketSnapshots(underlying: ProductId!, latestAtOrBefore: DateTime): [OptionsMarketSnapshot!]!
-
-  """Get the current known balances and positions for a given counterparty."""
+  "Get the current known balances and positions for a given counterparty."
   accountSummariesForCpty(venue: VenueId!, route: RouteId!): AccountSummaries!
-
-  """Get all current known balances and positions for all counterparties."""
+  "Get all current known balances and positions for all counterparties."
   accountSummaries: [AccountSummaries!]!
-
-  """Get all fills for a given venue, route, base, and quote."""
+  "Get all fills for a given venue, route, base, and quote."
   fills(venue: VenueId, route: RouteId, base: ProductId, quote: ProductId): Fills!
-
-  """Find order details by order ID from the OMS."""
+  "Find order details by order ID from the OMS."
   order(orderId: OrderId!): OrderLog
-
-  """List all open orders known to the OMS."""
+  "List all open orders known to the OMS."
   openOrders: [OrderLog!]!
-
-  """List all recently outed orders known to the OMS."""
+  "List all recently outed orders known to the OMS."
   outedOrders(fromInclusive: DateTime, toExclusive: DateTime): [OrderLog!]!
-
-  """
-  Query historical OHLCV candles for a given market, candle width, and time range.
-  """
+  "Query historical OHLCV candles for a given market, candle width, and time range."
   historicalCandles(id: MarketId!, start: DateTime!, end: DateTime!, width: CandleWidth!): [CandleV1!]!
-
-  """
-  Query TCA pnl / marks stats, id is an optional field but the dates are required
-  """
+  "Query TCA pnl / marks stats, id is an optional field but the dates are required"
   tcaMarks(id: MarketId, fromInclusive: DateTime!, toExclusive: DateTime!): [TcaMarksV1!]!
-
-  """
-  Query TCA summary stats, id is an optional field but the dates are required
-  """
+  "Query TCA summary stats, id is an optional field but the dates are required"
   tcaSummary(currency: String, id: MarketId, fromInclusive: DateTime!, toExclusive: DateTime!): [TcaSummaryV1!]!
-
   """
-  Query TCA balance pnl stats, the account_id is a required field.
-  The following filtering is allowed ..
-  If no venue is provided then all venues will be included
-  If use_purchasing_power is false or not provided then we will use
-    the balance column in the table. If it's true then we will use
-    the purchasing power column. This is needed for the rfb environment
+    Query latest Account Balance Snapshots
+    over the various venues supported by the connected
+    TCA database module
   """
-  tcaBalancePnl(accountId: AccountId!, venueId: VenueId, usePurchasingPower: Boolean): [TcaBalancePnlV1!]!
-
+  accountSnapshot(accountId: AccountId!, venueId: VenueId, usePurchasingPower: Boolean): [AccountSnapshot!]!
   """
-  Query TCA balance pnl timeseries, the account_id and venue_id are
-  required fields. If both date ranges are not valid then we will return
-  the timeseries for the last rolling 24 hours. If they are both provided
-  then the timeseries will return hourly data points for the range provided
-  If use_purchasing_power is false or not provided then we will use
-    the balance column in the table. If it's true then we will use
-    the purchasing power column. This is needed for the rfb environment
+    Query Account Balance Snapshot changes over time
+    This query allows a user to see how their account balances have
+    changed on hourly snapshots through time.
+    If from_inclusive is omitted, a time 24 hours in the past is assumed
   """
-  tcaBalancePnlTimeseries(accountId: AccountId!, venueId: VenueId!, fromInclusive: DateTime, toExclusive: DateTime, usePurchasingPower: Boolean): [TcaPnlV1!]!
-
-  """
-  Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap.
-  """
+  accountSnapshotHistory(accountIds: [AccountId!], venueId: VenueId, fromInclusive: DateTime, toExclusive: DateTime, usePurchasingPower: Boolean): [AccountSnapshotHistory!]!
+  "Get a snapshot of token info, sourced from CoinGecko and CoinMarketCap."
   coinInfos: [CoinInfo!]!
-
-  """Get token info for a given product."""
+  "Get token info for a given product."
   coinInfo(product: ProductId!): CoinInfo
-
-  """Get CME product group info."""
+  "Get CME product group info."
   cmeProductGroupInfos: [CmeProductGroupInfo!]!
-
-  """Find a generic algo order and its details by parent order ID."""
+  "Find a generic algo order and its details by algo order ID."
   algoOrder(orderId: OrderId!): AlgoOrder
-
-  """Find and return generic algo order status by parent order ID."""
+  "Find and return generic algo order status by algo order ID."
   algoStatus(orderId: OrderId): [AlgoStatus!]!
-
-  """Find and return generic algo logs by parent order ID."""
+  "Find and return generic algo logs by algo order ID."
   algoLog(orderId: OrderId!): AlgoLog
-
-  """Find and return TWAP algo order details by parent order ID."""
+  "Find and return TWAP algo order details by algo order ID."
   twapOrder(orderId: OrderId!): TwapOrder
-
-  """Find and return TWAP algo status by parent order ID."""
+  "Find and return TWAP algo status by algo order ID."
   twapStatus(orderId: OrderId): [TwapStatus!]!
-
-  """Find and return POV order details by parent order ID."""
+  "Find and return POV order details by algo order ID."
   povOrder(orderId: OrderId!): PovAlgoOrder
-
-  """Find and return POV algo status by parent order ID."""
+  "Find and return POV algo status by algo order ID."
   povStatus(orderId: OrderId): [PovAlgoStatus!]!
-
-  """Find and return SOR order details by parent order ID."""
+  "Find and return SOR order details by algo order ID."
   smartOrderRouterOrder(orderId: OrderId!): SmartOrderRouterOrder
-
-  """Find and return SOR algo status by parent order ID."""
+  "Find and return SOR algo status by algo order ID."
   smartOrderRouterStatus(orderId: OrderId): [SmartOrderRouterStatus!]!
-
-  """Find and return MM algo order details by parent order ID."""
+  "Find and return MM algo order details by algo order ID."
   mmAlgoOrder(orderId: OrderId!): MMAlgoOrder
-
-  """Find and return spread algo status by parent order ID."""
+  "Find and return spread algo status by algo order ID."
   spreadAlgoOrder(orderId: OrderId!): MMAlgoOrder
-
-  """Find and return MM algo status by parent order ID."""
+  "Find and return MM algo status by algo order ID."
   mmAlgoStatus(orderId: OrderId): [MMAlgoStatus!]!
-
-  """Find and return spread algo status by parent order ID."""
+  "Find and return spread algo status by algo order ID."
   spreadAlgoStatus(orderId: OrderId): [MMAlgoStatus!]!
 }
 
@@ -1236,27 +1286,26 @@ type StopLossLimitOrderType {
 }
 
 type SubscriptionRoot {
-  """Subscribe to the trade feed of a market."""
+  "Subscribe to the trade feed of a market."
   trades(market: MarketId!, delayed: Boolean): TradeV1!
-
-  """Subscribe to the orderbook feed of a market."""
+  "Subscribe to the orderbook feed of a market."
   book(market: MarketId!, precision: Decimal, delayed: Boolean): Book!
-
-  """Subscribe to the candle feed of a market."""
+  "Subscribe to the candle feed of a market."
   candles(market: MarketId!, candleWidth: CandleWidth!, finalized: Boolean, delayed: Boolean): CandleV1!
-
   """
-  Subscribe to exchange-specific data from markets.  This is a multiplexed stream.
+    Subscribe to market snapshots for a given market.
+    Only works for marketdata feeds which support integrated snapshots.
   """
+  marketSnapshots(markets: [MarketId!]!, delayed: Boolean): MarketSnapshot!
+  "e.g. 1s, 1m, 1h"
+  marketSnapshotsBatched(markets: [MarketId!]!, delayed: Boolean, batchInterval: String): [MarketSnapshot!]!
+  "Subscribe to exchange-specific data from markets.  This is a multiplexed stream."
   exchangeSpecific(markets: [MarketId!]!, fields: [String!]!, delayed: Boolean): [ExchangeSpecificUpdate!]!
-
-  """Subscribe to an RFQ feed."""
+  "Subscribe to an RFQ feed."
   rfqs(base: ProductId!, quote: ProductId!, venues: [VenueId!]!, quantity: Decimal!): [RfqResponse!]!
-
-  """Subscribe to all orderflow."""
+  "Subscribe to all orderflow."
   orderflow: Orderflow!
-
-  """Subscribe to all fills"""
+  "Subscribe to all fills"
   fills: Fill!
   pollOpenOrders(pollIntervalMs: Int!): [OrderLog!]!
   pollFills(pollIntervalMs: Int!, venue: VenueId, route: RouteId, base: ProductId, quote: ProductId): Fills!
@@ -1271,16 +1320,6 @@ type SubscriptionRoot {
 type TakeProfitLimitOrderType {
   limitPrice: Decimal!
   triggerPrice: Decimal!
-}
-
-type TcaBalancePnlV1 {
-  tsNow: DateTime!
-  tsPast: DateTime!
-  pnl: Decimal!
-  balanceNow: Decimal!
-  balancePast: Decimal!
-  venueId: VenueId!
-  venue: String!
 }
 
 type TcaData {
@@ -1303,11 +1342,6 @@ type TcaMarksV1 {
   fees: Decimal
   feeCurrency: String
   tcaValues: [TcaData!]!
-}
-
-type TcaPnlV1 {
-  ts: DateTime!
-  pnl: Decimal!
 }
 
 type TcaSummaryV1 {
@@ -1373,3 +1407,4 @@ union MarketKind = ExchangeMarketKind | PoolMarketKind | UnknownMarketKind
 union OrderType = LimitOrderType | StopLossLimitOrderType | TakeProfitLimitOrderType
 
 union Orderflow = Order | OmsOrderUpdate | Cancel | CancelAll | Ack | Reject | Fill | AberrantFill | Out
+

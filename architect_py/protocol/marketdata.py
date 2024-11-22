@@ -7,6 +7,9 @@ from decimal import Decimal
 from uuid import UUID
 from typing import Any, Literal, Optional, Union
 
+from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
+from architect_py.scalars import OrderDir
+
 
 class JsonMarketdataStub(object):
     def __init__(self, channel: Union[grpc.Channel, grpc.aio.Channel]):
@@ -90,12 +93,7 @@ class CandleV1:
 
 
 @dataclass(kw_only=True)
-class TradeV1:
-    time: Optional[datetime]
-    direction: Optional[Literal["Buy", "Sell"]]
-    price: Decimal
-    size: Decimal
-
+class TradeV1(SubscribeTradesTrades):
     def __init__(
         self,
         *,
@@ -106,7 +104,7 @@ class TradeV1:
         **kwargs
     ):
         self.time = time
-        self.direction = direction
+        self.direction = OrderDir.from_string(direction) if direction else None
         self.price = price
         self.size = size
         for k, v in kwargs.items():

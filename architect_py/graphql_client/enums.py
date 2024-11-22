@@ -4,6 +4,11 @@
 from enum import Enum
 
 
+class AccountMode(str, Enum):
+    LIVE = "LIVE"
+    PAPER = "PAPER"
+
+
 class AlgoControlCommand(str, Enum):
     START = "START"
     PAUSE = "PAUSE"
@@ -15,8 +20,9 @@ class AlgoKind(str, Enum):
     POV = "POV"
     SMART_ORDER_ROUTER = "SMART_ORDER_ROUTER"
     TWAP = "TWAP"
-    SPREAD = "SPREAD"
+    SPREADER = "SPREADER"
     CHASER = "CHASER"
+    SPREAD = "SPREAD"
 
 
 class AlgoRunningStatus(str, Enum):
@@ -66,6 +72,11 @@ class EnvironmentKind(str, Enum):
     BROKERAGE = "BROKERAGE"
 
 
+class EventContractsType(str, Enum):
+    SINGLE = "SINGLE"
+    DUAL = "DUAL"
+
+
 class FillKind(str, Enum):
     NORMAL = "NORMAL"
     REVERSAL = "REVERSAL"
@@ -108,6 +119,11 @@ class OrderStateFlags(str, Enum):
     STALE = "STALE"
 
 
+class ParentOrderKind(str, Enum):
+    ALGO = "ALGO"
+    ORDER = "ORDER"
+
+
 class Reason(str, Enum):
     ALGO_PAUSED = "ALGO_PAUSED"
     ALGO_STOPPED = "ALGO_STOPPED"
@@ -129,3 +145,11 @@ class ReferencePrice(str, Enum):
     MID = "MID"
     BID_ASK = "BID_ASK"
     HEDGE_MARKET_BID_ASK = "HEDGE_MARKET_BID_ASK"
+
+
+class UserTier(str, Enum):
+    PLATFORM = "PLATFORM"
+    BROKERAGE_UNSUBSCRIBED = "BROKERAGE_UNSUBSCRIBED"
+    BROKERAGE_BASIC = "BROKERAGE_BASIC"
+    BROKERAGE_PROFESSIONAL = "BROKERAGE_PROFESSIONAL"
+    STAFF = "STAFF"
