@@ -97,7 +97,7 @@ class Client(GraphQLClient):
             raise ValueError(
                 "API key and secret are not the correct length, please double check your credentials."
             )
-
+            
         super().__init__(**kwargs)
         self.no_gql = no_gql
         self.route_by_id = {}
