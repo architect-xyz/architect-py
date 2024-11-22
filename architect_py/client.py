@@ -53,7 +53,6 @@ class Client(AsyncClientProtocol):
         """
         attr = getattr(super().__getattribute__("client"), name)
         if is_async_function(attr):
-            print(f"A{name}")
             if "subscribe" in name:
                 raise AttributeError(
                     f"Method {name} is an subscription based async method and cannot be called synchronously"
