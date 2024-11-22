@@ -26,7 +26,7 @@ import re
 import dns.asyncresolver
 import dns.name
 import grpc.aio
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any, AsyncIterator, List, Optional, Sequence, TypeAlias, Union
@@ -37,13 +37,13 @@ from architect_py.async_graphql_client.base_model import UNSET, UnsetType
 from architect_py.async_graphql_client.get_market import GetMarketMarket
 from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.scalars import OrderDir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
     SimplePosition,
 )
 from architect_py.utils.dt import (
-    convert_datetime_to_utc_str,
     get_expiration_from_CME_name,
 )
 from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
@@ -77,24 +77,10 @@ from .protocol.marketdata import (
     L2BookSnapshot,
     L3BookSnapshot,
     SubscribeL1BookSnapshotsRequest,
-    TradeV1,
 )
 from .protocol.symbology import Market
 
 logger = logging.getLogger(__name__)
-
-
-class OrderDirection(Enum):
-    BUY = "buy"
-    SELL = "sell"
-
-    def __int__(self):
-        if self == OrderDirection.BUY:
-            return 1
-        elif self == OrderDirection.SELL:
-            return -1
-        else:
-            raise ValueError(f"Unknown OrderDirection: {self}")
 
 
 class AsyncClient(AsyncGraphQLClient):
@@ -110,7 +96,11 @@ class AsyncClient(AsyncGraphQLClient):
             raise ValueError(
                 "API key must be alphanumeric, please double check your credentials."
             )
-        elif " " in kwargs["api_secret"]:
+        elif "," in kwargs["api_key"] or "," in kwargs["api_secret"]:
+            raise ValueError(
+                "API key and secret cannot contain commas, please double check your credentials."
+            )
+        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
             raise ValueError(
                 "API key and secret cannot contain spaces, please double check your credentials."
             )
@@ -251,7 +241,7 @@ class AsyncClient(AsyncGraphQLClient):
         base: str,
         venue: str,
         route: str = "DIRECT",
-    ):
+    ) -> list:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
         and symbology to be loaded and indexed.
@@ -340,15 +330,15 @@ class AsyncClient(AsyncGraphQLClient):
         self,
         *,
         market: str,
-        dir: OrderDirection,
+        odir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
         post_only: bool = False,
         trigger_price: Optional[Decimal] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
-        price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
+        price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
@@ -357,26 +347,23 @@ class AsyncClient(AsyncGraphQLClient):
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
         """
-        if good_til_date is not None:
-            good_til_date_str = convert_datetime_to_utc_str(good_til_date)
-        else:
-            good_til_date_str = None
-
         if price_round_method is not None:
             market_info = await self.get_market(market)
             if market_info is not None:
+                tick_size = Decimal(market_info.tick_size)
                 limit_price = nearest_tick(
-                    limit_price,
-                    method=price_round_method,
-                    tick_size=market_info.tick_size,
+                    limit_price, method=price_round_method, tick_size=tick_size
                 )
             else:
                 raise ValueError(f"Could not find market information for {market}")
 
+        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
+            trigger_price = Decimal(trigger_price)
+
         order: str = await self.send_order(
             CreateOrder(
                 market=market,
-                dir=dir.value,
+                dir=odir,
                 quantity=quantity,
                 account=account,
                 orderType=order_type,
@@ -385,7 +372,7 @@ class AsyncClient(AsyncGraphQLClient):
                 triggerPrice=trigger_price,
                 timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
-                    goodTilDate=good_til_date_str,
+                    goodTilDate=good_til_date,
                 ),
                 quoteId=quote_id,
                 source=source,
@@ -393,68 +380,13 @@ class AsyncClient(AsyncGraphQLClient):
         )
 
         return await self.get_order(order)
-    
-    async def send_market_pro_order(
-        self,
-        *,
-        market: str,
-        dir: OrderDirection,
-        quantity: DecimalLike,
-        time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
-        account: Optional[str] = None,
-        source: OrderSource = OrderSource.API,
-        percent_through_market: Decimal = 0.02
-    ) -> Optional[GetOrderOrder]:
-
-        # Check for GQL failures
-        bbo_snapshot = await self.get_market_snapshot(market)
-        if bbo_snapshot is None:
-            raise ValueError("Failed to send market order with reason: no market snapshot for {market}")
-        
-        market_details = await self.get_market(market)
-        if market_details is None:
-            raise ValueError("Failed to send market order with reason: no market details for {market}")
-
-        best_bid = float(bbo_snapshot.bid_price)
-        best_ask = float(bbo_snapshot.ask_price)
-        last_price = float(bbo_snapshot.last_price)
-        
-        limit_price = best_ask * (1 + percent_through_market) if dir == OrderDirection.BUY else best_bid * (1 - percent_through_market)
-
-        # Avoid sending price outside CME's price bands
-        if market_details.venue.name == "CME":
-            price_band = market_details.cme_product_group_info.price_band
-            if price_band is None:
-                raise ValueError("Failed to send market order with reason: no CME price band for {market}")
-            else:
-                price_band = float(price_band)
-
-            if dir == OrderDirection.BUY:
-                limit_price = min(limit_price, last_price + price_band)
-            else:
-                limit_price = max(limit_price, last_price - price_band)
-    
-        # Conservatively round price to nearest tick
-        tick_round_method = TickRoundMethod.FLOOR if dir == OrderDirection.BUY else TickRoundMethod.CEIL
-        limit_price = nearest_tick(Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size))
-
-        return await self.send_limit_order(
-            market=market,
-            dir=dir,
-            quantity=str(quantity),
-            account=account,
-            order_type=CreateOrderType.LIMIT,
-            limit_price=str(limit_price),
-            time_in_force_instruction=time_in_force_instruction,
-            source=source
-        )
 
     async def send_twap_algo(
         self,
         *,
         name: str,
         market: str,
-        dir: OrderDirection,
+        odir: OrderDir,
         quantity: Decimal,
         interval_ms: int,
         reject_lockout_ms: int,
@@ -462,17 +394,15 @@ class AsyncClient(AsyncGraphQLClient):
         account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
-
-        end_time_str = convert_datetime_to_utc_str(end_time)
         return await self.send_twap_algo_request(
             CreateTwapAlgo(
                 name=name,
                 market=market,
-                dir=dir.value,
+                dir=odir,
                 quantity=quantity,
                 intervalMs=interval_ms,
                 rejectLockoutMs=reject_lockout_ms,
-                endTime=end_time_str,
+                endTime=end_time,
                 account=account,
                 takeThroughFrac=take_through_frac,
             )
@@ -483,7 +413,7 @@ class AsyncClient(AsyncGraphQLClient):
         *,
         name: str,
         market: str,
-        dir: OrderDirection,
+        odir: OrderDir,
         target_volume_frac: Decimal,
         min_order_quantity: Decimal,
         max_quantity: Decimal,
@@ -492,19 +422,18 @@ class AsyncClient(AsyncGraphQLClient):
         account: Optional[str] = None,
         take_through_frac: Optional[Decimal] = None,
     ) -> str:
-        end_time_str = convert_datetime_to_utc_str(end_time)
         return await self.send_pov_algo_request(
             CreatePovAlgo(
                 name=name,
                 market=market,
-                dir=dir.value,
+                dir=odir,
                 targetVolumeFrac=target_volume_frac,
                 minOrderQuantity=min_order_quantity,
                 maxQuantity=max_quantity,
                 orderLockoutMs=order_lockout_ms,
-                endTime=end_time_str,
+                endTime=end_time,
                 account=account,
-                takeThroughFrac=(take_through_frac),
+                takeThroughFrac=take_through_frac,
             )
         )
 
@@ -514,7 +443,7 @@ class AsyncClient(AsyncGraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: OrderDirection,
+        odir: OrderDir,
         limit_price: Decimal,
         target_size: Decimal,
         execution_time_limit_ms: int,
@@ -524,7 +453,7 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir.value,
+                dir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -537,7 +466,7 @@ class AsyncClient(AsyncGraphQLClient):
         markets: list[str],
         base: str,
         quote: str,
-        dir: OrderDirection,
+        odir: OrderDir,
         limit_price: Decimal,
         target_size: Decimal,
         execution_time_limit_ms: int,
@@ -547,7 +476,7 @@ class AsyncClient(AsyncGraphQLClient):
                 markets=markets,
                 base=base,
                 quote=quote,
-                dir=dir.value,
+                dir=odir,
                 limitPrice=limit_price,
                 targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
@@ -737,7 +666,9 @@ class AsyncClient(AsyncGraphQLClient):
 
                     quantity = Decimal(position.quantity) if position.quantity else None
                     if quantity:
-                        quantity = quantity if position.dir == "buy" else -quantity
+                        quantity = (
+                            quantity if position.dir == OrderDir.SELL else -quantity
+                        )
                     average_price = (
                         position.average_price if position.average_price else None
                     )
@@ -772,5 +703,4 @@ class AsyncClient(AsyncGraphQLClient):
         notice = await self.get_first_notice_date(market)
         if notice is None or notice.first_notice_date is None:
             return None
-
-        return datetime.strptime(notice.first_notice_date[:10], "%Y-%m-%d").date()
+        return notice.first_notice_date.date()

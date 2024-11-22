@@ -2,7 +2,7 @@
 # Source: queries.async.graphql
 
 from decimal import Decimal
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import Field
 
@@ -16,8 +16,8 @@ class GetMmOrder(BaseModel):
 
 class GetMmOrderMmAlgoOrder(BaseModel):
     name: str
-    order_id: Any = Field(alias="orderId")
-    market_id: Any = Field(alias="marketId")
+    order_id: str = Field(alias="orderId")
+    market_id: str = Field(alias="marketId")
     quantity_buy: Decimal = Field(alias="quantityBuy")
     quantity_sell: Decimal = Field(alias="quantitySell")
     min_position: Decimal = Field(alias="minPosition")
@@ -27,7 +27,7 @@ class GetMmOrderMmAlgoOrder(BaseModel):
     reference_price: ReferencePrice = Field(alias="referencePrice")
     ref_dist_frac: Decimal = Field(alias="refDistFrac")
     tolerance_frac: Decimal = Field(alias="toleranceFrac")
-    account: Optional[Any]
+    account: Optional[str]
 
 
 GetMmOrder.model_rebuild()

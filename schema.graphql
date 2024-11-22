@@ -1,14 +1,7 @@
-scalar Decimal
-
 schema {
   query: QueryRoot
   mutation: MutationRoot
   subscription: SubscriptionRoot
-}
-
-enum Dir {
-  BUY
-  SELL
 }
 
 enum AlgoControlCommand {
