@@ -86,9 +86,6 @@ class OrderDirection(Enum):
             raise ValueError(f"Unknown OrderDirection: {self}")
 
 
-DecimalLike: TypeAlias = Union[int, float, Decimal, str]
-
-
 class Client(GraphQLClient):
     def __init__(self, no_gql: bool = False, **kwargs):
         """
@@ -254,11 +251,11 @@ class Client(GraphQLClient):
         *,
         market: str,
         dir: OrderDirection,
-        quantity: DecimalLike,
+        quantity: Decimal,
         order_type: CreateOrderType = CreateOrderType.LIMIT,
-        limit_price: DecimalLike,
+        limit_price: Decimal,
         post_only: bool = False,
-        trigger_price: Optional[DecimalLike] = None,
+        trigger_price: Optional[Decimal] = None,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
         price_round_method: Optional[TickRoundMethod] = None,
         good_til_date: Optional[datetime] = None,
@@ -276,32 +273,27 @@ class Client(GraphQLClient):
         else:
             good_til_date_str = None
 
-        if not isinstance(limit_price, Decimal):
-            limit_price = Decimal(limit_price)
-
         if price_round_method is not None:
             market_info = self.get_market(market)
             if market_info is not None:
-                tick_size = Decimal(market_info.tick_size)
                 limit_price = nearest_tick(
-                    limit_price, method=price_round_method, tick_size=tick_size
+                    limit_price,
+                    method=price_round_method,
+                    tick_size=market_info.tick_size,
                 )
             else:
                 raise ValueError(f"Could not find market information for {market}")
-
-        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
-            trigger_price = Decimal(trigger_price)
 
         order: str = self.send_order(
             CreateOrder(
                 market=market,
                 dir=dir.value,
-                quantity=str(quantity),
+                quantity=quantity,
                 account=account,
                 orderType=order_type,
                 limitPrice=limit_price,
                 postOnly=post_only,
-                triggerPrice=str(trigger_price) if trigger_price is not None else None,
+                triggerPrice=trigger_price,
                 timeInForce=CreateTimeInForce(
                     instruction=time_in_force_instruction,
                     goodTilDate=good_til_date_str,
@@ -388,12 +380,12 @@ class Client(GraphQLClient):
         name: str,
         market: str,
         dir: OrderDirection,
-        quantity: DecimalLike,
+        quantity: Decimal,
         interval_ms: int,
         reject_lockout_ms: int,
         end_time: datetime,
         account: Optional[str] = None,
-        take_through_frac: Optional[DecimalLike] = None,
+        take_through_frac: Optional[Decimal] = None,
     ) -> str:
 
         end_time_str = convert_datetime_to_utc_str(end_time)
@@ -417,13 +409,13 @@ class Client(GraphQLClient):
         name: str,
         market: str,
         dir: OrderDirection,
-        target_volume_frac: DecimalLike,
-        min_order_quantity: DecimalLike,
-        max_quantity: DecimalLike,
+        target_volume_frac: Decimal,
+        min_order_quantity: Decimal,
+        max_quantity: Decimal,
         order_lockout_ms: int,
         end_time: datetime,
         account: Optional[str] = None,
-        take_through_frac: Optional[DecimalLike] = None,
+        take_through_frac: Optional[Decimal] = None,
     ) -> str:
         end_time_str = convert_datetime_to_utc_str(end_time)
         return self.send_pov_algo_request(
@@ -431,15 +423,13 @@ class Client(GraphQLClient):
                 name=name,
                 market=market,
                 dir=dir.value,
-                targetVolumeFrac=str(target_volume_frac),
-                minOrderQuantity=str(min_order_quantity),
-                maxQuantity=str(max_quantity),
+                targetVolumeFrac=target_volume_frac,
+                minOrderQuantity=min_order_quantity,
+                maxQuantity=max_quantity,
                 orderLockoutMs=order_lockout_ms,
                 endTime=end_time_str,
                 account=account,
-                takeThroughFrac=(
-                    str(take_through_frac) if take_through_frac is not None else None
-                ),
+                takeThroughFrac=(take_through_frac),
             )
         )
 
@@ -450,8 +440,8 @@ class Client(GraphQLClient):
         base: str,
         quote: str,
         dir: OrderDirection,
-        limit_price: DecimalLike,
-        target_size: DecimalLike,
+        limit_price: Decimal,
+        target_size: Decimal,
         execution_time_limit_ms: int,
     ) -> str:
         return self.send_smart_order_router_algo_request(
@@ -460,8 +450,8 @@ class Client(GraphQLClient):
                 base=base,
                 quote=quote,
                 dir=dir.value,
-                limitPrice=str(limit_price),
-                targetSize=str(target_size),
+                limitPrice=limit_price,
+                targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
             )
         )
@@ -473,8 +463,8 @@ class Client(GraphQLClient):
         base: str,
         quote: str,
         dir: OrderDirection,
-        limit_price: DecimalLike,
-        target_size: DecimalLike,
+        limit_price: Decimal,
+        target_size: Decimal,
         execution_time_limit_ms: int,
     ) -> Optional[Sequence[OrderFields]]:
         algo = self.preview_smart_order_router_algo_request(
@@ -483,8 +473,8 @@ class Client(GraphQLClient):
                 base=base,
                 quote=quote,
                 dir=dir.value,
-                limitPrice=str(limit_price),
-                targetSize=str(target_size),
+                limitPrice=limit_price,
+                targetSize=target_size,
                 executionTimeLimitMs=execution_time_limit_ms,
             )
         )
@@ -500,15 +490,15 @@ class Client(GraphQLClient):
         name: str,
         market: str,
         account: Optional[str] = None,
-        buy_quantity: DecimalLike,
-        sell_quantity: DecimalLike,
-        min_position: DecimalLike,
-        max_position: DecimalLike,
-        max_improve_bbo: DecimalLike,
-        position_tilt: DecimalLike,
+        buy_quantity: Decimal,
+        sell_quantity: Decimal,
+        min_position: Decimal,
+        max_position: Decimal,
+        max_improve_bbo: Decimal,
+        position_tilt: Decimal,
         reference_price: ReferencePrice,
-        ref_dist_frac: DecimalLike,
-        tolerance_frac: DecimalLike,
+        ref_dist_frac: Decimal,
+        tolerance_frac: Decimal,
         fill_lockout_ms: int,
         order_lockout_ms: int,
         reject_lockout_ms: int,
@@ -538,15 +528,15 @@ class Client(GraphQLClient):
         *,
         name: str,
         market: str,
-        buy_quantity: DecimalLike,
-        sell_quantity: DecimalLike,
-        min_position: DecimalLike,
-        max_position: DecimalLike,
-        max_improve_bbo: DecimalLike,
-        position_tilt: DecimalLike,
+        buy_quantity: Decimal,
+        sell_quantity: Decimal,
+        min_position: Decimal,
+        max_position: Decimal,
+        max_improve_bbo: Decimal,
+        position_tilt: Decimal,
         reference_price: ReferencePrice,
-        ref_dist_frac: DecimalLike,
-        tolerance_frac: DecimalLike,
+        ref_dist_frac: Decimal,
+        tolerance_frac: Decimal,
         hedge_market: CreateSpreadAlgoHedgeMarket,
         fill_lockout_ms: int,
         order_lockout_ms: int,
