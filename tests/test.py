@@ -2,6 +2,7 @@ import asyncio
 import os
 import pytest
 from architect_py.async_client import AsyncClient
+from architect_py.client import Client
 from architect_py.graphql_client.enums import (
     CreateOrderType,
     CreateTimeInForceInstruction,
@@ -106,6 +107,14 @@ async def _get_market(client: AsyncClient) -> SearchMarketsFilterMarkets:
     return market
 
 
+def _sync_get_market(client: Client) -> SearchMarketsFilterMarkets:
+    markets = client.search_markets(
+        search_string="", venue="CME", sort_by_volume_desc=True
+    )
+    market = markets[0]
+    return market
+
+
 @pytest.mark.asyncio
 async def test_send_limit_order():
     # check that sending strings for decimals works
@@ -158,7 +167,7 @@ async def test_send_limit_order():
         quantity="1",  # type: ignore  # we do this on purpose to test that sending strings works
         order_type=order_type,
         post_only=True,
-        limit_price=str(price),  # type: ignore  # we do this on purpose to test that sending strings works
+        limit_price=price,  # type: ignore  # we do this on purpose to test that sending strings works
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.IOC,
         price_round_method=TickRoundMethod.TOWARD_ZERO,
@@ -187,7 +196,27 @@ async def test_send_limit_order():
     )
 
     assert order is not None
-    assert order.reject_reason is not None
+
+
+def test_sync_market_order():
+    client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    market = _sync_get_market(client)
+    market_id = market.id
+
+    order = client.send_market_pro_order(
+        market=market_id,
+        odir=OrderDir.BUY,
+        quantity=Decimal(1),
+        account=ACCOUNT,
+        time_in_force_instruction=CreateTimeInForceInstruction.IOC,
+    )
+
+    assert order is not None
+    order_id = order.order.id
+    order = client.get_order(order_id)
+    assert order is not None
+    assert order.reject_reason is None
 
 
 @pytest.mark.asyncio

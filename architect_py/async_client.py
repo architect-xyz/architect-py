@@ -19,8 +19,8 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
+import asyncio
 import fnmatch
-from functools import lru_cache
 import logging
 import re
 from uuid import UUID
@@ -32,7 +32,6 @@ from decimal import Decimal
 from typing import (
     Any,
     AsyncIterator,
-    Coroutine,
     Dict,
     List,
     Optional,
@@ -100,6 +99,8 @@ class AsyncClient(GraphQLClient):
     ):
         """
         Please see the GraphQLClient class for the full list of arguments.
+
+        TODO: make paper trading port change to 6789 automatic
         """
         if kwargs["api_key"] is None:
             raise ValueError("API key is required.")
@@ -132,6 +133,8 @@ class AsyncClient(GraphQLClient):
         self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
         # route => venue => base => quote => market
 
+        self.get_market_cache = {}
+
     async def grpc_channel(self, endpoint: Union[dns.name.Name, str]):
         srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
         if len(srv_records) == 0:
@@ -146,13 +149,9 @@ class AsyncClient(GraphQLClient):
         await self.load_and_index_symbology()
 
     async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
-        return await self._get_cached_market(id, **kwargs)
-
-    @lru_cache(maxsize=10)
-    def _get_cached_market(
-        self, id: str, **kwargs: Any
-    ) -> Coroutine[Any, Any, Optional[GetMarketMarket]]:
-        return super().get_market(id, **kwargs)
+        # TODO: cache this function output
+        market = await super().get_market(id, **kwargs)
+        return market
 
     async def search_markets(
         self,
@@ -356,6 +355,7 @@ class AsyncClient(GraphQLClient):
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
+        wait_for_confirm: bool = False,
     ) -> Optional[GetOrderOrder]:
         """
         `account` is optional depending on the final cpty it gets to
@@ -392,6 +392,21 @@ class AsyncClient(GraphQLClient):
                 source=source,
             )
         )
+
+        if wait_for_confirm:
+            i = 0
+            while i < 30:
+                order_info = await self.get_order(order_id=order)
+                if order_info is None:
+                    return None
+                else:
+                    if len(order_info.order_state) > 1:
+                        return order_info
+                    elif order_info.order_state[0] != "OPEN":
+                        return order_info
+                    else:
+                        i += 1
+                await asyncio.sleep(0.1)
 
         return await self.get_order(order)
 

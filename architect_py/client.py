@@ -39,42 +39,34 @@ class Client(AsyncClientProtocol):
                 asyncio.set_event_loop(loop)
         self.loop = loop
 
-    def __getattr__(self, name: str):
+    def __getattribute__(self, name: str):
         """
         You may have been lead here looking for the definition of a method of the Client
         It can be found if you look in the AsyncClient class, which this class is a wrapper for,
         or GraphQLClient, which is a parent class of AsyncClient
 
         Explanation:
-        __getattr__ is a magic method that is called when an attribute is not found in the class
+        __getattribute__ is a magic method that is called when searching for any attribute
         In this case, will look through self.client, which is an instance of the Client class
 
         We do this because we want to be able to call the async methods of the Client in a synchronous way
         """
-        attr = getattr(self.client, name)
+        attr = getattr(super().__getattribute__("client"), name)
         if is_async_function(attr):
+            print(f"A{name}")
             if "subscribe" in name:
                 raise AttributeError(
                     f"Method {name} is an subscription based async method and cannot be called synchronously"
                 )
-            return partial(self._sync_call, attr)
+            return partial(super().__getattribute__("_sync_call"), attr)
         else:
             return attr
 
     def _sync_call(
         self, async_method: Callable[..., Awaitable[T]], *args, **kwargs
     ) -> T:
-        return self.loop.run_until_complete(async_method(*args, **kwargs))
-
-
-a = Client()
-
-a.find_markets
-a.get_l3_book_snapshot
-a.subscribe_l1_book_snapshots
-
-a = AsyncClient()
-
-a.find_markets
-a.get_l3_book_snapshot
-a.subscribe_l1_book_snapshots
+        return (
+            super()
+            .__getattribute__("loop")
+            .run_until_complete(async_method(*args, **kwargs))
+        )
