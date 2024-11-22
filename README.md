@@ -47,6 +47,10 @@ within the shell are not persisted.
 
 On any update, please run `update.sh`
 
+To run tests:
+`export $(cat pytest.env | xargs)`
+`pytest tests/*`
+
 
 How to generate the types:
 `poetry run ariadne-codegen --config ariadne-codegen.toml`

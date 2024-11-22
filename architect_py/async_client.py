@@ -32,6 +32,7 @@ from decimal import Decimal
 from typing import (
     Any,
     AsyncIterator,
+    Coroutine,
     Dict,
     List,
     Optional,
@@ -148,10 +149,10 @@ class AsyncClient(GraphQLClient):
         return await self._get_cached_market(id, **kwargs)
 
     @lru_cache(maxsize=10)
-    async def _get_cached_market(
+    def _get_cached_market(
         self, id: str, **kwargs: Any
-    ) -> Optional[GetMarketMarket]:
-        return await super().get_market(id, **kwargs)
+    ) -> Coroutine[Any, Any, Optional[GetMarketMarket]]:
+        return super().get_market(id, **kwargs)
 
     async def search_markets(
         self,
