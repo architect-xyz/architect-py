@@ -72,6 +72,13 @@ def test_sync_search_markets():
     markets = client.search_markets(glob="NQ*", venue="CME", sort_by_volume_desc=True)
     assert len(markets) > 0
 
+    for i in range(10):
+        l = 3
+        markets = client.search_markets(
+            search_string="NQ", venue="CME", sort_by_volume_desc=True, max_results=l
+        )
+        assert len(markets) == l
+
 
 @pytest.mark.asyncio
 async def test_search_markets():
@@ -85,7 +92,7 @@ async def test_search_markets():
     markets = await client.search_markets(
         glob="NQ*", venue="CME", sort_by_volume_desc=True
     )
-    assert len(markets) > 0
+    assert len(markets) > 5
 
 
 @pytest.mark.asyncio
@@ -98,28 +105,35 @@ async def test_find_markets():
 
 
 @pytest.mark.asyncio
-async def test_subscribe_l1_book_snapshots():
-    pass
-
-
-@pytest.mark.asyncio
-async def test_subscribe_l2_book_snapshots():
-    pass
-
-
-@pytest.mark.asyncio
-async def test_subscribe_l3_book_snapshots():
-    pass
+async def test_subscribe_book_snapshots():
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
 
 @pytest.mark.asyncio
 async def test_subscribe_trades():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    markets = await client.search_markets(
+        search_string="", venue="CME", sort_by_volume_desc=True
+    )
+    market = markets[0]
+
+    i = 0
+    async for trade in client.subscribe_trades(market.name):
+        assert trade is not None
+        i += 1
+
+        if i == 5:
+            break
 
 
 @pytest.mark.asyncio
 async def test_get_open_orders():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    orders = await client.get_open_orders()
+
+    assert orders is not None
 
 
 @pytest.mark.asyncio
