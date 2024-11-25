@@ -91,6 +91,15 @@ class Client(AsyncClientProtocol):
         else:
             return attr
 
+    def _sync_call(
+        self, async_method: Callable[..., Awaitable[T]], *args, **kwargs
+    ) -> T:
+        return (
+            super()
+            .__getattribute__("loop")
+            .run_until_complete(async_method(*args, **kwargs))
+        )
+
 
 class AsyncExecutor:
     def __init__(self):
