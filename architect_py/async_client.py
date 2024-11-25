@@ -190,7 +190,8 @@ class AsyncClient(GraphQLClient):
 
             if regex is not None:
                 markets = [market for market in markets if re.match(regex, market.name)]
-            markets = markets[:max_results] if max_results is not None else markets
+
+            markets = markets[:max_results] if isinstance(max_results, int) else markets
 
         else:
             markets = await super().search_markets(
