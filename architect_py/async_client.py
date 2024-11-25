@@ -743,7 +743,7 @@ class AsyncClient(GraphQLClient):
                     continue
                 name = account.account.name
 
-                usd = None
+                usd = Balance.new_empty()
                 for balance in account.balances:
                     if balance.product is None:
                         continue
@@ -783,9 +783,7 @@ class AsyncClient(GraphQLClient):
                             cash_excess,
                             yesterday_balance,
                         )
-
-                if usd is None:
-                    raise ValueError(f"Account {name} has no USD balance")
+                        break
 
                 positions = {}
                 for position in account.positions:
