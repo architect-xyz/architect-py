@@ -46,6 +46,7 @@ within the shell are not persisted.
 ## Maintainers
 
 On any update, please run `update.sh`
+In addition, any new function should have a test included in test.py
 
 To run tests:
 `export $(cat pytest.env | xargs)`
@@ -54,7 +55,6 @@ To run tests:
 
 How to generate the types:
 `poetry run ariadne-codegen --config ariadne-codegen.toml`
-`poetry run ariadne-codegen --config ariadne-codegen.async.toml`
 
 Python type conversions for scalars should be added to the codegen toml files, if needed.
 
