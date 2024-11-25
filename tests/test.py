@@ -8,12 +8,15 @@ from architect_py.graphql_client.enums import (
     CreateTimeInForceInstruction,
 )
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.utils.dt import get_expiration_from_CME_name
 from architect_py.scalars import OrderDir
 from decimal import Decimal
 
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from dotenv import load_dotenv
+
+from concurrent.futures import ThreadPoolExecutor
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -58,10 +61,30 @@ async def test_get_market():
     assert market is not None
 
 
+def test_sync_search_markets():
+    client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+    markets = client.search_markets(glob="ES*", venue="CME")
+    assert len(markets) > 0
+
+    markets = client.search_markets(glob="GC*", venue="CME")
+    assert len(markets) > 0
+
+    markets = client.search_markets(glob="NQ*", venue="CME", sort_by_volume_desc=True)
+    assert len(markets) > 0
+
+
 @pytest.mark.asyncio
 async def test_search_markets():
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
     markets = await client.search_markets(glob="ES*", venue="CME")
+    assert len(markets) > 0
+
+    markets = await client.search_markets(glob="GC*", venue="CME")
+    assert len(markets) > 0
+
+    markets = await client.search_markets(
+        glob="NQ*", venue="CME", sort_by_volume_desc=True
+    )
     assert len(markets) > 0
 
 
@@ -99,28 +122,15 @@ async def test_get_open_orders():
     pass
 
 
-async def _get_market(client: AsyncClient) -> SearchMarketsFilterMarkets:
-    markets = await client.search_markets(
-        search_string="", venue="CME", sort_by_volume_desc=True
-    )
-    market = markets[0]
-    return market
-
-
-def _sync_get_market(client: Client) -> SearchMarketsFilterMarkets:
-    markets = client.search_markets(
-        search_string="", venue="CME", sort_by_volume_desc=True
-    )
-    market = markets[0]
-    return market
-
-
 @pytest.mark.asyncio
 async def test_send_limit_order():
     # check that sending strings for decimals works
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
-    market = await _get_market(client)
+    markets = await client.search_markets(
+        search_string="", venue="CME", sort_by_volume_desc=True
+    )
+    market = markets[0]
     market_id = market.id
 
     snapshot = await client.get_market_snapshot(market_id)
@@ -201,7 +211,10 @@ async def test_send_limit_order():
 def test_sync_market_order():
     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
-    market = _sync_get_market(client)
+    markets = client.search_markets(
+        search_string="", venue="CME", sort_by_volume_desc=True
+    )
+    market = markets[0]
     market_id = market.id
 
     order = client.send_market_pro_order(
@@ -224,7 +237,8 @@ async def test_market_pro_order():
     # check that sending strings for decimals works
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
-    market = await _get_market(client)
+    markets = await client.search_markets(glob="ES*", venue="CME")
+    market = markets[0]
     market_id = market.id
 
     order = await client.send_market_pro_order(
@@ -246,57 +260,165 @@ async def test_market_pro_order():
 
 @pytest.mark.asyncio
 async def test_send_twap_algo():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
 
 @pytest.mark.asyncio
 async def test_send_pov_algo():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
 
 @pytest.mark.asyncio
 async def test_send_smart_order_router_algo():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
 
 @pytest.mark.asyncio
 async def test_preview_smart_order_router():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
 
 @pytest.mark.asyncio
 async def test_send_mm_algo():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
 
-@pytest.mark.asyncio
-async def test_send_spread_algo():
-    pass
+def sync_get_cme_futures_series():
+    client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    series = client.get_cme_futures_series("ES")
+    assert series is not None
+    return series
 
 
 @pytest.mark.asyncio
 async def test_get_cme_futures_series():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    series = await client.get_cme_futures_series("ES")
+
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(sync_get_cme_futures_series)
+        series_sync = future.result()
+
+    assert series is not None
+    assert series == series_sync
 
 
 @pytest.mark.asyncio
 async def test_get_cme_future_from_root_month_year():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    markets = await client.search_markets(glob="ES*", venue="CME")
+    market = markets[0]
+    assert market.name.startswith("ES")
+
+    expiration = get_expiration_from_CME_name(market.name)
+
+    fut = await client.get_cme_future_from_root_month_year(
+        "ES", month=expiration.month, year=expiration.year
+    )
+
+    assert fut == market
+
+
+def sync_get_account_summaries():
+    client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    summaries = client.get_account_summaries()
+
+    assert summaries is not None
+    return summaries
 
 
 @pytest.mark.asyncio
 async def test_get_account_summaries():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+    summaries = await client.get_account_summaries()
+
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(sync_get_account_summaries)
+        summaries_sync = future.result()
+
+    assert summaries is not None
+    assert summaries == summaries_sync
+
+
+def sync_get_balances_and_positions():
+    client_sync = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    balances = client_sync.get_balances_and_positions()
+
+    assert balances is not None
+
+    return balances
 
 
 @pytest.mark.asyncio
 async def test_get_balances_and_positions():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    balances = await client.get_balances_and_positions()
+
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(sync_get_balances_and_positions)
+        balances_sync = future.result()
+
+    assert balances is not None
+    assert balances == balances_sync
+
+
+def sync_get_cme_first_notice_date():
+    client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+    name = "GC"
+
+    markets = client.search_markets(glob=f"{name}*", venue="CME")
+    nearest_market = markets[0]
+    d = get_expiration_from_CME_name(nearest_market.name)
+    for market in markets:
+        d2 = get_expiration_from_CME_name(market.name)
+        if d2 < d:
+            d = d2
+            nearest_market = market
+
+    notice_date = client.get_cme_first_notice_date(nearest_market.id)
+
+    assert markets is not None
+    assert len(markets) > 5, f"There should be more than 5 {name} futures contracts"
+    assert nearest_market.name.startswith(name)
+    assert notice_date is not None
+    assert notice_date < d
+
+    return nearest_market, notice_date
 
 
 @pytest.mark.asyncio
 async def test_get_cme_first_notice_date():
-    pass
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+    name = "GC"
+
+    markets = await client.search_markets(glob=f"{name}*", venue="CME")
+    nearest_market = markets[0]
+    d = get_expiration_from_CME_name(nearest_market.name)
+    for market in markets:
+        d2 = get_expiration_from_CME_name(market.name)
+        if d2 < d:
+            d = d2
+            nearest_market = market
+
+    notice_date = await client.get_cme_first_notice_date(nearest_market.id)
+
+    assert markets is not None
+    assert len(markets) > 5, f"There should be more than 5 {name} futures contracts"
+    assert nearest_market.name.startswith(name)
+    assert notice_date is not None
+    assert notice_date < d
+
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(sync_get_cme_first_notice_date)
+        notice_date_sync = future.result()
+
+    assert (nearest_market, notice_date) == notice_date_sync
 
 
 if __name__ == "__main__":
