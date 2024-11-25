@@ -704,7 +704,7 @@ class AsyncClient(GraphQLClient):
         [market] = [
             market
             for market in await self.search_markets(
-                search_string=f"^{root} {year}{month}",
+                regex=f"^{root} {year}{month}",
                 venue="CME",
             )
             if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
