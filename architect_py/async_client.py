@@ -168,26 +168,43 @@ class AsyncClient(GraphQLClient):
         regex: str | None = None,
         **kwargs: Any,
     ) -> List[SearchMarketsFilterMarkets]:
-        markets = await super().search_markets(
-            venue,
-            base,
-            quote,
-            underlying,
-            max_results,
-            results_offset,
-            search_string,
-            only_favorites,
-            sort_by_volume_desc,
-            **kwargs,
-        )
 
-        if glob is not None:
-            markets = [
-                market for market in markets if fnmatch.fnmatch(market.name, glob)
-            ]
+        if glob or regex:
+            markets = await super().search_markets(
+                venue,
+                base,
+                quote,
+                underlying,
+                UNSET,
+                results_offset,
+                search_string,
+                only_favorites,
+                sort_by_volume_desc,
+                **kwargs,
+            )
 
-        if regex is not None:
-            markets = [market for market in markets if re.match(regex, market.name)]
+            if glob is not None:
+                markets = [
+                    market for market in markets if fnmatch.fnmatch(market.name, glob)
+                ]
+
+            if regex is not None:
+                markets = [market for market in markets if re.match(regex, market.name)]
+            markets = markets[:max_results] if max_results is not None else markets
+
+        else:
+            markets = await super().search_markets(
+                venue,
+                base,
+                quote,
+                underlying,
+                max_results,
+                results_offset,
+                search_string,
+                only_favorites,
+                sort_by_volume_desc,
+                **kwargs,
+            )
 
         return markets
 
