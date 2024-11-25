@@ -44,6 +44,7 @@ class Client(AsyncClientProtocol):
         self.loop = loop
 
         if "ipykernel" in sys.modules:
+            # for jupyter notebooks
             import atexit
 
             executor = AsyncExecutor()
