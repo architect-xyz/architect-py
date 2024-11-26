@@ -84,7 +84,7 @@ def autogenerate_protocol(cls) -> str:
         elif isinstance(value, (int, float, str, bool, type(None))):
             return repr(value)
         elif isinstance(value, Decimal):
-            return f"Decimal({value})"
+            return f"Decimal('{value}')"
         elif isinstance(value, UnsetType):
             return "UNSET"
         return type(value).__name__
