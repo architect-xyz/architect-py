@@ -437,7 +437,7 @@ class AsyncClient(GraphQLClient):
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        fraction_through_market: Decimal = Decimal(0.001),
+        fraction_through_market: Decimal = Decimal("0.001"),
     ) -> Optional[GetOrderOrder]:
 
         # Check for GQL failures
