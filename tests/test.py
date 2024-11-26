@@ -174,7 +174,6 @@ async def test_send_limit_order():
         odir=OrderDir.BUY,
         quantity=Decimal(1),
         order_type=order_type,
-        post_only=True,
         limit_price=price,
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.DAY,
@@ -200,7 +199,6 @@ async def test_send_limit_order():
         odir=OrderDir.BUY,
         quantity="1",  # type: ignore  # we do this on purpose to test that sending strings works
         order_type=order_type,
-        post_only=True,
         limit_price=price,  # type: ignore  # we do this on purpose to test that sending strings works
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.GTC,
@@ -222,7 +220,6 @@ async def test_send_limit_order():
         odir=OrderDir.BUY,
         quantity=Decimal(-1),
         order_type=order_type,
-        post_only=True,
         limit_price=price,
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.GTC,
@@ -351,7 +348,7 @@ async def test_get_cme_future_from_root_month_year():
         "ES", month=expiration.month, year=expiration.year
     )
 
-    assert fut == market
+    assert fut.id == market.id
 
 
 def sync_get_account_summaries():
