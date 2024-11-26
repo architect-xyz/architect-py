@@ -149,7 +149,7 @@ async def test_send_limit_order():
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
     markets = await client.search_markets(
-        search_string="ES", venue="CME", sort_by_volume_desc=True
+        search_string="MGC", venue="CME", sort_by_volume_desc=True
     )
     market = markets[0]
 
@@ -233,7 +233,7 @@ def test_sync_market_order():
     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
     markets = client.search_markets(
-        search_string="MES", venue="CME", sort_by_volume_desc=True
+        search_string="MGC", venue="CME", sort_by_volume_desc=True
     )
     market = markets[0]
     market_id = market.id
@@ -262,7 +262,7 @@ async def test_market_pro_order():
     # check that sending strings for decimals works
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
-    markets = await client.search_markets(glob="MES*", venue="CME")
+    markets = await client.search_markets(glob="MGC*", venue="CME")
     market = markets[0]
     market_id = market.id
 
@@ -448,6 +448,12 @@ async def test_get_cme_first_notice_date():
         notice_date_sync = future.result()
 
     assert (nearest_market, notice_date) == notice_date_sync
+
+
+@pytest.mark.asyncio
+async def test_cancel_orders():
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+    await client.cancel_all_orders()
 
 
 if __name__ == "__main__":
