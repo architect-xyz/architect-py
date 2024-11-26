@@ -57,6 +57,28 @@ async def test_client_init():
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET)
 
 
+async def flatten_position():
+    client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    [account_summary] = await client.get_account_summaries()
+
+    for account in account_summary.by_account:
+
+        for position in account.positions:
+            if position.market and position.account and position.quantity:
+                position_id = position.market.id
+                account_id = position.account.id
+                flatten_dir = position.dir.get_opposite()
+                quantity = position.quantity
+
+                await client.send_market_pro_order(
+                    market=position_id,
+                    odir=flatten_dir,
+                    quantity=quantity,
+                    account=account_id,
+                )
+
+
 @pytest.mark.asyncio
 async def test_get_market():
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
@@ -261,6 +283,8 @@ def test_sync_market_order():
 async def test_market_pro_order():
     # check that sending strings for decimals works
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
+    await client.cancel_all_orders()
 
     markets = await client.search_markets(glob="MGC*", venue="CME")
     market = markets[0]

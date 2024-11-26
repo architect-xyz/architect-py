@@ -27,6 +27,17 @@ class OrderDir(Enum):
         else:
             raise ValueError(f"Unknown Dir: {self}")
 
+    def get_opposite(self) -> "OrderDir":
+        """
+        NOTE: ENUMS ARE IMMUTABLE SO THIS DOES NOT MUTATE THE STATE OF THE ENUM
+        """
+        if self == OrderDir.BUY:
+            return OrderDir.SELL
+        elif self == OrderDir.SELL:
+            return OrderDir.BUY
+        else:
+            raise ValueError(f"Unknown Dir: {self}")
+
     @classmethod
     def deserialize(cls, value: str) -> "OrderDir":
         if value == "buy":
@@ -75,7 +86,7 @@ class OrderDir(Enum):
         else:
             raise ValueError(f"Unknown Dir: {value}")
 
-    @classmethod
+    @staticmethod
     def from_sign(cls, value: int) -> "OrderDir":
         if value > 0:
             return cls.BUY
