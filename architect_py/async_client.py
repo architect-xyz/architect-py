@@ -437,7 +437,7 @@ class AsyncClient(GraphQLClient):
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        percent_through_market: Decimal = Decimal(0.02),
+        fraction_through_market: Decimal = Decimal(0.001),
     ) -> Optional[GetOrderOrder]:
 
         # Check for GQL failures
@@ -463,13 +463,13 @@ class AsyncClient(GraphQLClient):
                 raise ValueError(
                     "Failed to send market order with reason: no ask price for {market}"
                 )
-            limit_price = bbo_snapshot.ask_price * (1 + percent_through_market)
+            limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
         else:
             if bbo_snapshot.bid_price is None:
                 raise ValueError(
                     "Failed to send market order with reason: no bid price for {market}"
                 )
-            limit_price = bbo_snapshot.bid_price * (1 - percent_through_market)
+            limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
 
         # Avoid sending price outside CME's price bands
         if market_details.venue.name == "CME":

@@ -6,6 +6,7 @@ from architect_py.client import Client
 from architect_py.graphql_client.enums import (
     CreateOrderType,
     CreateTimeInForceInstruction,
+    OrderStateFlags,
 )
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.utils.dt import get_expiration_from_CME_name
@@ -27,6 +28,11 @@ def test_load_env():
     ACCOUNT = os.getenv("ACCOUNT")
     API_KEY = os.getenv("API_KEY")
     API_SECRET = os.getenv("API_SECRET")
+
+    if HOST == "app.architect.co":
+        raise ValueError(
+            "You have set the HOST to the production server. Please change it to the sandbox server."
+        )
 
     if ACCOUNT is not None and "PAPER" in ACCOUNT:
         PORT = 6789
@@ -62,18 +68,19 @@ async def test_get_market():
 
 
 def test_sync_search_markets():
+    l = 5
     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
+
     markets = client.search_markets(glob="ES*", venue="CME")
-    assert len(markets) > 0
+    assert len(markets) > l
 
     markets = client.search_markets(glob="GC*", venue="CME")
-    assert len(markets) > 0
+    assert len(markets) > l
 
     markets = client.search_markets(glob="NQ*", venue="CME", sort_by_volume_desc=True)
-    assert len(markets) > 0
+    assert len(markets) > l
 
     for i in range(10):
-        l = 3
         markets = client.search_markets(
             search_string="NQ", venue="CME", sort_by_volume_desc=True, max_results=l
         )
@@ -84,10 +91,10 @@ def test_sync_search_markets():
 async def test_search_markets():
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
     markets = await client.search_markets(glob="ES*", venue="CME")
-    assert len(markets) > 0
+    assert len(markets) > 5
 
     markets = await client.search_markets(glob="GC*", venue="CME")
-    assert len(markets) > 0
+    assert len(markets) > 5
 
     markets = await client.search_markets(
         glob="NQ*", venue="CME", sort_by_volume_desc=True
@@ -142,12 +149,11 @@ async def test_send_limit_order():
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
     markets = await client.search_markets(
-        search_string="", venue="CME", sort_by_volume_desc=True
+        search_string="ES", venue="CME", sort_by_volume_desc=True
     )
     market = markets[0]
-    market_id = market.id
 
-    snapshot = await client.get_market_snapshot(market_id)
+    snapshot = await client.get_market_snapshot(market.id)
     if snapshot is None:
         # return ValueError(f"Market snapshot for {market.name} is None")
         price = Decimal(10)
@@ -164,36 +170,40 @@ async def test_send_limit_order():
     order_type: CreateOrderType = CreateOrderType.LIMIT
 
     order = await client.send_limit_order(
-        market=market_id,
+        market=market.id,
         odir=OrderDir.BUY,
         quantity=Decimal(1),
         order_type=order_type,
         post_only=True,
         limit_price=price,
         account=ACCOUNT,
-        time_in_force_instruction=CreateTimeInForceInstruction.IOC,
+        time_in_force_instruction=CreateTimeInForceInstruction.DAY,
         price_round_method=TickRoundMethod.TOWARD_ZERO,
+        wait_for_confirm=False,
     )
 
     assert order is not None
     order_id = order.order.id
-    await asyncio.sleep(0.3)
-    order = await client.get_order(order_id)
 
     assert order is not None
     assert order.reject_reason is None
     cancel = await client.cancel_order(order_id)
     assert cancel is not None
 
+    order = await client.get_order(order_id)
+
+    assert order is not None
+    assert OrderStateFlags.OUT in order.order_state
+
     order = await client.send_limit_order(
-        market=market_id,
+        market=market.id,
         odir=OrderDir.BUY,
         quantity="1",  # type: ignore  # we do this on purpose to test that sending strings works
         order_type=order_type,
         post_only=True,
         limit_price=price,  # type: ignore  # we do this on purpose to test that sending strings works
         account=ACCOUNT,
-        time_in_force_instruction=CreateTimeInForceInstruction.IOC,
+        time_in_force_instruction=CreateTimeInForceInstruction.GTC,
         price_round_method=TickRoundMethod.TOWARD_ZERO,
     )
 
@@ -208,14 +218,14 @@ async def test_send_limit_order():
     assert cancel is not None
 
     order = await client.send_limit_order(
-        market=market_id,
+        market=market.id,
         odir=OrderDir.BUY,
         quantity=Decimal(-1),
         order_type=order_type,
         post_only=True,
         limit_price=price,
         account=ACCOUNT,
-        time_in_force_instruction=CreateTimeInForceInstruction.IOC,
+        time_in_force_instruction=CreateTimeInForceInstruction.GTC,
         price_round_method=TickRoundMethod.TOWARD_ZERO,
     )
 
@@ -226,7 +236,7 @@ def test_sync_market_order():
     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
     markets = client.search_markets(
-        search_string="", venue="CME", sort_by_volume_desc=True
+        search_string="MES", venue="CME", sort_by_volume_desc=True
     )
     market = markets[0]
     market_id = market.id
@@ -237,6 +247,7 @@ def test_sync_market_order():
         quantity=Decimal(1),
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.IOC,
+        fraction_through_market=Decimal(0.0005),
     )
 
     assert order is not None
@@ -245,13 +256,16 @@ def test_sync_market_order():
     assert order is not None
     assert order.reject_reason is None
 
+    cancel = client.cancel_order(order_id)
+    assert cancel is not None
+
 
 @pytest.mark.asyncio
 async def test_market_pro_order():
     # check that sending strings for decimals works
     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
-    markets = await client.search_markets(glob="ES*", venue="CME")
+    markets = await client.search_markets(glob="MES*", venue="CME")
     market = markets[0]
     market_id = market.id
 
@@ -260,7 +274,8 @@ async def test_market_pro_order():
         odir=OrderDir.BUY,
         quantity=Decimal(1),
         account=ACCOUNT,
-        time_in_force_instruction=CreateTimeInForceInstruction.IOC,
+        time_in_force_instruction=CreateTimeInForceInstruction.GTC,
+        fraction_through_market=Decimal(0.0005),
     )
 
     await asyncio.sleep(0.2)
@@ -270,6 +285,9 @@ async def test_market_pro_order():
     order = await client.get_order(order_id)
     assert order is not None
     assert order.reject_reason is None
+
+    cancel = await client.cancel_order(order_id)
+    assert cancel is not None
 
 
 @pytest.mark.asyncio
