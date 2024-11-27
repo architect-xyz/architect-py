@@ -825,8 +825,8 @@ class AsyncClient(GraphQLClient):
                 )
         return bps
 
-    async def get_cme_first_notice_date(self, market_id: str) -> Optional[date]:
-        notice = await self.get_first_notice_date(market_id)
+    async def get_cme_first_notice_date(self, market: str) -> Optional[date]:
+        notice = await self.get_first_notice_date(market)
         if notice is None or notice.first_notice_date is None:
             return None
         return notice.first_notice_date.date()

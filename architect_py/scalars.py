@@ -86,7 +86,7 @@ class OrderDir(Enum):
         else:
             raise ValueError(f"Unknown Dir: {value}")
 
-    @staticmethod
+    @classmethod
     def from_sign(cls, value: int) -> "OrderDir":
         if value > 0:
             return cls.BUY
