@@ -28,7 +28,7 @@ class Client(AsyncClientProtocol):
 
     The AsyncClient is more performant and powerful, so it is recommended to use that class if possible.
 
-    Avoid adding functions to class unless you know what you are doing, because
+    Avoid adding functions or other attributes to this class unless you know what you are doing, because
     the __getattribute__ method changes the behavior of the class in a way that is not intuitive.
     """
 
