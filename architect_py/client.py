@@ -27,6 +27,9 @@ class Client(AsyncClientProtocol):
     One can find the function definition in the AsyncClient class.
 
     The AsyncClient is more performant and powerful, so it is recommended to use that class if possible.
+
+    Avoid adding functions to class unless you know what you are doing, because
+    the __getattribute__ method changes the behavior of the class in a way that is not intuitive.
     """
 
     client: AsyncClient
