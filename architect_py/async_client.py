@@ -133,8 +133,6 @@ class AsyncClient(GraphQLClient):
         self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
         # route => venue => base => quote => market
 
-        self.get_market_cache = {}
-
     async def grpc_channel(self, endpoint: Union[dns.name.Name, str]):
         srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
         if len(srv_records) == 0:
