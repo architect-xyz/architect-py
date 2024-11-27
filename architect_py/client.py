@@ -65,9 +65,6 @@ class Client(AsyncClientProtocol):
 
             super().__setattr__("_sync_call", _sync_call_create_task)
 
-    def set_loop(self, loop: AbstractEventLoop):
-        self.loop = loop
-
     def __getattribute__(self, name: str):
         """
         You may have been lead here looking for the definition of a method of the Client
