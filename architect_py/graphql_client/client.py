@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, AsyncIterator, Dict, List, Optional, Union
 
 from architect_py.utils.dt import convert_datetime_to_utc_str
 
@@ -11,6 +11,8 @@ from .base_model import UNSET, UnsetType
 from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
 from .cancel_orders import CancelOrders
+from .enums import CandleWidth
+from .fills_subscription import FillsSubscription, FillsSubscriptionFills
 from .get_account_summaries import (
     GetAccountSummaries,
     GetAccountSummariesAccountSummaries,
@@ -27,8 +29,13 @@ from .get_all_market_snapshots import (
     GetAllMarketSnapshotsMarketsSnapshots,
 )
 from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOpenOrders
+from .get_balances_for_cpty import (
+    GetBalancesForCpty,
+    GetBalancesForCptyAccountSummariesForCpty,
+)
 from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotBookSnapshot
 from .get_fills import GetFills, GetFillsFills
+from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
 from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateMarket
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
@@ -73,6 +80,25 @@ from .send_pov_algo_request import SendPovAlgoRequest
 from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
 from .send_spread_algo_request import SendSpreadAlgoRequest
 from .send_twap_algo_request import SendTwapAlgoRequest
+from .subscribe_book import SubscribeBook, SubscribeBookBook
+from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
+from .subscribe_exchange_specific import (
+    SubscribeExchangeSpecific,
+    SubscribeExchangeSpecificExchangeSpecific,
+)
+from .subscribe_orderflow import (
+    SubscribeOrderflow,
+    SubscribeOrderflowOrderflowAberrantFill,
+    SubscribeOrderflowOrderflowAck,
+    SubscribeOrderflowOrderflowCancel,
+    SubscribeOrderflowOrderflowCancelAll,
+    SubscribeOrderflowOrderflowFill,
+    SubscribeOrderflowOrderflowOmsOrderUpdate,
+    SubscribeOrderflowOrderflowOrder,
+    SubscribeOrderflowOrderflowOut,
+    SubscribeOrderflowOrderflowReject,
+)
+from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
 
 
 def gql(q: str) -> str:
@@ -80,7 +106,7 @@ def gql(q: str) -> str:
 
 
 class GraphQLClient(JuniperBaseClient):
-    def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
         query = gql(
             """
             query GetMarket($id: MarketId!) {
@@ -144,13 +170,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"id": id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetMarket", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetMarket.model_validate(data).market
 
-    def get_markets(
+    async def get_markets(
         self, ids: List[str], **kwargs: Any
     ) -> List[Optional[GetMarketsMarkets]]:
         query = gql(
@@ -216,13 +242,110 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"ids": ids}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetMarkets", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetMarkets.model_validate(data).markets
 
-    def search_markets(
+    async def get_filtered_markets(
+        self,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        base: Union[Optional[str], UnsetType] = UNSET,
+        quote: Union[Optional[str], UnsetType] = UNSET,
+        underlying: Union[Optional[str], UnsetType] = UNSET,
+        max_results: Union[Optional[int], UnsetType] = UNSET,
+        results_offset: Union[Optional[int], UnsetType] = UNSET,
+        search_string: Union[Optional[str], UnsetType] = UNSET,
+        only_favorites: Union[Optional[bool], UnsetType] = UNSET,
+        sort_by_volume_desc: Union[Optional[bool], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> List[GetFilteredMarketsFilterMarkets]:
+        query = gql(
+            """
+            query GetFilteredMarkets($venue: Str, $base: Str, $quote: Str, $underlying: Str, $maxResults: Int, $resultsOffset: Int, $searchString: Str, $onlyFavorites: Boolean, $sortByVolumeDesc: Boolean) {
+              filterMarkets(
+                filter: {venue: $venue, base: $base, quote: $quote, underlying: $underlying, maxResults: $maxResults, resultsOffset: $resultsOffset, searchString: $searchString, onlyFavorites: $onlyFavorites, sortByVolumeDesc: $sortByVolumeDesc}
+              ) {
+                ...MarketFields
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+                priceBand
+              }
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "base": base,
+            "quote": quote,
+            "underlying": underlying,
+            "maxResults": max_results,
+            "resultsOffset": results_offset,
+            "searchString": search_string,
+            "onlyFavorites": only_favorites,
+            "sortByVolumeDesc": sort_by_volume_desc,
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetFilteredMarkets",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetFilteredMarkets.model_validate(data).filter_markets
+
+    async def search_markets(
         self,
         venue: Union[Optional[str], UnsetType] = UNSET,
         base: Union[Optional[str], UnsetType] = UNSET,
@@ -310,13 +433,13 @@ class GraphQLClient(JuniperBaseClient):
             "onlyFavorites": only_favorites,
             "sortByVolumeDesc": sort_by_volume_desc,
         }
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="SearchMarkets", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return SearchMarkets.model_validate(data).filter_markets
 
-    def get_first_notice_date(
+    async def get_first_notice_date(
         self, id: str, **kwargs: Any
     ) -> Optional[GetFirstNoticeDateMarket]:
         query = gql(
@@ -329,7 +452,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"id": id}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetFirstNoticeDate",
             variables=variables,
@@ -338,7 +461,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetFirstNoticeDate.model_validate(data).market
 
-    def get_market_snapshot(
+    async def get_market_snapshot(
         self, id: str, **kwargs: Any
     ) -> Optional[GetMarketSnapshotMarketSnapshot]:
         query = gql(
@@ -366,7 +489,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"id": id}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetMarketSnapshot",
             variables=variables,
@@ -375,7 +498,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetMarketSnapshot.model_validate(data).market_snapshot
 
-    def get_all_market_snapshots(
+    async def get_all_market_snapshots(
         self, **kwargs: Any
     ) -> List[GetAllMarketSnapshotsMarketsSnapshots]:
         query = gql(
@@ -403,7 +526,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetAllMarketSnapshots",
             variables=variables,
@@ -412,7 +535,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetAllMarketSnapshots.model_validate(data).markets_snapshots
 
-    def get_account_summaries(
+    async def get_account_summaries(
         self, **kwargs: Any
     ) -> List[GetAccountSummariesAccountSummaries]:
         query = gql(
@@ -525,7 +648,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetAccountSummaries",
             variables=variables,
@@ -534,7 +657,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetAccountSummaries.model_validate(data).account_summaries
 
-    def get_account_summaries_for_cpty(
+    async def get_account_summaries_for_cpty(
         self, venue: str, route: str, **kwargs: Any
     ) -> GetAccountSummariesForCptyAccountSummariesForCpty:
         query = gql(
@@ -647,7 +770,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"venue": venue, "route": route}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetAccountSummariesForCpty",
             variables=variables,
@@ -658,7 +781,47 @@ class GraphQLClient(JuniperBaseClient):
             data
         ).account_summaries_for_cpty
 
-    def get_all_open_orders(self, **kwargs: Any) -> List[GetAllOpenOrdersOpenOrders]:
+    async def get_balances_for_cpty(
+        self, venue: str, route: str, **kwargs: Any
+    ) -> GetBalancesForCptyAccountSummariesForCpty:
+        query = gql(
+            """
+            query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
+              accountSummariesForCpty(venue: $venue, route: $route) {
+                snapshotTs
+                byAccount {
+                  balances {
+                    product {
+                      ...ProductFields
+                    }
+                    amount
+                  }
+                }
+              }
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {"venue": venue, "route": route}
+        response = await self.execute(
+            query=query,
+            operation_name="GetBalancesForCpty",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetBalancesForCpty.model_validate(data).account_summaries_for_cpty
+
+    async def get_all_open_orders(
+        self, **kwargs: Any
+    ) -> List[GetAllOpenOrdersOpenOrders]:
         query = gql(
             """
             query GetAllOpenOrders {
@@ -757,7 +920,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetAllOpenOrders",
             variables=variables,
@@ -766,7 +929,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetAllOpenOrders.model_validate(data).open_orders
 
-    def get_out_orders(
+    async def get_out_orders(
         self, from_inclusive: datetime, to_exclusive: datetime, **kwargs: Any
     ) -> List[GetOutOrdersOutedOrders]:
         query = gql(
@@ -870,13 +1033,13 @@ class GraphQLClient(JuniperBaseClient):
             "fromInclusive": convert_datetime_to_utc_str(from_inclusive),
             "toExclusive": convert_datetime_to_utc_str(to_exclusive),
         }
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetOutOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetOutOrders.model_validate(data).outed_orders
 
-    def get_order(self, order_id: str, **kwargs: Any) -> Optional[GetOrderOrder]:
+    async def get_order(self, order_id: str, **kwargs: Any) -> Optional[GetOrderOrder]:
         query = gql(
             """
             query GetOrder($orderId: OrderId!) {
@@ -975,13 +1138,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetOrder.model_validate(data).order
 
-    def get_algo_status(
+    async def get_algo_status(
         self, order_id: str, **kwargs: Any
     ) -> List[GetAlgoStatusAlgoStatus]:
         query = gql(
@@ -1006,13 +1169,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetAlgoStatus", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetAlgoStatus.model_validate(data).algo_status
 
-    def get_algo_order(
+    async def get_algo_order(
         self, order_id: str, **kwargs: Any
     ) -> Optional[GetAlgoOrderAlgoOrder]:
         query = gql(
@@ -1030,13 +1193,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetAlgoOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetAlgoOrder.model_validate(data).algo_order
 
-    def get_twap_status(
+    async def get_twap_status(
         self, order_id: str, **kwargs: Any
     ) -> List[GetTwapStatusTwapStatus]:
         query = gql(
@@ -1066,13 +1229,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetTwapStatus", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetTwapStatus.model_validate(data).twap_status
 
-    def get_twap_order(
+    async def get_twap_order(
         self, order_id: str, **kwargs: Any
     ) -> Optional[GetTwapOrderTwapOrder]:
         query = gql(
@@ -1094,13 +1257,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetTwapOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetTwapOrder.model_validate(data).twap_order
 
-    def get_pov_status(
+    async def get_pov_status(
         self, order_id: str, **kwargs: Any
     ) -> List[GetPovStatusPovStatus]:
         query = gql(
@@ -1131,13 +1294,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetPovStatus", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetPovStatus.model_validate(data).pov_status
 
-    def get_pov_order(
+    async def get_pov_order(
         self, order_id: str, **kwargs: Any
     ) -> Optional[GetPovOrderPovOrder]:
         query = gql(
@@ -1159,13 +1322,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetPovOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetPovOrder.model_validate(data).pov_order
 
-    def get_smart_order_router_status(
+    async def get_smart_order_router_status(
         self, order_id: str, **kwargs: Any
     ) -> List[GetSmartOrderRouterStatusSmartOrderRouterStatus]:
         query = gql(
@@ -1203,7 +1366,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetSmartOrderRouterStatus",
             variables=variables,
@@ -1212,7 +1375,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetSmartOrderRouterStatus.model_validate(data).smart_order_router_status
 
-    def get_smart_order_router_order(
+    async def get_smart_order_router_order(
         self, order_id: str, **kwargs: Any
     ) -> Optional[GetSmartOrderRouterOrderSmartOrderRouterOrder]:
         query = gql(
@@ -1233,7 +1396,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="GetSmartOrderRouterOrder",
             variables=variables,
@@ -1242,7 +1405,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetSmartOrderRouterOrder.model_validate(data).smart_order_router_order
 
-    def get_mm_status(
+    async def get_mm_status(
         self, order_id: str, **kwargs: Any
     ) -> List[GetMmStatusMmAlgoStatus]:
         query = gql(
@@ -1301,13 +1464,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetMmStatus", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetMmStatus.model_validate(data).mm_algo_status
 
-    def get_mm_order(
+    async def get_mm_order(
         self, order_id: str, **kwargs: Any
     ) -> Optional[GetMmOrderMmAlgoOrder]:
         query = gql(
@@ -1332,13 +1495,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetMmOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetMmOrder.model_validate(data).mm_algo_order
 
-    def get_spread_status(
+    async def get_spread_status(
         self, order_id: str, **kwargs: Any
     ) -> List[GetSpreadStatusSpreadAlgoStatus]:
         query = gql(
@@ -1397,13 +1560,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetSpreadStatus", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetSpreadStatus.model_validate(data).spread_algo_status
 
-    def get_spread_order(
+    async def get_spread_order(
         self, order_id: str, **kwargs: Any
     ) -> Optional[GetSpreadOrderSpreadAlgoOrder]:
         query = gql(
@@ -1428,13 +1591,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetSpreadOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetSpreadOrder.model_validate(data).spread_algo_order
 
-    def get_fills(
+    async def get_fills(
         self,
         venue: Union[Optional[str], UnsetType] = UNSET,
         route: Union[Optional[str], UnsetType] = UNSET,
@@ -1522,13 +1685,258 @@ class GraphQLClient(JuniperBaseClient):
             "base": base,
             "quote": quote,
         }
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetFills", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetFills.model_validate(data).fills
 
-    def send_order(self, order: CreateOrder, **kwargs: Any) -> str:
+    async def subscribe_trades(
+        self, market: str, **kwargs: Any
+    ) -> AsyncIterator[SubscribeTradesTrades]:
+        query = gql(
+            """
+            subscription SubscribeTrades($market: MarketId!) {
+              trades(market: $market) {
+                time
+                price
+                size
+                direction
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"market": market}
+        async for data in self.execute_ws(
+            query=query, operation_name="SubscribeTrades", variables=variables, **kwargs
+        ):
+            yield SubscribeTrades.model_validate(data).trades
+
+    async def subscribe_candles(
+        self, id: str, width: CandleWidth, **kwargs: Any
+    ) -> AsyncIterator[SubscribeCandlesCandles]:
+        query = gql(
+            """
+            subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
+              candles(market: $id, candleWidth: $width) {
+                ...CandleFields
+              }
+            }
+
+            fragment CandleFields on CandleV1 {
+              time
+              open
+              high
+              low
+              close
+              volume
+            }
+            """
+        )
+        variables: Dict[str, object] = {"id": id, "width": width}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="SubscribeCandles",
+            variables=variables,
+            **kwargs
+        ):
+            yield SubscribeCandles.model_validate(data).candles
+
+    async def fills_subscription(
+        self, **kwargs: Any
+    ) -> AsyncIterator[FillsSubscriptionFills]:
+        query = gql(
+            """
+            subscription FillsSubscription {
+              fills {
+                dir
+                fillId
+                kind
+                marketId
+                orderId
+                price
+                quantity
+                recvTime
+                tradeTime
+                market {
+                  ...MarketFields
+                }
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+                priceBand
+              }
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="FillsSubscription",
+            variables=variables,
+            **kwargs
+        ):
+            yield FillsSubscription.model_validate(data).fills
+
+    async def subscribe_book(
+        self,
+        id: str,
+        precision: Union[Optional[Decimal], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> AsyncIterator[SubscribeBookBook]:
+        query = gql(
+            """
+            subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
+              book(market: $id, precision: $precision) {
+                bids {
+                  price
+                  amount
+                  total
+                }
+                asks {
+                  price
+                  amount
+                  total
+                }
+                timestamp
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"id": id, "precision": precision}
+        async for data in self.execute_ws(
+            query=query, operation_name="SubscribeBook", variables=variables, **kwargs
+        ):
+            yield SubscribeBook.model_validate(data).book
+
+    async def subscribe_exchange_specific(
+        self, markets: List[str], fields: List[str], **kwargs: Any
+    ) -> AsyncIterator[List[SubscribeExchangeSpecificExchangeSpecific]]:
+        query = gql(
+            """
+            subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
+              exchangeSpecific(markets: $markets, fields: $fields) {
+                market {
+                  ...MarketFields
+                }
+                field
+                value
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+                priceBand
+              }
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
+            }
+            """
+        )
+        variables: Dict[str, object] = {"markets": markets, "fields": fields}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="SubscribeExchangeSpecific",
+            variables=variables,
+            **kwargs
+        ):
+            yield SubscribeExchangeSpecific.model_validate(data).exchange_specific
+
+    async def send_order(self, order: CreateOrder, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendOrder($order: CreateOrder!) {
@@ -1537,13 +1945,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"order": order}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="SendOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return SendOrder.model_validate(data).create_order
 
-    def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[str]:
+    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[str]:
         query = gql(
             """
             mutation SendOrders($orders: [CreateOrder!]!) {
@@ -1552,13 +1960,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orders": orders}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="SendOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return SendOrders.model_validate(data).create_orders
 
-    def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> str:
+    async def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
@@ -1567,7 +1975,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"algo": algo}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="SendTwapAlgoRequest",
             variables=variables,
@@ -1576,7 +1984,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return SendTwapAlgoRequest.model_validate(data).create_twap_algo
 
-    def send_pov_algo_request(self, algo: CreatePovAlgo, **kwargs: Any) -> str:
+    async def send_pov_algo_request(self, algo: CreatePovAlgo, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
@@ -1585,7 +1993,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"algo": algo}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="SendPovAlgoRequest",
             variables=variables,
@@ -1594,7 +2002,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return SendPovAlgoRequest.model_validate(data).create_pov_algo
 
-    def preview_smart_order_router_algo_request(
+    async def preview_smart_order_router_algo_request(
         self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
     ) -> Optional[PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo]:
         query = gql(
@@ -1694,7 +2102,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"algo": algo}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="PreviewSmartOrderRouterAlgoRequest",
             variables=variables,
@@ -1705,7 +2113,7 @@ class GraphQLClient(JuniperBaseClient):
             data
         ).preview_smart_order_router_algo
 
-    def send_smart_order_router_algo_request(
+    async def send_smart_order_router_algo_request(
         self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
     ) -> str:
         query = gql(
@@ -1716,7 +2124,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"algo": algo}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="SendSmartOrderRouterAlgoRequest",
             variables=variables,
@@ -1727,7 +2135,7 @@ class GraphQLClient(JuniperBaseClient):
             data
         ).create_smart_order_router_algo
 
-    def send_mm_algo_request(self, algo: CreateMMAlgo, **kwargs: Any) -> str:
+    async def send_mm_algo_request(self, algo: CreateMMAlgo, **kwargs: Any) -> str:
         query = gql(
             """
             mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
@@ -1736,7 +2144,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"algo": algo}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="SendMmAlgoRequest",
             variables=variables,
@@ -1745,7 +2153,9 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return SendMmAlgoRequest.model_validate(data).create_mm_algo
 
-    def send_spread_algo_request(self, algo: CreateSpreadAlgo, **kwargs: Any) -> str:
+    async def send_spread_algo_request(
+        self, algo: CreateSpreadAlgo, **kwargs: Any
+    ) -> str:
         query = gql(
             """
             mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
@@ -1754,7 +2164,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"algo": algo}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="SendSpreadAlgoRequest",
             variables=variables,
@@ -1763,7 +2173,7 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return SendSpreadAlgoRequest.model_validate(data).create_spread_algo
 
-    def cancel_order(self, order_id: str, **kwargs: Any) -> str:
+    async def cancel_order(self, order_id: str, **kwargs: Any) -> str:
         query = gql(
             """
             mutation CancelOrder($orderId: OrderId!) {
@@ -1772,13 +2182,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="CancelOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return CancelOrder.model_validate(data).cancel_order
 
-    def cancel_orders(self, order_ids: List[str], **kwargs: Any) -> List[str]:
+    async def cancel_orders(self, order_ids: List[str], **kwargs: Any) -> List[str]:
         query = gql(
             """
             mutation CancelOrders($orderIds: [OrderId!]!) {
@@ -1787,13 +2197,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"orderIds": order_ids}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="CancelOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return CancelOrders.model_validate(data).cancel_orders
 
-    def cancel_all_orders(
+    async def cancel_all_orders(
         self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
     ) -> Optional[str]:
         query = gql(
@@ -1804,13 +2214,13 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {"venue": venue}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="CancelAllOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return CancelAllOrders.model_validate(data).cancel_all_orders
 
-    def remove_telegram_api_keys(self, **kwargs: Any) -> bool:
+    async def remove_telegram_api_keys(self, **kwargs: Any) -> bool:
         query = gql(
             """
             mutation RemoveTelegramApiKeys {
@@ -1819,7 +2229,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {}
-        response = self.execute(
+        response = await self.execute(
             query=query,
             operation_name="RemoveTelegramApiKeys",
             variables=variables,
@@ -1828,7 +2238,91 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return RemoveTelegramApiKeys.model_validate(data).remove_telegram_api_keys
 
-    def get_book_snapshot(
+    async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
+        Union[
+            SubscribeOrderflowOrderflowOrder,
+            SubscribeOrderflowOrderflowOmsOrderUpdate,
+            SubscribeOrderflowOrderflowCancel,
+            SubscribeOrderflowOrderflowCancelAll,
+            SubscribeOrderflowOrderflowAck,
+            SubscribeOrderflowOrderflowReject,
+            SubscribeOrderflowOrderflowFill,
+            SubscribeOrderflowOrderflowAberrantFill,
+            SubscribeOrderflowOrderflowOut,
+        ]
+    ]:
+        query = gql(
+            """
+            subscription SubscribeOrderflow {
+              orderflow {
+                __typename
+                ... on Order {
+                  id
+                  marketId
+                  dir
+                  quantity
+                  accountId
+                  orderType {
+                    __typename
+                    ... on LimitOrderType {
+                      limitPrice
+                      postOnly
+                    }
+                    ... on StopLossLimitOrderType {
+                      limitPrice
+                      triggerPrice
+                    }
+                    ... on TakeProfitLimitOrderType {
+                      limitPrice
+                      triggerPrice
+                    }
+                  }
+                  timeInForce {
+                    instruction
+                    goodTilDate
+                  }
+                  quoteId
+                  source
+                }
+                ... on Ack {
+                  orderId
+                }
+                ... on Reject {
+                  orderId
+                  reason
+                }
+                ... on OmsOrderUpdate {
+                  orderId
+                  orderState: state
+                  filledQty
+                  avgFillPrice
+                }
+                ... on Fill {
+                  fillOrderId: orderId
+                  fillKind: kind
+                  marketId
+                  dir
+                  price
+                  quantity
+                  tradeTime
+                }
+                ... on Out {
+                  orderId
+                }
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        async for data in self.execute_ws(
+            query=query,
+            operation_name="SubscribeOrderflow",
+            variables=variables,
+            **kwargs
+        ):
+            yield SubscribeOrderflow.model_validate(data).orderflow
+
+    async def get_book_snapshot(
         self,
         market: str,
         num_levels: int,
@@ -1866,13 +2360,13 @@ class GraphQLClient(JuniperBaseClient):
             "precision": precision,
             "retainSeconds": retain_seconds,
         }
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
         )
         data = self.get_data(response)
         return GetBookSnapshot.model_validate(data).book_snapshot
 
-    def get_accounts(self, **kwargs: Any) -> List[GetAccountsAccounts]:
+    async def get_accounts(self, **kwargs: Any) -> List[GetAccountsAccounts]:
         query = gql(
             """
             query GetAccounts {
@@ -1884,7 +2378,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {}
-        response = self.execute(
+        response = await self.execute(
             query=query, operation_name="GetAccounts", variables=variables, **kwargs
         )
         data = self.get_data(response)

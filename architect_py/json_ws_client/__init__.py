@@ -68,13 +68,8 @@ class JsonWsClient:
                         raise Exception(m["error"])
 
     async def get_symbology_snapshot(self) -> SymbologySnapshot:
-        res = await self.request("symbology/snapshot")
-        snap = SymbologySnapshot(**res)
-        # TODO: better/more complete rehydration
-        snap.routes = [Route(**r) for r in snap.routes]
-        snap.venues = [Venue(**v) for v in snap.venues]
-        snap.products = [Product(**p) for p in snap.products]
-        snap.markets = [Market(**m) for m in snap.markets]
+        res: dict[str, Any] = await self.request("symbology/snapshot")
+        snap = SymbologySnapshot.from_dict(res)
         return snap
 
     async def get_l2_book_snapshot(self, market_id: uuid.UUID) -> L2BookSnapshot:
@@ -87,9 +82,7 @@ class JsonWsClient:
         res = await self.request(
             "marketdata/book/l3/snapshot", QueryL3BookSnapshot(market_id=market_id)
         )
-        snap = L3BookSnapshot(**res)
-        snap.bids = [L3Order(**b) for b in snap.bids]
-        snap.asks = [L3Order(**a) for a in snap.asks]
+        snap = L3BookSnapshot.from_dict(res)
         return snap
 
     async def subscribe_trades(self, market_id: uuid.UUID) -> AsyncIterator[TradeV1]:

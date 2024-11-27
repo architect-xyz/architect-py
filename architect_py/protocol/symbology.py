@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Generic, Literal, Optional, TypeVar
+from typing import Any, Literal, Optional
 from .utils import valid_decimal, valid_uuid
 
 
@@ -241,3 +241,14 @@ class SymbologySnapshot:
     venues: list[Venue] = field(default_factory=list)
     products: list[Product] = field(default_factory=list)
     markets: list[Market] = field(default_factory=list)
+
+    @staticmethod
+    def from_dict(d) -> "SymbologySnapshot":
+        return SymbologySnapshot(
+            epoch=d["epoch"],
+            seqno=d["seqno"],
+            routes=[Route(**r) for r in d["routes"]],
+            venues=[Venue(**v) for v in d["venues"]],
+            products=[Product(**p) for p in d["products"]],
+            markets=[Market(**m) for m in d["markets"]],
+        )

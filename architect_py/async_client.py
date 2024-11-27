@@ -29,14 +29,22 @@ import dns.name
 import grpc.aio
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, AsyncIterator, List, Optional, Sequence, TypeAlias, Union
+from typing import (
+    Any,
+    AsyncIterator,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Union,
+)
 
 import grpc.aio
 
-from architect_py.async_graphql_client.base_model import UNSET, UnsetType
-from architect_py.async_graphql_client.get_market import GetMarketMarket
-from architect_py.async_graphql_client.subscribe_trades import SubscribeTradesTrades
-from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.graphql_client.base_model import UNSET, UnsetType
+from architect_py.graphql_client.get_market import GetMarketMarket
+from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
+from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.scalars import OrderDir
 from architect_py.utils.balance_and_positions import (
     Balance,
@@ -48,18 +56,18 @@ from architect_py.utils.dt import (
 )
 from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
 
-from .async_graphql_client import AsyncGraphQLClient
-from .async_graphql_client.enums import (
+from .graphql_client import GraphQLClient
+from .graphql_client.enums import (
     CreateOrderType,
     OrderSource,
     ReferencePrice,
 )
-from .async_graphql_client.fragments import (
+from .graphql_client.fragments import (
     MarketFieldsKindExchangeMarketKind,
     OrderFields,
 )
-from .async_graphql_client.get_order import GetOrderOrder
-from .async_graphql_client.input_types import (
+from .graphql_client.get_order import GetOrderOrder
+from .graphql_client.input_types import (
     CreateMMAlgo,
     CreateOrder,
     CreatePovAlgo,
@@ -83,10 +91,14 @@ from .protocol.symbology import Market, Product, Route, Venue
 logger = logging.getLogger(__name__)
 
 
-class AsyncClient(AsyncGraphQLClient):
-    def __init__(self, no_gql: bool = False, **kwargs):
+class AsyncClient(GraphQLClient):
+    def __init__(
+        self,
+        no_gql: bool = False,
+        **kwargs,
+    ):
         """
-        Please see the AsyncGraphQLClient class for the full list of arguments.
+        Please see the GraphQLClient class for the full list of arguments.
         """
         if kwargs["api_key"] is None:
             raise ValueError("API key is required.")
@@ -111,14 +123,13 @@ class AsyncClient(AsyncGraphQLClient):
 
         super().__init__(**kwargs)
         self.no_gql = no_gql
-        self.marketdata: dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
-        self.route_by_id: dict[UUID, Route] = {}
-        self.venue_by_id: dict[UUID, Venue] = {}
-        self.product_by_id: dict[UUID, Product] = {}
-        self.market_by_id: dict[UUID, Market] = {}
-        self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = (
-            {}
-        )  # route => venue => base => quote => market
+        self.marketdata: Dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
+        self.route_by_id: Dict[UUID, Route] = {}
+        self.venue_by_id: Dict[UUID, Venue] = {}
+        self.product_by_id: Dict[UUID, Product] = {}
+        self.market_by_id: Dict[UUID, Market] = {}
+        self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
+        # route => venue => base => quote => market
 
     async def grpc_channel(self, endpoint: Union[dns.name.Name, str]):
         srv_records = await dns.asyncresolver.resolve(endpoint, "SRV")
@@ -243,7 +254,7 @@ class AsyncClient(AsyncGraphQLClient):
         base: str,
         venue: str,
         route: str = "DIRECT",
-    ) -> list:
+    ) -> list[str]:
         """
         Lookup all markets matching the given criteria.  Requires the client to be initialized
         and symbology to be loaded and indexed.
@@ -382,6 +393,87 @@ class AsyncClient(AsyncGraphQLClient):
         )
 
         return await self.get_order(order)
+
+    async def send_market_pro_order(
+        self,
+        *,
+        market: str,
+        odir: OrderDir,
+        quantity: Decimal,
+        time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
+        account: Optional[str] = None,
+        source: OrderSource = OrderSource.API,
+        percent_through_market: Decimal = Decimal(0.02),
+    ) -> Optional[GetOrderOrder]:
+
+        # Check for GQL failures
+        bbo_snapshot = await self.get_market_snapshot(market)
+        if bbo_snapshot is None:
+            raise ValueError(
+                "Failed to send market order with reason: no market snapshot for {market}"
+            )
+
+        market_details = await self.get_market(market)
+        if market_details is None:
+            raise ValueError(
+                "Failed to send market order with reason: no market details for {market}"
+            )
+
+        if bbo_snapshot.last_price is None:
+            raise ValueError(
+                "Failed to send market order with reason: no last price for {market}"
+            )
+
+        if odir == OrderDir.BUY:
+            if bbo_snapshot.ask_price is None:
+                raise ValueError(
+                    "Failed to send market order with reason: no ask price for {market}"
+                )
+            limit_price = bbo_snapshot.ask_price * (1 + percent_through_market)
+        else:
+            if bbo_snapshot.bid_price is None:
+                raise ValueError(
+                    "Failed to send market order with reason: no bid price for {market}"
+                )
+            limit_price = bbo_snapshot.bid_price * (1 - percent_through_market)
+
+        # Avoid sending price outside CME's price bands
+        if market_details.venue.name == "CME":
+            if market_details.cme_product_group_info is None:
+                raise ValueError(
+                    "Failed to send market order with reason: no CME product group info for {market}"
+                )
+            price_band = market_details.cme_product_group_info.price_band
+            if price_band is None:
+                raise ValueError(
+                    "Failed to send market order with reason: no CME price band for {market}"
+                )
+            else:
+                price_band = Decimal(price_band)
+
+            if odir == OrderDir.BUY:
+                limit_price = min(limit_price, bbo_snapshot.last_price + price_band)
+            else:
+                limit_price = max(limit_price, bbo_snapshot.last_price - price_band)
+
+        # Conservatively round price to nearest tick
+        tick_round_method = (
+            TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
+        )
+        limit_price = nearest_tick(
+            Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size)
+        )
+
+        return await self.send_limit_order(
+            market=market,
+            odir=odir,
+            quantity=quantity,
+            account=account,
+            order_type=CreateOrderType.LIMIT,
+            limit_price=limit_price,
+            time_in_force_instruction=time_in_force_instruction,
+            source=source,
+        )
 
     async def send_twap_algo(
         self,

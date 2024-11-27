@@ -1,5 +1,4 @@
 [tool.ariadne-codegen]
-async_client = false
 target_package_path = "./architect_py"
 target_package_name = "graphql_client"
 client_name = "GraphQLClient"
