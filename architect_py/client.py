@@ -33,7 +33,7 @@ class Client(AsyncClientProtocol):
     """
 
     client: AsyncClient
-    loop: AbstractEventLoop
+    _loop: AbstractEventLoop
 
     def __init__(self, loop: Optional[AbstractEventLoop] = None, *args, **kwargs):
         self.client = AsyncClient(*args, **kwargs)
@@ -44,7 +44,7 @@ class Client(AsyncClientProtocol):
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-        self.loop = loop
+        self._loop = loop
 
         if "ipykernel" in sys.modules:
             # for jupyter notebooks
@@ -96,7 +96,7 @@ class Client(AsyncClientProtocol):
     ) -> T:
         return (
             super()
-            .__getattribute__("loop")
+            .__getattribute__("_loop")
             .run_until_complete(async_method(*args, **kwargs))
         )
 
