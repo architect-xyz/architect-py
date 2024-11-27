@@ -30,6 +30,8 @@ class Client(AsyncClientProtocol):
 
     Avoid adding functions or other attributes to this class unless you know what you are doing, because
     the __getattribute__ method changes the behavior of the class in a way that is not intuitive.
+
+    Instead, add them to the AsyncClient class.
     """
 
     client: AsyncClient
