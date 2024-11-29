@@ -1,7 +1,10 @@
 from asyncio import AbstractEventLoop
 import asyncio
 from functools import partial
-from typing import Awaitable, Callable, Optional, TypeVar
+import threading
+from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
+
+import sys
 
 from architect_py.async_client import AsyncClient
 from architect_py.protocol.client_protocol import AsyncClientProtocol
@@ -12,6 +15,7 @@ T = TypeVar("T")
 
 def is_async_function(obj):
     # can be converted to C function for faster performance
+    # asyncio.iscoroutinefunction is more comprehensive but almost 3x slower
     return callable(obj) and hasattr(obj, "__code__") and obj.__code__.co_flags & 0x80
 
 
@@ -23,10 +27,15 @@ class Client(AsyncClientProtocol):
     One can find the function definition in the AsyncClient class.
 
     The AsyncClient is more performant and powerful, so it is recommended to use that class if possible.
+
+    Avoid adding functions or other attributes to this class unless you know what you are doing, because
+    the __getattribute__ method changes the behavior of the class in a way that is not intuitive.
+
+    Instead, add them to the AsyncClient class.
     """
 
     client: AsyncClient
-    loop: AbstractEventLoop
+    _loop: AbstractEventLoop
 
     def __init__(self, loop: Optional[AbstractEventLoop] = None, *args, **kwargs):
         self.client = AsyncClient(*args, **kwargs)
@@ -37,44 +46,89 @@ class Client(AsyncClientProtocol):
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-        self.loop = loop
+        self._loop = loop
 
-    def __getattr__(self, name: str):
+        if "ipykernel" in sys.modules:
+            # for jupyter notebooks
+            import atexit
+
+            executor = AsyncExecutor()
+            atexit.register(executor.shutdown)
+
+            def _sync_call_create_task(
+                async_method: Callable[..., Coroutine[Any, Any, T]],
+                *args,
+                **kwargs,
+            ) -> Optional[T]:
+                """
+                Executes the given coroutine synchronously using the executor.
+                """
+                return executor.submit(async_method(*args, **kwargs))
+
+            super().__setattr__("_sync_call", _sync_call_create_task)
+
+    def __getattribute__(self, name: str):
         """
         You may have been lead here looking for the definition of a method of the Client
         It can be found if you look in the AsyncClient class, which this class is a wrapper for,
         or GraphQLClient, which is a parent class of AsyncClient
 
         Explanation:
-        __getattr__ is a magic method that is called when an attribute is not found in the class
+        __getattribute__ is a magic method that is called when searching for any attribute
         In this case, will look through self.client, which is an instance of the Client class
 
         We do this because we want to be able to call the async methods of the Client in a synchronous way
+
+        It must be getattribute and not getattr because of the AsyncClientProtocol class inheritance
+        We gain type hinting but lose the ability to call the methods of the Client class itself
+        in a normal way
         """
-        attr = getattr(self.client, name)
+        attr = getattr(super().__getattribute__("client"), name)
         if is_async_function(attr):
             if "subscribe" in name:
                 raise AttributeError(
                     f"Method {name} is an subscription based async method and cannot be called synchronously"
                 )
-            return partial(self._sync_call, attr)
+            return partial(super().__getattribute__("_sync_call"), attr)
         else:
             return attr
 
     def _sync_call(
         self, async_method: Callable[..., Awaitable[T]], *args, **kwargs
     ) -> T:
-        return self.loop.run_until_complete(async_method(*args, **kwargs))
+        return (
+            super()
+            .__getattribute__("_loop")
+            .run_until_complete(async_method(*args, **kwargs))
+        )
 
 
-a = Client()
+class AsyncExecutor:
+    def __init__(self):
+        """
+        one consideration is to enforce this class to be a singleton
+        however, this is not necessary as the class is only used in the Client class
+        when it is used in a jupyter notebook, so unlikely to be a problem
+        """
 
-a.find_markets
-a.get_l3_book_snapshot
-a.subscribe_l1_book_snapshots
+        self.loop = asyncio.new_event_loop()
+        self.thread = threading.Thread(target=self._run_loop, daemon=True)
+        self.thread.start()
 
-a = AsyncClient()
+    def _run_loop(self):
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
 
-a.find_markets
-a.get_l3_book_snapshot
-a.subscribe_l1_book_snapshots
+    def submit(self, coro: Coroutine[Any, Any, Any]) -> Any:
+        """
+        Submit a coroutine to the event loop and wait for its result synchronously.
+        """
+        future = asyncio.run_coroutine_threadsafe(coro, self.loop)
+        return future.result()
+
+    def shutdown(self):
+        """
+        Shutdown the event loop and background thread gracefully.
+        """
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        self.thread.join()

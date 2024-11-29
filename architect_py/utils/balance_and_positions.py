@@ -32,6 +32,10 @@ class Balance:
     cash_excess: Optional[Decimal]
     yesterday_balance: Optional[Decimal]
 
+    @staticmethod
+    def new_empty() -> "Balance":
+        return Balance(None, None, None, None, None, None)
+
     @property
     def change_in_balance(self) -> Optional[Decimal]:
         if self.amount and self.yesterday_balance:

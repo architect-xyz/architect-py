@@ -19,8 +19,8 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
+import asyncio
 import fnmatch
-from functools import lru_cache
 import logging
 import re
 from uuid import UUID
@@ -99,6 +99,8 @@ class AsyncClient(GraphQLClient):
     ):
         """
         Please see the GraphQLClient class for the full list of arguments.
+
+        TODO: make paper trading port change to 6789 automatic
         """
         if kwargs["api_key"] is None:
             raise ValueError("API key is required.")
@@ -145,13 +147,9 @@ class AsyncClient(GraphQLClient):
         await self.load_and_index_symbology()
 
     async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
-        return await self._get_cached_market(id, **kwargs)
-
-    @lru_cache(maxsize=10)
-    async def _get_cached_market(
-        self, id: str, **kwargs: Any
-    ) -> Optional[GetMarketMarket]:
-        return await super().get_market(id, **kwargs)
+        # TODO: cache this function output
+        market = await super().get_market(id, **kwargs)
+        return market
 
     async def search_markets(
         self,
@@ -168,26 +166,44 @@ class AsyncClient(GraphQLClient):
         regex: str | None = None,
         **kwargs: Any,
     ) -> List[SearchMarketsFilterMarkets]:
-        markets = await super().search_markets(
-            venue,
-            base,
-            quote,
-            underlying,
-            max_results,
-            results_offset,
-            search_string,
-            only_favorites,
-            sort_by_volume_desc,
-            **kwargs,
-        )
 
-        if glob is not None:
-            markets = [
-                market for market in markets if fnmatch.fnmatch(market.name, glob)
-            ]
+        if glob or regex:
+            markets = await super().search_markets(
+                venue,
+                base,
+                quote,
+                underlying,
+                UNSET,
+                results_offset,
+                search_string,
+                only_favorites,
+                sort_by_volume_desc,
+                **kwargs,
+            )
 
-        if regex is not None:
-            markets = [market for market in markets if re.match(regex, market.name)]
+            if glob is not None:
+                markets = [
+                    market for market in markets if fnmatch.fnmatch(market.name, glob)
+                ]
+
+            if regex is not None:
+                markets = [market for market in markets if re.match(regex, market.name)]
+
+            markets = markets[:max_results] if isinstance(max_results, int) else markets
+
+        else:
+            markets = await super().search_markets(
+                venue,
+                base,
+                quote,
+                underlying,
+                max_results,
+                results_offset,
+                search_string,
+                only_favorites,
+                sort_by_volume_desc,
+                **kwargs,
+            )
 
         return markets
 
@@ -355,6 +371,7 @@ class AsyncClient(GraphQLClient):
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
+        wait_for_confirm: bool = False,
     ) -> Optional[GetOrderOrder]:
         """
         `account` is optional depending on the final cpty it gets to
@@ -392,6 +409,21 @@ class AsyncClient(GraphQLClient):
             )
         )
 
+        if wait_for_confirm:
+            i = 0
+            while i < 30:
+                order_info = await self.get_order(order_id=order)
+                if order_info is None:
+                    return None
+                else:
+                    if len(order_info.order_state) > 1:
+                        return order_info
+                    elif order_info.order_state[0] != "OPEN":
+                        return order_info
+                    else:
+                        i += 1
+                await asyncio.sleep(0.1)
+
         return await self.get_order(order)
 
     async def send_market_pro_order(
@@ -403,7 +435,7 @@ class AsyncClient(GraphQLClient):
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        percent_through_market: Decimal = Decimal(0.02),
+        fraction_through_market: Decimal = Decimal("0.001"),
     ) -> Optional[GetOrderOrder]:
 
         # Check for GQL failures
@@ -429,13 +461,13 @@ class AsyncClient(GraphQLClient):
                 raise ValueError(
                     "Failed to send market order with reason: no ask price for {market}"
                 )
-            limit_price = bbo_snapshot.ask_price * (1 + percent_through_market)
+            limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
         else:
             if bbo_snapshot.bid_price is None:
                 raise ValueError(
                     "Failed to send market order with reason: no bid price for {market}"
                 )
-            limit_price = bbo_snapshot.bid_price * (1 - percent_through_market)
+            limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
 
         # Avoid sending price outside CME's price bands
         if market_details.venue.name == "CME":
@@ -688,7 +720,7 @@ class AsyncClient(GraphQLClient):
         [market] = [
             market
             for market in await self.search_markets(
-                search_string=f"^{root} {year}{month}",
+                regex=f"^{root} {year}{month}",
                 venue="CME",
             )
             if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
@@ -709,7 +741,7 @@ class AsyncClient(GraphQLClient):
                     continue
                 name = account.account.name
 
-                usd = None
+                usd = Balance.new_empty()
                 for balance in account.balances:
                     if balance.product is None:
                         continue
@@ -749,9 +781,7 @@ class AsyncClient(GraphQLClient):
                             cash_excess,
                             yesterday_balance,
                         )
-
-                if usd is None:
-                    raise ValueError(f"Account {name} has no USD balance")
+                        break
 
                 positions = {}
                 for position in account.positions:
