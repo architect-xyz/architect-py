@@ -1,9 +1,10 @@
+import inspect
 from decimal import Decimal
 from enum import Enum
-import architect_py.async_client
 
-from typing import Any, get_origin, get_args, Union, Protocol
-import inspect
+from typing import Any, get_args, get_origin, Protocol, Union
+
+import architect_py.async_client
 
 from architect_py.graphql_client.base_model import UnsetType
 

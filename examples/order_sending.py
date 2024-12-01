@@ -1,7 +1,9 @@
 import asyncio
+
+import logging
 from datetime import datetime, timedelta
+
 from architect_py.async_client import AsyncClient, OrderDirection
-from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.async_graphql_client.enums import (
     CreateOrderType,
     CreateTimeInForceInstruction,
@@ -10,8 +12,7 @@ from architect_py.async_graphql_client.enums import (
 from architect_py.async_graphql_client.fragments import (
     MarketFieldsKindExchangeMarketKind,
 )
-
-import logging
+from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
 
 LOGGER = logging.getLogger(__name__)
 
@@ -168,6 +169,7 @@ async def test_create_mm_algo():
 async def test_cancel_all_orders():
     await client.cancel_all_orders()
 
+
 async def test_send_market_pro_order():
     market = await get_market()
     print(market)
@@ -178,8 +180,9 @@ async def test_send_market_pro_order():
         dir=OrderDirection.BUY,
         quantity=1,
         account=ACCOUNT,
-        time_in_force=CreateTimeInForceInstruction.IOC
+        time_in_force=CreateTimeInForceInstruction.IOC,
     )
+
 
 async def main():
     await test_send_market_pro_order()

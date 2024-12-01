@@ -1,10 +1,10 @@
-from asyncio import AbstractEventLoop
 import asyncio
-from functools import partial
-import threading
-from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
 
 import sys
+import threading
+from asyncio import AbstractEventLoop
+from functools import partial
+from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
 
 from architect_py.async_client import AsyncClient
 from architect_py.protocol.client_protocol import AsyncClientProtocol

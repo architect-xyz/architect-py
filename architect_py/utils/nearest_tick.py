@@ -6,14 +6,13 @@ nearest_tick(123.456, TickRoundMethod.ROUND, tick_size)
 """
 
 from decimal import (
+    Decimal,
     ROUND_CEILING,
     ROUND_DOWN,
     ROUND_FLOOR,
     ROUND_HALF_UP,
     ROUND_UP,
-    Decimal,
 )
-
 
 from enum import Enum
 

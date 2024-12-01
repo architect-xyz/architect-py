@@ -10,12 +10,22 @@ Changes made from default base client:
 
 import enum
 import json
-from typing import IO, Any, AsyncIterator, Dict, List, Optional, Tuple, TypeVar, cast
+from typing import Any, AsyncIterator, cast, Dict, IO, List, Optional, Tuple, TypeVar
 from uuid import uuid4
 
 import httpx
 from pydantic import BaseModel
 from pydantic_core import to_jsonable_python
+
+from websockets.client import (  # type: ignore[import-not-found,unused-ignore]
+    connect as ws_connect,
+    WebSocketClientProtocol,
+)
+from websockets.typing import (  # type: ignore[import-not-found,unused-ignore]
+    Data,
+    Origin,
+    Subprotocol,
+)
 
 from .base_model import UNSET, Upload
 from .exceptions import (
@@ -23,16 +33,6 @@ from .exceptions import (
     GraphQLClientHttpError,
     GraphQLClientInvalidMessageFormat,
     GraphQLClientInvalidResponseError,
-)
-
-from websockets.client import (  # type: ignore[import-not-found,unused-ignore]
-    WebSocketClientProtocol,
-    connect as ws_connect,
-)
-from websockets.typing import (  # type: ignore[import-not-found,unused-ignore]
-    Data,
-    Origin,
-    Subprotocol,
 )
 
 Self = TypeVar("Self", bound="JuniperBaseClient")

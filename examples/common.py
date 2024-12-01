@@ -1,7 +1,8 @@
+import os
+
 from architect_py.async_client import AsyncClient
 from architect_py.client import Client
 from dotenv import load_dotenv
-import os
 
 
 def create_client():

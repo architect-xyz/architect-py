@@ -23,49 +23,32 @@ import asyncio
 import fnmatch
 import logging
 import re
-from uuid import UUID
-import dns.asyncresolver
-import dns.name
-import grpc.aio
 from datetime import date, datetime
 from decimal import Decimal
-from typing import (
-    Any,
-    AsyncIterator,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Union,
-)
+from typing import Any, AsyncIterator, Dict, List, Optional, Sequence, Union
+from uuid import UUID
+
+import dns.asyncresolver
+import dns.name
 
 import grpc.aio
 
 from architect_py.graphql_client.base_model import UNSET, UnsetType
 from architect_py.graphql_client.get_market import GetMarketMarket
-from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
 from architect_py.utils.balance_and_positions import (
     Balance,
     BalancesAndPositions,
     SimplePosition,
 )
-from architect_py.utils.dt import (
-    get_expiration_from_CME_name,
-)
-from architect_py.utils.nearest_tick import TickRoundMethod, nearest_tick
+from architect_py.utils.dt import get_expiration_from_CME_name
+from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
-from .graphql_client.enums import (
-    CreateOrderType,
-    OrderSource,
-    ReferencePrice,
-)
-from .graphql_client.fragments import (
-    MarketFieldsKindExchangeMarketKind,
-    OrderFields,
-)
+from .graphql_client.enums import CreateOrderType, OrderSource, ReferencePrice
+from .graphql_client.fragments import MarketFieldsKindExchangeMarketKind, OrderFields
 from .graphql_client.get_order import GetOrderOrder
 from .graphql_client.input_types import (
     CreateMMAlgo,
