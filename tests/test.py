@@ -41,53 +41,6 @@ from dotenv import load_dotenv
 
 
 # @pytest.mark.asyncio
-# async def test_search_markets():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-#     markets = await client.search_markets(glob="ES*", venue="CME")
-#     assert len(markets) > 5
-
-#     markets = await client.search_markets(glob="GC*", venue="CME")
-#     assert len(markets) > 5
-
-#     markets = await client.search_markets(
-#         glob="NQ*", venue="CME", sort_by_volume_desc=True
-#     )
-#     assert len(markets) > 5
-
-
-# @pytest.mark.asyncio
-# async def test_find_markets():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-#     markets = await client.search_markets(glob="ES*", venue="CME")
-#     markets = client.find_markets(base=markets[0].name, venue="CME")
-
-#     assert markets is not None
-
-
-# @pytest.mark.asyncio
-# async def test_subscribe_book_snapshots():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-
-# @pytest.mark.asyncio
-# async def test_subscribe_trades():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-#     markets = await client.search_markets(
-#         search_string="", venue="CME", sort_by_volume_desc=True
-#     )
-#     market = markets[0]
-
-#     i = 0
-#     async for trade in client.subscribe_trades(market.name):
-#         assert trade is not None
-#         i += 1
-
-#         if i == 5:
-#             break
-
-
-# @pytest.mark.asyncio
 # async def test_get_open_orders():
 #     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
@@ -182,34 +135,6 @@ from dotenv import load_dotenv
 #     assert order is not None
 
 
-# def test_sync_market_order():
-#     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-#     markets = client.search_markets(
-#         search_string="MGC", venue="CME", sort_by_volume_desc=True
-#     )
-#     market = markets[0]
-#     market_id = market.id
-
-#     order = client.send_market_pro_order(
-#         market=market_id,
-#         odir=OrderDir.BUY,
-#         quantity=Decimal(1),
-#         account=ACCOUNT,
-#         time_in_force_instruction=CreateTimeInForceInstruction.IOC,
-#         fraction_through_market=Decimal(0.0005),
-#     )
-
-#     assert order is not None
-#     order_id = order.order.id
-#     order = client.get_order(order_id)
-#     assert order is not None
-#     assert order.reject_reason is None
-
-#     cancel = client.cancel_order(order_id)
-#     assert cancel is not None
-
-
 # @pytest.mark.asyncio
 # async def test_market_pro_order():
 #     # check that sending strings for decimals works
@@ -240,70 +165,6 @@ from dotenv import load_dotenv
 
 #     cancel = await client.cancel_order(order_id)
 #     assert cancel is not None
-
-
-# @pytest.mark.asyncio
-# async def test_send_twap_algo():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-
-# @pytest.mark.asyncio
-# async def test_send_pov_algo():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-
-# @pytest.mark.asyncio
-# async def test_send_smart_order_router_algo():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-
-# @pytest.mark.asyncio
-# async def test_preview_smart_order_router():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-
-# @pytest.mark.asyncio
-# async def test_send_mm_algo():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-
-# def sync_get_cme_futures_series():
-#     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-#     series = client.get_cme_futures_series("ES")
-#     assert series is not None
-#     return series
-
-
-# @pytest.mark.asyncio
-# async def test_get_cme_futures_series():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-#     series = await client.get_cme_futures_series("ES")
-
-#     with ThreadPoolExecutor() as executor:
-#         future = executor.submit(sync_get_cme_futures_series)
-#         series_sync = future.result()
-
-#     assert series is not None
-#     assert series == series_sync
-
-
-# @pytest.mark.asyncio
-# async def test_get_cme_future_from_root_month_year():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-#     markets = await client.search_markets(glob="ES*", venue="CME")
-#     market = markets[0]
-#     assert market.name.startswith("ES")
-
-#     expiration = get_expiration_from_CME_name(market.name)
-
-#     fut = await client.get_cme_future_from_root_month_year(
-#         "ES", month=expiration.month, year=expiration.year
-#     )
-
-#     assert fut.id == market.id
 
 
 # def sync_get_account_summaries():

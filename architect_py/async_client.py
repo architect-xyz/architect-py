@@ -699,11 +699,10 @@ class AsyncClient(GraphQLClient):
     async def get_cme_future_from_root_month_year(
         self, root: str, month: int, year: int
     ) -> SearchMarketsFilterMarkets:
-
         [market] = [
             market
             for market in await self.search_markets(
-                regex=f"^{root} {year}{month}",
+                regex=f"^{root} {year}{month:02d}",
                 venue="CME",
             )
             if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
