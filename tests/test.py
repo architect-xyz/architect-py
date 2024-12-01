@@ -18,48 +18,6 @@ from architect_py.utils.nearest_tick import TickRoundMethod
 from dotenv import load_dotenv
 
 
-@pytest.fixture(scope="session", autouse=True)
-def create_async_client():
-    load_dotenv()
-
-    host = os.getenv("ARCHITECT_HOST") or "localhost"
-    port = int(os.getenv("ARCHITECT_PORT") or 4567)
-    api_key = os.getenv("ARCHITECT_API_KEY")
-    api_secret = os.getenv("ARCHITECT_API_SECRET")
-    # TODO: maybe use ARCHITECT_MODE for paper vs live
-    test_account = os.getenv("ARCHITECT_TEST_ACCOUNT")
-
-    if host == "app.architect.co":
-        raise ValueError(
-            "You have set the HOST to the production server. Please change it to the sandbox server."
-        )
-
-    # if ACCOUNT is not None and "PAPER" in ACCOUNT:
-    #     PORT = 6789
-    # else:
-    #     PORT = 4567
-
-    global client
-    client = AsyncClient(host=host, port=port, api_key=api_key, api_secret=api_secret)
-
-
-# @pytest.mark.asyncio
-# async def test_client_init():
-#     try:
-#         client = AsyncClient(host=HOST, api_key=" ", api_secret=" ", port=PORT)
-#     except ValueError:
-#         pass
-#     try:
-#         client = AsyncClient(
-#             host=HOST, api_key="asdlfkja", api_secret=";alskjdf", port=PORT
-#         )
-#     except ValueError:
-#         pass
-
-#     print(API_KEY, API_SECRET)
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET)
-
-
 # async def flatten_position():
 #     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
 
@@ -80,16 +38,6 @@ def create_async_client():
 #                     quantity=quantity,
 #                     account=account_id,
 #                 )
-
-
-# @pytest.mark.asyncio
-# async def test_get_market():
-#     global client
-#     markets = await client.search_markets(glob="ES*", venue="CME")
-#     name = markets[0].name
-
-#     market = await client.get_market(name)
-#     assert market is not None
 
 
 # def test_sync_search_markets():

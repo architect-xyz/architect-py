@@ -1,12 +1,12 @@
 import os
 
-import pytest
+import pytest_asyncio
 from architect_py.async_client import AsyncClient
 from dotenv import load_dotenv
 
 
-@pytest.fixture(scope="session")
-def async_client():
+@pytest_asyncio.fixture
+async def async_client():
     load_dotenv()
 
     host = os.getenv("ARCHITECT_HOST") or "localhost"
@@ -26,5 +26,7 @@ def async_client():
     # else:
     #     PORT = 4567
 
-    client = AsyncClient(host=host, port=port, api_key=api_key, api_secret=api_secret)
-    return client
+    async with AsyncClient(
+        host=host, port=port, api_key=api_key, api_secret=api_secret
+    ) as client:
+        yield client
