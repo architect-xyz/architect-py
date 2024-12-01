@@ -1,21 +1,23 @@
-import orjson
 import uuid
+from typing import Any, AsyncIterator, Optional
+
+import orjson
 import websockets.client
+
 from ..protocol import (
     ProtocolQueryMessage,
     ProtocolResponseMessage,
     ProtocolSubscribeMessage,
 )
-from ..protocol.symbology import SymbologySnapshot, Route, Venue, Product, Market
 from ..protocol.marketdata import (
-    QueryL2BookSnapshot,
-    QueryL3BookSnapshot,
     L2BookSnapshot,
     L3BookSnapshot,
     L3Order,
+    QueryL2BookSnapshot,
+    QueryL3BookSnapshot,
     TradeV1,
 )
-from typing import Any, AsyncIterator, Optional
+from ..protocol.symbology import Market, Product, Route, SymbologySnapshot, Venue
 
 
 class JsonWsClient:

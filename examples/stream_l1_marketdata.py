@@ -1,10 +1,12 @@
 import asyncio
 from uuid import UUID
+
 from architect_py.async_client import AsyncClient
 from architect_py.protocol.marketdata import (
     JsonMarketdataStub,
     SubscribeL1BookSnapshotsRequest,
 )
+
 from .common import create_async_client
 
 

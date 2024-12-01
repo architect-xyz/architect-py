@@ -1,8 +1,10 @@
 import pprint
 import time
+
 from architect_py.client import OrderDirection
 from architect_py.graphql_client.enums import OrderStateFlags
-from .common import create_client, print_book, print_open_orders, confirm
+
+from .common import confirm, create_client, print_book, print_open_orders
 
 
 c = create_client()

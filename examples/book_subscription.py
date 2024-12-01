@@ -1,10 +1,11 @@
 import asyncio
 import os
 
-from pydantic import ValidationError
-
 from architect_py.async_client import AsyncClient
 from architect_py.async_graphql_client.exceptions import GraphQLClientHttpError
+
+from pydantic import ValidationError
+
 from .common import create_async_client
 
 buy_columns = "{:>15} {:>15} {:>15}"
