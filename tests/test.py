@@ -213,7 +213,6 @@ from dotenv import load_dotenv
 #     assert balances == balances_sync
 
 
-
 # @pytest.mark.asyncio
 # async def test_cancel_orders():
 #     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
