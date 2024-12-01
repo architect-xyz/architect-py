@@ -13,8 +13,7 @@ async def async_client():
     port = int(os.getenv("ARCHITECT_PORT") or 4567)
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
-    # TODO: maybe use ARCHITECT_MODE for paper vs live
-    test_account = os.getenv("ARCHITECT_TEST_ACCOUNT")
+    # test_account = os.getenv("ARCHITECT_TEST_ACCOUNT")
 
     if host == "app.architect.co":
         raise ValueError(

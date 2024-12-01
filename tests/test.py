@@ -213,58 +213,6 @@ from dotenv import load_dotenv
 #     assert balances == balances_sync
 
 
-# def sync_get_cme_first_notice_date():
-#     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-#     name = "GC"
-
-#     markets = client.search_markets(glob=f"{name}*", venue="CME")
-#     nearest_market = markets[0]
-#     d = get_expiration_from_CME_name(nearest_market.name)
-#     for market in markets:
-#         d2 = get_expiration_from_CME_name(market.name)
-#         if d2 < d:
-#             d = d2
-#             nearest_market = market
-
-#     notice_date = client.get_cme_first_notice_date(nearest_market.id)
-
-#     assert markets is not None
-#     assert len(markets) > 5, f"There should be more than 5 {name} futures contracts"
-#     assert nearest_market.name.startswith(name)
-#     assert notice_date is not None
-#     assert notice_date < d
-
-#     return nearest_market, notice_date
-
-
-# @pytest.mark.asyncio
-# async def test_get_cme_first_notice_date():
-#     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-#     name = "GC"
-
-#     markets = await client.search_markets(glob=f"{name}*", venue="CME")
-#     nearest_market = markets[0]
-#     d = get_expiration_from_CME_name(nearest_market.name)
-#     for market in markets:
-#         d2 = get_expiration_from_CME_name(market.name)
-#         if d2 < d:
-#             d = d2
-#             nearest_market = market
-
-#     notice_date = await client.get_cme_first_notice_date(nearest_market.id)
-
-#     assert markets is not None
-#     assert len(markets) > 5, f"There should be more than 5 {name} futures contracts"
-#     assert nearest_market.name.startswith(name)
-#     assert notice_date is not None
-#     assert notice_date < d
-
-#     with ThreadPoolExecutor() as executor:
-#         future = executor.submit(sync_get_cme_first_notice_date)
-#         notice_date_sync = future.result()
-
-#     assert (nearest_market, notice_date) == notice_date_sync
-
 
 # @pytest.mark.asyncio
 # async def test_cancel_orders():
