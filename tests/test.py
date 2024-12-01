@@ -40,26 +40,6 @@ from dotenv import load_dotenv
 #                 )
 
 
-# def test_sync_search_markets():
-#     l = 5
-#     client = Client(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)
-
-#     markets = client.search_markets(glob="ES*", venue="CME")
-#     assert len(markets) > l
-
-#     markets = client.search_markets(glob="GC*", venue="CME")
-#     assert len(markets) > l
-
-#     markets = client.search_markets(glob="NQ*", venue="CME", sort_by_volume_desc=True)
-#     assert len(markets) > l
-
-#     for i in range(10):
-#         markets = client.search_markets(
-#             search_string="NQ", venue="CME", sort_by_volume_desc=True, max_results=l
-#         )
-#         assert len(markets) == l
-
-
 # @pytest.mark.asyncio
 # async def test_search_markets():
 #     client = AsyncClient(host=HOST, api_key=API_KEY, api_secret=API_SECRET, port=PORT)

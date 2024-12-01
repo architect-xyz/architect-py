@@ -20,7 +20,15 @@ async def test_search_for_es_front_month(async_client: AsyncClient):
 @pytest.mark.asyncio
 async def test_popular_cme_futures_exist(async_client: AsyncClient):
     markets = await async_client.search_markets(venue="CME")
-    popular_series = ["ES", "GC", "NQ"]
-    for series in popular_series:
-        futures = [market for market in markets if market.kind.base.name.startswith(f"{series} ")]
-        assert len(futures) > 1, f"not enough futures markets found in {series} series"
+    # list of popular CME futures series and the minimum
+    # number of futures we expect to see per series
+    popular_series = [("ES", 5), ("GC", 5), ("NQ", 5)]
+    for series, min_count in popular_series:
+        futures = [
+            market
+            for market in markets
+            if market.kind.base.name.startswith(f"{series} ")
+        ]
+        assert (
+            len(futures) > min_count
+        ), f"not enough futures markets found in {series} series"
