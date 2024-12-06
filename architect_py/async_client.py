@@ -275,7 +275,7 @@ class AsyncClient(GraphQLClient):
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
         req = SubscribeL1BookSnapshotsRequest(market_ids=market_ids)
-        return stub.SubscribeL1BookSnapshots(req)  # type: ignore
+        return stub.SubscribeL1BookSnapshots(req)  
 
     async def get_l2_book_snapshot(self, market: str) -> L2BookSnapshot:
         [_, cpty] = market.split("*", 1)
