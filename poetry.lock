@@ -316,16 +316,6 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
-name = "blist"
-version = "1.3.6"
-description = "a list-like type with better asymptotic performance and similar performance on small lists"
-optional = false
-python-versions = "*"
-files = [
-    {file = "blist-1.3.6.tar.gz", hash = "sha256:3a12c450b001bdf895b30ae818d4d6d3f1552096b8c995f0fe0c74bef04d1fc3"},
-]
-
-[[package]]
 name = "botocore"
 version = "1.35.76"
 description = "Low-level, data-driven core of boto 3."
@@ -2144,4 +2134,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4"
-content-hash = "0e5909b0c4bf6eb08f0aef95b64d721d3d26bac3e99a097c4fcad89eb5b6c2c3"
+content-hash = "e8f541d20b020ef4d6fdc4ce34fef6a0da6557d7b5a5ff572942d5df48ee85f8"
