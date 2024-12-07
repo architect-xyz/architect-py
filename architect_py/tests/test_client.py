@@ -10,3 +10,9 @@ async def test_client_init():
         client = AsyncClient(
             host="localhost", port=4567, api_key="something", api_secret='"alskjdf"'
         )
+
+
+@pytest.mark.asyncio
+async def test_client_jwt(async_client: AsyncClient):
+    jwt = await async_client.create_jwt()
+    assert jwt is not None, "jwt should not be None"

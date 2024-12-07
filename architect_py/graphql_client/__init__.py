@@ -5,6 +5,7 @@ from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
 from .cancel_orders import CancelOrders
 from .client import GraphQLClient
+from .create_jwt import CreateJwt
 from .enums import (
     AccountMode,
     AlgoControlCommand,
@@ -243,6 +244,7 @@ __all__ = [
     "CandleFields",
     "CandleWidth",
     "CmeSecurityType",
+    "CreateJwt",
     "CreateMMAlgo",
     "CreateOrder",
     "CreateOrderType",

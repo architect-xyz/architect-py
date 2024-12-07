@@ -843,3 +843,7 @@ query GetAccounts {
     name
   }
 }
+
+mutation CreateJwt {
+  createJwt
+}

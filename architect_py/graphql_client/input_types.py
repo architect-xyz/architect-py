@@ -140,7 +140,3 @@ class MarketFilter(BaseModel):
 class UpdateMarket(BaseModel):
     market_id: str = Field(alias="marketId")
     is_favorite: bool = Field(alias="isFavorite")
-
-
-CreateOrder.model_rebuild()
-CreateSpreadAlgo.model_rebuild()

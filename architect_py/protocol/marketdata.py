@@ -21,6 +21,20 @@ class JsonMarketdataStub(object):
                 buf, type=L1BookSnapshot
             ),
         )
+        self.L2BookSnapshot = channel.unary_unary(
+            "/json.architect.Marketdata/L2BookSnapshot",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=L2BookSnapshot
+            ),
+        )
+        self.SubscribeL2BookUpdates = channel.unary_stream(
+            "/json.architect.Marketdata/SubscribeL2BookUpdates",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=L2BookUpdate
+            ),
+        )
 
 
 class SubscribeL1BookSnapshotsRequest(msgspec.Struct, kw_only=True):
@@ -39,6 +53,47 @@ class L1BookSnapshot(msgspec.Struct, kw_only=True):
     def timestamp(self):
         dt = datetime.fromtimestamp(self.timestamp_s)
         return dt.replace(microsecond=self.timestamp_ns // 1000)
+    
+
+class L2BookSnapshotRequest(msgspec.Struct, kw_only=True):
+    market_id: str
+
+
+class SubscribeL2BookUpdatesRequest(msgspec.Struct, kw_only=True):
+    market_id: str
+
+
+class L2BookSnapshot(msgspec.Struct, kw_only=True, tag_field="t", tag="s"):
+    timestamp_s: int = msgspec.field(name="ts")
+    timestamp_ns: int = msgspec.field(name="tn")
+    sequence_id: int = msgspec.field(name="sid")
+    sequence_number: int = msgspec.field(name="sn")
+    bids: list[tuple[Decimal, Decimal]] = msgspec.field(name="b")
+    asks: list[tuple[Decimal, Decimal]] = msgspec.field(name="a")
+    
+    def timestamp(self):
+        dt = datetime.fromtimestamp(self.timestamp_s)
+        return dt.replace(microsecond=self.timestamp_ns // 1000)
+    
+
+class L2BookDiff(msgspec.Struct, kw_only=True, tag_field="t", tag="d"):
+    timestamp_s: int = msgspec.field(name="ts")
+    timestamp_ns: int = msgspec.field(name="tn")
+    sequence_id: int = msgspec.field(name="sid")
+    sequence_number: int = msgspec.field(name="sn")
+    # Set of (price, size) updates. If zero, the price level
+    # has been removed from the book.
+    bids: list[tuple[Decimal, Decimal]] = msgspec.field(name="b")
+    # Set of (price, size) updates. If zero, the price level
+    # has been removed from the book.
+    asks: list[tuple[Decimal, Decimal]] = msgspec.field(name="a")
+    
+    def timestamp(self):
+        dt = datetime.fromtimestamp(self.timestamp_s)
+        return dt.replace(microsecond=self.timestamp_ns // 1000)
+
+
+L2BookUpdate = Union[L2BookSnapshot, L2BookDiff]
 
 
 @dataclass(kw_only=True)
@@ -47,7 +102,7 @@ class QueryL2BookSnapshot:
 
 
 @dataclass(kw_only=True)
-class L2BookSnapshot:
+class ExternalL2BookSnapshot:
     timestamp: datetime
     epoch: datetime
     seqno: int

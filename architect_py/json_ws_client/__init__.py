@@ -10,7 +10,7 @@ from ..protocol import (
     ProtocolSubscribeMessage,
 )
 from ..protocol.marketdata import (
-    L2BookSnapshot,
+    ExternalL2BookSnapshot,
     L3BookSnapshot,
     L3Order,
     QueryL2BookSnapshot,
@@ -74,11 +74,11 @@ class JsonWsClient:
         snap = SymbologySnapshot.from_dict(res)
         return snap
 
-    async def get_l2_book_snapshot(self, market_id: uuid.UUID) -> L2BookSnapshot:
+    async def get_l2_book_snapshot(self, market_id: uuid.UUID) -> ExternalL2BookSnapshot:
         res = await self.request(
             "marketdata/book/l2/snapshot", QueryL2BookSnapshot(market_id=market_id)
         )
-        return L2BookSnapshot(**res)
+        return ExternalL2BookSnapshot(**res)
 
     async def get_l3_book_snapshot(self, market_id: uuid.UUID) -> L3BookSnapshot:
         res = await self.request(

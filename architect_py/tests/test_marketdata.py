@@ -1,4 +1,6 @@
 import pytest
+import pytz
+from datetime import datetime
 from architect_py.async_client import AsyncClient
 
 
@@ -33,3 +35,35 @@ async def test_subscribe_l1_stream(async_client: AsyncClient):
         i += 1
         if i > 5:
             break
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3)
+async def test_l2_snapshot(async_client: AsyncClient):
+    snap = await async_client.l2_book_snapshot(
+        "https://coinbase.marketdata.architect.co",
+        "BTC Crypto/USD*COINBASE/DIRECT"
+    )
+    assert snap is not None, "snapshot should not be None"
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3)
+async def test_marketdata_snapshots(async_client: AsyncClient):
+    # TODO: what is the actual expectation here?
+    # Check if market should be open based on CME hours
+    now = datetime.now(pytz.timezone('US/Central'))
+    weekday = now.weekday()
+    if weekday == 5:  # Saturday
+        pytest.skip("CME is closed on Saturday")
+    elif weekday == 4:  # Friday
+        if now.hour >= 21:  # After 9 PM
+            pytest.skip("CME is closed after 9 PM CT on Friday")
+    elif weekday == 6:  # Sunday
+        if now.hour < 17:  # Before 5 PM
+            pytest.skip("CME opens at 5 PM CT on Sunday")
+
+    markets = await async_client.get_cme_futures_series("ES")
+    _, market = markets[0]
+    snap = await async_client.get_market_snapshot(market.id)
+    assert snap is not None, "snapshot should not be None"

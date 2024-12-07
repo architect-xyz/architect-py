@@ -11,6 +11,7 @@ from .base_model import UNSET, UnsetType
 from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
 from .cancel_orders import CancelOrders
+from .create_jwt import CreateJwt
 from .enums import CandleWidth
 from .fills_subscription import FillsSubscription, FillsSubscriptionFills
 from .get_account_summaries import (
@@ -2383,3 +2384,18 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetAccounts.model_validate(data).accounts
+
+    async def create_jwt(self, **kwargs: Any) -> str:
+        query = gql(
+            """
+            mutation CreateJwt {
+              createJwt
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query, operation_name="CreateJwt", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return CreateJwt.model_validate(data).create_jwt
