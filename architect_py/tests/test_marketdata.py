@@ -18,13 +18,19 @@ from architect_py.async_client import AsyncClient
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3)
-async def test_subscribe_l1_stream(async_client: AsyncClient):
+@pytest.mark.parametrize(
+    "endpoint,market_id", 
+    [
+        ("binance-futures-usd-m.marketdata.architect.co", "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"),
+        ("bybit.marketdata.architect.co", "BTC-USDT BYBIT Perpetual/USDT Crypto*BYBIT/DIRECT"),
+        ("okx.marketdata.architect.co", "BTC-USDT OKX Perpetual/USDT Crypto*OKX/DIRECT")
+    ]
+)
+async def test_subscribe_l1_stream(async_client: AsyncClient, endpoint: str, market_id: str):
     i = 0
     async for snap in await async_client.subscribe_l1_book_snapshots(
-        "binance-futures-usd-m.marketdata.architect.co",
-        market_ids=[
-            "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"
-        ],
+        endpoint,
+        market_ids=[market_id]
     ):
         # CR alee: really these should WARN a few times before failing;
         # think about how this interacts with presence
