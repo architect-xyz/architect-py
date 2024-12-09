@@ -47,8 +47,8 @@ async def test_subscribe_l1_stream(async_client: AsyncClient, endpoint: str, mar
 @pytest.mark.timeout(3)
 async def test_l2_snapshot(async_client: AsyncClient):
     snap = await async_client.l2_book_snapshot(
-        "https://coinbase.marketdata.architect.co",
-        "BTC Crypto/USD*COINBASE/DIRECT"
+        "okx.marketdata.architect.co",
+        "BTC Crypto/USD*OKX/DIRECT"
     )
     assert snap is not None, "snapshot should not be None"
 
