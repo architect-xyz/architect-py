@@ -8,7 +8,6 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from architect_py.utils.dt import convert_datetime_to_utc_str
 
 from .base_model import UNSET, UnsetType
-from .cancel_all_orders import CancelAllOrders
 from .cancel_order import CancelOrder
 from .cancel_orders import CancelOrders
 from .create_jwt import CreateJwt
@@ -2203,23 +2202,6 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return CancelOrders.model_validate(data).cancel_orders
-
-    async def cancel_all_orders(
-        self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
-    ) -> Optional[str]:
-        query = gql(
-            """
-            mutation CancelAllOrders($venue: VenueId) {
-              cancelAllOrders(venueId: $venue)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"venue": venue}
-        response = await self.execute(
-            query=query, operation_name="CancelAllOrders", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return CancelAllOrders.model_validate(data).cancel_all_orders
 
     async def remove_telegram_api_keys(self, **kwargs: Any) -> bool:
         query = gql(

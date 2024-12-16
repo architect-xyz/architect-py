@@ -1016,6 +1016,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     async def cancel_all_orders(
         self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
     ) -> Optional[str]:
+        # TODO: add back the graphql cancel_all_orders once fixed
         orders = await self.get_open_orders()
 
         for order in orders:

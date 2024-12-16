@@ -754,9 +754,9 @@ mutation CancelOrders($orderIds: [OrderId!]!) {
   cancelOrders(orderIds: $orderIds)
 }
 
-mutation CancelAllOrders($venue: VenueId) {
-  cancelAllOrders(venueId: $venue)
-}
+# mutation CancelAllOrders($venue: VenueId) {
+#   cancelAllOrders(venueId: $venue)
+# }
 
 mutation RemoveTelegramApiKeys {
   removeTelegramApiKeys
