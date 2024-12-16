@@ -247,9 +247,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             raise Exception(f"No SRV records found for {url.hostname}")
         connect_str = f"{srv_records[0].target}:{srv_records[0].port}"
         if is_https:
-            credentials = grpc.ssl_channel_credentials(root_certificates=self.grpc_root_certificates)
+            credentials = grpc.ssl_channel_credentials(
+                root_certificates=self.grpc_root_certificates
+            )
             options = (("grpc.ssl_target_name_override", "service.architect.xyz"),)
-            return grpc.aio.secure_channel(connect_str, credentials, options = options)
+            return grpc.aio.secure_channel(connect_str, credentials, options=options)
         else:
             return grpc.aio.insecure_channel(connect_str)
 
@@ -273,7 +275,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 )  # TODO: actually inspect the JWT exp
             except Exception as e:
                 logger.error("Failed to refresh gRPC credentials: %s", e)
-        
+
         return self.grpc_jwt
 
     def configure_marketdata(self, *, cpty: str, url: str):
@@ -435,31 +437,46 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         stub = JsonMarketdataStub(channel)
         req = L2BookSnapshotRequest(market_id=market_id)
         jwt = await self.refresh_grpc_credentials()
-        # TODO: use secure channel or force allow auth header over insecure channel 
+        # TODO: use secure channel or force allow auth header over insecure channel
         # credentials = None if jwt is None else grpc.access_token_call_credentials(jwt)
-        return await stub.L2BookSnapshot(req, metadata=(("authorization", f"Bearer {jwt}"),))
-    
-    async def subscribe_l2_book_updates(self, endpoint: str, market_id: str) -> AsyncIterator[L2BookUpdate]:
+        return await stub.L2BookSnapshot(
+            req, metadata=(("authorization", f"Bearer {jwt}"),)
+        )
+
+    async def subscribe_l2_book_updates(
+        self, endpoint: str, market_id: str
+    ) -> AsyncIterator[L2BookUpdate]:
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
         req = SubscribeL2BookUpdatesRequest(market_id=market_id)
         jwt = await self.refresh_grpc_credentials()
-        return stub.SubscribeL2BookUpdates(req, metadata=(("authorization", f"Bearer {jwt}"),))
-    
-    async def watch_l2_book(self, endpoint: str, market_id: str) -> AsyncIterator[tuple[int, int]]:
+        return stub.SubscribeL2BookUpdates(
+            req, metadata=(("authorization", f"Bearer {jwt}"),)
+        )
+
+    async def watch_l2_book(
+        self, endpoint: str, market_id: str
+    ) -> AsyncIterator[tuple[int, int]]:
         async for up in await self.subscribe_l2_book_updates(endpoint, market_id):
             if isinstance(up, L2BookSnapshot):
                 self.l2_books[market_id] = L2Book(up)
             elif isinstance(up, L2BookDiff):
                 if market_id not in self.l2_books:
-                    raise ValueError(f"received update before snapshot for L2 book {market_id}")
+                    raise ValueError(
+                        f"received update before snapshot for L2 book {market_id}"
+                    )
                 book = self.l2_books[market_id]
-                if up.sequence_id != book.sequence_id or up.sequence_number != book.sequence_number + 1:
-                    raise ValueError(f"received update out of order for L2 book {market_id}")
+                if (
+                    up.sequence_id != book.sequence_id
+                    or up.sequence_number != book.sequence_number + 1
+                ):
+                    raise ValueError(
+                        f"received update out of order for L2 book {market_id}"
+                    )
                 book.update_from_diff(up)
 
             yield (up.sequence_id, up.sequence_number)
-    
+
     async def get_external_l2_book_snapshot(
         self, market: str
     ) -> ExternalL2BookSnapshot:
@@ -996,12 +1013,20 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             return None
         return notice.first_notice_date.date()
 
+    async def cancel_all_orders(
+        self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
+    ) -> Optional[str]:
+        orders = await self.get_open_orders()
 
-# TODO: move this somewhere else 
+        for order in orders:
+            await self.cancel_order(order.order_id)
+
+
+# TODO: move this somewhere else
 class L2Book:
-    timestamp_s: int 
+    timestamp_s: int
     timestamp_ns: int
-    sequence_id: int 
+    sequence_id: int
     sequence_number: int
     bids: dict[Decimal, Decimal]
     asks: dict[Decimal, Decimal]
@@ -1031,7 +1056,7 @@ class L2Book:
                 self.bids[price] = size
         for price, size in diff.asks:
             if size.is_zero():
-                if price in self.asks: 
+                if price in self.asks:
                     del self.asks[price]
             else:
                 self.asks[price] = size
@@ -1039,7 +1064,7 @@ class L2Book:
     def timestamp(self):
         dt = datetime.fromtimestamp(self.timestamp_s)
         return dt.replace(microsecond=self.timestamp_ns // 1000)
-    
+
     def snapshot(self) -> L2BookSnapshot:
         return L2BookSnapshot(
             timestamp_s=self.timestamp_s,
