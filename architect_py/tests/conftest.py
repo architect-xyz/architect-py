@@ -1,8 +1,10 @@
 import os
 
+import pytest
 import pytest_asyncio
-from architect_py.async_client import AsyncClient
 from dotenv import load_dotenv
+
+from architect_py.async_client import AsyncClient
 
 
 def is_truthy(value: str | None) -> bool:
@@ -34,3 +36,18 @@ async def async_client():
         host=host, port=port, api_key=api_key, api_secret=api_secret
     ) as client:
         yield client
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--live_orderflow",
+        action="store_true",
+        help="Run orderflow tests",
+    )
+
+
+def pytest_runtest_setup(item):
+    if "live_orderflow" in item.keywords and not item.config.getoption(
+        "--live_orderflow"
+    ):
+        pytest.skip("need --live_orderflow option to run this test")
