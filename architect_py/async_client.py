@@ -241,6 +241,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if "://" not in endpoint:
             endpoint = f"http://{endpoint}"
         url = urlparse(endpoint)
+        if url.hostname is None:
+            raise Exception(f"Invalid endpoint: {endpoint}")
         is_https = url.scheme == "https"
         srv_records = await dns.asyncresolver.resolve(url.hostname, "SRV")
         if len(srv_records) == 0:

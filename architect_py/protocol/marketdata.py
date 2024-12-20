@@ -12,7 +12,7 @@ from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
 
 
-class JsonMarketdataStub(object):
+class JsonMarketdataStub:
     def __init__(self, channel: Union[grpc.Channel, grpc.aio.Channel]):
         self.SubscribeL1BookSnapshots = channel.unary_stream(
             "/json.architect.Marketdata/SubscribeL1BookSnapshots",
@@ -53,7 +53,7 @@ class L1BookSnapshot(msgspec.Struct, kw_only=True):
     def timestamp(self):
         dt = datetime.fromtimestamp(self.timestamp_s)
         return dt.replace(microsecond=self.timestamp_ns // 1000)
-    
+
 
 class L2BookSnapshotRequest(msgspec.Struct, kw_only=True):
     market_id: str
@@ -70,11 +70,11 @@ class L2BookSnapshot(msgspec.Struct, kw_only=True, tag_field="t", tag="s"):
     sequence_number: int = msgspec.field(name="sn")
     bids: list[tuple[Decimal, Decimal]] = msgspec.field(name="b")
     asks: list[tuple[Decimal, Decimal]] = msgspec.field(name="a")
-    
+
     def timestamp(self):
         dt = datetime.fromtimestamp(self.timestamp_s)
         return dt.replace(microsecond=self.timestamp_ns // 1000)
-    
+
 
 class L2BookDiff(msgspec.Struct, kw_only=True, tag_field="t", tag="d"):
     timestamp_s: int = msgspec.field(name="ts")
@@ -87,7 +87,7 @@ class L2BookDiff(msgspec.Struct, kw_only=True, tag_field="t", tag="d"):
     # Set of (price, size) updates. If zero, the price level
     # has been removed from the book.
     asks: list[tuple[Decimal, Decimal]] = msgspec.field(name="a")
-    
+
     def timestamp(self):
         dt = datetime.fromtimestamp(self.timestamp_s)
         return dt.replace(microsecond=self.timestamp_ns // 1000)
