@@ -73,9 +73,9 @@ class JuniperBaseClient:
 
         ws_protocol = "wss" if use_tls else "ws"
         self.ws_url = f"{ws_protocol}://{host}:{port}/subscriptions/graphql"
-        self.ws_headers = {}
+        self.ws_headers: dict = {}
         self.ws_origin = Origin(ws_origin) if ws_origin else None
-        self.ws_connection_init_payload = {}
+        self.ws_connection_init_payload: dict[str, str] = {}
         if api_key and api_secret:
             self.ws_connection_init_payload["authorization"] = (
                 f"Basic {api_key} {api_secret}"
