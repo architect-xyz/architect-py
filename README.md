@@ -64,17 +64,10 @@ To run tests:
 `export $(cat pytest.env | xargs)`
 `pytest tests/*`
 
-to run the test, must have a pytest.env in the main directory file with the following content:
-```bash
-HOST=staging.architect.co
-API_KEY=...
-API_SECRET=...
-ACCOUNT=...
-```
-
 
 ### What does `update.sh` do?
 
 1. Uses ariadne-codegen to generate the async client
 2. Autogenerates the protocol that the sync client inherits from
+3. Runs the tests
 
