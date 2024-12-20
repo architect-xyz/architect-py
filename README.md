@@ -56,6 +56,9 @@ Important files:
 - `architect_py/client.py`: contains the sync client, delegates functions calls to a composed AsyncClient in the innards, inherits from the client_protocl to give the correct type hinting from Pylance
 - `tests` and `examples`: self-explanatory
 
+The purpose of the client_protocol.py is so that the sync client can inherit from it and users can get good code completion and get the correct typing on their function calls, because
+the type-checker would otherwise not play nice with the way the sync_client is using the getattr magic function.
+
 On any update, please run `update.sh`
 
 In addition, any new function should have a test included in test.py
@@ -65,9 +68,10 @@ To run tests:
 `pytest tests/*`
 
 
+
+
 ### What does `update.sh` do?
 
 1. Uses ariadne-codegen to generate the async client
 2. Autogenerates the protocol that the sync client inherits from
-3. Runs the tests
 
