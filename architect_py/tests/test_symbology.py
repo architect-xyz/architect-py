@@ -5,6 +5,8 @@ import pytest
 from architect_py.async_client import AsyncClient
 from dateutil.relativedelta import relativedelta
 
+from architect_py.graphql_client.fragments import MarketFieldsKindExchangeMarketKind
+
 
 @pytest.mark.asyncio
 async def test_futures_series_populated(async_client: AsyncClient):
@@ -13,10 +15,12 @@ async def test_futures_series_populated(async_client: AsyncClient):
     # number of futures we expect to see per series
     popular_series = [("ES", 5), ("GC", 5), ("NQ", 5)]
     for series, min_count in popular_series:
+
         futures = [
             market
             for market in markets
-            if market.kind.base.name.startswith(f"{series} ")
+            if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
+            and market.kind.base.name.startswith(f"{series} ")
         ]
         assert (
             len(futures) > min_count
@@ -28,12 +32,14 @@ async def test_search_for_es_front_month(async_client: AsyncClient):
     series = await async_client.get_cme_futures_series("ES")
     assert len(series) > 0, "no futures markets found in ES series"
     _, front_month_future = series[0]
-    assert re.match(
-        r"ES \d* CME Future", front_month_future.kind.base.name
-    ), "front month future base name does not match regex"
-    assert (
-        front_month_future.kind.quote.name == "USD"
-    ), "front month future quote is not USD"
+    if isinstance(front_month_future.kind, MarketFieldsKindExchangeMarketKind):
+        front_month_future.kind
+        assert re.match(
+            r"ES \d* CME Future", front_month_future.kind.base.name
+        ), "front month future base name does not match regex"
+        assert (
+            front_month_future.kind.quote.name == "USD"
+        ), "front month future quote is not USD"
 
 
 @pytest.mark.asyncio
@@ -46,6 +52,8 @@ async def test_get_cme_future_from_root_month_year(async_client: AsyncClient):
     future = await async_client.get_cme_future_from_root_month_year(
         "BTC", month=month, year=year
     )
+
+    assert isinstance(future.kind, MarketFieldsKindExchangeMarketKind)
     assert re.match(
         f"BTC {year}{month:02d}[0-9]{{2}} CME Future", future.kind.base.name
     ), "future base name does not match regex"

@@ -114,8 +114,8 @@ class AsyncClient(GraphQLClient):
 
         super().__init__(**kwargs)
         self.no_gql = no_gql
-        self.grpc_jwt = None
-        self.grpc_jwt_expiration = None
+        self.grpc_jwt: Optional[str] = None
+        self.grpc_jwt_expiration: Optional[datetime] = None
         self.grpc_root_certificates = b"""
 -----BEGIN CERTIFICATE-----
 MIIGXzCCBEegAwIBAgIUHOrdr4QhSz6SqPDFLWCqFAmAercwDQYJKoZIhvcNAQEN
@@ -366,16 +366,16 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     by_venue[market.venue.name] = {}
                 by_base = by_venue[market.venue.name]
 
-                if market.kind is MarketFieldsKindExchangeMarketKind:
+                if isinstance(market.kind, MarketFieldsKindExchangeMarketKind):
                     if market.kind.base.name not in by_base:
                         by_base[market.kind.base.name] = {}
                     by_quote = by_base[market.kind.base.name]
                     by_quote[market.kind.quote.name] = market.name
             logger.info("Indexed %d markets", len(markets))
         # get symbology from marketdata clients
-        clients = []
+        clients: list[JsonWsClient] = []
         if cpty is None:
-            clients = self.marketdata.values()
+            clients = list(self.marketdata.values())
         elif cpty in self.marketdata:
             clients = [self.marketdata[cpty]]
         for client in clients:
@@ -386,22 +386,22 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 self.venue_by_id[venue.id] = venue
             for product in snap.products:
                 self.product_by_id[product.id] = product
-            for market in snap.markets:
-                self.market_by_id[market.id] = market
-                route = self.route_by_id[market.route]
+            for snap_market in snap.markets:
+                self.market_by_id[snap_market.id] = snap_market
+                route = self.route_by_id[snap_market.route]
                 if route.name not in self.market_names_by_route:
                     self.market_names_by_route[route.name] = {}
                 by_venue = self.market_names_by_route[route.name]
-                venue = self.venue_by_id[market.venue]
+                venue = self.venue_by_id[snap_market.venue]
                 if venue.name not in by_venue:
                     by_venue[venue.name] = {}
                 by_base = by_venue[venue.name]
-                base = self.product_by_id[market.base()]
+                base = self.product_by_id[snap_market.base()]
                 if base.name not in by_base:
                     by_base[base.name] = {}
                 by_quote = by_base[base.name]
-                quote = self.product_by_id[market.quote()]
-                by_quote[quote.name] = market.name
+                quote = self.product_by_id[snap_market.quote()]
+                by_quote[quote.name] = snap_market.name
 
     # CR alee: make base, venue, route optional, and add optional quote.
     # Have to think harder about efficient indexing.
@@ -696,13 +696,14 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 raise ValueError(
                     "Failed to send market order with reason: no CME product group info for {market}"
                 )
-            price_band = market_details.cme_product_group_info.price_band
-            if price_band is None:
+
+            price_band_str = market_details.cme_product_group_info.price_band
+            if price_band_str is None:
                 raise ValueError(
                     "Failed to send market order with reason: no CME price band for {market}"
                 )
-            else:
-                price_band = Decimal(price_band)
+
+            price_band: Decimal = Decimal(price_band_str)
 
             if odir == OrderDir.BUY:
                 limit_price = min(limit_price, bbo_snapshot.last_price + price_band)
@@ -1057,6 +1058,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
         for order in orders:
             await self.cancel_order(order.order_id)
+
+        return None
 
 
 # TODO: move this somewhere else
