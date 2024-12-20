@@ -609,7 +609,41 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                         i += 1
                 await asyncio.sleep(0.1)
 
-        return await self.get_order(order)
+        order_return = await self.get_order(order)
+
+        if order_return is None:
+            market_info = await self.get_market(market)
+            if market_info is None:
+                raise ValueError(
+                    f"Market {market} not found and no order has been sent. "
+                    "Please put in a valid market. "
+                    "Examples of how to get valid markets:\n"
+                    'await client.search_markets(glob="ES*", venue="CME")\n'
+                    'await client.search_markets(regex="^ES.+25")\n'
+                    "One can check with the client.get_market(market)."
+                )
+
+            if account is not None:
+                accounts = await self.get_accounts()
+                if account not in [a.id for a in accounts]:
+                    raise ValueError(
+                        f"Account {account} not found. No order has been sent. Available accounts: {accounts}"
+                    )
+            else:
+                if market_info.venue.name == "CME":
+                    raise ValueError(
+                        "Account is required for CME orders. Please provide an account. No order has been sent."
+                    )
+                else:
+                    raise ValueError(
+                        "Order error has occured and no order has been sent. It may be because account is set to None."
+                    )
+
+            raise ValueError(
+                "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please try again and contact support if the issue persists."
+            )
+
+        return order_return
 
     async def send_market_pro_order(
         self,
