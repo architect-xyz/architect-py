@@ -5,16 +5,13 @@ A Python API for [Architect](https://architect.co).
 Just some of the features of this API:
 symbology, market snapshots, past trades, account queries, order management (including sending advanced algos!), and market feed subscriptions.
 
-The `AsyncClient` and `Client` are the entryway into making calls to the Architect backend. Check the `examples` folder or the `architect_py/tests` folders for example usages.
-
-While the AsyncClient is the recommended way to use the Architect API, we also have a Client that can be run without any familiarity with `async/await`.
-
-The sync clients and async clients usage is identical, except one removes the `await` before the call. The only exception to this is that the sync client does not support any subscriptions, because they are inherently asynchronous.
-
 This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.
 
 
 ## Example usage
+
+`AsyncClient` and `Client` are the entryways into making calls to the Architect backend.
+
 
 ```python
 import asyncio
@@ -51,9 +48,13 @@ def main():
     print(client.search_markets(glob="ES*", venue="CME"))
 ```
 
+While the AsyncClient is the recommended way to use the Architect API, the Client instead without any familiarity with `async/await`.
+The sync clients and async clients usage is identical, except one removes the `await` before the call. The only exception to this is that the sync client does not support any subscriptions, because they are inherently asynchronous.
+
+Check the `examples` folder or the `architect_py/tests` folders for example usages.
 
 
-## Running examples from this package
+### Running examples from this package
 
 Clone this repository to run examples in the `examples` directory.  This package
 uses poetry for dependency management.  To enter a poetry virtual environment, make
