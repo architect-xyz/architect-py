@@ -42,12 +42,19 @@ def pytest_addoption(parser):
     parser.addoption(
         "--live_orderflow",
         action="store_true",
+        default=False,
         help="Run orderflow tests",
     )
 
+def pytest_configure(config):
+    config.addinivalue_line("markers", "live_orderflow: runs live orders against Binance and other cptys")
 
-def pytest_runtest_setup(item):
-    if "live_orderflow" in item.keywords and not item.config.getoption(
-        "--live_orderflow"
-    ):
-        pytest.skip("need --live_orderflow option to run this test")
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--live_orderflow"):
+        # --runslow given in cli: do not skip slow tests
+        return
+    skip_liveorderflow = pytest.mark.skip(reason="need --live_orderflow option to run")
+    for item in items:
+        if "live_orderflow" in item.keywords:
+            item.add_marker(skip_liveorderflow)
