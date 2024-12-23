@@ -559,7 +559,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
         wait_for_confirm: bool = False,
-    ) -> Optional[GetOrderOrder]:
+    ) -> GetOrderOrder:
         """
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
@@ -601,7 +601,9 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             while i < 30:
                 order_info = await self.get_order(order_id=order)
                 if order_info is None:
-                    return None
+                    raise ValueError(
+                        "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
+                    )
                 else:
                     if len(order_info.order_state) > 1:
                         return order_info
@@ -610,6 +612,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     else:
                         i += 1
                 await asyncio.sleep(0.1)
+
+        print(order)
 
         order_return = await self.get_order(order)
 
@@ -630,7 +634,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
         fraction_through_market: Decimal = Decimal("0.001"),
-    ) -> Optional[GetOrderOrder]:
+    ) -> GetOrderOrder:
 
         # Check for GQL failures
         bbo_snapshot = await self.get_market_snapshot(market)
