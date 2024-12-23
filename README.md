@@ -1,6 +1,6 @@
 # architect_py
 
-A Python API for [Architect](https:://architect.co).
+A Python API for [Architect](https://architect.co).
 
 Just some of the features of this API:
 symbology, market snapshots, past trades, account queries, order management (including sending advanced algos!), and market feed subscriptions.
