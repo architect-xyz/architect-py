@@ -34,11 +34,12 @@ class Client(AsyncClientProtocol):
     Instead, add them to the AsyncClient class.
     """
 
+    __slots__ = ("client", "_loop")
     client: AsyncClient
     _loop: AbstractEventLoop
 
     def __init__(self, loop: Optional[AbstractEventLoop] = None, *args, **kwargs):
-        self.client = AsyncClient(*args, **kwargs)
+        super().__setattr__("client", AsyncClient(*args, **kwargs))
 
         if loop is None:
             try:
@@ -46,7 +47,7 @@ class Client(AsyncClientProtocol):
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-        self._loop = loop
+        super().__setattr__("_loop", loop)
 
         if "ipykernel" in sys.modules:
             # for jupyter notebooks
@@ -59,7 +60,7 @@ class Client(AsyncClientProtocol):
                 async_method: Callable[..., Coroutine[Any, Any, T]],
                 *args,
                 **kwargs,
-            ) -> Optional[T]:
+            ) -> T:
                 """
                 Executes the given coroutine synchronously using the executor.
                 """
@@ -77,7 +78,8 @@ class Client(AsyncClientProtocol):
         __getattribute__ is a magic method that is called when searching for any attribute
         In this case, will look through self.client, which is an instance of the Client class
 
-        We do this because we want to be able to call the async methods of the Client in a synchronous way
+        We do this because we want to be able to call the async methods of the Client in a synchronous way,
+        but otherwise pass through the other attributes normally
 
         It must be getattribute and not getattr because of the AsyncClientProtocol class inheritance
         We gain type hinting but lose the ability to call the methods of the Client class itself
@@ -92,6 +94,11 @@ class Client(AsyncClientProtocol):
             return partial(super().__getattribute__("_sync_call"), attr)
         else:
             return attr
+
+    def __setattr__(self, name: str, value: Any):
+        """primarily to prevent unintended shadowing"""
+        client = super().__getattribute__("client")
+        setattr(client, name, value)
 
     def _sync_call(
         self, async_method: Callable[..., Awaitable[T]], *args, **kwargs

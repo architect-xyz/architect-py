@@ -1,8 +1,9 @@
 import asyncio
+from decimal import Decimal
 import os
 
 from architect_py.async_client import AsyncClient
-from architect_py.async_graphql_client.exceptions import GraphQLClientHttpError
+from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 
 from pydantic import ValidationError
 
@@ -37,7 +38,10 @@ async def main():
     # market_id = "BTC Crypto/USD*COINBASE/DIRECT"
     market_id = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
     try:
-        stream = c.subscribe_book(market_id, precision="0.1", ping_interval=None)
+        stream = c.subscribe_book(
+            market_id, precision=Decimal("0.1"), ping_interval=None
+        )
+        # it is better to do `Decimal("0.1")` instead of Decimal(0.1) to avoid floating point errors
         async for book in stream:
             print_book(book)
     except GraphQLClientHttpError as e:

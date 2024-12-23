@@ -1,5 +1,19 @@
 # architect_py
 
+A Python API for [Architect](https:://architect.co).
+
+Just some of the features of this API:
+symbology, market snapshots, past trades, account queries, order management (including sending advanced algos!), and market feed subscriptions.
+
+The `AsyncClient` and `Client` are the entryway into making calls to the Architect backend. Check the `examples` folder or the `architect_py/tests` folders for example usages.
+
+While the AsyncClient is the recommended way to use the Architect API, we also have a Client that can be run without any familiarity with `async/await`.
+
+The sync clients and async clients usage is identical, except one removes the `await` before the call. The only exception to this is that the sync client does not support any subscriptions, because they are inherently asynchronous.
+
+This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.l
+
+
 ## Example usage
 
 ```python
@@ -9,7 +23,7 @@ from architect_py.async_client import AsyncClient
 
 async def main():
     c = AsyncClient(
-        host="<your installation domain>",
+        host="<your installation domain>",  # e.g. app.architect.co for the brokerage
         api_key="<api key>",
         api_secret="<api secret>"
     )
@@ -18,11 +32,28 @@ async def main():
     async for trade in s:
         print(trade)
 
-
 asyncio.run(main())
 ```
 
-## Running additional examples from this package
+```python
+from architect_py.client import Client
+
+def main():
+    c = Client(
+        host="<your installation domain>",
+        api_key="<api key>",
+        api_secret="<api secret>"
+    )
+    print(await c.execute("query { me { userId email } }"))
+    print("\n\n")
+    print(client.get_balances_and_positions())
+    print("\n\n")
+    print(client.search_markets(glob="ES*", venue="CME"))
+```
+
+
+
+## Running examples from this package
 
 Clone this repository to run examples in the `examples` directory.  This package
 uses poetry for dependency management.  To enter a poetry virtual environment, make
@@ -42,6 +73,12 @@ python -m examples.trades
 
 You can exit the poetry shell by running `exit`.  Environment variables set
 within the shell are not persisted.
+
+
+## API keys for the brokerage
+
+API keys/secrets for the brokerage can be generated on the [user account page](https://app.architect.co/user/account).
+
 
 ## Maintainers
 
