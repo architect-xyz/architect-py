@@ -11,7 +11,7 @@ While the AsyncClient is the recommended way to use the Architect API, we also h
 
 The sync clients and async clients usage is identical, except one removes the `await` before the call. The only exception to this is that the sync client does not support any subscriptions, because they are inherently asynchronous.
 
-This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.l
+This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.
 
 
 ## Example usage
