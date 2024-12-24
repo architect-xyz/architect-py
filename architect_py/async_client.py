@@ -613,8 +613,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                         i += 1
                 await asyncio.sleep(0.1)
 
-        print(order)
-
         order_return = await self.get_order(order)
 
         if order_return is None:
