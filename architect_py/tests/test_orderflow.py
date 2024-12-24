@@ -25,6 +25,7 @@ async def test_market_pro_order(async_client: AsyncClient):
     [
         "BTC Crypto/USDT Crypto*BINANCE/DIRECT",
         "ETH Crypto/USDT Crypto*BINANCE/DIRECT",
+        "SOL Crypto/USDT Crypto*BINANCE/DIRECT",
     ],
 )
 async def test_live_far_order_cancel(async_client: AsyncClient, market_id: str):
@@ -39,20 +40,24 @@ async def test_live_far_order_cancel(async_client: AsyncClient, market_id: str):
     snapshot = await async_client.get_market_snapshot(market_id)
     assert snapshot is not None, f"Snapshot does not exist for {market_id}"
 
-    min_qty = market.min_order_quantity * 10 # for some reason need to scale here, think min order qty is off
-    far_price = snapshot.bid_price * 1.15
+    min_qty = float(market.min_order_quantity)
+    far_price = float(snapshot.last_price) * 0.1
 
-    assert min_qty * far_price < 10 # ensure we are spending more than $10 on this (even though we will cancel the order)
+    assert (
+        min_qty * far_price < 10
+    )  # ensure we are spending more than $10 on this (even though we will cancel the order)
 
     # Make a very cheap
     order = await async_client.send_limit_order(
         market=market_id,
         odir=OrderDir.BUY,
         quantity=min_qty,  # not sure what's going here with min qty not being accurate
-        limit_price=far_price
+        limit_price=far_price,
     )
 
     assert order is not None
+
+    print(order)
 
     cancel = await async_client.cancel_order(order.order.id)
 
