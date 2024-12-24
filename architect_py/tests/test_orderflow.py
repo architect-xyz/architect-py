@@ -57,8 +57,6 @@ async def test_live_far_order_cancel(async_client: AsyncClient, market_id: str):
 
     assert order is not None
 
-    print(order)
-
     cancel = await async_client.cancel_order(order.order.id)
 
     assert cancel
