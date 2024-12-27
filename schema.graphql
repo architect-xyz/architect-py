@@ -20,9 +20,8 @@ enum AlgoKind {
   POV
   SMART_ORDER_ROUTER
   TWAP
-  SPREADER
-  CHASER
   SPREAD
+  CHASER
 }
 
 enum AlgoRunningStatus {
@@ -793,6 +792,7 @@ type EventSeries {
 type ExchangeMarketKind {
   base: Product!
   quote: Product!
+  legs: [Product!]!
 }
 
 type ExchangeSpecificUpdate {
@@ -966,9 +966,9 @@ type MutationRoot {
   "Set/unset market favorited by current user."
   updateMarket(payload: UpdateMarket!): Market
   "Send an order to Architect."
-  createOrder(order: CreateOrder!): OrderId!
+  createOrder(order: CreateOrder!): OrderLog
   "Send multiple orders to Architect."
-  createOrders(orders: [CreateOrder!]!): [OrderId!]!
+  createOrders(orders: [CreateOrder!]!): [OrderLog]!
   "Cancel an Architect order."
   cancelOrder(orderId: OrderId!): OrderId!
   "Cancel multiple Architect orders."
@@ -989,9 +989,9 @@ type MutationRoot {
   createSmartOrderRouterAlgo(algo: CreateSmartOrderRouterAlgo!): OrderId!
   "Create a new MM algo order."
   createMmAlgo(mmAlgo: CreateMMAlgo!): OrderId!
-
-  """Create a new Spread algo order."""
+  "Create a new Spread algo order."
   createSpreadAlgo(spreadAlgo: CreateSpreadAlgo!): OrderId!
+  changePaperUsdBalance(amount: Decimal!): Boolean!
 }
 
 type OmsOrderUpdate {
@@ -1108,6 +1108,7 @@ type Product {
   event: Event
   eventOutcome: EventOutcome
   eventContracts: EventContracts
+  marketsForBase: [MarketId!]!
 }
 
 type QueryRoot {

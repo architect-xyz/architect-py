@@ -49,7 +49,11 @@ from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import CreateOrderType, OrderSource, ReferencePrice
-from .graphql_client.fragments import MarketFieldsKindExchangeMarketKind, OrderFields
+from .graphql_client.fragments import (
+    MarketFieldsKindExchangeMarketKind,
+    OrderFields,
+    OrderLogFields,
+)
 from .graphql_client.get_order import GetOrderOrder
 from .graphql_client.input_types import (
     CreateMMAlgo,
@@ -558,8 +562,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        wait_for_confirm: bool = False,
-    ) -> GetOrderOrder:
+    ) -> OrderLogFields:
         """
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
@@ -577,7 +580,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if not isinstance(trigger_price, Decimal) and trigger_price is not None:
             trigger_price = Decimal(trigger_price)
 
-        order: str = await self.send_order(
+        order_return = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=odir,
@@ -596,25 +599,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             )
         )
 
-        if wait_for_confirm:
-            i = 0
-            while i < 30:
-                order_info = await self.get_order(order_id=order)
-                if order_info is None:
-                    raise ValueError(
-                        "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
-                    )
-                else:
-                    if len(order_info.order_state) > 1:
-                        return order_info
-                    elif order_info.order_state[0] != "OPEN":
-                        return order_info
-                    else:
-                        i += 1
-                await asyncio.sleep(0.1)
-
-        order_return = await self.get_order(order)
-
         if order_return is None:
             raise ValueError(
                 "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
@@ -632,7 +616,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
         fraction_through_market: Decimal = Decimal("0.001"),
-    ) -> GetOrderOrder:
+    ) -> OrderLogFields:
 
         # Check for GQL failures
         bbo_snapshot = await self.get_market_snapshot(market)

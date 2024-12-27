@@ -20,9 +20,8 @@ class AlgoKind(str, Enum):
     POV = "POV"
     SMART_ORDER_ROUTER = "SMART_ORDER_ROUTER"
     TWAP = "TWAP"
-    SPREADER = "SPREADER"
-    CHASER = "CHASER"
     SPREAD = "SPREAD"
+    CHASER = "CHASER"
 
 
 class AlgoRunningStatus(str, Enum):

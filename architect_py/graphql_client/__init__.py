@@ -184,8 +184,8 @@ from .preview_smart_order_router_algo_request import (
 from .remove_telegram_api_keys import RemoveTelegramApiKeys
 from .search_markets import SearchMarkets, SearchMarketsFilterMarkets
 from .send_mm_algo_request import SendMmAlgoRequest
-from .send_order import SendOrder
-from .send_orders import SendOrders
+from .send_order import SendOrder, SendOrderCreateOrder
+from .send_orders import SendOrders, SendOrdersCreateOrders
 from .send_pov_algo_request import SendPovAlgoRequest
 from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
 from .send_spread_algo_request import SendSpreadAlgoRequest
@@ -383,7 +383,9 @@ __all__ = [
     "SearchMarketsFilterMarkets",
     "SendMmAlgoRequest",
     "SendOrder",
+    "SendOrderCreateOrder",
     "SendOrders",
+    "SendOrdersCreateOrders",
     "SendPovAlgoRequest",
     "SendSmartOrderRouterAlgoRequest",
     "SendSpreadAlgoRequest",
