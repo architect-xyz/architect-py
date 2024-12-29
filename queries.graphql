@@ -709,11 +709,15 @@ subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!
 }
 
 mutation SendOrder($order: CreateOrder!) {
-  createOrder(order: $order)
+  createOrder(order: $order) {
+    ...OrderLogFields
+  }
 }
 
 mutation SendOrders($orders: [CreateOrder!]!) {
-  createOrders(orders: $orders)
+  createOrders(orders: $orders) {
+    ...OrderLogFields
+  }
 }
 
 mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {

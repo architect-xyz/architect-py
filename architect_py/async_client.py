@@ -19,7 +19,6 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-import asyncio
 import fnmatch
 import logging
 import re
@@ -49,7 +48,11 @@ from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import CreateOrderType, OrderSource, ReferencePrice
-from .graphql_client.fragments import MarketFieldsKindExchangeMarketKind, OrderFields
+from .graphql_client.fragments import (
+    MarketFieldsKindExchangeMarketKind,
+    OrderFields,
+    OrderLogFields,
+)
 from .graphql_client.get_order import GetOrderOrder
 from .graphql_client.input_types import (
     CreateMMAlgo,
@@ -114,8 +117,8 @@ class AsyncClient(GraphQLClient):
 
         super().__init__(**kwargs)
         self.no_gql = no_gql
-        self.grpc_jwt = None
-        self.grpc_jwt_expiration = None
+        self.grpc_jwt: Optional[str] = None
+        self.grpc_jwt_expiration: Optional[datetime] = None
         self.grpc_root_certificates = b"""
 -----BEGIN CERTIFICATE-----
 MIIGXzCCBEegAwIBAgIUHOrdr4QhSz6SqPDFLWCqFAmAercwDQYJKoZIhvcNAQEN
@@ -241,8 +244,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if "://" not in endpoint:
             endpoint = f"http://{endpoint}"
         url = urlparse(endpoint)
+        if url.hostname is None:
+            raise Exception(f"Invalid endpoint: {endpoint}")
         is_https = url.scheme == "https"
-        srv_records = await dns.asyncresolver.resolve(url.hostname, "SRV")
+        srv_records: list = await dns.asyncresolver.resolve(url.hostname, "SRV")
         if len(srv_records) == 0:
             raise Exception(f"No SRV records found for {url.hostname}")
         connect_str = f"{srv_records[0].target}:{srv_records[0].port}"
@@ -364,16 +369,16 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     by_venue[market.venue.name] = {}
                 by_base = by_venue[market.venue.name]
 
-                if market.kind is MarketFieldsKindExchangeMarketKind:
+                if isinstance(market.kind, MarketFieldsKindExchangeMarketKind):
                     if market.kind.base.name not in by_base:
                         by_base[market.kind.base.name] = {}
                     by_quote = by_base[market.kind.base.name]
                     by_quote[market.kind.quote.name] = market.name
             logger.info("Indexed %d markets", len(markets))
         # get symbology from marketdata clients
-        clients = []
+        clients: list[JsonWsClient] = []
         if cpty is None:
-            clients = self.marketdata.values()
+            clients = list(self.marketdata.values())
         elif cpty in self.marketdata:
             clients = [self.marketdata[cpty]]
         for client in clients:
@@ -384,22 +389,22 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 self.venue_by_id[venue.id] = venue
             for product in snap.products:
                 self.product_by_id[product.id] = product
-            for market in snap.markets:
-                self.market_by_id[market.id] = market
-                route = self.route_by_id[market.route]
+            for snap_market in snap.markets:
+                self.market_by_id[snap_market.id] = snap_market
+                route = self.route_by_id[snap_market.route]
                 if route.name not in self.market_names_by_route:
                     self.market_names_by_route[route.name] = {}
                 by_venue = self.market_names_by_route[route.name]
-                venue = self.venue_by_id[market.venue]
+                venue = self.venue_by_id[snap_market.venue]
                 if venue.name not in by_venue:
                     by_venue[venue.name] = {}
                 by_base = by_venue[venue.name]
-                base = self.product_by_id[market.base()]
+                base = self.product_by_id[snap_market.base()]
                 if base.name not in by_base:
                     by_base[base.name] = {}
                 by_quote = by_base[base.name]
-                quote = self.product_by_id[market.quote()]
-                by_quote[quote.name] = market.name
+                quote = self.product_by_id[snap_market.quote()]
+                by_quote[quote.name] = snap_market.name
 
     # CR alee: make base, venue, route optional, and add optional quote.
     # Have to think harder about efficient indexing.
@@ -556,8 +561,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        wait_for_confirm: bool = False,
-    ) -> Optional[GetOrderOrder]:
+    ) -> OrderLogFields:
         """
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
@@ -572,10 +576,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             else:
                 raise ValueError(f"Could not find market information for {market}")
 
-        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
-            trigger_price = Decimal(trigger_price)
-
-        order: str = await self.send_order(
+        order_return = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=odir,
@@ -594,22 +595,12 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             )
         )
 
-        if wait_for_confirm:
-            i = 0
-            while i < 30:
-                order_info = await self.get_order(order_id=order)
-                if order_info is None:
-                    return None
-                else:
-                    if len(order_info.order_state) > 1:
-                        return order_info
-                    elif order_info.order_state[0] != "OPEN":
-                        return order_info
-                    else:
-                        i += 1
-                await asyncio.sleep(0.1)
+        if order_return is None:
+            raise ValueError(
+                "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
+            )
 
-        return await self.get_order(order)
+        return order_return
 
     async def send_market_pro_order(
         self,
@@ -621,7 +612,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
         fraction_through_market: Decimal = Decimal("0.001"),
-    ) -> Optional[GetOrderOrder]:
+    ) -> OrderLogFields:
 
         # Check for GQL failures
         bbo_snapshot = await self.get_market_snapshot(market)
@@ -660,13 +651,14 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 raise ValueError(
                     "Failed to send market order with reason: no CME product group info for {market}"
                 )
-            price_band = market_details.cme_product_group_info.price_band
-            if price_band is None:
+
+            price_band_str = market_details.cme_product_group_info.price_band
+            if price_band_str is None:
                 raise ValueError(
                     "Failed to send market order with reason: no CME price band for {market}"
                 )
-            else:
-                price_band = Decimal(price_band)
+
+            price_band: Decimal = Decimal(price_band_str)
 
             if odir == OrderDir.BUY:
                 limit_price = min(limit_price, bbo_snapshot.last_price + price_band)
@@ -1021,6 +1013,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
         for order in orders:
             await self.cancel_order(order.order_id)
+
+        return None
 
 
 # TODO: move this somewhere else

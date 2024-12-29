@@ -24,17 +24,19 @@ async def main():
             "POPCAT-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"
         ],
     ):
-        market_name = "<unknown>"
         if snap.market_id in markets_by_id:
             market = markets_by_id[snap.market_id]
             market_name = market.name
+        else:
+            market_name = "<unknown>"
+
         best_bid_s = "<no bid>"
         best_ask_s = "<no ask>"
         if snap.best_bid:
             best_bid_s = f"{snap.best_bid[1]} x {snap.best_bid[0]}"  # size x price
         if snap.best_ask:
             best_ask_s = f"{snap.best_ask[0]} x {snap.best_ask[1]}"  # price x size
-        print(f"{market.name} {snap.timestamp()} {best_bid_s} {best_ask_s}")
+        print(f"{market_name} {snap.timestamp()} {best_bid_s} {best_ask_s}")
 
 
 asyncio.run(main())
