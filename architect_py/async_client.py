@@ -19,7 +19,6 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-import asyncio
 import fnmatch
 import logging
 import re
@@ -576,9 +575,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 )
             else:
                 raise ValueError(f"Could not find market information for {market}")
-
-        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
-            trigger_price = Decimal(trigger_price)
 
         order_return = await self.send_order(
             CreateOrder(
