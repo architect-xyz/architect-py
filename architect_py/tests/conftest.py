@@ -1,8 +1,10 @@
 import os
 
+import pytest
 import pytest_asyncio
-from architect_py.async_client import AsyncClient
 from dotenv import load_dotenv
+
+from architect_py.async_client import AsyncClient
 
 
 def is_truthy(value: str | None) -> bool:
@@ -34,3 +36,25 @@ async def async_client():
         host=host, port=port, api_key=api_key, api_secret=api_secret
     ) as client:
         yield client
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--live_orderflow",
+        action="store_true",
+        default=False,
+        help="Run orderflow tests",
+    )
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "live_orderflow: runs live orders against Binance and other cptys")
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--live_orderflow"):
+        # --runslow given in cli: do not skip slow tests
+        return
+    skip_liveorderflow = pytest.mark.skip(reason="need --live_orderflow option to run")
+    for item in items:
+        if "live_orderflow" in item.keywords:
+            item.add_marker(skip_liveorderflow)
