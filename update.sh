@@ -3,7 +3,7 @@ poetry run ariadne-codegen --config ariadne-codegen.toml
 python generate_protocol.py > architect_py/protocol/client_protocol.py
 
 
-VERSION_FILE="architect_py/_version.py"
+VERSION_FILE="version"
 
 # Extract the current version from the file
 if [ -f "$VERSION_FILE" ]; then
@@ -14,4 +14,4 @@ else
     exit 1
 fi
 
-echo "Have you updated the version in $VERSION_FILE?"
+echo "\n\nHave you updated the version in $VERSION_FILE?"
