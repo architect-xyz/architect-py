@@ -98,7 +98,7 @@ Important files:
 The purpose of the client_protocol.py is so that the sync client can inherit from it and users can get good code completion and get the correct typing on their function calls, because
 the type-checker would otherwise not play nice with the way the sync_client is using the getattr magic function.
 
-On any update, please run `update.sh` and update the version in `architect_py/_version.py`
+On any update, please run `update.sh` and update the version in the `version` file on the top level
 
 In addition, any new function should have a test included in test.py
 
