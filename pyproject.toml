@@ -14,9 +14,6 @@ classifiers = [
 [tool.setuptools.dynamic]
 version = { attr = "architect_py._version.__version__" }
 
-[tool.poetry-dynamic-versioning]
-enable = true
-
 [tool.poetry.dependencies]
 asyncio = "^3"
 dnspython = "^2"
