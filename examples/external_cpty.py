@@ -12,7 +12,7 @@ class SimpleExternalCpty(WebSocket):
         super().__init__(*args, **kwargs)
         # in a prod environment, these should probably be global and not per-connection
         self.open_orders = {}
-        self.balances = defaultdict(lambda: 0)
+        self.balances = defaultdict(lambda: 0.0)
 
     def logAndSendMessage(self, data):
         print(f"> {data}")

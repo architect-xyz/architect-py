@@ -1,18 +1,21 @@
 import asyncio
 
+from decimal import Decimal
 import logging
 from datetime import datetime, timedelta
 
-from architect_py.async_client import AsyncClient, OrderDirection
-from architect_py.async_graphql_client.enums import (
+from architect_py.async_client import AsyncClient
+from architect_py.scalars import OrderDir
+
+from architect_py.graphql_client.enums import (
     CreateOrderType,
     CreateTimeInForceInstruction,
     ReferencePrice,
 )
-from architect_py.async_graphql_client.fragments import (
+from architect_py.graphql_client.fragments import (
     MarketFieldsKindExchangeMarketKind,
 )
-from architect_py.async_graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,12 +57,12 @@ async def test_send_order():
 
     order = await client.send_limit_order(
         market=market_id,
-        dir=OrderDirection.BUY,
-        quantity=1,
+        odir=OrderDir.BUY,
+        quantity=Decimal(1),
         order_type=order_type,
         post_only=True,
-        limit_price=float(snapshot.bid_price)
-        - (float(snapshot.ask_price) - float(snapshot.bid_price)) * 10,
+        limit_price=snapshot.bid_price
+        - (snapshot.ask_price - snapshot.bid_price) * Decimal(10),
         account=ACCOUNT,
         time_in_force_instruction=CreateTimeInForceInstruction.IOC,
     )
@@ -79,12 +82,14 @@ async def test_create_twap_algo():
     order = await client.send_twap_algo(
         name="test_TWAP",
         market=market_id,
-        dir=OrderDirection.BUY,
-        quantity=10,
+        odir=OrderDir.BUY,
+        quantity=Decimal(10),
         interval_ms=1000,
         account=ACCOUNT,
         reject_lockout_ms=1000,
-        take_through_frac=0.1,
+        take_through_frac=Decimal(
+            "0.1"
+        ),  # we use a string here to avoid floating point errors
         end_time=datetime.now() + timedelta(minutes=10),
     )
     logging.critical(f"TWAP TEST: {order}")
@@ -99,10 +104,10 @@ async def test_create_pov_algo():
     order = await client.send_pov_algo(
         name="test_POV",
         market=market_id,
-        dir=OrderDirection.BUY,
-        target_volume_frac=0.1,
-        min_order_quantity=1,
-        max_quantity=10,
+        odir=OrderDir.BUY,
+        target_volume_frac=Decimal("0.1"),
+        min_order_quantity=Decimal(1),
+        max_quantity=Decimal(10),
         order_lockout_ms=1000,
         end_time=datetime.now() + timedelta(minutes=10),
         account=ACCOUNT,
@@ -133,9 +138,9 @@ async def test_create_smart_order_router_algo():
         markets=[market_id],
         base=market.kind.base.id,
         quote=market.kind.quote.id,
-        dir=OrderDirection.BUY,
+        odir=OrderDir.BUY,
         limit_price=lp,
-        target_size=5,
+        target_size=Decimal(5),
         execution_time_limit_ms=1000,
     )
     logging.critical(f"SOR TEST: {order}")
@@ -148,22 +153,22 @@ async def test_create_mm_algo():
     order = await client.send_mm_algo(
         name="test_MM",
         market=market_id,
-        buy_quantity=1,
-        sell_quantity=1,
-        min_position=1,
-        max_position=10,
-        max_improve_bbo=0.1,
-        position_tilt=0.1,
+        buy_quantity=Decimal(1),
+        sell_quantity=Decimal(1),
+        min_position=Decimal(1),
+        max_position=Decimal(10),
+        max_improve_bbo=Decimal("0.1"),
+        position_tilt=Decimal("0.1"),
         reference_price=ReferencePrice.MID,
-        ref_dist_frac=0.1,
-        tolerance_frac=0.1,
+        ref_dist_frac=Decimal("0.1"),
+        tolerance_frac=Decimal("0.1"),
         fill_lockout_ms=1000,
         order_lockout_ms=1000,
         reject_lockout_ms=1000,
     )
     logging.critical(f"MM TEST: {order}")
     if order is not None:
-        order = await client.cancel_order(order.order.id)
+        order = await client.cancel_order(order)
 
 
 async def test_cancel_all_orders():
@@ -177,10 +182,10 @@ async def test_send_market_pro_order():
 
     await client.send_market_pro_order(
         market=market_id,
-        dir=OrderDirection.BUY,
-        quantity=1,
+        odir=OrderDir.BUY,
+        quantity=Decimal(1),
         account=ACCOUNT,
-        time_in_force=CreateTimeInForceInstruction.IOC,
+        time_in_force_instruction=CreateTimeInForceInstruction.IOC,
     )
 
 

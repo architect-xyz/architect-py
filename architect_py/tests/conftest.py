@@ -2,6 +2,8 @@ import os
 
 import pytest
 import pytest_asyncio
+from architect_py.client import Client
+from architect_py.async_client import AsyncClient
 from dotenv import load_dotenv
 
 from architect_py.async_client import AsyncClient
@@ -38,6 +40,29 @@ async def async_client():
         yield client
 
 
+def test_sync_client(async_client: AsyncClient):
+    # this test should not have any market orders or any other side effects
+
+    host = os.getenv("ARCHITECT_HOST") or "localhost"
+    port = int(os.getenv("ARCHITECT_PORT") or 4567)
+    api_key = os.getenv("ARCHITECT_API_KEY")
+    api_secret = os.getenv("ARCHITECT_API_SECRET")
+
+    client = Client(host=host, api_key=api_key, api_secret=api_secret, port=port)
+
+    sync_result = client.search_markets(max_results=5, venue="CME")
+    assert len(sync_result) == 5
+
+    sync_result = client.search_markets(glob="ES*", venue="CME")
+    assert sync_result is not None
+
+    ES_future = sync_result[0]
+
+    sync_result = client.get_market(ES_future.id)
+
+    assert sync_result is not None
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--live_orderflow",
@@ -46,8 +71,11 @@ def pytest_addoption(parser):
         help="Run orderflow tests",
     )
 
+
 def pytest_configure(config):
-    config.addinivalue_line("markers", "live_orderflow: runs live orders against Binance and other cptys")
+    config.addinivalue_line(
+        "markers", "live_orderflow: runs live orders against Binance and other cptys"
+    )
 
 
 def pytest_collection_modifyitems(config, items):
