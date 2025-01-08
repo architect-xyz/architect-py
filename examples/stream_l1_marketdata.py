@@ -2,10 +2,6 @@ import asyncio
 from uuid import UUID
 
 from architect_py.async_client import AsyncClient
-from architect_py.protocol.marketdata import (
-    JsonMarketdataStub,
-    SubscribeL1BookSnapshotsRequest,
-)
 
 from .common import create_async_client
 
@@ -18,6 +14,29 @@ async def main():
         markets_by_id[UUID(market.id)] = market
     print(f"Loaded {len(markets)} markets")
 
+    """
+    CR acho:
+    async for snap in c.subscribe_l1_book_snapshots(
+
+    has the type error
+
+    "Coroutine[Any, Any, AsyncIterator[L1BookSnapshot]]" is not iterable
+    "__aiter__" method not defined
+
+    subscribe_l1_book_snapshots (supposedly) returns a Coroutine[Any, Any, AsyncIterator[L1BookSnapshot]]
+    This does not pass the type check because it is using async for directly on a coroutine without awaiting it first.
+
+    If this truly returned Coroutine[Any, Any, AsyncIterator[L1BookSnapshot]], then it should be more like
+
+    await snaps = c.subscribe_l1_book_snapshots(
+            "binance-futures-usd-m.marketdata.architect.co",
+            market_ids=[
+                "POPCAT-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"
+            ],
+    )
+    async for snap in snaps:
+    [...]
+    """
     async for snap in c.subscribe_l1_book_snapshots(
         "binance-futures-usd-m.marketdata.architect.co",
         market_ids=[
