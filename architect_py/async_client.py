@@ -563,8 +563,19 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         source: OrderSource = OrderSource.API,
     ) -> OrderLogFields:
         """
-        `account` is optional depending on the final cpty it gets to
-        For CME orders, the account is required
+        `account` is optional depending on the final cpty it gets to.
+        For CME orders, the account is required.
+
+        Example usage:
+        await client.send_limit_order(
+            market=ES_market,
+            odir=OrderDir.BUY,
+            quantity=Decimal(1),
+            limit_price=Decimal(200),
+            order_type=CreateOrderType.LIMIT,
+            post_only=False,
+            account=ACCOUNT
+        )
         """
         if price_round_method is not None:
             market_info = await self.get_market(market)
@@ -614,6 +625,23 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         source: OrderSource = OrderSource.API,
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> OrderLogFields:
+        """
+        Send a market order with a limit price that is a fraction through the market.
+        It can be thought of as a "market pro" order, where the user is willing to pay a little extra to get the order filled quickly.
+
+        The limit price is calculated as follows:
+        - If buying, the limit price is the ask price times (1 + fraction_through_market)
+        - If selling, the limit price is the bid price times (1 - fraction_through_market)
+        The limit price is then rounded to the nearest tick and made to be within the CME price bands.
+
+        Example usage:
+        client.send_market_pro_order(
+            market=ES_market,
+            odir=OrderDir.BUY,
+            quantity=Decimal(1),
+            account=ACCOUNT
+        )
+        """
 
         # Check for GQL failures
         bbo_snapshot = await self.get_market_snapshot(market)
