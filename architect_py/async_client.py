@@ -19,7 +19,6 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-import asyncio
 import fnmatch
 import logging
 import re
@@ -49,7 +48,11 @@ from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import CreateOrderType, OrderSource, ReferencePrice
-from .graphql_client.fragments import MarketFieldsKindExchangeMarketKind, OrderFields
+from .graphql_client.fragments import (
+    MarketFieldsKindExchangeMarketKind,
+    OrderFields,
+    OrderLogFields,
+)
 from .graphql_client.get_order import GetOrderOrder
 from .graphql_client.input_types import (
     CreateMMAlgo,
@@ -558,26 +561,34 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         quote_id: Optional[str] = None,
         source: OrderSource = OrderSource.API,
-        wait_for_confirm: bool = False,
-    ) -> GetOrderOrder:
+    ) -> OrderLogFields:
         """
-        `account` is optional depending on the final cpty it gets to
-        For CME orders, the account is required
+        `account` is optional depending on the final cpty it gets to.
+        For CME orders, the account is required.
+
+        Example usage:
+        await client.send_limit_order(
+            market=ES_market,
+            odir=OrderDir.BUY,
+            quantity=Decimal(1),
+            limit_price=Decimal(200),
+            order_type=CreateOrderType.LIMIT,
+            post_only=False,
+            account=ACCOUNT
+        )
         """
         if price_round_method is not None:
             market_info = await self.get_market(market)
             if market_info is not None:
-                tick_size = Decimal(market_info.tick_size)
                 limit_price = nearest_tick(
-                    limit_price, method=price_round_method, tick_size=tick_size
+                    limit_price,
+                    method=price_round_method,
+                    tick_size=market_info.tick_size,
                 )
             else:
                 raise ValueError(f"Could not find market information for {market}")
 
-        if not isinstance(trigger_price, Decimal) and trigger_price is not None:
-            trigger_price = Decimal(trigger_price)
-
-        order: str = await self.send_order(
+        order_return = await self.send_order(
             CreateOrder(
                 market=market,
                 dir=odir,
@@ -596,25 +607,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             )
         )
 
-        if wait_for_confirm:
-            i = 0
-            while i < 30:
-                order_info = await self.get_order(order_id=order)
-                if order_info is None:
-                    raise ValueError(
-                        "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
-                    )
-                else:
-                    if len(order_info.order_state) > 1:
-                        return order_info
-                    elif order_info.order_state[0] != "OPEN":
-                        return order_info
-                    else:
-                        i += 1
-                await asyncio.sleep(0.1)
-
-        order_return = await self.get_order(order)
-
         if order_return is None:
             raise ValueError(
                 "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
@@ -632,7 +624,24 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         source: OrderSource = OrderSource.API,
         fraction_through_market: Decimal = Decimal("0.001"),
-    ) -> GetOrderOrder:
+    ) -> OrderLogFields:
+        """
+        Send a market order with a limit price that is a fraction through the market.
+        It can be thought of as a "market pro" order, where the user is willing to pay a little extra to get the order filled quickly.
+
+        The limit price is calculated as follows:
+        - If buying, the limit price is the ask price times (1 + fraction_through_market)
+        - If selling, the limit price is the bid price times (1 - fraction_through_market)
+        The limit price is then rounded to the nearest tick and made to be within the CME price bands.
+
+        Example usage:
+        client.send_market_pro_order(
+            market=ES_market,
+            odir=OrderDir.BUY,
+            quantity=Decimal(1),
+            account=ACCOUNT
+        )
+        """
 
         # Check for GQL failures
         bbo_snapshot = await self.get_market_snapshot(market)
@@ -690,7 +699,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
         )
         limit_price = nearest_tick(
-            Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size)
+            limit_price, tick_round_method, market_details.tick_size
         )
 
         return await self.send_limit_order(
@@ -942,40 +951,13 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount) if balance.amount else None
-                        total_margin = (
-                            Decimal(balance.total_margin)
-                            if balance.total_margin
-                            else None
-                        )
-                        position_margin = (
-                            Decimal(balance.position_margin)
-                            if balance.position_margin
-                            else None
-                        )
-                        purchasing_power = (
-                            Decimal(balance.purchasing_power)
-                            if balance.purchasing_power
-                            else None
-                        )
-                        cash_excess = (
-                            Decimal(balance.cash_excess)
-                            if balance.cash_excess
-                            else None
-                        )
-                        yesterday_balance = (
-                            Decimal(balance.yesterday_balance)
-                            if balance.yesterday_balance
-                            else None
-                        )
-
                         usd = Balance(
-                            usd_amount,
-                            total_margin,
-                            position_margin,
-                            purchasing_power,
-                            cash_excess,
-                            yesterday_balance,
+                            balance.amount,
+                            balance.total_margin,
+                            balance.position_margin,
+                            balance.purchasing_power,
+                            balance.cash_excess,
+                            balance.yesterday_balance,
                         )
                         break
 
@@ -984,11 +966,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     if position.market is None:
                         continue
 
-                    quantity = Decimal(position.quantity) if position.quantity else None
-                    if quantity:
-                        quantity = (
-                            quantity if position.dir == OrderDir.SELL else -quantity
-                        )
+                    if position.quantity:
+                        quantity = -1 * position.quantity * position.dir.get_sign()
+                    else:
+                        quantity = None
                     average_price = (
                         position.average_price if position.average_price else None
                     )
@@ -996,13 +977,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind
                     ):
-                        if position.market.kind.base.mark_usd is None:
-                            mark = None
-                        else:
-                            try:
-                                mark = Decimal(position.market.kind.base.mark_usd)
-                            except Exception:
-                                mark = None
+                        mark = position.market.kind.base.mark_usd
                     else:
                         mark = None
 

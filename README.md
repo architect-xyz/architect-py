@@ -56,6 +56,27 @@ Check the `examples` folder or the `architect_py/tests` folders for example usag
 
 ### Running examples from this package
 
+def main():
+    c = Client(
+        host="<your installation domain>",
+        api_key="<api key>",
+        api_secret="<api secret>"
+    )
+    print(await c.execute("query { me { userId email } }"))
+    print("\n\n")
+    print(client.get_balances_and_positions())
+    print("\n\n")
+    print(client.search_markets(glob="ES*", venue="CME"))
+```
+
+While the AsyncClient is the recommended way to use the Architect API, the Client instead without any familiarity with `async/await`.
+The sync clients and async clients usage is identical, except one removes the `await` before the call. The only exception to this is that the sync client does not support any subscriptions, because they are inherently asynchronous.
+
+Check the `examples` folder or the `architect_py/tests` folders for example usages.
+
+
+### Running examples from this package
+
 Clone this repository to run examples in the `examples` directory. This package
 uses poetry for dependency management. To enter a poetry virtual environment, make
 sure you have [poetry](https://python-poetry.org/docs/) installed and run the
@@ -105,6 +126,17 @@ In addition, any new function should have a test included in test.py
 To run tests:
 `export $(cat pytest.env | xargs)`
 `pytest tests/*`
+
+to run the test, must have a pytest.env in the main directory file with the following content:
+```bash
+HOST=staging.architect.co
+API_KEY=...
+API_SECRET=...
+ACCOUNT=...
+```
+
+
+
 
 ### What does `update.sh` do?
 

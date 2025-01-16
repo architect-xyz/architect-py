@@ -74,8 +74,8 @@ from .preview_smart_order_router_algo_request import (
 from .remove_telegram_api_keys import RemoveTelegramApiKeys
 from .search_markets import SearchMarkets, SearchMarketsFilterMarkets
 from .send_mm_algo_request import SendMmAlgoRequest
-from .send_order import SendOrder
-from .send_orders import SendOrders
+from .send_order import SendOrder, SendOrderCreateOrder
+from .send_orders import SendOrders, SendOrdersCreateOrders
 from .send_pov_algo_request import SendPovAlgoRequest
 from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
 from .send_spread_algo_request import SendSpreadAlgoRequest
@@ -1936,11 +1936,103 @@ class GraphQLClient(JuniperBaseClient):
         ):
             yield SubscribeExchangeSpecific.model_validate(data).exchange_specific
 
-    async def send_order(self, order: CreateOrder, **kwargs: Any) -> str:
+    async def send_order(
+        self, order: CreateOrder, **kwargs: Any
+    ) -> Optional[SendOrderCreateOrder]:
         query = gql(
             """
             mutation SendOrder($order: CreateOrder!) {
-              createOrder(order: $order)
+              createOrder(order: $order) {
+                ...OrderLogFields
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+                priceBand
+              }
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment OrderLogFields on OrderLog {
+              __typename
+              timestamp
+              order {
+                id
+                market {
+                  ...MarketFields
+                }
+                dir
+                quantity
+                orderType {
+                  __typename
+                  ... on LimitOrderType {
+                    limitPrice
+                  }
+                  ... on StopLossLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                  ... on TakeProfitLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                }
+                timeInForce {
+                  instruction
+                  goodTilDate
+                }
+              }
+              orderState
+              filledQty
+              avgFillPrice
+              rejectReason
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
             }
             """
         )
@@ -1951,11 +2043,103 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return SendOrder.model_validate(data).create_order
 
-    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[str]:
+    async def send_orders(
+        self, orders: List[CreateOrder], **kwargs: Any
+    ) -> List[Optional[SendOrdersCreateOrders]]:
         query = gql(
             """
             mutation SendOrders($orders: [CreateOrder!]!) {
-              createOrders(orders: $orders)
+              createOrders(orders: $orders) {
+                ...OrderLogFields
+              }
+            }
+
+            fragment MarketFields on Market {
+              __typename
+              venue {
+                id
+                name
+              }
+              exchangeSymbol
+              id
+              cmeProductGroupInfo {
+                productName
+                securityType
+                category
+                subCategory
+                mainFraction
+                priceBand
+              }
+              kind {
+                ... on ExchangeMarketKind {
+                  __typename
+                  base {
+                    ...ProductFields
+                  }
+                  quote {
+                    ...ProductFields
+                  }
+                }
+                ... on PoolMarketKind {
+                  __typename
+                  products {
+                    ...ProductFields
+                  }
+                }
+              }
+              name
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              route {
+                id
+                name
+              }
+              isFavorite
+            }
+
+            fragment OrderLogFields on OrderLog {
+              __typename
+              timestamp
+              order {
+                id
+                market {
+                  ...MarketFields
+                }
+                dir
+                quantity
+                orderType {
+                  __typename
+                  ... on LimitOrderType {
+                    limitPrice
+                  }
+                  ... on StopLossLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                  ... on TakeProfitLimitOrderType {
+                    limitPrice
+                    triggerPrice
+                  }
+                }
+                timeInForce {
+                  instruction
+                  goodTilDate
+                }
+              }
+              orderState
+              filledQty
+              avgFillPrice
+              rejectReason
+            }
+
+            fragment ProductFields on Product {
+              __typename
+              id
+              name
+              kind
+              markUsd
             }
             """
         )
