@@ -132,8 +132,6 @@ async def test_create_smart_order_router_algo():
     assert isinstance(market, SearchMarketsFilterMarkets)
     assert isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
 
-    market.kind
-
     order = await client.preview_smart_order_router(
         markets=[market_id],
         base=market.kind.base.id,

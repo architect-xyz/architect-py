@@ -27,6 +27,9 @@ class OrderDir(Enum):
         else:
             raise ValueError(f"Unknown Dir: {self}")
 
+    def get_sign(self) -> int:
+        return int(self)
+
     def get_opposite(self) -> "OrderDir":
         """
         NOTE: ENUMS ARE IMMUTABLE SO THIS DOES NOT MUTATE THE STATE OF THE ENUM

@@ -569,9 +569,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if price_round_method is not None:
             market_info = await self.get_market(market)
             if market_info is not None:
-                tick_size = Decimal(market_info.tick_size)
                 limit_price = nearest_tick(
-                    limit_price, method=price_round_method, tick_size=tick_size
+                    limit_price,
+                    method=price_round_method,
+                    tick_size=market_info.tick_size,
                 )
             else:
                 raise ValueError(f"Could not find market information for {market}")
@@ -670,7 +671,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
         )
         limit_price = nearest_tick(
-            Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size)
+            limit_price, tick_round_method, market_details.tick_size
         )
 
         return await self.send_limit_order(
@@ -922,40 +923,13 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     if balance.product is None:
                         continue
                     if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount) if balance.amount else None
-                        total_margin = (
-                            Decimal(balance.total_margin)
-                            if balance.total_margin
-                            else None
-                        )
-                        position_margin = (
-                            Decimal(balance.position_margin)
-                            if balance.position_margin
-                            else None
-                        )
-                        purchasing_power = (
-                            Decimal(balance.purchasing_power)
-                            if balance.purchasing_power
-                            else None
-                        )
-                        cash_excess = (
-                            Decimal(balance.cash_excess)
-                            if balance.cash_excess
-                            else None
-                        )
-                        yesterday_balance = (
-                            Decimal(balance.yesterday_balance)
-                            if balance.yesterday_balance
-                            else None
-                        )
-
                         usd = Balance(
-                            usd_amount,
-                            total_margin,
-                            position_margin,
-                            purchasing_power,
-                            cash_excess,
-                            yesterday_balance,
+                            balance.amount,
+                            balance.total_margin,
+                            balance.position_margin,
+                            balance.purchasing_power,
+                            balance.cash_excess,
+                            balance.yesterday_balance,
                         )
                         break
 
@@ -964,11 +938,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     if position.market is None:
                         continue
 
-                    quantity = Decimal(position.quantity) if position.quantity else None
-                    if quantity:
-                        quantity = (
-                            quantity if position.dir == OrderDir.SELL else -quantity
-                        )
+                    if position.quantity:
+                        quantity = -1 * position.quantity * position.dir.get_sign()
+                    else:
+                        quantity = None
                     average_price = (
                         position.average_price if position.average_price else None
                     )
@@ -976,13 +949,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     if isinstance(
                         position.market.kind, MarketFieldsKindExchangeMarketKind
                     ):
-                        if position.market.kind.base.mark_usd is None:
-                            mark = None
-                        else:
-                            try:
-                                mark = Decimal(position.market.kind.base.mark_usd)
-                            except Exception:
-                                mark = None
+                        mark = position.market.kind.base.mark_usd
                     else:
                         mark = None
 
