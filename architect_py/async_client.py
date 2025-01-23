@@ -77,6 +77,8 @@ from .protocol.marketdata import (
 )
 from .protocol.symbology import Market, Product, Route, Venue
 
+from .utils.price_bands import price_band_pairs
+
 logger = logging.getLogger(__name__)
 
 
@@ -672,18 +674,14 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                     "Failed to send market order with reason: no CME product group info for {market}"
                 )
 
-            price_band_str = market_details.cme_product_group_info.price_band
-            if price_band_str is None:
-                raise ValueError(
-                    "Failed to send market order with reason: no CME price band for {market}"
-                )
+            name: str = market_details.name.split(" ")[0]
+            price_band = price_band_pairs.get(name, None)
 
-            price_band: Decimal = Decimal(price_band_str)
-
-            if odir == OrderDir.BUY:
-                limit_price = min(limit_price, bbo_snapshot.last_price + price_band)
-            else:
-                limit_price = max(limit_price, bbo_snapshot.last_price - price_band)
+            if price_band:
+                if odir == OrderDir.BUY:
+                    limit_price = min(limit_price, bbo_snapshot.last_price + price_band)
+                else:
+                    limit_price = max(limit_price, bbo_snapshot.last_price - price_band)
 
         # Conservatively round price to nearest tick
         tick_round_method = (

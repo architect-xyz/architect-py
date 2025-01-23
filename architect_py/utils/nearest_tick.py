@@ -17,7 +17,6 @@ from decimal import (
 from enum import Enum
 
 from functools import partial
-from typing import Union
 
 import architect_py.graphql_client.fragments as fragments
 
