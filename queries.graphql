@@ -847,3 +847,10 @@ query GetAccounts {
 mutation CreateJwt {
   createJwt
 }
+
+query GetMargin($id: MarketId!) {
+  market(id: $id) {
+    initialMargin
+    maintenanceMargin
+  }
+}

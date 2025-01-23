@@ -37,6 +37,7 @@ from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotBookSnapshot
 from .get_fills import GetFills, GetFillsFills
 from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
 from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateMarket
+from .get_margin import GetMargin, GetMarginMarket
 from .get_market import GetMarket, GetMarketMarket
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
 from .get_markets import GetMarkets, GetMarketsMarkets
@@ -2381,3 +2382,21 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return CreateJwt.model_validate(data).create_jwt
+
+    async def get_margin(self, id: str, **kwargs: Any) -> Optional[GetMarginMarket]:
+        query = gql(
+            """
+            query GetMargin($id: MarketId!) {
+              market(id: $id) {
+                initialMargin
+                maintenanceMargin
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"id": id}
+        response = await self.execute(
+            query=query, operation_name="GetMargin", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetMargin.model_validate(data).market
