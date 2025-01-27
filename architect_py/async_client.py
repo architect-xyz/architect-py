@@ -636,52 +636,45 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> GetOrderOrder:
 
+        market_details = await self.get_market(market)
+        if market_details is None:
+            raise ValueError(
+                f"Failed to send market order with reason: no market details for {market}"
+            )
+
         # Check for GQL failures
         bbo_snapshot = await self.get_market_snapshot(market)
         if bbo_snapshot is None:
             raise ValueError(
-                "Failed to send market order with reason: no market snapshot for {market}"
+                f"Failed to send market order with reason: no market snapshot for {market}"
             )
 
-        market_details = await self.get_market(market)
-        if market_details is None:
-            raise ValueError(
-                "Failed to send market order with reason: no market details for {market}"
-            )
-
-        if bbo_snapshot.last_price is None:
-            raise ValueError(
-                "Failed to send market order with reason: no last price for {market}"
-            )
+        if market_details.venue.name == "CME":
+            name: str = market_details.name.split(" ")[0]
+            price_band = price_band_pairs.get(name, None)
+        else:
+            price_band = None
 
         if odir == OrderDir.BUY:
             if bbo_snapshot.ask_price is None:
                 raise ValueError(
-                    "Failed to send market order with reason: no ask price for {market}"
+                    f"Failed to send market order with reason: no ask price for {market}"
                 )
             limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
+
+            if price_band and bbo_snapshot.last_price:
+                price_band_reference_price = bbo_snapshot.last_price + price_band
+                limit_price = min(limit_price, price_band_reference_price)
+
         else:
             if bbo_snapshot.bid_price is None:
                 raise ValueError(
-                    "Failed to send market order with reason: no bid price for {market}"
+                    f"Failed to send market order with reason: no bid price for {market}"
                 )
             limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
-
-        # Avoid sending price outside CME's price bands
-        if market_details.venue.name == "CME":
-            if market_details.cme_product_group_info is None:
-                raise ValueError(
-                    "Failed to send market order with reason: no CME product group info for {market}"
-                )
-
-            name: str = market_details.name.split(" ")[0]
-            price_band = price_band_pairs.get(name, None)
-
-            if price_band:
-                if odir == OrderDir.BUY:
-                    limit_price = min(limit_price, bbo_snapshot.last_price + price_band)
-                else:
-                    limit_price = max(limit_price, bbo_snapshot.last_price - price_band)
+            if price_band and bbo_snapshot.last_price:
+                price_band_reference_price = bbo_snapshot.last_price - price_band
+                limit_price = min(limit_price, price_band_reference_price)
 
         # Conservatively round price to nearest tick
         tick_round_method = (
