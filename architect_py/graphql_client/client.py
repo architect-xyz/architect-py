@@ -5,99 +5,41 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 
-from architect_py.utils.dt import convert_datetime_to_utc_str
+from architect_py.scalars import OrderDir, convert_datetime_to_utc_str, serialize
 
 from .base_model import UNSET, UnsetType
-from .cancel_order import CancelOrder
-from .cancel_orders import CancelOrders
+from .cancel_all_orders import CancelAllOrders, CancelAllOrdersOms
+from .cancel_order import CancelOrder, CancelOrderOms
 from .create_jwt import CreateJwt
-from .enums import CandleWidth
-from .fills_subscription import FillsSubscription, FillsSubscriptionFills
-from .get_account_summaries import (
-    GetAccountSummaries,
-    GetAccountSummariesAccountSummaries,
-)
-from .get_account_summaries_for_cpty import (
-    GetAccountSummariesForCpty,
-    GetAccountSummariesForCptyAccountSummariesForCpty,
-)
-from .get_accounts import GetAccounts, GetAccountsAccounts
-from .get_algo_order import GetAlgoOrder, GetAlgoOrderAlgoOrder
-from .get_algo_status import GetAlgoStatus, GetAlgoStatusAlgoStatus
-from .get_all_market_snapshots import (
-    GetAllMarketSnapshots,
-    GetAllMarketSnapshotsMarketsSnapshots,
-)
-from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOpenOrders
-from .get_balances_for_cpty import (
-    GetBalancesForCpty,
-    GetBalancesForCptyAccountSummariesForCpty,
-)
-from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotBookSnapshot
-from .get_fills import GetFills, GetFillsFills
-from .get_filtered_markets import GetFilteredMarkets, GetFilteredMarketsFilterMarkets
-from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateMarket
-from .get_margin import GetMargin, GetMarginMarket
-from .get_market import GetMarket, GetMarketMarket
-from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketSnapshot
-from .get_markets import GetMarkets, GetMarketsMarkets
-from .get_mm_order import GetMmOrder, GetMmOrderMmAlgoOrder
-from .get_mm_status import GetMmStatus, GetMmStatusMmAlgoStatus
-from .get_order import GetOrder, GetOrderOrder
-from .get_out_orders import GetOutOrders, GetOutOrdersOutedOrders
-from .get_pov_order import GetPovOrder, GetPovOrderPovOrder
-from .get_pov_status import GetPovStatus, GetPovStatusPovStatus
-from .get_smart_order_router_order import (
-    GetSmartOrderRouterOrder,
-    GetSmartOrderRouterOrderSmartOrderRouterOrder,
-)
-from .get_smart_order_router_status import (
-    GetSmartOrderRouterStatus,
-    GetSmartOrderRouterStatusSmartOrderRouterStatus,
-)
-from .get_spread_order import GetSpreadOrder, GetSpreadOrderSpreadAlgoOrder
-from .get_spread_status import GetSpreadStatus, GetSpreadStatusSpreadAlgoStatus
-from .get_twap_order import GetTwapOrder, GetTwapOrderTwapOrder
-from .get_twap_status import GetTwapStatus, GetTwapStatusTwapStatus
-from .input_types import (
-    CreateMMAlgo,
-    CreateOrder,
-    CreatePovAlgo,
-    CreateSmartOrderRouterAlgo,
-    CreateSpreadAlgo,
-    CreateTwapAlgo,
-)
+from .enums import CandleWidth, OrderType, TimeInForce
+from .get_account_summaries import GetAccountSummaries, GetAccountSummariesFolio
+from .get_account_summary import GetAccountSummary, GetAccountSummaryFolio
+from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOms
+from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotMarketdata
+from .get_fills import GetFills, GetFillsFolio
+from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateSymbology
+from .get_historical_orders import GetHistoricalOrders, GetHistoricalOrdersFolio
+from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketdata
+from .get_market_snapshots import GetMarketSnapshots, GetMarketSnapshotsMarketdata
+from .get_open_orders import GetOpenOrders, GetOpenOrdersOms
+from .get_product_info import GetProductInfo, GetProductInfoSymbology
+from .get_product_infos import GetProductInfos, GetProductInfosSymbology
 from .juniper_base_client import JuniperBaseClient
-from .preview_smart_order_router_algo_request import (
-    PreviewSmartOrderRouterAlgoRequest,
-    PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo,
-)
-from .remove_telegram_api_keys import RemoveTelegramApiKeys
-from .search_markets import SearchMarkets, SearchMarketsFilterMarkets
-from .send_mm_algo_request import SendMmAlgoRequest
-from .send_order import SendOrder
-from .send_orders import SendOrders
-from .send_pov_algo_request import SendPovAlgoRequest
-from .send_smart_order_router_algo_request import SendSmartOrderRouterAlgoRequest
-from .send_spread_algo_request import SendSpreadAlgoRequest
-from .send_twap_algo_request import SendTwapAlgoRequest
-from .subscribe_book import SubscribeBook, SubscribeBookBook
+from .place_order import PlaceOrder, PlaceOrderOms
+from .search_symbols import SearchSymbols, SearchSymbolsSymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
-from .subscribe_exchange_specific import (
-    SubscribeExchangeSpecific,
-    SubscribeExchangeSpecificExchangeSpecific,
-)
 from .subscribe_orderflow import (
     SubscribeOrderflow,
     SubscribeOrderflowOrderflowAberrantFill,
-    SubscribeOrderflowOrderflowAck,
     SubscribeOrderflowOrderflowCancel,
-    SubscribeOrderflowOrderflowCancelAll,
+    SubscribeOrderflowOrderflowCancelAck,
+    SubscribeOrderflowOrderflowCancelReject,
     SubscribeOrderflowOrderflowFill,
-    SubscribeOrderflowOrderflowOmsOrderUpdate,
+    SubscribeOrderflowOrderflowGqlOrderReject,
     SubscribeOrderflowOrderflowOrder,
-    SubscribeOrderflowOrderflowOut,
-    SubscribeOrderflowOrderflowReject,
+    SubscribeOrderflowOrderflowOrderAck,
+    SubscribeOrderflowOrderflowOrderOut,
+    SubscribeOrderflowOrderflowOrderStale,
 )
 from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
 
@@ -107,352 +49,102 @@ def gql(q: str) -> str:
 
 
 class GraphQLClient(JuniperBaseClient):
-    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
+    async def search_symbols(
+        self, search: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
+    ) -> SearchSymbolsSymbology:
         query = gql(
             """
-            query GetMarket($id: MarketId!) {
-              market(id: $id) {
-                ...MarketFields
+            query SearchSymbols($search: String) {
+              symbology {
+                searchSymbols(search: $search)
               }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
             }
             """
         )
-        variables: Dict[str, object] = {"id": id}
+        variables: Dict[str, object] = {"search": search}
         response = await self.execute(
-            query=query, operation_name="GetMarket", variables=variables, **kwargs
+            query=query, operation_name="SearchSymbols", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetMarket.model_validate(data).market
+        return SearchSymbols.model_validate(data).symbology
 
-    async def get_markets(
-        self, ids: List[str], **kwargs: Any
-    ) -> List[Optional[GetMarketsMarkets]]:
+    async def get_product_info(
+        self, symbol: str, **kwargs: Any
+    ) -> GetProductInfoSymbology:
         query = gql(
             """
-            query GetMarkets($ids: [MarketId!]!) {
-              markets(id: $ids) {
-                ...MarketFields
+            query GetProductInfo($symbol: String!) {
+              symbology {
+                productInfo(symbol: $symbol) {
+                  ...ProductInfoFields
+                }
               }
             }
 
-            fragment MarketFields on Market {
+            fragment ProductInfoFields on ProductInfo {
               __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
+              symbol
+              productType
+              underlying
+              multiplier
+              derivativeKind
+              firstNoticeDate
             }
             """
         )
-        variables: Dict[str, object] = {"ids": ids}
+        variables: Dict[str, object] = {"symbol": symbol}
         response = await self.execute(
-            query=query, operation_name="GetMarkets", variables=variables, **kwargs
+            query=query, operation_name="GetProductInfo", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetMarkets.model_validate(data).markets
+        return GetProductInfo.model_validate(data).symbology
 
-    async def get_filtered_markets(
-        self,
-        venue: Union[Optional[str], UnsetType] = UNSET,
-        base: Union[Optional[str], UnsetType] = UNSET,
-        quote: Union[Optional[str], UnsetType] = UNSET,
-        underlying: Union[Optional[str], UnsetType] = UNSET,
-        max_results: Union[Optional[int], UnsetType] = UNSET,
-        results_offset: Union[Optional[int], UnsetType] = UNSET,
-        search_string: Union[Optional[str], UnsetType] = UNSET,
-        only_favorites: Union[Optional[bool], UnsetType] = UNSET,
-        sort_by_volume_desc: Union[Optional[bool], UnsetType] = UNSET,
-        **kwargs: Any
-    ) -> List[GetFilteredMarketsFilterMarkets]:
+    async def get_product_infos(
+        self, symbols: List[str], **kwargs: Any
+    ) -> GetProductInfosSymbology:
         query = gql(
             """
-            query GetFilteredMarkets($venue: Str, $base: Str, $quote: Str, $underlying: Str, $maxResults: Int, $resultsOffset: Int, $searchString: Str, $onlyFavorites: Boolean, $sortByVolumeDesc: Boolean) {
-              filterMarkets(
-                filter: {venue: $venue, base: $base, quote: $quote, underlying: $underlying, maxResults: $maxResults, resultsOffset: $resultsOffset, searchString: $searchString, onlyFavorites: $onlyFavorites, sortByVolumeDesc: $sortByVolumeDesc}
-              ) {
-                ...MarketFields
+            query GetProductInfos($symbols: [String!]!) {
+              symbology {
+                productInfos(symbols: $symbols) {
+                  ...ProductInfoFields
+                }
               }
             }
 
-            fragment MarketFields on Market {
+            fragment ProductInfoFields on ProductInfo {
               __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
+              symbol
+              productType
+              underlying
+              multiplier
+              derivativeKind
+              firstNoticeDate
             }
             """
         )
-        variables: Dict[str, object] = {
-            "venue": venue,
-            "base": base,
-            "quote": quote,
-            "underlying": underlying,
-            "maxResults": max_results,
-            "resultsOffset": results_offset,
-            "searchString": search_string,
-            "onlyFavorites": only_favorites,
-            "sortByVolumeDesc": sort_by_volume_desc,
-        }
+        variables: Dict[str, object] = {"symbols": symbols}
         response = await self.execute(
-            query=query,
-            operation_name="GetFilteredMarkets",
-            variables=variables,
-            **kwargs
+            query=query, operation_name="GetProductInfos", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetFilteredMarkets.model_validate(data).filter_markets
-
-    async def search_markets(
-        self,
-        venue: Union[Optional[str], UnsetType] = UNSET,
-        base: Union[Optional[str], UnsetType] = UNSET,
-        quote: Union[Optional[str], UnsetType] = UNSET,
-        underlying: Union[Optional[str], UnsetType] = UNSET,
-        max_results: Union[Optional[int], UnsetType] = UNSET,
-        results_offset: Union[Optional[int], UnsetType] = UNSET,
-        search_string: Union[Optional[str], UnsetType] = UNSET,
-        only_favorites: Union[Optional[bool], UnsetType] = UNSET,
-        sort_by_volume_desc: Union[Optional[bool], UnsetType] = UNSET,
-        **kwargs: Any
-    ) -> List[SearchMarketsFilterMarkets]:
-        query = gql(
-            """
-            query SearchMarkets($venue: Str, $base: Str, $quote: Str, $underlying: Str, $maxResults: Int, $resultsOffset: Int, $searchString: Str, $onlyFavorites: Boolean, $sortByVolumeDesc: Boolean) {
-              filterMarkets(
-                filter: {venue: $venue, base: $base, quote: $quote, underlying: $underlying, maxResults: $maxResults, resultsOffset: $resultsOffset, searchString: $searchString, onlyFavorites: $onlyFavorites, sortByVolumeDesc: $sortByVolumeDesc}
-              ) {
-                ...MarketFields
-              }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {
-            "venue": venue,
-            "base": base,
-            "quote": quote,
-            "underlying": underlying,
-            "maxResults": max_results,
-            "resultsOffset": results_offset,
-            "searchString": search_string,
-            "onlyFavorites": only_favorites,
-            "sortByVolumeDesc": sort_by_volume_desc,
-        }
-        response = await self.execute(
-            query=query, operation_name="SearchMarkets", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return SearchMarkets.model_validate(data).filter_markets
+        return GetProductInfos.model_validate(data).symbology
 
     async def get_first_notice_date(
-        self, id: str, **kwargs: Any
-    ) -> Optional[GetFirstNoticeDateMarket]:
+        self, symbol: str, **kwargs: Any
+    ) -> GetFirstNoticeDateSymbology:
         query = gql(
             """
-            query GetFirstNoticeDate($id: MarketId!) {
-              market(id: $id) {
-                firstNoticeDate
+            query GetFirstNoticeDate($symbol: String!) {
+              symbology {
+                productInfo(symbol: $symbol) {
+                  firstNoticeDate
+                }
               }
             }
             """
         )
-        variables: Dict[str, object] = {"id": id}
+        variables: Dict[str, object] = {"symbol": symbol}
         response = await self.execute(
             query=query,
             operation_name="GetFirstNoticeDate",
@@ -460,36 +152,34 @@ class GraphQLClient(JuniperBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetFirstNoticeDate.model_validate(data).market
+        return GetFirstNoticeDate.model_validate(data).symbology
 
     async def get_market_snapshot(
-        self, id: str, **kwargs: Any
-    ) -> Optional[GetMarketSnapshotMarketSnapshot]:
+        self, venue: str, symbol: str, **kwargs: Any
+    ) -> GetMarketSnapshotMarketdata:
         query = gql(
             """
-            query GetMarketSnapshot($id: MarketId!) {
-              marketSnapshot(market: $id) {
-                ...MarketSnapshotFields
+            query GetMarketSnapshot($venue: MarketdataVenue!, $symbol: String!) {
+              marketdata {
+                ticker(venue: $venue, symbol: $symbol) {
+                  ...MarketTickerFields
+                }
               }
             }
 
-            fragment MarketSnapshotFields on MarketSnapshot {
-              __typename
-              marketId
-              market {
-                name
-              }
-              high24h
-              lastPrice
-              low24h
-              volume24h
-              open24h
+            fragment MarketTickerFields on Ticker {
+              symbol
+              timestamp
               bidPrice
+              bidSize
               askPrice
+              askSize
+              lastPrice
+              lastSize
             }
             """
         )
-        variables: Dict[str, object] = {"id": id}
+        variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
         response = await self.execute(
             query=query,
             operation_name="GetMarketSnapshot",
@@ -497,158 +187,144 @@ class GraphQLClient(JuniperBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetMarketSnapshot.model_validate(data).market_snapshot
+        return GetMarketSnapshot.model_validate(data).marketdata
 
-    async def get_all_market_snapshots(
-        self, **kwargs: Any
-    ) -> List[GetAllMarketSnapshotsMarketsSnapshots]:
+    async def get_market_snapshots(
+        self,
+        venue: str,
+        symbols: Union[Optional[List[str]], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetMarketSnapshotsMarketdata:
         query = gql(
             """
-            query GetAllMarketSnapshots {
-              marketsSnapshots {
-                ...MarketSnapshotFields
+            query GetMarketSnapshots($venue: MarketdataVenue!, $symbols: [String!]) {
+              marketdata {
+                tickers(venue: $venue, symbols: $symbols) {
+                  ...MarketTickerFields
+                }
               }
             }
 
-            fragment MarketSnapshotFields on MarketSnapshot {
-              __typename
-              marketId
-              market {
-                name
-              }
-              high24h
-              lastPrice
-              low24h
-              volume24h
-              open24h
+            fragment MarketTickerFields on Ticker {
+              symbol
+              timestamp
               bidPrice
+              bidSize
               askPrice
+              askSize
+              lastPrice
+              lastSize
             }
             """
         )
-        variables: Dict[str, object] = {}
+        variables: Dict[str, object] = {"venue": venue, "symbols": symbols}
         response = await self.execute(
             query=query,
-            operation_name="GetAllMarketSnapshots",
+            operation_name="GetMarketSnapshots",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetAllMarketSnapshots.model_validate(data).markets_snapshots
+        return GetMarketSnapshots.model_validate(data).marketdata
 
-    async def get_account_summaries(
-        self, **kwargs: Any
-    ) -> List[GetAccountSummariesAccountSummaries]:
+    async def get_account_summary(
+        self,
+        account: Any,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetAccountSummaryFolio:
         query = gql(
             """
-            query GetAccountSummaries {
-              accountSummaries {
-                ...AccountSummariesFields
-              }
-            }
-
-            fragment AccountSummariesFields on AccountSummaries {
-              snapshotTs
-              byAccount {
-                account {
-                  id
-                  name
-                }
-                balances {
-                  product {
-                    ...ProductFields
-                  }
-                  account {
-                    id
-                    name
-                  }
-                  venue {
-                    id
-                    name
-                  }
-                  amount
-                  totalMargin
-                  positionMargin
-                  purchasingPower
-                  cashExcess
-                  yesterdayBalance
-                }
-                positions {
-                  account {
-                    id
-                    name
-                  }
-                  venue {
-                    id
-                    name
-                  }
-                  market {
-                    ...MarketFields
-                  }
-                  dir
-                  quantity
-                  averagePrice
-                  tradeDate
-                  tradeTime
+            query GetAccountSummary($venue: ExecutionVenue, $account: Uuid!) {
+              folio {
+                accountSummary(venue: $venue, account: $account) {
+                  ...AccountSummaryFields
                 }
               }
             }
 
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
+            fragment AccountSummaryFields on AccountSummary {
+              account
+              timestamp
+              balances {
+                product
+                balance
               }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
+              positions {
+                symbol
+                quantity
+                tradeTime
+                costBasis
+                breakEvenPrice
+                liquidationPrice
               }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
+              unrealizedPnl
+              realizedPnl
+              equity
+              yesterdayEquity
+              cashExcess
+              totalMargin
+              positionMargin
             }
             """
         )
-        variables: Dict[str, object] = {}
+        variables: Dict[str, object] = {"venue": venue, "account": account}
+        response = await self.execute(
+            query=query,
+            operation_name="GetAccountSummary",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetAccountSummary.model_validate(data).folio
+
+    async def get_account_summaries(
+        self,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        trader: Union[Optional[str], UnsetType] = UNSET,
+        accounts: Union[Optional[List[Any]], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetAccountSummariesFolio:
+        query = gql(
+            """
+            query GetAccountSummaries($venue: ExecutionVenue, $trader: UserId, $accounts: [Uuid!]) {
+              folio {
+                accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
+                  ...AccountSummaryFields
+                }
+              }
+            }
+
+            fragment AccountSummaryFields on AccountSummary {
+              account
+              timestamp
+              balances {
+                product
+                balance
+              }
+              positions {
+                symbol
+                quantity
+                tradeTime
+                costBasis
+                breakEvenPrice
+                liquidationPrice
+              }
+              unrealizedPnl
+              realizedPnl
+              equity
+              yesterdayEquity
+              cashExcess
+              totalMargin
+              positionMargin
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "trader": trader,
+            "accounts": accounts,
+        }
         response = await self.execute(
             query=query,
             operation_name="GetAccountSummaries",
@@ -656,267 +332,105 @@ class GraphQLClient(JuniperBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetAccountSummaries.model_validate(data).account_summaries
+        return GetAccountSummaries.model_validate(data).folio
 
-    async def get_account_summaries_for_cpty(
-        self, venue: str, route: str, **kwargs: Any
-    ) -> GetAccountSummariesForCptyAccountSummariesForCpty:
+    async def get_open_orders(
+        self,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        account: Union[Optional[Any], UnsetType] = UNSET,
+        trader: Union[Optional[str], UnsetType] = UNSET,
+        symbol: Union[Optional[str], UnsetType] = UNSET,
+        parent_order_id: Union[Optional[str], UnsetType] = UNSET,
+        order_ids: Union[Optional[List[str]], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetOpenOrdersOms:
         query = gql(
             """
-            query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
-              accountSummariesForCpty(venue: $venue, route: $route) {
-                ...AccountSummariesFields
-              }
-            }
-
-            fragment AccountSummariesFields on AccountSummaries {
-              snapshotTs
-              byAccount {
-                account {
-                  id
-                  name
-                }
-                balances {
-                  product {
-                    ...ProductFields
-                  }
-                  account {
-                    id
-                    name
-                  }
-                  venue {
-                    id
-                    name
-                  }
-                  amount
-                  totalMargin
-                  positionMargin
-                  purchasingPower
-                  cashExcess
-                  yesterdayBalance
-                }
-                positions {
-                  account {
-                    id
-                    name
-                  }
-                  venue {
-                    id
-                    name
-                  }
-                  market {
-                    ...MarketFields
-                  }
-                  dir
-                  quantity
-                  averagePrice
-                  tradeDate
-                  tradeTime
+            query GetOpenOrders($venue: ExecutionVenue, $account: Uuid, $trader: UserId, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
+              oms {
+                openOrders(
+                  venue: $venue
+                  account: $account
+                  trader: $trader
+                  symbol: $symbol
+                  parentOrderId: $parentOrderId
+                  orderIds: $orderIds
+                ) {
+                  ...OrderFields
                 }
               }
             }
 
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
+            fragment OrderFields on Order {
               id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
+              parentId
+              recvTime
+              status
+              rejectReason
+              symbol
+              trader
+              account
+              dir
+              quantity
+              filledQuantity
+              averageFillPrice
+              orderType
+              limitPrice
+              postOnly
+              triggerPrice
+              timeInForce
+              goodTilDate
+              source
+              executionVenue
             }
             """
         )
-        variables: Dict[str, object] = {"venue": venue, "route": route}
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "account": account,
+            "trader": trader,
+            "symbol": symbol,
+            "parentOrderId": parent_order_id,
+            "orderIds": order_ids,
+        }
         response = await self.execute(
-            query=query,
-            operation_name="GetAccountSummariesForCpty",
-            variables=variables,
-            **kwargs
+            query=query, operation_name="GetOpenOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetAccountSummariesForCpty.model_validate(
-            data
-        ).account_summaries_for_cpty
+        return GetOpenOrders.model_validate(data).oms
 
-    async def get_balances_for_cpty(
-        self, venue: str, route: str, **kwargs: Any
-    ) -> GetBalancesForCptyAccountSummariesForCpty:
-        query = gql(
-            """
-            query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
-              accountSummariesForCpty(venue: $venue, route: $route) {
-                snapshotTs
-                byAccount {
-                  balances {
-                    product {
-                      ...ProductFields
-                    }
-                    amount
-                  }
-                }
-              }
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {"venue": venue, "route": route}
-        response = await self.execute(
-            query=query,
-            operation_name="GetBalancesForCpty",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetBalancesForCpty.model_validate(data).account_summaries_for_cpty
-
-    async def get_all_open_orders(
-        self, **kwargs: Any
-    ) -> List[GetAllOpenOrdersOpenOrders]:
+    async def get_all_open_orders(self, **kwargs: Any) -> GetAllOpenOrdersOms:
         query = gql(
             """
             query GetAllOpenOrders {
-              openOrders {
-                ...OrderLogFields
+              oms {
+                openOrders {
+                  ...OrderFields
+                }
               }
             }
 
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
+            fragment OrderFields on Order {
               id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment OrderLogFields on OrderLog {
-              __typename
-              timestamp
-              order {
-                id
-                market {
-                  ...MarketFields
-                }
-                dir
-                quantity
-                orderType {
-                  __typename
-                  ... on LimitOrderType {
-                    limitPrice
-                  }
-                  ... on StopLossLimitOrderType {
-                    limitPrice
-                    triggerPrice
-                  }
-                  ... on TakeProfitLimitOrderType {
-                    limitPrice
-                    triggerPrice
-                  }
-                }
-                timeInForce {
-                  instruction
-                  goodTilDate
-                }
-              }
-              orderState
-              filledQty
-              avgFillPrice
+              parentId
+              recvTime
+              status
               rejectReason
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
+              symbol
+              trader
+              account
+              dir
+              quantity
+              filledQuantity
+              averageFillPrice
+              orderType
+              limitPrice
+              postOnly
+              triggerPrice
+              timeInForce
+              goodTilDate
+              source
+              executionVenue
             }
             """
         )
@@ -928,804 +442,209 @@ class GraphQLClient(JuniperBaseClient):
             **kwargs
         )
         data = self.get_data(response)
-        return GetAllOpenOrders.model_validate(data).open_orders
+        return GetAllOpenOrders.model_validate(data).oms
 
-    async def get_out_orders(
-        self, from_inclusive: datetime, to_exclusive: datetime, **kwargs: Any
-    ) -> List[GetOutOrdersOutedOrders]:
-        query = gql(
-            """
-            query GetOutOrders($fromInclusive: DateTime!, $toExclusive: DateTime!) {
-              outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
-                ...OrderLogFields
-              }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment OrderLogFields on OrderLog {
-              __typename
-              timestamp
-              order {
-                id
-                market {
-                  ...MarketFields
-                }
-                dir
-                quantity
-                orderType {
-                  __typename
-                  ... on LimitOrderType {
-                    limitPrice
-                  }
-                  ... on StopLossLimitOrderType {
-                    limitPrice
-                    triggerPrice
-                  }
-                  ... on TakeProfitLimitOrderType {
-                    limitPrice
-                    triggerPrice
-                  }
-                }
-                timeInForce {
-                  instruction
-                  goodTilDate
-                }
-              }
-              orderState
-              filledQty
-              avgFillPrice
-              rejectReason
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {
-            "fromInclusive": convert_datetime_to_utc_str(from_inclusive),
-            "toExclusive": convert_datetime_to_utc_str(to_exclusive),
-        }
-        response = await self.execute(
-            query=query, operation_name="GetOutOrders", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetOutOrders.model_validate(data).outed_orders
-
-    async def get_order(self, order_id: str, **kwargs: Any) -> Optional[GetOrderOrder]:
-        query = gql(
-            """
-            query GetOrder($orderId: OrderId!) {
-              order(orderId: $orderId) {
-                ...OrderLogFields
-              }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment OrderLogFields on OrderLog {
-              __typename
-              timestamp
-              order {
-                id
-                market {
-                  ...MarketFields
-                }
-                dir
-                quantity
-                orderType {
-                  __typename
-                  ... on LimitOrderType {
-                    limitPrice
-                  }
-                  ... on StopLossLimitOrderType {
-                    limitPrice
-                    triggerPrice
-                  }
-                  ... on TakeProfitLimitOrderType {
-                    limitPrice
-                    triggerPrice
-                  }
-                }
-                timeInForce {
-                  instruction
-                  goodTilDate
-                }
-              }
-              orderState
-              filledQty
-              avgFillPrice
-              rejectReason
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetOrder.model_validate(data).order
-
-    async def get_algo_status(
-        self, order_id: str, **kwargs: Any
-    ) -> List[GetAlgoStatusAlgoStatus]:
-        query = gql(
-            """
-            query GetAlgoStatus($orderId: OrderId!) {
-              algoStatus(orderId: $orderId) {
-                orderId
-                order {
-                  orderId
-                  trader
-                  account
-                  algo
-                  parentOrderId
-                  markets
-                }
-                creationTime
-                status
-                lastStatusChange
-                fractionComplete
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetAlgoStatus", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetAlgoStatus.model_validate(data).algo_status
-
-    async def get_algo_order(
-        self, order_id: str, **kwargs: Any
-    ) -> Optional[GetAlgoOrderAlgoOrder]:
-        query = gql(
-            """
-            query GetAlgoOrder($orderId: OrderId!) {
-              algoOrder(orderId: $orderId) {
-                orderId
-                trader
-                account
-                algo
-                parentOrderId
-                markets
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetAlgoOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetAlgoOrder.model_validate(data).algo_order
-
-    async def get_twap_status(
-        self, order_id: str, **kwargs: Any
-    ) -> List[GetTwapStatusTwapStatus]:
-        query = gql(
-            """
-            query GetTwapStatus($orderId: OrderId!) {
-              twapStatus(orderId: $orderId) {
-                orderId
-                order {
-                  name
-                  orderId
-                  marketId
-                  dir
-                  quantity
-                  endTime
-                  accountId
-                  intervalMs
-                  rejectLockoutMs
-                  takeThroughFrac
-                }
-                creationTime
-                status
-                fractionComplete
-                realizedTwap
-                quantityFilled
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetTwapStatus", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetTwapStatus.model_validate(data).twap_status
-
-    async def get_twap_order(
-        self, order_id: str, **kwargs: Any
-    ) -> Optional[GetTwapOrderTwapOrder]:
-        query = gql(
-            """
-            query GetTwapOrder($orderId: OrderId!) {
-              twapOrder(orderId: $orderId) {
-                name
-                orderId
-                marketId
-                dir
-                quantity
-                endTime
-                accountId
-                intervalMs
-                rejectLockoutMs
-                takeThroughFrac
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetTwapOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetTwapOrder.model_validate(data).twap_order
-
-    async def get_pov_status(
-        self, order_id: str, **kwargs: Any
-    ) -> List[GetPovStatusPovStatus]:
-        query = gql(
-            """
-            query GetPovStatus($orderId: OrderId!) {
-              povStatus(orderId: $orderId) {
-                orderId
-                order {
-                  name
-                  orderId
-                  marketId
-                  dir
-                  targetVolumeFrac
-                  minOrderQuantity
-                  maxQuantity
-                  endTime
-                  accountId
-                  takeThroughFrac
-                }
-                creationTime
-                status
-                fractionComplete
-                realizedVolumeFrac
-                marketVolume
-                quantityFilled
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetPovStatus", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetPovStatus.model_validate(data).pov_status
-
-    async def get_pov_order(
-        self, order_id: str, **kwargs: Any
-    ) -> Optional[GetPovOrderPovOrder]:
-        query = gql(
-            """
-            query GetPovOrder($orderId: OrderId!) {
-              povOrder(orderId: $orderId) {
-                name
-                orderId
-                marketId
-                dir
-                targetVolumeFrac
-                minOrderQuantity
-                maxQuantity
-                endTime
-                accountId
-                takeThroughFrac
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetPovOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetPovOrder.model_validate(data).pov_order
-
-    async def get_smart_order_router_status(
-        self, order_id: str, **kwargs: Any
-    ) -> List[GetSmartOrderRouterStatusSmartOrderRouterStatus]:
-        query = gql(
-            """
-            query GetSmartOrderRouterStatus($orderId: OrderId!) {
-              smartOrderRouterStatus(orderId: $orderId) {
-                status {
-                  orderId
-                  order {
-                    orderId
-                    trader
-                    account
-                    algo
-                    parentOrderId
-                    markets
-                  }
-                  creationTime
-                  status
-                  lastStatusChange
-                  fractionComplete
-                }
-                order {
-                  orderId
-                  markets {
-                    id
-                  }
-                  dir
-                  limitPrice
-                  targetSize
-                  executionTimeLimitMs
-                  parentOrderId
-                }
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query,
-            operation_name="GetSmartOrderRouterStatus",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetSmartOrderRouterStatus.model_validate(data).smart_order_router_status
-
-    async def get_smart_order_router_order(
-        self, order_id: str, **kwargs: Any
-    ) -> Optional[GetSmartOrderRouterOrderSmartOrderRouterOrder]:
-        query = gql(
-            """
-            query GetSmartOrderRouterOrder($orderId: OrderId!) {
-              smartOrderRouterOrder(orderId: $orderId) {
-                orderId
-                markets {
-                  id
-                }
-                dir
-                limitPrice
-                targetSize
-                executionTimeLimitMs
-                parentOrderId
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query,
-            operation_name="GetSmartOrderRouterOrder",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetSmartOrderRouterOrder.model_validate(data).smart_order_router_order
-
-    async def get_mm_status(
-        self, order_id: str, **kwargs: Any
-    ) -> List[GetMmStatusMmAlgoStatus]:
-        query = gql(
-            """
-            query GetMmStatus($orderId: OrderId!) {
-              mmAlgoStatus(orderId: $orderId) {
-                orderId
-                order {
-                  name
-                  orderId
-                  marketId
-                  quantityBuy
-                  quantitySell
-                  minPosition
-                  maxPosition
-                  maxImproveBbo
-                  positionTilt
-                  referencePrice
-                  refDistFrac
-                  toleranceFrac
-                  account
-                }
-                creationTime
-                status
-                position
-                hedgePosition
-                missRatio
-                effectiveSpread
-                buyStatus {
-                  lastOrderTime
-                  lastFillTime
-                  lastRejectTime
-                  openOrder {
-                    orderId
-                    price
-                    quantity
-                    cancelPending
-                  }
-                  referencePrice
-                }
-                sellStatus {
-                  lastOrderTime
-                  lastFillTime
-                  lastRejectTime
-                  openOrder {
-                    orderId
-                    price
-                    quantity
-                    cancelPending
-                  }
-                  referencePrice
-                }
-                kind
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetMmStatus", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetMmStatus.model_validate(data).mm_algo_status
-
-    async def get_mm_order(
-        self, order_id: str, **kwargs: Any
-    ) -> Optional[GetMmOrderMmAlgoOrder]:
-        query = gql(
-            """
-            query GetMmOrder($orderId: OrderId!) {
-              mmAlgoOrder(orderId: $orderId) {
-                name
-                orderId
-                marketId
-                quantityBuy
-                quantitySell
-                minPosition
-                maxPosition
-                maxImproveBbo
-                positionTilt
-                referencePrice
-                refDistFrac
-                toleranceFrac
-                account
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetMmOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetMmOrder.model_validate(data).mm_algo_order
-
-    async def get_spread_status(
-        self, order_id: str, **kwargs: Any
-    ) -> List[GetSpreadStatusSpreadAlgoStatus]:
-        query = gql(
-            """
-            query GetSpreadStatus($orderId: OrderId!) {
-              spreadAlgoStatus(orderId: $orderId) {
-                orderId
-                order {
-                  name
-                  orderId
-                  marketId
-                  quantityBuy
-                  quantitySell
-                  minPosition
-                  maxPosition
-                  maxImproveBbo
-                  positionTilt
-                  referencePrice
-                  refDistFrac
-                  toleranceFrac
-                  account
-                }
-                creationTime
-                status
-                position
-                hedgePosition
-                missRatio
-                effectiveSpread
-                buyStatus {
-                  lastOrderTime
-                  lastFillTime
-                  lastRejectTime
-                  openOrder {
-                    orderId
-                    price
-                    quantity
-                    cancelPending
-                  }
-                  referencePrice
-                }
-                sellStatus {
-                  lastOrderTime
-                  lastFillTime
-                  lastRejectTime
-                  openOrder {
-                    orderId
-                    price
-                    quantity
-                    cancelPending
-                  }
-                  referencePrice
-                }
-                kind
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetSpreadStatus", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetSpreadStatus.model_validate(data).spread_algo_status
-
-    async def get_spread_order(
-        self, order_id: str, **kwargs: Any
-    ) -> Optional[GetSpreadOrderSpreadAlgoOrder]:
-        query = gql(
-            """
-            query GetSpreadOrder($orderId: OrderId!) {
-              spreadAlgoOrder(orderId: $orderId) {
-                name
-                orderId
-                marketId
-                quantityBuy
-                quantitySell
-                minPosition
-                maxPosition
-                maxImproveBbo
-                positionTilt
-                referencePrice
-                refDistFrac
-                toleranceFrac
-                account
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderId": order_id}
-        response = await self.execute(
-            query=query, operation_name="GetSpreadOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetSpreadOrder.model_validate(data).spread_algo_order
-
-    async def get_fills(
+    async def get_historical_orders(
         self,
+        from_inclusive: datetime,
+        to_exclusive: datetime,
         venue: Union[Optional[str], UnsetType] = UNSET,
-        route: Union[Optional[str], UnsetType] = UNSET,
-        base: Union[Optional[str], UnsetType] = UNSET,
-        quote: Union[Optional[str], UnsetType] = UNSET,
+        account: Union[Optional[Any], UnsetType] = UNSET,
+        parent_order_id: Union[Optional[str], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetFillsFills:
+    ) -> GetHistoricalOrdersFolio:
         query = gql(
             """
-            query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
-              fills(venue: $venue, route: $route, base: $base, quote: $quote) {
-                normal {
-                  kind
-                  fillId
-                  orderId
-                  market {
-                    ...MarketFields
-                  }
-                  dir
-                  price
-                  quantity
-                  recvTime
-                  tradeTime
+            query GetHistoricalOrders($venue: ExecutionVenue, $account: Uuid, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+              folio {
+                historicalOrders(
+                  venue: $venue
+                  account: $account
+                  parentOrderId: $parentOrderId
+                  fromInclusive: $fromInclusive
+                  toExclusive: $toExclusive
+                ) {
+                  ...OrderFields
                 }
               }
             }
 
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
+            fragment OrderFields on Order {
               id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
+              parentId
+              recvTime
+              status
+              rejectReason
+              symbol
+              trader
+              account
+              dir
+              quantity
+              filledQuantity
+              averageFillPrice
+              orderType
+              limitPrice
+              postOnly
+              triggerPrice
+              timeInForce
+              goodTilDate
+              source
+              executionVenue
             }
             """
         )
         variables: Dict[str, object] = {
             "venue": venue,
-            "route": route,
-            "base": base,
-            "quote": quote,
+            "account": account,
+            "parentOrderId": parent_order_id,
+            "fromInclusive": convert_datetime_to_utc_str(from_inclusive),
+            "toExclusive": convert_datetime_to_utc_str(to_exclusive),
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetHistoricalOrders",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetHistoricalOrders.model_validate(data).folio
+
+    async def get_fills(
+        self,
+        venue: Union[Optional[str], UnsetType] = UNSET,
+        account: Union[Optional[Any], UnsetType] = UNSET,
+        order_id: Union[Optional[str], UnsetType] = UNSET,
+        from_inclusive: Union[Optional[datetime], UnsetType] = UNSET,
+        to_exclusive: Union[Optional[datetime], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetFillsFolio:
+        query = gql(
+            """
+            query GetFills($venue: ExecutionVenue, $account: Uuid, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
+              folio {
+                historicalFills(
+                  venue: $venue
+                  account: $account
+                  orderId: $orderId
+                  fromInclusive: $fromInclusive
+                  toExclusive: $toExclusive
+                ) {
+                  fills {
+                    fillId
+                    fillKind
+                    executionVenue
+                    exchangeFillId
+                    orderId
+                    trader
+                    account
+                    symbol
+                    dir
+                    quantity
+                    price
+                    recvTime
+                    tradeTime
+                  }
+                  aberrantFills {
+                    fillId
+                    fillKind
+                    executionVenue
+                    exchangeFillId
+                    orderId
+                    trader
+                    account
+                    symbol
+                    dir
+                    quantity
+                    price
+                    recvTime
+                    tradeTime
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "account": account,
+            "orderId": order_id,
+            "fromInclusive": convert_datetime_to_utc_str(from_inclusive),
+            "toExclusive": convert_datetime_to_utc_str(to_exclusive),
         }
         response = await self.execute(
             query=query, operation_name="GetFills", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetFills.model_validate(data).fills
+        return GetFills.model_validate(data).folio
 
-    async def subscribe_trades(
-        self, market: str, **kwargs: Any
-    ) -> AsyncIterator[SubscribeTradesTrades]:
+    async def get_book_snapshot(
+        self, venue: str, symbol: str, **kwargs: Any
+    ) -> GetBookSnapshotMarketdata:
         query = gql(
             """
-            subscription SubscribeTrades($market: MarketId!) {
-              trades(market: $market) {
-                time
-                price
-                size
-                direction
+            query GetBookSnapshot($venue: MarketdataVenue!, $symbol: String!) {
+              marketdata {
+                l2BookSnapshot(venue: $venue, symbol: $symbol) {
+                  timestamp
+                  bids {
+                    price
+                    size
+                  }
+                  asks {
+                    price
+                    size
+                  }
+                }
               }
             }
             """
         )
-        variables: Dict[str, object] = {"market": market}
+        variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
+        response = await self.execute(
+            query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetBookSnapshot.model_validate(data).marketdata
+
+    async def subscribe_trades(
+        self, venue: str, symbol: str, **kwargs: Any
+    ) -> AsyncIterator[SubscribeTradesTrades]:
+        query = gql(
+            """
+            subscription SubscribeTrades($venue: MarketdataVenue!, $symbol: String!) {
+              trades(venue: $venue, symbol: $symbol) {
+                timestamp
+                direction
+                price
+                size
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
         async for data in self.execute_ws(
             query=query, operation_name="SubscribeTrades", variables=variables, **kwargs
         ):
             yield SubscribeTrades.model_validate(data).trades
 
     async def subscribe_candles(
-        self, id: str, width: CandleWidth, **kwargs: Any
+        self,
+        venue: str,
+        symbol: str,
+        widths: Union[Optional[List[CandleWidth]], UnsetType] = UNSET,
+        **kwargs: Any
     ) -> AsyncIterator[SubscribeCandlesCandles]:
         query = gql(
             """
-            subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
-              candles(market: $id, candleWidth: $width) {
+            subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $widths: [CandleWidth!]) {
+              candles(venue: $venue, symbol: $symbol, candleWidths: $widths) {
                 ...CandleFields
               }
             }
 
-            fragment CandleFields on CandleV1 {
-              time
+            fragment CandleFields on Candle {
+              timestamp
+              width
               open
               high
               low
@@ -1734,7 +653,11 @@ class GraphQLClient(JuniperBaseClient):
             }
             """
         )
-        variables: Dict[str, object] = {"id": id, "width": width}
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "symbol": symbol,
+            "widths": widths,
+        }
         async for data in self.execute_ws(
             query=query,
             operation_name="SubscribeCandles",
@@ -1743,442 +666,18 @@ class GraphQLClient(JuniperBaseClient):
         ):
             yield SubscribeCandles.model_validate(data).candles
 
-    async def fills_subscription(
-        self, **kwargs: Any
-    ) -> AsyncIterator[FillsSubscriptionFills]:
-        query = gql(
-            """
-            subscription FillsSubscription {
-              fills {
-                dir
-                fillId
-                kind
-                marketId
-                orderId
-                price
-                quantity
-                recvTime
-                tradeTime
-                market {
-                  ...MarketFields
-                }
-              }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {}
-        async for data in self.execute_ws(
-            query=query,
-            operation_name="FillsSubscription",
-            variables=variables,
-            **kwargs
-        ):
-            yield FillsSubscription.model_validate(data).fills
-
-    async def subscribe_book(
-        self,
-        id: str,
-        precision: Union[Optional[Decimal], UnsetType] = UNSET,
-        **kwargs: Any
-    ) -> AsyncIterator[SubscribeBookBook]:
-        query = gql(
-            """
-            subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
-              book(market: $id, precision: $precision) {
-                bids {
-                  price
-                  amount
-                  total
-                }
-                asks {
-                  price
-                  amount
-                  total
-                }
-                timestamp
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"id": id, "precision": precision}
-        async for data in self.execute_ws(
-            query=query, operation_name="SubscribeBook", variables=variables, **kwargs
-        ):
-            yield SubscribeBook.model_validate(data).book
-
-    async def subscribe_exchange_specific(
-        self, markets: List[str], fields: List[str], **kwargs: Any
-    ) -> AsyncIterator[List[SubscribeExchangeSpecificExchangeSpecific]]:
-        query = gql(
-            """
-            subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
-              exchangeSpecific(markets: $markets, fields: $fields) {
-                market {
-                  ...MarketFields
-                }
-                field
-                value
-              }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {"markets": markets, "fields": fields}
-        async for data in self.execute_ws(
-            query=query,
-            operation_name="SubscribeExchangeSpecific",
-            variables=variables,
-            **kwargs
-        ):
-            yield SubscribeExchangeSpecific.model_validate(data).exchange_specific
-
-    async def send_order(self, order: CreateOrder, **kwargs: Any) -> str:
-        query = gql(
-            """
-            mutation SendOrder($order: CreateOrder!) {
-              createOrder(order: $order)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"order": order}
-        response = await self.execute(
-            query=query, operation_name="SendOrder", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return SendOrder.model_validate(data).create_order
-
-    async def send_orders(self, orders: List[CreateOrder], **kwargs: Any) -> List[str]:
-        query = gql(
-            """
-            mutation SendOrders($orders: [CreateOrder!]!) {
-              createOrders(orders: $orders)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orders": orders}
-        response = await self.execute(
-            query=query, operation_name="SendOrders", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return SendOrders.model_validate(data).create_orders
-
-    async def send_twap_algo_request(self, algo: CreateTwapAlgo, **kwargs: Any) -> str:
-        query = gql(
-            """
-            mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
-              createTwapAlgo(twapAlgo: $algo)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"algo": algo}
-        response = await self.execute(
-            query=query,
-            operation_name="SendTwapAlgoRequest",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return SendTwapAlgoRequest.model_validate(data).create_twap_algo
-
-    async def send_pov_algo_request(self, algo: CreatePovAlgo, **kwargs: Any) -> str:
-        query = gql(
-            """
-            mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
-              createPovAlgo(povAlgo: $algo)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"algo": algo}
-        response = await self.execute(
-            query=query,
-            operation_name="SendPovAlgoRequest",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return SendPovAlgoRequest.model_validate(data).create_pov_algo
-
-    async def preview_smart_order_router_algo_request(
-        self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
-    ) -> Optional[PreviewSmartOrderRouterAlgoRequestPreviewSmartOrderRouterAlgo]:
-        query = gql(
-            """
-            mutation PreviewSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
-              previewSmartOrderRouterAlgo(algo: $algo) {
-                orders {
-                  ...OrderFields
-                }
-              }
-            }
-
-            fragment MarketFields on Market {
-              __typename
-              venue {
-                id
-                name
-              }
-              exchangeSymbol
-              id
-              cmeProductGroupInfo {
-                productName
-                securityType
-                category
-                subCategory
-                mainFraction
-                priceBand
-              }
-              kind {
-                ... on ExchangeMarketKind {
-                  __typename
-                  base {
-                    ...ProductFields
-                  }
-                  quote {
-                    ...ProductFields
-                  }
-                }
-                ... on PoolMarketKind {
-                  __typename
-                  products {
-                    ...ProductFields
-                  }
-                }
-              }
-              name
-              tickSize
-              stepSize
-              minOrderQuantity
-              minOrderQuantityUnit
-              route {
-                id
-                name
-              }
-              isFavorite
-            }
-
-            fragment OrderFields on Order {
-              id
-              marketId
-              market {
-                ...MarketFields
-              }
-              dir
-              quantity
-              accountId
-              orderType {
-                __typename
-                ... on LimitOrderType {
-                  limitPrice
-                  postOnly
-                }
-                ... on StopLossLimitOrderType {
-                  limitPrice
-                  triggerPrice
-                }
-                ... on TakeProfitLimitOrderType {
-                  limitPrice
-                  triggerPrice
-                }
-              }
-              timeInForce {
-                instruction
-                goodTilDate
-              }
-              quoteId
-              source
-            }
-
-            fragment ProductFields on Product {
-              __typename
-              id
-              name
-              kind
-              markUsd
-            }
-            """
-        )
-        variables: Dict[str, object] = {"algo": algo}
-        response = await self.execute(
-            query=query,
-            operation_name="PreviewSmartOrderRouterAlgoRequest",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return PreviewSmartOrderRouterAlgoRequest.model_validate(
-            data
-        ).preview_smart_order_router_algo
-
-    async def send_smart_order_router_algo_request(
-        self, algo: CreateSmartOrderRouterAlgo, **kwargs: Any
-    ) -> str:
-        query = gql(
-            """
-            mutation SendSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
-              createSmartOrderRouterAlgo(algo: $algo)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"algo": algo}
-        response = await self.execute(
-            query=query,
-            operation_name="SendSmartOrderRouterAlgoRequest",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return SendSmartOrderRouterAlgoRequest.model_validate(
-            data
-        ).create_smart_order_router_algo
-
-    async def send_mm_algo_request(self, algo: CreateMMAlgo, **kwargs: Any) -> str:
-        query = gql(
-            """
-            mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
-              createMmAlgo(mmAlgo: $algo)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"algo": algo}
-        response = await self.execute(
-            query=query,
-            operation_name="SendMmAlgoRequest",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return SendMmAlgoRequest.model_validate(data).create_mm_algo
-
-    async def send_spread_algo_request(
-        self, algo: CreateSpreadAlgo, **kwargs: Any
-    ) -> str:
-        query = gql(
-            """
-            mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
-              createSpreadAlgo(spreadAlgo: $algo)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"algo": algo}
-        response = await self.execute(
-            query=query,
-            operation_name="SendSpreadAlgoRequest",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return SendSpreadAlgoRequest.model_validate(data).create_spread_algo
-
-    async def cancel_order(self, order_id: str, **kwargs: Any) -> str:
+    async def cancel_order(self, order_id: str, **kwargs: Any) -> CancelOrderOms:
         query = gql(
             """
             mutation CancelOrder($orderId: OrderId!) {
-              cancelOrder(orderId: $orderId)
+              oms {
+                cancelOrder(orderId: $orderId) {
+                  id
+                  orderId
+                  status
+                  rejectReason
+                }
+              }
             }
             """
         )
@@ -2187,52 +686,123 @@ class GraphQLClient(JuniperBaseClient):
             query=query, operation_name="CancelOrder", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return CancelOrder.model_validate(data).cancel_order
+        return CancelOrder.model_validate(data).oms
 
-    async def cancel_orders(self, order_ids: List[str], **kwargs: Any) -> List[str]:
+    async def cancel_all_orders(self, **kwargs: Any) -> CancelAllOrdersOms:
         query = gql(
             """
-            mutation CancelOrders($orderIds: [OrderId!]!) {
-              cancelOrders(orderIds: $orderIds)
-            }
-            """
-        )
-        variables: Dict[str, object] = {"orderIds": order_ids}
-        response = await self.execute(
-            query=query, operation_name="CancelOrders", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return CancelOrders.model_validate(data).cancel_orders
-
-    async def remove_telegram_api_keys(self, **kwargs: Any) -> bool:
-        query = gql(
-            """
-            mutation RemoveTelegramApiKeys {
-              removeTelegramApiKeys
+            mutation CancelAllOrders {
+              oms {
+                cancelAllOrders
+              }
             }
             """
         )
         variables: Dict[str, object] = {}
         response = await self.execute(
-            query=query,
-            operation_name="RemoveTelegramApiKeys",
-            variables=variables,
-            **kwargs
+            query=query, operation_name="CancelAllOrders", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return RemoveTelegramApiKeys.model_validate(data).remove_telegram_api_keys
+        return CancelAllOrders.model_validate(data).oms
+
+    async def place_order(
+        self,
+        symbol: str,
+        dir: OrderDir,
+        quantity: Decimal,
+        order_type: OrderType,
+        time_in_force: TimeInForce,
+        id: Union[Optional[str], UnsetType] = UNSET,
+        trader: Union[Optional[str], UnsetType] = UNSET,
+        account: Union[Optional[str], UnsetType] = UNSET,
+        limit_price: Union[Optional[Decimal], UnsetType] = UNSET,
+        post_only: Union[Optional[bool], UnsetType] = UNSET,
+        trigger_price: Union[Optional[Decimal], UnsetType] = UNSET,
+        good_til_date: Union[Optional[datetime], UnsetType] = UNSET,
+        execution_venue: Union[Optional[str], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> PlaceOrderOms:
+        query = gql(
+            """
+            mutation PlaceOrder($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
+              oms {
+                placeOrder(
+                  id: $id
+                  symbol: $symbol
+                  dir: $dir
+                  quantity: $quantity
+                  trader: $trader
+                  account: $account
+                  orderType: $orderType
+                  limitPrice: $limitPrice
+                  postOnly: $postOnly
+                  triggerPrice: $triggerPrice
+                  timeInForce: $timeInForce
+                  goodTilDate: $goodTilDate
+                  executionVenue: $executionVenue
+                ) {
+                  ...OrderFields
+                }
+              }
+            }
+
+            fragment OrderFields on Order {
+              id
+              parentId
+              recvTime
+              status
+              rejectReason
+              symbol
+              trader
+              account
+              dir
+              quantity
+              filledQuantity
+              averageFillPrice
+              orderType
+              limitPrice
+              postOnly
+              triggerPrice
+              timeInForce
+              goodTilDate
+              source
+              executionVenue
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "id": id,
+            "symbol": symbol,
+            "dir": serialize(dir),
+            "quantity": quantity,
+            "trader": trader,
+            "account": account,
+            "orderType": order_type,
+            "limitPrice": limit_price,
+            "postOnly": post_only,
+            "triggerPrice": trigger_price,
+            "timeInForce": time_in_force,
+            "goodTilDate": convert_datetime_to_utc_str(good_til_date),
+            "executionVenue": execution_venue,
+        }
+        response = await self.execute(
+            query=query, operation_name="PlaceOrder", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return PlaceOrder.model_validate(data).oms
 
     async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
         Union[
             SubscribeOrderflowOrderflowOrder,
-            SubscribeOrderflowOrderflowOmsOrderUpdate,
+            SubscribeOrderflowOrderflowOrderAck,
+            SubscribeOrderflowOrderflowGqlOrderReject,
+            SubscribeOrderflowOrderflowOrderOut,
+            SubscribeOrderflowOrderflowOrderStale,
             SubscribeOrderflowOrderflowCancel,
-            SubscribeOrderflowOrderflowCancelAll,
-            SubscribeOrderflowOrderflowAck,
-            SubscribeOrderflowOrderflowReject,
+            SubscribeOrderflowOrderflowCancelAck,
+            SubscribeOrderflowOrderflowCancelReject,
             SubscribeOrderflowOrderflowFill,
             SubscribeOrderflowOrderflowAberrantFill,
-            SubscribeOrderflowOrderflowOut,
         ]
     ]:
         query = gql(
@@ -2241,59 +811,66 @@ class GraphQLClient(JuniperBaseClient):
               orderflow {
                 __typename
                 ... on Order {
-                  id
-                  marketId
-                  dir
-                  quantity
-                  accountId
-                  orderType {
-                    __typename
-                    ... on LimitOrderType {
-                      limitPrice
-                      postOnly
-                    }
-                    ... on StopLossLimitOrderType {
-                      limitPrice
-                      triggerPrice
-                    }
-                    ... on TakeProfitLimitOrderType {
-                      limitPrice
-                      triggerPrice
-                    }
-                  }
-                  timeInForce {
-                    instruction
-                    goodTilDate
-                  }
-                  quoteId
-                  source
+                  ...OrderFields
                 }
-                ... on Ack {
+                ... on OrderAck {
                   orderId
                 }
-                ... on Reject {
+                ... on CancelAck {
+                  orderId
+                }
+                ... on GqlOrderReject {
                   orderId
                   reason
+                  message
                 }
-                ... on OmsOrderUpdate {
+                ... on CancelReject {
                   orderId
-                  orderState: state
-                  filledQty
-                  avgFillPrice
+                  message
                 }
                 ... on Fill {
                   fillOrderId: orderId
-                  fillKind: kind
-                  marketId
+                  fillId
+                  fillKind
+                  executionVenue
+                  exchangeFillId
+                  symbol
                   dir
-                  price
                   quantity
+                  price
+                  recvTime
                   tradeTime
                 }
-                ... on Out {
+                ... on OrderOut {
+                  orderId
+                }
+                ... on OrderStale {
                   orderId
                 }
               }
+            }
+
+            fragment OrderFields on Order {
+              id
+              parentId
+              recvTime
+              status
+              rejectReason
+              symbol
+              trader
+              account
+              dir
+              quantity
+              filledQuantity
+              averageFillPrice
+              orderType
+              limitPrice
+              postOnly
+              triggerPrice
+              timeInForce
+              goodTilDate
+              source
+              executionVenue
             }
             """
         )
@@ -2305,68 +882,6 @@ class GraphQLClient(JuniperBaseClient):
             **kwargs
         ):
             yield SubscribeOrderflow.model_validate(data).orderflow
-
-    async def get_book_snapshot(
-        self,
-        market: str,
-        num_levels: int,
-        precision: Union[Optional[Decimal], UnsetType] = UNSET,
-        retain_seconds: Union[Optional[int], UnsetType] = UNSET,
-        **kwargs: Any
-    ) -> GetBookSnapshotBookSnapshot:
-        query = gql(
-            """
-            query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSeconds: Int) {
-              bookSnapshot(
-                market: $market
-                numLevels: $numLevels
-                precision: $precision
-                retainSubscriptionForNSeconds: $retainSeconds
-              ) {
-                timestamp
-                bids {
-                  price
-                  amount
-                  total
-                }
-                asks {
-                  price
-                  amount
-                  total
-                }
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {
-            "market": market,
-            "numLevels": num_levels,
-            "precision": precision,
-            "retainSeconds": retain_seconds,
-        }
-        response = await self.execute(
-            query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetBookSnapshot.model_validate(data).book_snapshot
-
-    async def get_accounts(self, **kwargs: Any) -> List[GetAccountsAccounts]:
-        query = gql(
-            """
-            query GetAccounts {
-              accounts {
-                id
-                name
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {}
-        response = await self.execute(
-            query=query, operation_name="GetAccounts", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetAccounts.model_validate(data).accounts
 
     async def create_jwt(self, **kwargs: Any) -> str:
         query = gql(
@@ -2382,21 +897,3 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return CreateJwt.model_validate(data).create_jwt
-
-    async def get_margin(self, id: str, **kwargs: Any) -> Optional[GetMarginMarket]:
-        query = gql(
-            """
-            query GetMargin($id: MarketId!) {
-              market(id: $id) {
-                initialMargin
-                maintenanceMargin
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"id": id}
-        response = await self.execute(
-            query=query, operation_name="GetMargin", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return GetMargin.model_validate(data).market

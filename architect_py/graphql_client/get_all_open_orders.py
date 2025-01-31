@@ -6,15 +6,20 @@ from typing import List
 from pydantic import Field
 
 from .base_model import BaseModel
-from .fragments import OrderLogFields
+from .fragments import OrderFields
 
 
 class GetAllOpenOrders(BaseModel):
-    open_orders: List["GetAllOpenOrdersOpenOrders"] = Field(alias="openOrders")
+    oms: "GetAllOpenOrdersOms"
 
 
-class GetAllOpenOrdersOpenOrders(OrderLogFields):
+class GetAllOpenOrdersOms(BaseModel):
+    open_orders: List["GetAllOpenOrdersOmsOpenOrders"] = Field(alias="openOrders")
+
+
+class GetAllOpenOrdersOmsOpenOrders(OrderFields):
     pass
 
 
 GetAllOpenOrders.model_rebuild()
+GetAllOpenOrdersOms.model_rebuild()

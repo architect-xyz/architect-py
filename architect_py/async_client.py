@@ -35,8 +35,6 @@ import dns.name
 import grpc.aio
 
 from architect_py.graphql_client.base_model import UNSET, UnsetType
-from architect_py.graphql_client.get_market import GetMarketMarket
-from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
 from architect_py.utils.balance_and_positions import (
@@ -44,24 +42,23 @@ from architect_py.utils.balance_and_positions import (
     BalancesAndPositions,
     SimplePosition,
 )
-from architect_py.utils.dt import get_expiration_from_CME_name
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
-from .graphql_client.enums import CreateOrderType, OrderSource, ReferencePrice
-from .graphql_client.fragments import MarketFieldsKindExchangeMarketKind, OrderFields
-from .graphql_client.get_order import GetOrderOrder
-from .graphql_client.input_types import (
-    CreateMMAlgo,
-    CreateOrder,
-    CreatePovAlgo,
-    CreateSmartOrderRouterAlgo,
-    CreateSpreadAlgo,
-    CreateSpreadAlgoHedgeMarket,
-    CreateTimeInForce,
-    CreateTimeInForceInstruction,
-    CreateTwapAlgo,
-)
+from .graphql_client.enums import OrderSource  # , CreateOrderType, ReferencePrice
+from .graphql_client.fragments import OrderFields
+
+# from .graphql_client.input_types import (
+#     CreateMMAlgo,
+#     CreateOrder,
+#     CreatePovAlgo,
+#     CreateSmartOrderRouterAlgo,
+#     CreateSpreadAlgo,
+#     CreateSpreadAlgoHedgeMarket,
+#     CreateTimeInForce,
+#     CreateTimeInForceInstruction,
+#     CreateTwapAlgo,
+# )
 from .json_ws_client import JsonWsClient
 from .protocol.marketdata import (
     JsonMarketdataStub,
@@ -288,11 +285,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     async def start_session(self):
         await self.load_and_index_symbology()
 
-    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
-        # TODO: cache this function output
-        market = await super().get_market(id, **kwargs)
-        return market
-
     async def search_markets(
         self,
         venue: str | None | UnsetType = UNSET,
@@ -331,7 +323,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             if regex is not None:
                 markets = [market for market in markets if re.match(regex, market.name)]
 
-            markets = markets[:max_results] if isinstance(max_results, int) else markets
+            if isinstance(max_results, int):
+                markets = markets[:max_results]
 
         else:
             markets = await super().search_markets(
@@ -627,7 +620,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     async def send_market_pro_order(
         self,
         *,
-        market: str,
+        symbol: str,
         odir: OrderDir,
         quantity: Decimal,
         time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
@@ -636,8 +629,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> GetOrderOrder:
 
-        market_details = await self.get_market(market)
-        if market_details is None:
+        product_info = await self.get_product_info(symbol)
+        if product_info is None:
             raise ValueError(
                 f"Failed to send market order with reason: no market details for {market}"
             )
@@ -649,8 +642,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 f"Failed to send market order with reason: no market snapshot for {market}"
             )
 
-        if market_details.venue.name == "CME":
-            name: str = market_details.name.split(" ")[0]
+        if product_info.venue.name == "CME":
+            name: str = product_info.name.split(" ")[0]
             price_band = price_band_pairs.get(name, None)
         else:
             price_band = None
@@ -681,7 +674,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
         )
         limit_price = nearest_tick(
-            Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size)
+            Decimal(limit_price), tick_round_method, Decimal(product_info.tick_size)
         )
 
         return await self.send_limit_order(
@@ -695,192 +688,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             source=source,
         )
 
-    async def send_twap_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        odir: OrderDir,
-        quantity: Decimal,
-        interval_ms: int,
-        reject_lockout_ms: int,
-        end_time: datetime,
-        account: Optional[str] = None,
-        take_through_frac: Optional[Decimal] = None,
-    ) -> str:
-        return await self.send_twap_algo_request(
-            CreateTwapAlgo(
-                name=name,
-                market=market,
-                dir=odir,
-                quantity=quantity,
-                intervalMs=interval_ms,
-                rejectLockoutMs=reject_lockout_ms,
-                endTime=end_time,
-                account=account,
-                takeThroughFrac=take_through_frac,
-            )
-        )
-
-    async def send_pov_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        odir: OrderDir,
-        target_volume_frac: Decimal,
-        min_order_quantity: Decimal,
-        max_quantity: Decimal,
-        order_lockout_ms: int,
-        end_time: datetime,
-        account: Optional[str] = None,
-        take_through_frac: Optional[Decimal] = None,
-    ) -> str:
-        return await self.send_pov_algo_request(
-            CreatePovAlgo(
-                name=name,
-                market=market,
-                dir=odir,
-                targetVolumeFrac=target_volume_frac,
-                minOrderQuantity=min_order_quantity,
-                maxQuantity=max_quantity,
-                orderLockoutMs=order_lockout_ms,
-                endTime=end_time,
-                account=account,
-                takeThroughFrac=take_through_frac,
-            )
-        )
-
-    async def send_smart_order_router_algo(
-        self,
-        *,
-        markets: list[str],
-        base: str,
-        quote: str,
-        odir: OrderDir,
-        limit_price: Decimal,
-        target_size: Decimal,
-        execution_time_limit_ms: int,
-    ) -> str:
-        return await self.send_smart_order_router_algo_request(
-            CreateSmartOrderRouterAlgo(
-                markets=markets,
-                base=base,
-                quote=quote,
-                dir=odir,
-                limitPrice=limit_price,
-                targetSize=target_size,
-                executionTimeLimitMs=execution_time_limit_ms,
-            )
-        )
-
-    async def preview_smart_order_router(
-        self,
-        *,
-        markets: list[str],
-        base: str,
-        quote: str,
-        odir: OrderDir,
-        limit_price: Decimal,
-        target_size: Decimal,
-        execution_time_limit_ms: int,
-    ) -> Optional[Sequence[OrderFields]]:
-        algo = await self.preview_smart_order_router_algo_request(
-            CreateSmartOrderRouterAlgo(
-                markets=markets,
-                base=base,
-                quote=quote,
-                dir=odir,
-                limitPrice=limit_price,
-                targetSize=target_size,
-                executionTimeLimitMs=execution_time_limit_ms,
-            )
-        )
-
-        if algo:
-            return algo.orders
-        else:
-            return None
-
-    async def send_mm_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        account: Optional[str] = None,
-        buy_quantity: Decimal,
-        sell_quantity: Decimal,
-        min_position: Decimal,
-        max_position: Decimal,
-        max_improve_bbo: Decimal,
-        position_tilt: Decimal,
-        reference_price: ReferencePrice,
-        ref_dist_frac: Decimal,
-        tolerance_frac: Decimal,
-        fill_lockout_ms: int,
-        order_lockout_ms: int,
-        reject_lockout_ms: int,
-    ):
-        return await self.send_mm_algo_request(
-            CreateMMAlgo(
-                name=name,
-                market=market,
-                account=account,
-                buyQuantity=buy_quantity,
-                sellQuantity=sell_quantity,
-                minPosition=min_position,
-                maxPosition=max_position,
-                maxImproveBbo=max_improve_bbo,
-                positionTilt=position_tilt,
-                referencePrice=reference_price,
-                refDistFrac=ref_dist_frac,
-                toleranceFrac=tolerance_frac,
-                fillLockoutMs=fill_lockout_ms,
-                orderLockoutMs=order_lockout_ms,
-                rejectLockoutMs=reject_lockout_ms,
-            )
-        )
-
-    async def send_spread_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        buy_quantity: Decimal,
-        sell_quantity: Decimal,
-        min_position: Decimal,
-        max_position: Decimal,
-        max_improve_bbo: Decimal,
-        position_tilt: Decimal,
-        reference_price: ReferencePrice,
-        ref_dist_frac: Decimal,
-        tolerance_frac: Decimal,
-        hedge_market: CreateSpreadAlgoHedgeMarket,
-        fill_lockout_ms: int,
-        order_lockout_ms: int,
-        reject_lockout_ms: int,
-        account: Optional[str] = None,
-    ) -> str:
-        return await self.send_spread_algo_request(
-            CreateSpreadAlgo(
-                name=name,
-                market=market,
-                account=account,
-                buyQuantity=buy_quantity,
-                sellQuantity=sell_quantity,
-                minPosition=min_position,
-                maxPosition=max_position,
-                maxImproveBbo=max_improve_bbo,
-                positionTilt=position_tilt,
-                referencePrice=reference_price,
-                refDistFrac=ref_dist_frac,
-                toleranceFrac=tolerance_frac,
-                hedgeMarket=hedge_market,
-                fillLockoutMs=fill_lockout_ms,
-                orderLockoutMs=order_lockout_ms,
-                rejectLockoutMs=reject_lockout_ms,
-            )
-        )
+    @staticmethod
+    def get_expiration_from_CME_name(name: str) -> date:
+        _, d, *_ = name.split(" ")
+        return datetime.strptime(d, "%Y%m%d").date()
 
     async def get_cme_futures_series(
         self, series: str
@@ -891,7 +702,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         )
 
         filtered_markets = [
-            (get_expiration_from_CME_name(market.kind.base.name), market)
+            (self.get_expiration_from_CME_name(market.kind.base.name), market)
             for market in markets
             if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
             and market.kind.base.name.startswith(series)
@@ -916,116 +727,95 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
         return market
 
-    async def get_balances_and_positions(self) -> list["BalancesAndPositions"]:
+    async def get_balances_and_positions(
+        self,
+        venue: Optional[str] = None,
+        trader: Optional[str] = None,
+        accounts: Optional[list[str]] = None,
+    ) -> list["BalancesAndPositions"]:
         # returns data in the shape account => venue => { usd_balance: xxx, ...usd margin info, then product: balance, etc. }
-        summaries = await self.get_account_summaries()
+        summaries = await self.get_account_summaries(venue, trader, accounts)
 
         bps = []
 
-        for summary in summaries:
-            for account in summary.by_account:
-                if account.account is None:
+        for summary in summaries.account_summaries:
+            usd = Balance.new_empty()
+            for balance in summary.balances:
+                if balance.product == "USD":
+                    usd_amount = balance.balance
+                    total_margin = (
+                        Decimal(balance.total_margin) if balance.total_margin else None
+                    )
+                    position_margin = (
+                        Decimal(balance.position_margin)
+                        if balance.position_margin
+                        else None
+                    )
+                    purchasing_power = (
+                        Decimal(balance.purchasing_power)
+                        if balance.purchasing_power
+                        else None
+                    )
+                    cash_excess = (
+                        Decimal(balance.cash_excess) if balance.cash_excess else None
+                    )
+                    yesterday_balance = (
+                        Decimal(balance.yesterday_balance)
+                        if balance.yesterday_balance
+                        else None
+                    )
+
+                    usd = Balance(
+                        usd_amount,
+                        total_margin,
+                        position_margin,
+                        purchasing_power,
+                        cash_excess,
+                        yesterday_balance,
+                    )
+                    break
+
+            positions = {}
+            for position in account.positions:
+                if position.market is None:
                     continue
-                name = account.account.name
 
-                usd = Balance.new_empty()
-                for balance in account.balances:
-                    if balance.product is None:
-                        continue
-                    if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount) if balance.amount else None
-                        total_margin = (
-                            Decimal(balance.total_margin)
-                            if balance.total_margin
-                            else None
-                        )
-                        position_margin = (
-                            Decimal(balance.position_margin)
-                            if balance.position_margin
-                            else None
-                        )
-                        purchasing_power = (
-                            Decimal(balance.purchasing_power)
-                            if balance.purchasing_power
-                            else None
-                        )
-                        cash_excess = (
-                            Decimal(balance.cash_excess)
-                            if balance.cash_excess
-                            else None
-                        )
-                        yesterday_balance = (
-                            Decimal(balance.yesterday_balance)
-                            if balance.yesterday_balance
-                            else None
-                        )
-
-                        usd = Balance(
-                            usd_amount,
-                            total_margin,
-                            position_margin,
-                            purchasing_power,
-                            cash_excess,
-                            yesterday_balance,
-                        )
-                        break
-
-                positions = {}
-                for position in account.positions:
-                    if position.market is None:
-                        continue
-
-                    quantity = Decimal(position.quantity) if position.quantity else None
-                    if quantity:
-                        quantity = (
-                            quantity if position.dir == OrderDir.SELL else -quantity
-                        )
-                    average_price = (
-                        position.average_price if position.average_price else None
-                    )
-
-                    if isinstance(
-                        position.market.kind, MarketFieldsKindExchangeMarketKind
-                    ):
-                        if position.market.kind.base.mark_usd is None:
-                            mark = None
-                        else:
-                            try:
-                                mark = Decimal(position.market.kind.base.mark_usd)
-                            except Exception:
-                                mark = None
-                    else:
-                        mark = None
-
-                    positions[position.market.name] = SimplePosition(
-                        quantity, average_price, mark
-                    )
-
-                bps.append(
-                    BalancesAndPositions(
-                        name,
-                        usd_balance=usd,
-                        positions=positions,
-                    )
+                quantity = Decimal(position.quantity) if position.quantity else None
+                if quantity:
+                    quantity = quantity if position.dir == OrderDir.SELL else -quantity
+                average_price = (
+                    position.average_price if position.average_price else None
                 )
+
+                if isinstance(position.market.kind, MarketFieldsKindExchangeMarketKind):
+                    if position.market.kind.base.mark_usd is None:
+                        mark = None
+                    else:
+                        try:
+                            mark = Decimal(position.market.kind.base.mark_usd)
+                        except Exception:
+                            mark = None
+                else:
+                    mark = None
+
+                positions[position.market.name] = SimplePosition(
+                    quantity, average_price, mark
+                )
+
+            bps.append(
+                BalancesAndPositions(
+                    name,
+                    usd_balance=usd,
+                    positions=positions,
+                )
+            )
         return bps
 
     async def get_cme_first_notice_date(self, market: str) -> Optional[date]:
         notice = await self.get_first_notice_date(market)
-        if notice is None or notice.first_notice_date is None:
+        if notice is None or notice.product_info is None:
             return None
-        return notice.first_notice_date.date()
-
-    async def cancel_all_orders(
-        self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
-    ) -> Optional[str]:
-        # TODO: add back the graphql cancel_all_orders once fixed
-        orders = await self.get_open_orders()
-
-        for order in orders:
-            await self.cancel_order(order.order_id)
-
-        return None
+        return notice.product_info.first_notice_date
 
 
 # TODO: move this somewhere else

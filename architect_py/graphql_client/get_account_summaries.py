@@ -6,17 +6,22 @@ from typing import List
 from pydantic import Field
 
 from .base_model import BaseModel
-from .fragments import AccountSummariesFields
+from .fragments import AccountSummaryFields
 
 
 class GetAccountSummaries(BaseModel):
-    account_summaries: List["GetAccountSummariesAccountSummaries"] = Field(
+    folio: "GetAccountSummariesFolio"
+
+
+class GetAccountSummariesFolio(BaseModel):
+    account_summaries: List["GetAccountSummariesFolioAccountSummaries"] = Field(
         alias="accountSummaries"
     )
 
 
-class GetAccountSummariesAccountSummaries(AccountSummariesFields):
+class GetAccountSummariesFolioAccountSummaries(AccountSummaryFields):
     pass
 
 
 GetAccountSummaries.model_rebuild()
+GetAccountSummariesFolio.model_rebuild()

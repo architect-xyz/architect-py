@@ -13,7 +13,6 @@ from architect_py.graphql_client.enums import (
 )
 from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.scalars import OrderDir
-from architect_py.utils.dt import get_expiration_from_CME_name
 from architect_py.utils.nearest_tick import TickRoundMethod
 from dotenv import load_dotenv
 

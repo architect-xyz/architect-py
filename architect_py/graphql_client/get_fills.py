@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import Field
 
@@ -11,33 +11,55 @@ from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 from .enums import FillKind
-from .fragments import MarketFields
 
 
 class GetFills(BaseModel):
-    fills: "GetFillsFills"
+    folio: "GetFillsFolio"
 
 
-class GetFillsFills(BaseModel):
-    normal: List["GetFillsFillsNormal"]
+class GetFillsFolio(BaseModel):
+    historical_fills: "GetFillsFolioHistoricalFills" = Field(alias="historicalFills")
 
 
-class GetFillsFillsNormal(BaseModel):
-    kind: FillKind
-    fill_id: str = Field(alias="fillId")
+class GetFillsFolioHistoricalFills(BaseModel):
+    fills: List["GetFillsFolioHistoricalFillsFills"]
+    aberrant_fills: List["GetFillsFolioHistoricalFillsAberrantFills"] = Field(
+        alias="aberrantFills"
+    )
+
+
+class GetFillsFolioHistoricalFillsFills(BaseModel):
+    fill_id: Any = Field(alias="fillId")
+    fill_kind: FillKind = Field(alias="fillKind")
+    execution_venue: str = Field(alias="executionVenue")
+    exchange_fill_id: Optional[str] = Field(alias="exchangeFillId")
     order_id: Optional[str] = Field(alias="orderId")
-    market: "GetFillsFillsNormalMarket"
+    trader: Optional[str]
+    account: Optional[Any]
+    symbol: str
     dir: OrderDir
-    price: Decimal
     quantity: Decimal
+    price: Decimal
     recv_time: Optional[datetime] = Field(alias="recvTime")
-    trade_time: datetime = Field(alias="tradeTime")
+    trade_time: Optional[datetime] = Field(alias="tradeTime")
 
 
-class GetFillsFillsNormalMarket(MarketFields):
-    pass
+class GetFillsFolioHistoricalFillsAberrantFills(BaseModel):
+    fill_id: Any = Field(alias="fillId")
+    fill_kind: Optional[FillKind] = Field(alias="fillKind")
+    execution_venue: str = Field(alias="executionVenue")
+    exchange_fill_id: Optional[str] = Field(alias="exchangeFillId")
+    order_id: Optional[str] = Field(alias="orderId")
+    trader: Optional[str]
+    account: Optional[Any]
+    symbol: Optional[str]
+    dir: Optional[OrderDir]
+    quantity: Optional[Decimal]
+    price: Optional[Decimal]
+    recv_time: Optional[datetime] = Field(alias="recvTime")
+    trade_time: Optional[datetime] = Field(alias="tradeTime")
 
 
 GetFills.model_rebuild()
-GetFillsFills.model_rebuild()
-GetFillsFillsNormal.model_rebuild()
+GetFillsFolio.model_rebuild()
+GetFillsFolioHistoricalFills.model_rebuild()

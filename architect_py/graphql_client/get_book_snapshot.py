@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field
 
@@ -11,26 +11,31 @@ from .base_model import BaseModel
 
 
 class GetBookSnapshot(BaseModel):
-    book_snapshot: "GetBookSnapshotBookSnapshot" = Field(alias="bookSnapshot")
+    marketdata: "GetBookSnapshotMarketdata"
 
 
-class GetBookSnapshotBookSnapshot(BaseModel):
-    timestamp: datetime
-    bids: List["GetBookSnapshotBookSnapshotBids"]
-    asks: List["GetBookSnapshotBookSnapshotAsks"]
+class GetBookSnapshotMarketdata(BaseModel):
+    l_2_book_snapshot: "GetBookSnapshotMarketdataL2BookSnapshot" = Field(
+        alias="l2BookSnapshot"
+    )
 
 
-class GetBookSnapshotBookSnapshotBids(BaseModel):
+class GetBookSnapshotMarketdataL2BookSnapshot(BaseModel):
+    timestamp: Optional[datetime]
+    bids: List["GetBookSnapshotMarketdataL2BookSnapshotBids"]
+    asks: List["GetBookSnapshotMarketdataL2BookSnapshotAsks"]
+
+
+class GetBookSnapshotMarketdataL2BookSnapshotBids(BaseModel):
     price: Decimal
-    amount: Decimal
-    total: Decimal
+    size: Decimal
 
 
-class GetBookSnapshotBookSnapshotAsks(BaseModel):
+class GetBookSnapshotMarketdataL2BookSnapshotAsks(BaseModel):
     price: Decimal
-    amount: Decimal
-    total: Decimal
+    size: Decimal
 
 
 GetBookSnapshot.model_rebuild()
-GetBookSnapshotBookSnapshot.model_rebuild()
+GetBookSnapshotMarketdata.model_rebuild()
+GetBookSnapshotMarketdataL2BookSnapshot.model_rebuild()
