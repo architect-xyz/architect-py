@@ -34,7 +34,7 @@ class OrderSource(str, Enum):
     API = "API"
     GUI = "GUI"
     ALGO = "ALGO"
-    EXTERNAL = "EXTERNAL"
+    RECONCILED = "RECONCILED"
     CLI = "CLI"
     TELEGRAM = "TELEGRAM"
     OTHER = "OTHER"
@@ -42,9 +42,8 @@ class OrderSource(str, Enum):
 
 class OrderStatus(str, Enum):
     PENDING = "PENDING"
-    ACKED = "ACKED"
-    REJECTED = "REJECTED"
     OPEN = "OPEN"
+    REJECTED = "REJECTED"
     OUT = "OUT"
     CANCELING = "CANCELING"
     CANCELED = "CANCELED"

@@ -22,8 +22,9 @@ class SubscribeOrderflow(BaseModel):
         "SubscribeOrderflowOrderflowOrderOut",
         "SubscribeOrderflowOrderflowOrderStale",
         "SubscribeOrderflowOrderflowCancel",
-        "SubscribeOrderflowOrderflowCancelAck",
         "SubscribeOrderflowOrderflowCancelReject",
+        "SubscribeOrderflowOrderflowOrderCanceling",
+        "SubscribeOrderflowOrderflowOrderCanceled",
         "SubscribeOrderflowOrderflowFill",
         "SubscribeOrderflowOrderflowAberrantFill",
     ] = Field(discriminator="typename__")
@@ -59,15 +60,20 @@ class SubscribeOrderflowOrderflowCancel(BaseModel):
     typename__: Literal["Cancel"] = Field(alias="__typename")
 
 
-class SubscribeOrderflowOrderflowCancelAck(BaseModel):
-    typename__: Literal["CancelAck"] = Field(alias="__typename")
-    order_id: str = Field(alias="orderId")
-
-
 class SubscribeOrderflowOrderflowCancelReject(BaseModel):
     typename__: Literal["CancelReject"] = Field(alias="__typename")
     order_id: str = Field(alias="orderId")
     message: Optional[str]
+
+
+class SubscribeOrderflowOrderflowOrderCanceling(BaseModel):
+    typename__: Literal["OrderCanceling"] = Field(alias="__typename")
+
+
+class SubscribeOrderflowOrderflowOrderCanceled(BaseModel):
+    typename__: Literal["OrderCanceled"] = Field(alias="__typename")
+    order_id: str = Field(alias="orderId")
+    cancel_id: Optional[Any] = Field(alias="cancelId")
 
 
 class SubscribeOrderflowOrderflowFill(BaseModel):

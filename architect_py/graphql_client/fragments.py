@@ -33,10 +33,14 @@ class AccountSummaryFieldsBalances(BaseModel):
 
 
 class AccountSummaryFieldsPositions(BaseModel):
-    symbol: str
+    symbol: Any
+    position: "AccountSummaryFieldsPositionsPosition"
+
+
+class AccountSummaryFieldsPositionsPosition(BaseModel):
     quantity: Decimal
     trade_time: Optional[datetime] = Field(alias="tradeTime")
-    cost_basis: Decimal = Field(alias="costBasis")
+    cost_basis: Optional[Decimal] = Field(alias="costBasis")
     break_even_price: Optional[Decimal] = Field(alias="breakEvenPrice")
     liquidation_price: Optional[Decimal] = Field(alias="liquidationPrice")
 

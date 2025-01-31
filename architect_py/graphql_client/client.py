@@ -32,12 +32,13 @@ from .subscribe_orderflow import (
     SubscribeOrderflow,
     SubscribeOrderflowOrderflowAberrantFill,
     SubscribeOrderflowOrderflowCancel,
-    SubscribeOrderflowOrderflowCancelAck,
     SubscribeOrderflowOrderflowCancelReject,
     SubscribeOrderflowOrderflowFill,
     SubscribeOrderflowOrderflowGqlOrderReject,
     SubscribeOrderflowOrderflowOrder,
     SubscribeOrderflowOrderflowOrderAck,
+    SubscribeOrderflowOrderflowOrderCanceled,
+    SubscribeOrderflowOrderflowOrderCanceling,
     SubscribeOrderflowOrderflowOrderOut,
     SubscribeOrderflowOrderflowOrderStale,
 )
@@ -50,18 +51,42 @@ def gql(q: str) -> str:
 
 class GraphQLClient(JuniperBaseClient):
     async def search_symbols(
-        self, search: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
+        self,
+        execution_venue: str,
+        marketdata_venue: str,
+        sort_by_volume_desc: bool,
+        search_string: Union[Optional[str], UnsetType] = UNSET,
+        underlying: Union[Optional[str], UnsetType] = UNSET,
+        max_results: Union[Optional[int], UnsetType] = UNSET,
+        results_offset: Union[Optional[int], UnsetType] = UNSET,
+        **kwargs: Any
     ) -> SearchSymbolsSymbology:
         query = gql(
             """
-            query SearchSymbols($search: String) {
+            query SearchSymbols($searchString: String, $executionVenue: ExecutionVenue!, $marketdataVenue: MarketdataVenue!, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
               symbology {
-                searchSymbols(search: $search)
+                searchSymbols(
+                  searchString: $searchString
+                  executionVenue: $executionVenue
+                  marketdataVenue: $marketdataVenue
+                  underlying: $underlying
+                  maxResults: $maxResults
+                  resultsOffset: $resultsOffset
+                  sortByVolumeDesc: $sortByVolumeDesc
+                )
               }
             }
             """
         )
-        variables: Dict[str, object] = {"search": search}
+        variables: Dict[str, object] = {
+            "searchString": search_string,
+            "executionVenue": execution_venue,
+            "marketdataVenue": marketdata_venue,
+            "underlying": underlying,
+            "maxResults": max_results,
+            "resultsOffset": results_offset,
+            "sortByVolumeDesc": sort_by_volume_desc,
+        }
         response = await self.execute(
             query=query, operation_name="SearchSymbols", variables=variables, **kwargs
         )
@@ -252,11 +277,13 @@ class GraphQLClient(JuniperBaseClient):
               }
               positions {
                 symbol
-                quantity
-                tradeTime
-                costBasis
-                breakEvenPrice
-                liquidationPrice
+                position {
+                  quantity
+                  tradeTime
+                  costBasis
+                  breakEvenPrice
+                  liquidationPrice
+                }
               }
               unrealizedPnl
               realizedPnl
@@ -304,11 +331,13 @@ class GraphQLClient(JuniperBaseClient):
               }
               positions {
                 symbol
-                quantity
-                tradeTime
-                costBasis
-                breakEvenPrice
-                liquidationPrice
+                position {
+                  quantity
+                  tradeTime
+                  costBasis
+                  breakEvenPrice
+                  liquidationPrice
+                }
               }
               unrealizedPnl
               realizedPnl
@@ -672,8 +701,9 @@ class GraphQLClient(JuniperBaseClient):
             mutation CancelOrder($orderId: OrderId!) {
               oms {
                 cancelOrder(orderId: $orderId) {
-                  id
+                  cancelId
                   orderId
+                  recvTime
                   status
                   rejectReason
                 }
@@ -799,8 +829,9 @@ class GraphQLClient(JuniperBaseClient):
             SubscribeOrderflowOrderflowOrderOut,
             SubscribeOrderflowOrderflowOrderStale,
             SubscribeOrderflowOrderflowCancel,
-            SubscribeOrderflowOrderflowCancelAck,
             SubscribeOrderflowOrderflowCancelReject,
+            SubscribeOrderflowOrderflowOrderCanceling,
+            SubscribeOrderflowOrderflowOrderCanceled,
             SubscribeOrderflowOrderflowFill,
             SubscribeOrderflowOrderflowAberrantFill,
         ]
@@ -816,8 +847,9 @@ class GraphQLClient(JuniperBaseClient):
                 ... on OrderAck {
                   orderId
                 }
-                ... on CancelAck {
+                ... on OrderCanceled {
                   orderId
+                  cancelId
                 }
                 ... on GqlOrderReject {
                   orderId

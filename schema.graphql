@@ -34,7 +34,7 @@ enum OrderSource {
   API
   GUI
   ALGO
-  EXTERNAL
+  RECONCILED
   CLI
   TELEGRAM
   OTHER
@@ -160,23 +160,24 @@ type AberrantFill {
 }
 
 type AccountBalance {
+  product: Product!
+  balance: Decimal!
+}
+
+type AccountPosition {
   quantity: Decimal!
+  "The meaning of this field varies by reporting venue."
   tradeTime: DateTime
   costBasis: Decimal
   breakEvenPrice: Decimal
   liquidationPrice: Decimal
 }
 
-type AccountPosition {
-  symbol: TradableProduct!
-  position: AccountPosition!
-}
-
 type AccountSummary {
   account: Uuid!
   timestamp: DateTime!
   balances: [AccountBalance!]!
-  positions: [AccountPosition!]!
+  positions: [AccountSymbolPosition!]!
   unrealizedPnl: Decimal
   realizedPnl: Decimal
   equity: Decimal
@@ -185,6 +186,11 @@ type AccountSummary {
   purchasingPower: Decimal
   totalMargin: Decimal
   positionMargin: Decimal
+}
+
+type AccountSymbolPosition {
+  symbol: TradableProduct!
+  position: AccountPosition!
 }
 
 type ApiKey {

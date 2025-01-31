@@ -51,11 +51,13 @@ fragment AccountSummaryFields on AccountSummary {
   }
   positions {
     symbol
-    quantity
-    tradeTime
-    costBasis
-    breakEvenPrice
-    liquidationPrice
+    position {
+      quantity
+      tradeTime
+      costBasis
+      breakEvenPrice
+      liquidationPrice
+    }
   }
   unrealizedPnl
   realizedPnl
@@ -579,8 +581,9 @@ subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $width
 mutation CancelOrder($orderId: OrderId!) {
   oms {
     cancelOrder(orderId: $orderId) {
-      id
+      cancelId
       orderId
+      recvTime
       status
       rejectReason
     }
@@ -612,8 +615,9 @@ subscription SubscribeOrderflow {
     ... on OrderAck {
       orderId
     }
-    ... on CancelAck {
+    ... on OrderCanceled {
       orderId
+      cancelId
     }
     ... on GqlOrderReject {
       orderId
