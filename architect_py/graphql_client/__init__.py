@@ -87,7 +87,7 @@ from .get_product_infos import (
 )
 from .juniper_base_client import JuniperBaseClient
 from .place_order import PlaceOrder, PlaceOrderOms, PlaceOrderOmsPlaceOrder
-from .search_symbols import SearchSymbols, SearchSymbolsSymbology
+from .search_symbols_request import SearchSymbolsRequest, SearchSymbolsRequestSymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
 from .subscribe_orderflow import (
     SubscribeOrderflow,
@@ -173,8 +173,8 @@ __all__ = [
     "PlaceOrderOms",
     "PlaceOrderOmsPlaceOrder",
     "ProductInfoFields",
-    "SearchSymbols",
-    "SearchSymbolsSymbology",
+    "SearchSymbolsRequest",
+    "SearchSymbolsRequestSymbology",
     "SubscribeCandles",
     "SubscribeCandlesCandles",
     "SubscribeOrderflow",

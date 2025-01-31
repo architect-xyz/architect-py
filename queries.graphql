@@ -81,7 +81,7 @@ fragment MarketTickerFields on Ticker {
 
 
 
-query SearchSymbols($searchString: String, $executionVenue: ExecutionVenue!, $marketdataVenue: MarketdataVenue!, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
+query SearchSymbolsRequest($searchString: String, $executionVenue: ExecutionVenue, $marketdataVenue: MarketdataVenue, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
   symbology {
     searchSymbols(searchString: $searchString, executionVenue: $executionVenue, marketdataVenue: $marketdataVenue, underlying: $underlying, maxResults: $maxResults, resultsOffset: $resultsOffset, sortByVolumeDesc: $sortByVolumeDesc)
   }

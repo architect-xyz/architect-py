@@ -285,10 +285,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     async def start_session(self):
         await self.load_and_index_symbology()
 
-    async def search_markets(
+    async def search_symbols(
         self,
-        venue: str | None | UnsetType = UNSET,
-        base: str | None | UnsetType = UNSET,
+        *,
+        execution_venue: str | None | UnsetType = UNSET,
+        marketdata_venue: str | None | UnsetType = UNSET,
         quote: str | None | UnsetType = UNSET,
         underlying: str | None | UnsetType = UNSET,
         max_results: int | None | UnsetType = UNSET,
@@ -299,21 +300,21 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         glob: str | None = None,
         regex: str | None = None,
         **kwargs: Any,
-    ) -> List[SearchMarketsFilterMarkets]:
+    ) -> List[str]:
 
         if glob or regex:
-            markets = await super().search_markets(
-                venue,
-                base,
-                quote,
-                underlying,
-                UNSET,
-                results_offset,
-                search_string,
-                only_favorites,
-                sort_by_volume_desc,
-                **kwargs,
-            )
+            markets = (
+                await self.search_symbols_request(
+                    sort_by_volume_desc,
+                    search_string,
+                    execution_venue,
+                    marketdata_venue,
+                    underlying,
+                    UNSET,
+                    results_offset,
+                    **kwargs,
+                )
+            ).search_symbols
 
             if glob is not None:
                 markets = [
@@ -327,18 +328,20 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 markets = markets[:max_results]
 
         else:
-            markets = await super().search_markets(
-                venue,
-                base,
-                quote,
-                underlying,
-                max_results,
-                results_offset,
-                search_string,
-                only_favorites,
-                sort_by_volume_desc,
-                **kwargs,
-            )
+            markets = (
+                await self.search_symbols_request(
+                    venue,
+                    base,
+                    quote,
+                    underlying,
+                    max_results,
+                    results_offset,
+                    search_string,
+                    only_favorites,
+                    sort_by_volume_desc,
+                    **kwargs,
+                )
+            ).search_symbols
 
         return markets
 

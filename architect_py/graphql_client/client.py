@@ -26,7 +26,7 @@ from .get_product_info import GetProductInfo, GetProductInfoSymbology
 from .get_product_infos import GetProductInfos, GetProductInfosSymbology
 from .juniper_base_client import JuniperBaseClient
 from .place_order import PlaceOrder, PlaceOrderOms
-from .search_symbols import SearchSymbols, SearchSymbolsSymbology
+from .search_symbols_request import SearchSymbolsRequest, SearchSymbolsRequestSymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
 from .subscribe_orderflow import (
     SubscribeOrderflow,
@@ -50,20 +50,20 @@ def gql(q: str) -> str:
 
 
 class GraphQLClient(JuniperBaseClient):
-    async def search_symbols(
+    async def search_symbols_request(
         self,
-        execution_venue: str,
-        marketdata_venue: str,
         sort_by_volume_desc: bool,
         search_string: Union[Optional[str], UnsetType] = UNSET,
+        execution_venue: Union[Optional[str], UnsetType] = UNSET,
+        marketdata_venue: Union[Optional[str], UnsetType] = UNSET,
         underlying: Union[Optional[str], UnsetType] = UNSET,
         max_results: Union[Optional[int], UnsetType] = UNSET,
         results_offset: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> SearchSymbolsSymbology:
+    ) -> SearchSymbolsRequestSymbology:
         query = gql(
             """
-            query SearchSymbols($searchString: String, $executionVenue: ExecutionVenue!, $marketdataVenue: MarketdataVenue!, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
+            query SearchSymbolsRequest($searchString: String, $executionVenue: ExecutionVenue, $marketdataVenue: MarketdataVenue, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
               symbology {
                 searchSymbols(
                   searchString: $searchString
@@ -88,10 +88,13 @@ class GraphQLClient(JuniperBaseClient):
             "sortByVolumeDesc": sort_by_volume_desc,
         }
         response = await self.execute(
-            query=query, operation_name="SearchSymbols", variables=variables, **kwargs
+            query=query,
+            operation_name="SearchSymbolsRequest",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return SearchSymbols.model_validate(data).symbology
+        return SearchSymbolsRequest.model_validate(data).symbology
 
     async def get_product_info(
         self, symbol: str, **kwargs: Any

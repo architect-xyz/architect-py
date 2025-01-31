@@ -435,7 +435,7 @@ type SymbologyQueryRoot {
   executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(searchString: String, executionVenue: ExecutionVenue!, marketdataVenue: MarketdataVenue!, underlying: String, maxResults: Int, resultsOffset: Int, sortByVolumeDesc: Boolean!): [String!]!
+  searchSymbols(searchString: String, executionVenue: ExecutionVenue, marketdataVenue: MarketdataVenue, underlying: String, maxResults: Int, resultsOffset: Int, sortByVolumeDesc: Boolean!): [String!]!
 }
 
 type Ticker {
