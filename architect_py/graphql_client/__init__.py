@@ -4,7 +4,7 @@ from .base_model import BaseModel, Upload
 from .cancel_all_orders import CancelAllOrders, CancelAllOrdersOms
 from .cancel_order import CancelOrder, CancelOrderOms, CancelOrderOmsCancelOrder
 from .client import GraphQLClient
-from .create_jwt import CreateJwt
+from .create_jwt import CreateJwt, CreateJwtUser
 from .enums import (
     CancelStatus,
     CandleWidth,
@@ -19,12 +19,12 @@ from .fragments import (
     AccountSummaryFields,
     AccountSummaryFieldsBalances,
     AccountSummaryFieldsPositions,
-    AccountSummaryFieldsPositionsPosition,
     CandleFields,
     MarketTickerFields,
     OrderFields,
     ProductInfoFields,
 )
+from .future_series import FutureSeries, FutureSeriesSymbology
 from .get_account_summaries import (
     GetAccountSummaries,
     GetAccountSummariesFolio,
@@ -47,6 +47,11 @@ from .get_book_snapshot import (
     GetBookSnapshotMarketdataL2BookSnapshotAsks,
     GetBookSnapshotMarketdataL2BookSnapshotBids,
 )
+from .get_execution_info import (
+    GetExecutionInfo,
+    GetExecutionInfoSymbology,
+    GetExecutionInfoSymbologyExecutionInfo,
+)
 from .get_fills import (
     GetFills,
     GetFillsFolio,
@@ -63,6 +68,10 @@ from .get_historical_orders import (
     GetHistoricalOrders,
     GetHistoricalOrdersFolio,
     GetHistoricalOrdersFolioHistoricalOrders,
+)
+from .get_main_execution_venue import (
+    GetMainExecutionVenue,
+    GetMainExecutionVenueSymbology,
 )
 from .get_market_snapshot import (
     GetMarketSnapshot,
@@ -109,7 +118,6 @@ __all__ = [
     "AccountSummaryFields",
     "AccountSummaryFieldsBalances",
     "AccountSummaryFieldsPositions",
-    "AccountSummaryFieldsPositionsPosition",
     "BaseModel",
     "CancelAllOrders",
     "CancelAllOrdersOms",
@@ -120,7 +128,10 @@ __all__ = [
     "CandleFields",
     "CandleWidth",
     "CreateJwt",
+    "CreateJwtUser",
     "FillKind",
+    "FutureSeries",
+    "FutureSeriesSymbology",
     "GetAccountSummaries",
     "GetAccountSummariesFolio",
     "GetAccountSummariesFolioAccountSummaries",
@@ -135,6 +146,9 @@ __all__ = [
     "GetBookSnapshotMarketdataL2BookSnapshot",
     "GetBookSnapshotMarketdataL2BookSnapshotAsks",
     "GetBookSnapshotMarketdataL2BookSnapshotBids",
+    "GetExecutionInfo",
+    "GetExecutionInfoSymbology",
+    "GetExecutionInfoSymbologyExecutionInfo",
     "GetFills",
     "GetFillsFolio",
     "GetFillsFolioHistoricalFills",
@@ -146,6 +160,8 @@ __all__ = [
     "GetHistoricalOrders",
     "GetHistoricalOrdersFolio",
     "GetHistoricalOrdersFolioHistoricalOrders",
+    "GetMainExecutionVenue",
+    "GetMainExecutionVenueSymbology",
     "GetMarketSnapshot",
     "GetMarketSnapshotMarketdata",
     "GetMarketSnapshotMarketdataTicker",

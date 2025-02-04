@@ -3,7 +3,8 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Literal, Optional, Union
+from typing import Literal, Optional, Union
+from uuid import UUID
 
 from pydantic import Field
 
@@ -73,13 +74,13 @@ class SubscribeOrderflowOrderflowOrderCanceling(BaseModel):
 class SubscribeOrderflowOrderflowOrderCanceled(BaseModel):
     typename__: Literal["OrderCanceled"] = Field(alias="__typename")
     order_id: str = Field(alias="orderId")
-    cancel_id: Optional[Any] = Field(alias="cancelId")
+    cancel_id: Optional[UUID] = Field(alias="cancelId")
 
 
 class SubscribeOrderflowOrderflowFill(BaseModel):
     typename__: Literal["Fill"] = Field(alias="__typename")
     fill_order_id: Optional[str] = Field(alias="fillOrderId")
-    fill_id: Any = Field(alias="fillId")
+    fill_id: UUID = Field(alias="fillId")
     fill_kind: FillKind = Field(alias="fillKind")
     execution_venue: str = Field(alias="executionVenue")
     exchange_fill_id: Optional[str] = Field(alias="exchangeFillId")

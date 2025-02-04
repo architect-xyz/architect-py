@@ -2,7 +2,8 @@
 # Source: queries.graphql
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
 
@@ -19,7 +20,7 @@ class CancelOrderOms(BaseModel):
 
 
 class CancelOrderOmsCancelOrder(BaseModel):
-    cancel_id: Any = Field(alias="cancelId")
+    cancel_id: UUID = Field(alias="cancelId")
     order_id: str = Field(alias="orderId")
     recv_time: Optional[datetime] = Field(alias="recvTime")
     status: CancelStatus

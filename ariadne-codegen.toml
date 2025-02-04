@@ -12,11 +12,14 @@ plugins = ["ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin"]
 [tool.ariadne-codegen.scalars]
 Decimal.type = "decimal.Decimal"
 
+AccountName.type = "str"
 ExecutionVenue.type = "str"
 MarketdataVenue.type = "str"
 OrderId.type = "str"
-UserId.type = "str"
 Product.type = "str"
+TradableProduct.type = "str"
+UserId.type = "str"
+Uuid.type = "uuid.UUID"
 
 Dir.type = "architect_py.scalars.OrderDir"
 Dir.serialize = "architect_py.scalars.serialize"

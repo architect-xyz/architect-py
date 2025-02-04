@@ -3,7 +3,8 @@
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import List, Optional
+from uuid import UUID
 
 from pydantic import Field
 
@@ -14,7 +15,7 @@ from .enums import CandleWidth, OrderSource, OrderStatus, OrderType, TimeInForce
 
 
 class AccountSummaryFields(BaseModel):
-    account: Any
+    account: UUID
     timestamp: datetime
     balances: List["AccountSummaryFieldsBalances"]
     positions: List["AccountSummaryFieldsPositions"]
@@ -23,6 +24,7 @@ class AccountSummaryFields(BaseModel):
     equity: Optional[Decimal]
     yesterday_equity: Optional[Decimal] = Field(alias="yesterdayEquity")
     cash_excess: Optional[Decimal] = Field(alias="cashExcess")
+    purchasing_power: Optional[Decimal] = Field(alias="purchasingPower")
     total_margin: Optional[Decimal] = Field(alias="totalMargin")
     position_margin: Optional[Decimal] = Field(alias="positionMargin")
 
@@ -33,11 +35,7 @@ class AccountSummaryFieldsBalances(BaseModel):
 
 
 class AccountSummaryFieldsPositions(BaseModel):
-    symbol: Any
-    position: "AccountSummaryFieldsPositionsPosition"
-
-
-class AccountSummaryFieldsPositionsPosition(BaseModel):
+    symbol: str
     quantity: Decimal
     trade_time: Optional[datetime] = Field(alias="tradeTime")
     cost_basis: Optional[Decimal] = Field(alias="costBasis")
@@ -74,7 +72,7 @@ class OrderFields(BaseModel):
     reject_reason: Optional[str] = Field(alias="rejectReason")
     symbol: str
     trader: str
-    account: Any
+    account: UUID
     dir: OrderDir
     quantity: Decimal
     filled_quantity: Decimal = Field(alias="filledQuantity")

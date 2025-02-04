@@ -51,19 +51,18 @@ fragment AccountSummaryFields on AccountSummary {
   }
   positions {
     symbol
-    position {
-      quantity
-      tradeTime
-      costBasis
-      breakEvenPrice
-      liquidationPrice
-    }
+    quantity
+    tradeTime
+    costBasis
+    breakEvenPrice
+    liquidationPrice
   }
   unrealizedPnl
   realizedPnl
   equity
   yesterdayEquity
   cashExcess
+  purchasingPower
   totalMargin
   positionMargin
 }
@@ -112,6 +111,33 @@ query GetFirstNoticeDate($symbol: String!) {
   }
 }
 
+query FutureSeries($seriesSymbol: String!) {
+  symbology {
+    futuresSeries(seriesSymbol: $seriesSymbol)
+  }
+}
+
+query getMainExecutionVenue($symbol: String!) {
+  symbology {
+    getMainExecutionVenue(symbol: $symbol)
+  }
+}
+
+query GetExecutionInfo($symbol: String!, $executionVenue: ExecutionVenue!) {
+  symbology {
+    executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
+      symbol
+      executionVenue
+      tickSize
+      stepSize
+      minOrderQuantity
+      minOrderQuantityUnit
+      isDelisted
+    }
+  }
+}
+
+
 query GetMarketSnapshot($venue: MarketdataVenue!, $symbol: String!) {
   marketdata {
     ticker(venue: $venue, symbol: $symbol) {
@@ -129,7 +155,7 @@ query GetMarketSnapshots($venue: MarketdataVenue!, $symbols: [String!]) {
 }
 
 
-query GetAccountSummary($venue: ExecutionVenue, $account: Uuid!) {
+query GetAccountSummary($venue: ExecutionVenue, $account: String!) {
   folio {
     accountSummary(venue: $venue, account: $account) {
       ...AccountSummaryFields
@@ -137,7 +163,7 @@ query GetAccountSummary($venue: ExecutionVenue, $account: Uuid!) {
   }
 }
 
-query GetAccountSummaries($venue: ExecutionVenue, $trader: UserId, $accounts: [Uuid!]) {
+query GetAccountSummaries($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
   folio {
     accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
       ...AccountSummaryFields
@@ -145,7 +171,7 @@ query GetAccountSummaries($venue: ExecutionVenue, $trader: UserId, $accounts: [U
   }
 }
 
-query GetOpenOrders($venue: ExecutionVenue, $account: Uuid, $trader: UserId, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
+query GetOpenOrders($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
   oms {
     openOrders(venue: $venue, account: $account, trader: $trader, symbol: $symbol, parentOrderId: $parentOrderId, orderIds: $orderIds) {
       ...OrderFields
@@ -161,7 +187,7 @@ query GetAllOpenOrders {
   }
 }
 
-query GetHistoricalOrders($venue: ExecutionVenue, $account: Uuid, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+query GetHistoricalOrders($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
   folio {
     historicalOrders(venue: $venue, account: $account, parentOrderId: $parentOrderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
       ...OrderFields
@@ -478,7 +504,7 @@ query GetHistoricalOrders($venue: ExecutionVenue, $account: Uuid, $parentOrderId
 #   }
 # }
 
-query GetFills($venue: ExecutionVenue, $account: Uuid, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
+query GetFills($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
   folio {
     historicalFills(venue: $venue, account: $account, orderId: $orderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
       fills {
@@ -652,5 +678,7 @@ subscription SubscribeOrderflow {
 
 
 mutation CreateJwt {
-  createJwt
+  user {
+    createJwt
+  }
 }

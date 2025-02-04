@@ -8,6 +8,7 @@ class CancelStatus(str, Enum):
     PENDING = "PENDING"
     ACKED = "ACKED"
     REJECTED = "REJECTED"
+    OUT = "OUT"
 
 
 class CandleWidth(str, Enum):

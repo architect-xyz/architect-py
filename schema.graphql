@@ -8,6 +8,7 @@ enum CancelStatus {
   PENDING
   ACKED
   REJECTED
+  OUT
 }
 
 enum CandleWidth {
@@ -63,6 +64,8 @@ enum TimeInForce {
   IOC
   FOK
 }
+
+scalar AccountName
 
 """
   Date in the proleptic Gregorian calendar (without time zone).
@@ -159,18 +162,23 @@ type AberrantFill {
   tradeTime: DateTime
 }
 
+type Account {
+  id: Uuid!
+  name: AccountName!
+}
+
 type AccountBalance {
   product: Product!
   balance: Decimal!
 }
 
-type AccountPosition {
-  quantity: Decimal!
-  "The meaning of this field varies by reporting venue."
-  tradeTime: DateTime
-  costBasis: Decimal
-  breakEvenPrice: Decimal
-  liquidationPrice: Decimal
+"Set of flags for account permissions"
+type AccountPermissions {
+  list: Boolean!
+  view: Boolean!
+  trade: Boolean!
+  reduceOrClose: Boolean!
+  setLimits: Boolean!
 }
 
 type AccountSummary {
@@ -190,7 +198,17 @@ type AccountSummary {
 
 type AccountSymbolPosition {
   symbol: TradableProduct!
-  position: AccountPosition!
+  quantity: Decimal!
+  tradeTime: DateTime
+  costBasis: Decimal
+  breakEvenPrice: Decimal
+  liquidationPrice: Decimal
+}
+
+type AccountWithPermissions {
+  account: Account!
+  trader: UserId!
+  permissions: AccountPermissions!
 }
 
 type ApiKey {
@@ -292,11 +310,11 @@ type Fill {
 }
 
 type FolioQueryRoot {
-  accountSummary(venue: ExecutionVenue, account: Uuid!): AccountSummary!
-  accountSummaries(venue: ExecutionVenue, trader: UserId, accounts: [Uuid!]): [AccountSummary!]!
-  accountHistory(venue: ExecutionVenue, account: Uuid!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
-  historicalFills(venue: ExecutionVenue, account: Uuid, orderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime): HistoricalFillsResponse!
-  historicalOrders(venue: ExecutionVenue, account: Uuid, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime): [Order!]!
+  accountSummary(venue: ExecutionVenue, account: String!): AccountSummary!
+  accountSummaries(venue: ExecutionVenue, trader: String, accounts: [String!]): [AccountSummary!]!
+  accountHistory(venue: ExecutionVenue, account: String!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
+  historicalFills(venue: ExecutionVenue, account: String, trader: String, orderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): HistoricalFillsResponse!
+  historicalOrders(venue: ExecutionVenue, account: String, trader: String, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): [Order!]!
 }
 
 type GqlOrderReject {
@@ -336,20 +354,19 @@ type MarketdataQueryRoot {
 }
 
 type MutationRoot {
-  "Create a session JWT to use for authentication with upstream gRPC services.  Requires the server to be configured for Architect auth federation."
-  createJwt: String!
+  user: UserMutationRoot!
   oms: OmsMutationRoot!
 }
 
 type OmsMutationRoot {
   placeOrder(id: OrderId, symbol: String!, dir: Dir!, quantity: Decimal!, trader: String, account: String, orderType: OrderType!, limitPrice: Decimal, postOnly: Boolean, triggerPrice: Decimal, timeInForce: TimeInForce!, goodTilDate: DateTime, executionVenue: ExecutionVenue): Order!
   cancelOrder(orderId: OrderId!): Cancel!
-  cancelAllOrders: Boolean!
+  cancelAllOrders(trader: String, account: String, executionVenue: String): Boolean!
 }
 
 type OmsQueryRoot {
-  openOrders(venue: ExecutionVenue, account: Uuid, trader: UserId, symbol: String, parentOrderId: OrderId, orderIds: [OrderId!]): [Order!]!
-  pendingCancels(venue: ExecutionVenue, account: Uuid, trader: UserId, symbol: String, cancelIds: [Uuid!]): [Cancel!]!
+  openOrders(venue: ExecutionVenue, account: String, trader: String, symbol: String, parentOrderId: OrderId, orderIds: [OrderId!]): [Order!]!
+  pendingCancels(venue: ExecutionVenue, account: String, trader: String, symbol: String, cancelIds: [Uuid!]): [Cancel!]!
 }
 
 type Order {
@@ -424,7 +441,7 @@ type SubscriptionRoot {
   "Subscribe to only the current candle.  The candle will update on every trade, or every `tick_period_ms` if specified."
   currentCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, tickPeriodMs: Int): Candle!
   "Listen to orderflow events."
-  orderflow(executionVenue: ExecutionVenue, trader: UserId, account: Uuid): Orderflow!
+  orderflow(executionVenue: ExecutionVenue, trader: String, account: String): Orderflow!
   trades(venue: MarketdataVenue!, symbol: String!): Trade!
 }
 
@@ -432,6 +449,7 @@ type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
+  getMainExecutionVenue(symbol: String!): ExecutionVenue
   executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
@@ -474,9 +492,20 @@ type Trade {
   size: Decimal!
 }
 
+type UserMutationRoot {
+  "Create a session JWT to use for authentication with upstream gRPC services.  Requires the server to be configured for Architect auth federation."
+  createJwt: String!
+  "Create a new API key"
+  createApiKey: ApiKey!
+  "Remove an API key"
+  removeApiKey(apiKey: String!): Boolean!
+}
+
 type UserQueryRoot {
   userId: UserId!
   userEmail: String!
+  "List user's accounts"
+  accounts: [AccountWithPermissions!]!
   "List user's API keys"
   apiKeys: [ApiKey!]!
 }

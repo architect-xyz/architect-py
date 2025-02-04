@@ -21,17 +21,6 @@ from functools import partial
 import architect_py.graphql_client.fragments as fragments
 
 
-def get_tick_size(market: fragments.MarketFields) -> Decimal:
-    """
-    CLIENT EXAMPLE:
-        market = await client.get_market(market_id)
-        if market is None:
-            raise ValueError(f"Market {market_id} not found")
-        get_tick_size(market)
-    """
-    return Decimal(market.tick_size)
-
-
 def round_method(value: Decimal, tick_size: Decimal) -> Decimal:
     """
     ROUND: Round to the nearest tick. If the remainder is >= half the tick size, round up; otherwise, round down.

@@ -15,6 +15,7 @@ Breaking Changes:
 - removed GetAllMarketSnapshots, replaced with GetMarketSnapshots
 - removed SearchSymbols, replaced with SearchSymbols
 - algos currently not working
+- removed get_balance_anmd_position in favor of client.get_account_summaries
 
 Features:
 

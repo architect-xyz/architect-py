@@ -3,7 +3,8 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import List, Optional
+from uuid import UUID
 
 from pydantic import Field
 
@@ -29,13 +30,13 @@ class GetFillsFolioHistoricalFills(BaseModel):
 
 
 class GetFillsFolioHistoricalFillsFills(BaseModel):
-    fill_id: Any = Field(alias="fillId")
+    fill_id: UUID = Field(alias="fillId")
     fill_kind: FillKind = Field(alias="fillKind")
     execution_venue: str = Field(alias="executionVenue")
     exchange_fill_id: Optional[str] = Field(alias="exchangeFillId")
     order_id: Optional[str] = Field(alias="orderId")
     trader: Optional[str]
-    account: Optional[Any]
+    account: Optional[UUID]
     symbol: str
     dir: OrderDir
     quantity: Decimal
@@ -45,13 +46,13 @@ class GetFillsFolioHistoricalFillsFills(BaseModel):
 
 
 class GetFillsFolioHistoricalFillsAberrantFills(BaseModel):
-    fill_id: Any = Field(alias="fillId")
+    fill_id: UUID = Field(alias="fillId")
     fill_kind: Optional[FillKind] = Field(alias="fillKind")
     execution_venue: str = Field(alias="executionVenue")
     exchange_fill_id: Optional[str] = Field(alias="exchangeFillId")
     order_id: Optional[str] = Field(alias="orderId")
     trader: Optional[str]
-    account: Optional[Any]
+    account: Optional[UUID]
     symbol: Optional[str]
     dir: Optional[OrderDir]
     quantity: Optional[Decimal]
