@@ -181,11 +181,20 @@ type AccountPermissions {
   setLimits: Boolean!
 }
 
+type AccountPosition {
+  symbol: TradableProduct!
+  quantity: Decimal!
+  tradeTime: DateTime
+  costBasis: Decimal
+  breakEvenPrice: Decimal
+  liquidationPrice: Decimal
+}
+
 type AccountSummary {
   account: Uuid!
   timestamp: DateTime!
   balances: [AccountBalance!]!
-  positions: [AccountSymbolPosition!]!
+  positions: [AccountPosition!]!
   unrealizedPnl: Decimal
   realizedPnl: Decimal
   equity: Decimal
@@ -194,15 +203,6 @@ type AccountSummary {
   purchasingPower: Decimal
   totalMargin: Decimal
   positionMargin: Decimal
-}
-
-type AccountSymbolPosition {
-  symbol: TradableProduct!
-  quantity: Decimal!
-  tradeTime: DateTime
-  costBasis: Decimal
-  breakEvenPrice: Decimal
-  liquidationPrice: Decimal
 }
 
 type AccountWithPermissions {
@@ -449,8 +449,7 @@ type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
-  getMainExecutionVenue(symbol: String!): ExecutionVenue
-  executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
+  executionInfo(symbol: String!, executionVenue: ExecutionVenue): ExecutionInfo!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
   searchSymbols(searchString: String, executionVenue: ExecutionVenue, marketdataVenue: MarketdataVenue, underlying: String, maxResults: Int, resultsOffset: Int, sortByVolumeDesc: Boolean!): [String!]!

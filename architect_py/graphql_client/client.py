@@ -21,10 +21,6 @@ from .get_execution_info import GetExecutionInfo, GetExecutionInfoSymbology
 from .get_fills import GetFills, GetFillsFolio
 from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateSymbology
 from .get_historical_orders import GetHistoricalOrders, GetHistoricalOrdersFolio
-from .get_main_execution_venue import (
-    GetMainExecutionVenue,
-    GetMainExecutionVenueSymbology,
-)
 from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketdata
 from .get_market_snapshots import GetMarketSnapshots, GetMarketSnapshotsMarketdata
 from .get_open_orders import GetOpenOrders, GetOpenOrdersOms
@@ -206,28 +202,6 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return FutureSeries.model_validate(data).symbology
-
-    async def get_main_execution_venue(
-        self, symbol: str, **kwargs: Any
-    ) -> GetMainExecutionVenueSymbology:
-        query = gql(
-            """
-            query getMainExecutionVenue($symbol: String!) {
-              symbology {
-                getMainExecutionVenue(symbol: $symbol)
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"symbol": symbol}
-        response = await self.execute(
-            query=query,
-            operation_name="getMainExecutionVenue",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetMainExecutionVenue.model_validate(data).symbology
 
     async def get_execution_info(
         self, symbol: str, execution_venue: str, **kwargs: Any

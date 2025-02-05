@@ -69,10 +69,6 @@ from .get_historical_orders import (
     GetHistoricalOrdersFolio,
     GetHistoricalOrdersFolioHistoricalOrders,
 )
-from .get_main_execution_venue import (
-    GetMainExecutionVenue,
-    GetMainExecutionVenueSymbology,
-)
 from .get_market_snapshot import (
     GetMarketSnapshot,
     GetMarketSnapshotMarketdata,
@@ -160,8 +156,6 @@ __all__ = [
     "GetHistoricalOrders",
     "GetHistoricalOrdersFolio",
     "GetHistoricalOrdersFolioHistoricalOrders",
-    "GetMainExecutionVenue",
-    "GetMainExecutionVenueSymbology",
     "GetMarketSnapshot",
     "GetMarketSnapshotMarketdata",
     "GetMarketSnapshotMarketdataTicker",

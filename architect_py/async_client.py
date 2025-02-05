@@ -269,7 +269,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             )
         ):
             try:
-                self.grpc_jwt = await self.create_jwt()
+                self.grpc_jwt = (await self.create_jwt()).create_jwt
                 self.grpc_jwt_expiration = datetime.now() + timedelta(
                     hours=23
                 )  # TODO: actually inspect the JWT exp
@@ -289,12 +289,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         *,
         execution_venue: str | None | UnsetType = UNSET,
         marketdata_venue: str | None | UnsetType = UNSET,
-        quote: str | None | UnsetType = UNSET,
         underlying: str | None | UnsetType = UNSET,
         max_results: int | None | UnsetType = UNSET,
         results_offset: int | None | UnsetType = UNSET,
         search_string: str | None | UnsetType = UNSET,
-        only_favorites: bool | None | UnsetType = UNSET,
         sort_by_volume_desc: bool | None | UnsetType = UNSET,
         glob: str | None = None,
         regex: str | None = None,
@@ -304,24 +302,27 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if glob or regex:
             markets = (
                 await self.search_symbols_request(
-                    sort_by_volume_desc,
+                    (
+                        sort_by_volume_desc
+                        if isinstance(sort_by_volume_desc, bool)
+                        else False
+                    ),
                     search_string,
                     execution_venue,
                     marketdata_venue,
                     underlying,
                     UNSET,
                     results_offset,
-                    **kwargs,
                 )
             ).search_symbols
 
             if glob is not None:
                 markets = [
-                    market for market in markets if fnmatch.fnmatch(market.name, glob)
+                    market for market in markets if fnmatch.fnmatch(market, glob)
                 ]
 
             if regex is not None:
-                markets = [market for market in markets if re.match(regex, market.name)]
+                markets = [market for market in markets if re.match(regex, market)]
 
             if isinstance(max_results, int):
                 markets = markets[:max_results]
@@ -329,16 +330,17 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         else:
             markets = (
                 await self.search_symbols_request(
-                    venue,
-                    base,
-                    quote,
+                    (
+                        sort_by_volume_desc
+                        if isinstance(sort_by_volume_desc, bool)
+                        else False
+                    ),
+                    search_string,
+                    execution_venue,
+                    marketdata_venue,
                     underlying,
                     max_results,
                     results_offset,
-                    search_string,
-                    only_favorites,
-                    sort_by_volume_desc,
-                    **kwargs,
                 )
             ).search_symbols
 
@@ -354,7 +356,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if not self.no_gql:
             logger.info("Loading symbology...")
             symbols = await self.search_symbols()
-            logger.info("Loaded %d markets", len(markets))
+            logger.info("Loaded %d markets", len(symbols))
             for symbol in symbols:
                 market = self.get_product_info(symbol)
 
@@ -513,34 +515,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 f"cpty {cpty} not configured for marketdata and no GQL server"
             )
 
-    async def get_open_orders(
-        self,
-        venue: Optional[str] = None,
-        route: Optional[str] = None,
-        cpty: Optional[str] = None,
-    ):
-        """
-        Get open orders known to the OMS.  Optionally filter by specific venue (e.g. "COINBASE")
-        or counterparty (e.g. "COINBASE/DIRECT").
-        """
-        cpty_venue = None
-        cpty_route = None
-        if cpty:
-            cpty_venue, cpty_route = cpty.split("/", 1)
-        open_orders = await self.get_all_open_orders()
-        filtered_orders = []
-        for oo in open_orders:
-            if venue and oo.order.market.venue.name != venue:
-                continue
-            if route and oo.order.market.route.name != route:
-                continue
-            if cpty_venue and oo.order.market.venue.name != cpty_venue:
-                continue
-            if cpty_route and oo.order.market.route.name != cpty_route:
-                continue
-            filtered_orders.append(oo)
-        return filtered_orders
-
     async def send_limit_order(
         self,
         *,
@@ -556,7 +530,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
-        execution_venue: Optional[str],
+        execution_venue: Optional[str] = None,
     ) -> OrderFields:
         """
         `account` is optional depending on the final cpty it gets to
@@ -564,16 +538,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         """
 
         if price_round_method is not None:
-            if execution_venue is None:
-                execution_venue = (
-                    await self.get_main_execution_venue(symbol)
-                ).get_main_execution_venue
-
-                if execution_venue is None:
-                    raise ValueError(
-                        f"Could not find execution venue for {symbol} to get tick size for price rounding"
-                    )
-
             execution_info = await self.get_execution_info(symbol, execution_venue)
             if (tick_size := execution_info.execution_info.tick_size) is not None:
                 if tick_size:
@@ -608,6 +572,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         self,
         *,
         symbol: str,
+        marketdata_venue: Optional[str] = None,
         odir: OrderDir,
         quantity: Decimal,
         time_in_force: TimeInForce = TimeInForce.DAY,
@@ -618,26 +583,23 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         product_info = await self.get_product_info(symbol)
         if product_info is None:
             raise ValueError(
-                f"Failed to send market order with reason: no market details for {market}"
+                f"Failed to send market order with reason: no market details for {symbol}"
             )
 
         # Check for GQL failures
-        bbo_snapshot = await self.get_market_snapshot(market)
+        bbo_snapshot = await self.get_market_snapshot(marketdata_venue, symbol)
+        bbo_snapshot = bbo_snapshot.ticker
         if bbo_snapshot is None:
             raise ValueError(
-                f"Failed to send market order with reason: no market snapshot for {market}"
+                f"Failed to send market order with reason: no market snapshot for {symbol}"
             )
 
-        if product_info.venue.name == "CME":
-            name: str = product_info.name.split(" ")[0]
-            price_band = price_band_pairs.get(name, None)
-        else:
-            price_band = None
+        price_band = price_band_pairs.get(symbol, None)
 
         if odir == OrderDir.BUY:
             if bbo_snapshot.ask_price is None:
                 raise ValueError(
-                    f"Failed to send market order with reason: no ask price for {market}"
+                    f"Failed to send market order with reason: no ask price for {symbol}"
                 )
             limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
 
@@ -648,7 +610,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         else:
             if bbo_snapshot.bid_price is None:
                 raise ValueError(
-                    f"Failed to send market order with reason: no bid price for {market}"
+                    f"Failed to send market order with reason: no bid price for {symbol}"
                 )
             limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
             if price_band and bbo_snapshot.last_price:
@@ -659,9 +621,20 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         tick_round_method = (
             TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
         )
-        limit_price = nearest_tick(
-            Decimal(limit_price), tick_round_method, Decimal(product_info.tick_size)
+
+        execution_info = await self.get_execution_info(
+            execution_venue=marketdata_venue, symbol=symbol
         )
+
+        if (
+            execution_info.execution_info is not None
+            and (tick_size := execution_info.execution_info.tick_size) is not None
+        ):
+            limit_price = nearest_tick(
+                Decimal(limit_price),
+                tick_round_method,
+                tick_size=tick_size,
+            )
 
         return await self.send_limit_order(
             symbol=symbol,

@@ -117,12 +117,6 @@ query FutureSeries($seriesSymbol: String!) {
   }
 }
 
-query getMainExecutionVenue($symbol: String!) {
-  symbology {
-    getMainExecutionVenue(symbol: $symbol)
-  }
-}
-
 query GetExecutionInfo($symbol: String!, $executionVenue: ExecutionVenue!) {
   symbology {
     executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
