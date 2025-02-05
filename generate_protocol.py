@@ -62,6 +62,7 @@ def autogenerate_protocol(cls) -> str:
     """
     protocol_name = f"{cls.__name__}Protocol"
     methods = {}
+    method_decorators = {}
     attributes = {}
 
     # Inspect class members
@@ -72,6 +73,14 @@ def autogenerate_protocol(cls) -> str:
             # Collect methods
             signature = inspect.signature(member)
             methods[name] = signature
+
+            raw_member = inspect.getattr_static(cls, name)
+            decorators = []
+            if isinstance(raw_member, staticmethod):
+                decorators.append("@staticmethod")
+            elif isinstance(raw_member, classmethod):
+                decorators.append("@classmethod")
+            method_decorators[name] = decorators
         elif not inspect.isroutine(member):
             # Collect attributes
             attributes[name] = getattr(cls, name, Any)
@@ -119,6 +128,12 @@ def autogenerate_protocol(cls) -> str:
     for name, signature in methods.items():
         if "subscribe" in name:
             continue
+
+        # for decorators like @staticmethod and @classmethod
+        if name in method_decorators:
+            for deco in method_decorators[name]:
+                protocol_lines.append(f"    {deco}")
+
         params = []
         keyword_only = False
         for param_name, param in signature.parameters.items():
