@@ -16,6 +16,8 @@ Breaking Changes:
 - removed SearchSymbols, replaced with SearchSymbols
 - algos currently not working
 - removed get_balance_anmd_position in favor of client.get_account_summaries
+- subscribe_book replaced with watch_L2_book
+- getBookSnapshot replaced with L2BookSnapshot
 
 Features:
 
@@ -27,7 +29,10 @@ Improvement:
 
 
 Todo:
+- algos need to work again
+
 - test Date scalar in firstNoticeDate in the ProductInfo type
+
 - re-add getmargin
 query GetMargin($id: MarketId!) {
   market(id: $id) {
@@ -38,22 +43,6 @@ query GetMargin($id: MarketId!) {
 - need this
 mutation RemoveTelegramApiKeys {
   removeTelegramApiKeys
-}
-- need these subscriptions back
-subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
-  book(market: $id, precision: $precision) {
-    bids {
-      price
-      amount
-      total
-    }
-    asks {
-      price
-      amount
-      total
-    }
-    timestamp
-  }
 }
 subscription FillsSubscription {
   fills {

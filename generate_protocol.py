@@ -2,7 +2,8 @@ import inspect
 from decimal import Decimal
 from enum import Enum
 
-from typing import Any, get_args, get_origin, Protocol, Union
+from typing import Any, Sequence, get_args, get_origin, Union
+import collections.abc
 
 import architect_py.async_client
 
@@ -28,6 +29,12 @@ def format_type_hint_with_generics(type_hint) -> str:
         return (
             f"Union[{', '.join(format_type_hint_with_generics(arg) for arg in args)}]"
         ).replace("NoneType", "None")
+
+    elif origin in (Sequence, collections.abc.Sequence):
+        args = get_args(type_hint)
+        if args:
+            return f"Sequence[{format_type_hint_with_generics(args[0])}]"
+        return "Sequence[Any]"
 
     elif origin is list:
         args = get_args(type_hint)
@@ -109,10 +116,10 @@ def autogenerate_protocol(cls) -> str:
         "# It is not used for anything else",
         "# For maintainers: ensure that the types in this file are correct for correct type hinting",
         "\n",
-        "import architect_py.graphql_client",
         "from typing import Union",
         "from architect_py.graphql_client import *",
         "from architect_py.async_client import *",
+        "from architect_py.graphql_client.base_model import UnsetType",
         "from httpx import Response",
         "\n",
         f"class {protocol_name}:",
