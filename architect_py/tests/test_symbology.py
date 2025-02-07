@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 
 @pytest.mark.asyncio
 async def test_futures_series_populated(async_client: AsyncClient):
-    markets = await async_client.search_symbols(venue="CME")
+    markets = await async_client.search_symbols(execution_venue="CME")
     # list of popular CME futures series and the minimum
     # number of futures we expect to see per series
     popular_series = [("ES", 5), ("GC", 5), ("NQ", 5)]

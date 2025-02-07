@@ -570,22 +570,6 @@ query GetPrimaryExecutionVenueQuery($symbol: String!) {
 
 
 
-subscription SubscribeTrades($venue: MarketdataVenue!, $symbol: String!) {
-  trades(venue: $venue, symbol: $symbol) {
-    timestamp
-    direction
-    price
-    size
-  }
-}
-
-subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $widths: [CandleWidth!]) {
-  candles(venue: $venue, symbol: $symbol, candleWidths: $widths) {
-    ...CandleFields
-  }
-}
-
-
 # mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
 #   createTwapAlgo(twapAlgo: $algo)
 # }
@@ -614,6 +598,22 @@ subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $width
 # mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
 #   createSpreadAlgo(spreadAlgo: $algo)
 # }
+
+
+subscription SubscribeTrades($venue: MarketdataVenue!, $symbol: String!) {
+  trades(venue: $venue, symbol: $symbol) {
+    timestamp
+    direction
+    price
+    size
+  }
+}
+
+subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $widths: [CandleWidth!]) {
+  candles(venue: $venue, symbol: $symbol, candleWidths: $widths) {
+    ...CandleFields
+  }
+}
 
 
 mutation CancelOrder($orderId: OrderId!) {

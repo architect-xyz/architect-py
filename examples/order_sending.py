@@ -28,7 +28,9 @@ client = AsyncClient(host=HOST, api_key=api_key, api_secret=api_secret)
 async def search_symbol() -> tuple[str, str]:
     venue = "CME"
     markets = await client.search_symbols(
-        search_string="ES", venue=venue, sort_by_volume_desc=True
+        search_string="ES",
+        execution_venue=venue,
+        sort_by_volume_desc_given_execution_venue=True,
     )
     market = markets[0]
     return venue, market
@@ -70,11 +72,11 @@ async def test_cancel_all_orders():
 
 async def test_send_market_pro_order():
     venue, symbol = await search_symbol()
-    print(market)
+    print(symbol)
 
     await client.send_market_pro_order(
         symbol=symbol,
-        venue=venue,
+        execution_venue=venue,
         odir=OrderDir.BUY,
         quantity=Decimal(1),
         account=ACCOUNT,

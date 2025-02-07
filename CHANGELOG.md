@@ -1,8 +1,8 @@
 3.0.0
 
 Breaking Changes:
-- Removed GetFilteredMarkets query in favor of SearchMarkets
-- Removed GetBalancesForCpty query in favor of GetAccountSummariesForCpty
+- Removed GetFilteredMarkets query, replaced by SearchMarkets
+- Removed GetBalancesForCpty query, replace by GetAccountSummaries
 - CreateOrder was replaced by PlaceOrder
 - Removed SendOrders and CancelOrders (for now...)
 - moved utils.dt.convert_datetime_to_utc_str to scalars.convert_datetime_to_utc_str 

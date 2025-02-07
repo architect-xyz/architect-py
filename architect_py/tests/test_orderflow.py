@@ -39,14 +39,14 @@ async def test_live_far_order_cancel(
     market = await async_client.get_execution_info(symbol, venue)
     assert market is not None, f"execution_info does not exist for {symbol}, {venue}"
 
-    snapshot = await async_client.get_market_snapshot(venue, symbol)
+    snapshot = await async_client.market_snapshot(venue, symbol)
     assert (
         snapshot is not None
     ), f"Snapshot does not exist for {symbol} at venue {venue}"
 
-    min_qty = Decimal(market.execution_info.min_order_quantity)
+    min_qty = Decimal(market.min_order_quantity)
 
-    if last_price := snapshot.ticker.last_price:
+    if last_price := snapshot.last_price:
         far_price = last_price * Decimal("1.1")
     else:
         raise ValueError("No last price in snapshot")

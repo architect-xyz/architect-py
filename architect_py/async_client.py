@@ -435,9 +435,21 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         # this is an alias for l1_book_snapshot
         return await self.l1_book_snapshot(venue, symbol)
 
+    async def market_snapshots(
+        self, venue: str, symbols: list[str]
+    ) -> Sequence[MarketTickerFields]:
+        # this is an alias for l1_book_snapshots
+        return await self.l1_book_snapshots(venue, symbols)
+
     async def l1_book_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
         snapshot = await self.get_market_snapshot_query(venue, symbol)
         return snapshot.ticker
+
+    async def l1_book_snapshots(
+        self, venue: str, symbols: list[str]
+    ) -> Sequence[MarketTickerFields]:
+        snapshot = await self.get_market_snapshots_query(venue, symbols)
+        return snapshot.tickers
 
     async def l2_book_snapshot(self, venue: str, symbol: str) -> L2BookFields:
         l2_book = await self.get_l_2_book_snapshot_query(venue, symbol)

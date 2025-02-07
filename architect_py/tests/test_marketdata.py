@@ -61,7 +61,8 @@ async def test_subscribe_l1_stream(
 @pytest.mark.timeout(3)
 async def test_l2_snapshot(async_client: AsyncClient):
     snap = await async_client.l2_book_snapshot(
-        "okx.marketdata.architect.co", "BTC Crypto/USD*OKX/DIRECT", symbol
+        "okx.marketdata.architect.co",
+        "BTC Crypto/USD*OKX/DIRECT",
     )
     assert snap is not None, "snapshot should not be None"
 
@@ -84,5 +85,5 @@ async def test_marketdata_snapshots(async_client: AsyncClient):
 
     markets = await async_client.get_cme_futures_series("ES")
     _, market = markets[0]
-    snap = await async_client.market_snapshot(market)
+    snap = await async_client.market_snapshot(symbol=market, venue="CME")
     assert snap is not None, "snapshot should not be None"
