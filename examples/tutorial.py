@@ -2,9 +2,7 @@ from decimal import Decimal
 import pprint
 import time
 
-from architect_py.graphql_client.fragments import MarketFieldsKindExchangeMarketKind
 from architect_py.scalars import OrderDir
-from architect_py.graphql_client.enums import OrderStateFlags
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from .common import confirm, create_client, print_book, print_open_orders
@@ -12,30 +10,29 @@ from .common import confirm, create_client, print_book, print_open_orders
 
 c = create_client()
 
+venue = "CME"
+
 # Find all MET markets (Micro ETH) from CME
 # markets = c.search_markets(venue="COINBASE", base="BTC Crypto", quote="USD")
-markets = c.search_markets(venue="CME", underlying="MET CME Index")
-print()
-print("Found markets:")
-print()
-for m in markets:
-    print(f"  • {m.name}")
+symbols = c.search_symbols(venue=venue, underlying="MET CME Index")
+print("\nFound markets:\n")
+for s in symbols:
+    print(f"  • {s}")
 
 # Lookup information about a single market
-print()
-print(f"Details for {markets[0].name}:")
-print()
-market = c.get_market(markets[0].name)
-assert market is not None
-pprint.pp(market)
+print(f"\nDetails for {symbols[0]}:")
+product_info = c.get_product_info(symbols[0])
+assert product_info is not None
+pprint.pp(product_info)
 
 # Get market snapshot for a single market
 # Market snapshots tell you the current best bid, best ask,
 # and other ticker info for the given symbol.
 print()
-print(f"Market snapshot for {market.name}:")
+print(f"Market snapshot for {product_info.product_info}:")
 print()
-market_snapshot = c.get_market_snapshot(market.name)
+market_snapshot = c.market_snapshot(venue, market)
+
 pprint.pp(market_snapshot)
 
 # Get book snapshot for a single market

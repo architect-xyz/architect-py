@@ -14,22 +14,24 @@ from .base_model import BaseModel
 from .enums import FillKind
 
 
-class GetFills(BaseModel):
-    folio: "GetFillsFolio"
+class GetFillsQuery(BaseModel):
+    folio: "GetFillsQueryFolio"
 
 
-class GetFillsFolio(BaseModel):
-    historical_fills: "GetFillsFolioHistoricalFills" = Field(alias="historicalFills")
+class GetFillsQueryFolio(BaseModel):
+    historical_fills: "GetFillsQueryFolioHistoricalFills" = Field(
+        alias="historicalFills"
+    )
 
 
-class GetFillsFolioHistoricalFills(BaseModel):
-    fills: List["GetFillsFolioHistoricalFillsFills"]
-    aberrant_fills: List["GetFillsFolioHistoricalFillsAberrantFills"] = Field(
+class GetFillsQueryFolioHistoricalFills(BaseModel):
+    fills: List["GetFillsQueryFolioHistoricalFillsFills"]
+    aberrant_fills: List["GetFillsQueryFolioHistoricalFillsAberrantFills"] = Field(
         alias="aberrantFills"
     )
 
 
-class GetFillsFolioHistoricalFillsFills(BaseModel):
+class GetFillsQueryFolioHistoricalFillsFills(BaseModel):
     fill_id: UUID = Field(alias="fillId")
     fill_kind: FillKind = Field(alias="fillKind")
     execution_venue: str = Field(alias="executionVenue")
@@ -45,7 +47,7 @@ class GetFillsFolioHistoricalFillsFills(BaseModel):
     trade_time: Optional[datetime] = Field(alias="tradeTime")
 
 
-class GetFillsFolioHistoricalFillsAberrantFills(BaseModel):
+class GetFillsQueryFolioHistoricalFillsAberrantFills(BaseModel):
     fill_id: UUID = Field(alias="fillId")
     fill_kind: Optional[FillKind] = Field(alias="fillKind")
     execution_venue: str = Field(alias="executionVenue")
@@ -61,6 +63,6 @@ class GetFillsFolioHistoricalFillsAberrantFills(BaseModel):
     trade_time: Optional[datetime] = Field(alias="tradeTime")
 
 
-GetFills.model_rebuild()
-GetFillsFolio.model_rebuild()
-GetFillsFolioHistoricalFills.model_rebuild()
+GetFillsQuery.model_rebuild()
+GetFillsQueryFolio.model_rebuild()
+GetFillsQueryFolioHistoricalFills.model_rebuild()

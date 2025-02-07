@@ -20,13 +20,14 @@ def format_type_hint_with_generics(type_hint) -> str:
     origin = get_origin(type_hint)
     if origin is Union:
         args = get_args(type_hint)
-        if len(args) == 2 and type(None) in args:
-            # Handle Optional[X]
-            non_none_type = args[0] if args[1] is type(None) else args[1]
-            return f"Optional[{format_type_hint_with_generics(non_none_type)}]"
+        if type(None) in args:
+            if len(args) == 2:
+                # Handle Optional[X]
+                non_none_type = args[0] if args[1] is type(None) else args[1]
+                return f"Optional[{format_type_hint_with_generics(non_none_type)}]"
         return (
             f"Union[{', '.join(format_type_hint_with_generics(arg) for arg in args)}]"
-        )
+        ).replace("NoneType", "None")
 
     elif origin is list:
         args = get_args(type_hint)
@@ -108,12 +109,11 @@ def autogenerate_protocol(cls) -> str:
         "# It is not used for anything else",
         "# For maintainers: ensure that the types in this file are correct for correct type hinting",
         "\n",
-        "from types import NoneType",
         "import architect_py.graphql_client",
+        "from typing import Union",
         "from architect_py.graphql_client import *",
         "from architect_py.async_client import *",
         "from httpx import Response",
-        "from dns.name import Name",
         "\n",
         f"class {protocol_name}:",
     ]

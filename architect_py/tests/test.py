@@ -6,12 +6,6 @@ from decimal import Decimal
 import pytest
 from architect_py.async_client import AsyncClient
 from architect_py.client import Client
-from architect_py.graphql_client.enums import (
-    CreateOrderType,
-    CreateTimeInForceInstruction,
-    OrderStateFlags,
-)
-from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
 from architect_py.scalars import OrderDir
 from architect_py.utils.nearest_tick import TickRoundMethod
 from dotenv import load_dotenv

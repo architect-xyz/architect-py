@@ -19,18 +19,32 @@ from architect_py.async_client import AsyncClient
 @pytest.mark.asyncio
 @pytest.mark.timeout(3)
 @pytest.mark.parametrize(
-    "endpoint,market_id", 
+    "endpoint,market_id",
     [
-        ("binance-futures-usd-m.marketdata.architect.co", "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"),
-        ("bybit.marketdata.architect.co", "BTC-USDT BYBIT Perpetual/USDT Crypto*BYBIT/DIRECT"),
-        ("okx.marketdata.architect.co", "BTC-USDT OKX Perpetual/USDT Crypto*OKX/DIRECT")
-    ]
+        (
+            "app.architect.co",
+            "ES 20251219 CME Future",
+        ),
+        (
+            "binance-futures-usd-m.marketdata.architect.co",
+            "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT",
+        ),
+        (
+            "bybit.marketdata.architect.co",
+            "BTC-USDT BYBIT Perpetual/USDT Crypto*BYBIT/DIRECT",
+        ),
+        (
+            "okx.marketdata.architect.co",
+            "BTC-USDT OKX Perpetual/USDT Crypto*OKX/DIRECT",
+        ),
+    ],
 )
-async def test_subscribe_l1_stream(async_client: AsyncClient, endpoint: str, market_id: str):
+async def test_subscribe_l1_stream(
+    async_client: AsyncClient, endpoint: str, symbol: str
+):
     i = 0
     async for snap in await async_client.subscribe_l1_book_snapshots(
-        endpoint,
-        market_ids=[market_id]
+        endpoint, symbols=[symbol]
     ):
         # CR alee: really these should WARN a few times before failing;
         # think about how this interacts with presence
@@ -47,8 +61,7 @@ async def test_subscribe_l1_stream(async_client: AsyncClient, endpoint: str, mar
 @pytest.mark.timeout(3)
 async def test_l2_snapshot(async_client: AsyncClient):
     snap = await async_client.l2_book_snapshot(
-        "okx.marketdata.architect.co",
-        "BTC Crypto/USD*OKX/DIRECT"
+        "okx.marketdata.architect.co", "BTC Crypto/USD*OKX/DIRECT", symbol
     )
     assert snap is not None, "snapshot should not be None"
 
@@ -58,7 +71,7 @@ async def test_l2_snapshot(async_client: AsyncClient):
 async def test_marketdata_snapshots(async_client: AsyncClient):
     # TODO: what is the actual expectation here?
     # Check if market should be open based on CME hours
-    now = datetime.now(pytz.timezone('US/Central'))
+    now = datetime.now(pytz.timezone("US/Central"))
     weekday = now.weekday()
     if weekday == 5:  # Saturday
         pytest.skip("CME is closed on Saturday")
@@ -71,5 +84,5 @@ async def test_marketdata_snapshots(async_client: AsyncClient):
 
     markets = await async_client.get_cme_futures_series("ES")
     _, market = markets[0]
-    snap = await async_client.get_market_snapshot(market.id)
+    snap = await async_client.market_snapshot(market)
     assert snap is not None, "snapshot should not be None"

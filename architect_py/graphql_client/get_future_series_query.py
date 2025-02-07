@@ -8,12 +8,12 @@ from pydantic import Field
 from .base_model import BaseModel
 
 
-class FutureSeries(BaseModel):
-    symbology: "FutureSeriesSymbology"
+class GetFutureSeriesQuery(BaseModel):
+    symbology: "GetFutureSeriesQuerySymbology"
 
 
-class FutureSeriesSymbology(BaseModel):
+class GetFutureSeriesQuerySymbology(BaseModel):
     futures_series: List[str] = Field(alias="futuresSeries")
 
 
-FutureSeries.model_rebuild()
+GetFutureSeriesQuery.model_rebuild()

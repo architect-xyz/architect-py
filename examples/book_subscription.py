@@ -36,11 +36,10 @@ def print_book(book):
 async def main():
     c: AsyncClient = create_async_client()
     # market_id = "BTC Crypto/USD*COINBASE/DIRECT"
-    market_id = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
+    endpoint = "app.architect.co"
+    symbol = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
     try:
-        stream = c.subscribe_book(
-            market_id, precision=Decimal("0.1"), ping_interval=None
-        )
+        stream = c.subscribe_l1_book_snapshots(endpoint, symbols=[symbol])
         # it is better to do `Decimal("0.1")` instead of Decimal(0.1) to avoid floating point errors
         async for book in stream:
             print_book(book)

@@ -348,7 +348,7 @@ type MarketStatus {
 type MarketdataQueryRoot {
   historicalCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, start: DateTime!, end: DateTime!): [Candle!]!
   l2BookSnapshot(venue: MarketdataVenue!, symbol: String!): L2Book!
-  ticker(venue: MarketdataVenue!, symbol: String!): Ticker!
+  ticker(venue: MarketdataVenue, symbol: String!): Ticker!
   tickers(venue: MarketdataVenue!, symbols: [String!]): [Ticker!]!
   marketStatus(venue: MarketdataVenue!, symbol: String!): MarketStatus!
 }
@@ -450,9 +450,11 @@ type SymbologyQueryRoot {
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
   executionInfo(symbol: String!, executionVenue: ExecutionVenue): ExecutionInfo!
+  getPrimaryExecutionVenue(symbol: String!): ExecutionVenue!
+  getExecutionVenues(symbol: String!): [ExecutionVenue!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(searchString: String, executionVenue: ExecutionVenue, marketdataVenue: MarketdataVenue, underlying: String, maxResults: Int, resultsOffset: Int, sortByVolumeDesc: Boolean!): [String!]!
+  searchSymbols(searchString: String, underlying: String, executionVenue: ExecutionVenue, maxResults: Int, sortByVolumeDescGivenExecutionVenue: Boolean!): [String!]!
 }
 
 type Ticker {

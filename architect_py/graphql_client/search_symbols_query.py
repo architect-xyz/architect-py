@@ -8,12 +8,12 @@ from pydantic import Field
 from .base_model import BaseModel
 
 
-class SearchSymbolsRequest(BaseModel):
-    symbology: "SearchSymbolsRequestSymbology"
+class SearchSymbolsQuery(BaseModel):
+    symbology: "SearchSymbolsQuerySymbology"
 
 
-class SearchSymbolsRequestSymbology(BaseModel):
+class SearchSymbolsQuerySymbology(BaseModel):
     search_symbols: List[str] = Field(alias="searchSymbols")
 
 
-SearchSymbolsRequest.model_rebuild()
+SearchSymbolsQuery.model_rebuild()

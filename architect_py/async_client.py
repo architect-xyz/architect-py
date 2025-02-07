@@ -19,22 +19,23 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-import asyncio
 import fnmatch
 import logging
 import re
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import Any, AsyncIterator, Dict, List, Optional, Sequence, Union
+from typing import Any, AsyncIterator, Dict, List, Optional, Sequence
 from urllib.parse import urlparse
-from uuid import UUID
 
 import dns.asyncresolver
 import dns.name
 
 import grpc.aio
 
-from architect_py.graphql_client.base_model import UNSET, UnsetType
+from architect_py.graphql_client.base_model import UNSET
+from architect_py.graphql_client.get_fills_query import (
+    GetFillsQueryFolioHistoricalFills,
+)
 from architect_py.graphql_client.place_order import PlaceOrderOms
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
@@ -45,7 +46,14 @@ from .graphql_client.enums import (
     OrderType,
     TimeInForce,
 )
-from .graphql_client.fragments import OrderFields
+from .graphql_client.fragments import (
+    AccountSummaryFields,
+    ExecutionInfoFields,
+    L2BookFields,
+    MarketTickerFields,
+    OrderFields,
+    ProductInfoFields,
+)
 
 # from .graphql_client.input_types import (
 #     CreateMMAlgo,
@@ -227,12 +235,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 -----END CERTIFICATE-----
 """
         self.marketdata: Dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
-        self.route_by_id: Dict[UUID, Route] = {}
-        self.venue_by_id: Dict[UUID, Venue] = {}
-        self.product_by_id: Dict[UUID, Product] = {}
-        self.market_by_id: Dict[UUID, Market] = {}
-        # route => venue => base => quote => market
-        self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
         self.l2_books: dict[str, L2Book] = {}
 
     async def grpc_channel(self, endpoint: str):
@@ -281,38 +283,31 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     def configure_marketdata(self, *, cpty: str, url: str):
         self.marketdata[cpty] = JsonWsClient(url=url)
 
-    async def start_session(self):
-        await self.load_and_index_symbology()
-
     async def search_symbols(
         self,
         *,
-        execution_venue: str | None | UnsetType = UNSET,
-        marketdata_venue: str | None | UnsetType = UNSET,
-        underlying: str | None | UnsetType = UNSET,
-        max_results: int | None | UnsetType = UNSET,
-        results_offset: int | None | UnsetType = UNSET,
-        search_string: str | None | UnsetType = UNSET,
-        sort_by_volume_desc: bool | None | UnsetType = UNSET,
-        glob: str | None = None,
-        regex: str | None = None,
-        **kwargs: Any,
+        search_string: Optional[str] = None,
+        glob: Optional[str] = None,
+        regex: Optional[str] = None,
+        underlying: Optional[str] = None,
+        execution_venue: Optional[str] = None,
+        sort_by_volume_desc_given_execution_venue: bool = False,
+        max_results: Optional[int] = None,
     ) -> List[str]:
+
+        if execution_venue is None and sort_by_volume_desc_given_execution_venue:
+            raise ValueError(
+                "sort_by_volume_desc_given_execution_venue requires execution_venue"
+            )
 
         if glob or regex:
             markets = (
-                await self.search_symbols_request(
-                    (
-                        sort_by_volume_desc
-                        if isinstance(sort_by_volume_desc, bool)
-                        else False
-                    ),
+                await self.search_symbols_query(
+                    sort_by_volume_desc_given_execution_venue,
                     search_string,
-                    execution_venue,
-                    marketdata_venue,
                     underlying,
+                    execution_venue,
                     UNSET,
-                    results_offset,
                 )
             ).search_symbols
 
@@ -329,152 +324,175 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
         else:
             markets = (
-                await self.search_symbols_request(
-                    (
-                        sort_by_volume_desc
-                        if isinstance(sort_by_volume_desc, bool)
-                        else False
-                    ),
+                await self.search_symbols_query(
+                    sort_by_volume_desc_given_execution_venue,
                     search_string,
-                    execution_venue,
-                    marketdata_venue,
                     underlying,
+                    execution_venue,
                     max_results,
-                    results_offset,
                 )
             ).search_symbols
 
         return markets
 
-    async def load_and_index_symbology(self, cpty: Optional[str] = None):
-        # TODO: consider locking
-        self.route_by_id = {}
-        self.venue_by_id = {}
-        self.product_by_id = {}
-        self.market_by_id = {}
-        self.market_names_by_route = {}
-        if not self.no_gql:
-            logger.info("Loading symbology...")
-            symbols = await self.search_symbols()
-            logger.info("Loaded %d markets", len(symbols))
-            for symbol in symbols:
-                market = self.get_product_info(symbol)
+    async def get_product_info(self, symbol: str) -> Optional[ProductInfoFields]:
+        # this reduces the indirection count
+        info = await self.get_product_info_query(symbol)
+        return info.product_info
 
-                if market.route.name not in self.market_names_by_route:
-                    self.market_names_by_route[market.route.name] = {}
-                by_venue = self.market_names_by_route[market.route.name]
-                if market.venue.name not in by_venue:
-                    by_venue[market.venue.name] = {}
-                by_base = by_venue[market.venue.name]
+    async def get_product_infos(
+        self, symbols: list[str]
+    ) -> Sequence[ProductInfoFields]:
+        infos = await self.get_product_infos_query(symbols)
+        return infos.product_infos
 
-                if isinstance(market.kind, MarketFieldsKindExchangeMarketKind):
-                    if market.kind.base.name not in by_base:
-                        by_base[market.kind.base.name] = {}
-                    by_quote = by_base[market.kind.base.name]
-                    by_quote[market.kind.quote.name] = market.name
-            logger.info("Indexed %d markets", len(markets))
-        # get symbology from marketdata clients
-        clients: list[JsonWsClient] = []
-        if cpty is None:
-            clients = list(self.marketdata.values())
-        elif cpty in self.marketdata:
-            clients = [self.marketdata[cpty]]
-        for client in clients:
-            snap = await client.get_symbology_snapshot()
-            for route in snap.routes:
-                self.route_by_id[route.id] = route
-            for venue in snap.venues:
-                self.venue_by_id[venue.id] = venue
-            for product in snap.products:
-                self.product_by_id[product.id] = product
-            for snap_market in snap.markets:
-                self.market_by_id[snap_market.id] = snap_market
-                route = self.route_by_id[snap_market.route]
-                if route.name not in self.market_names_by_route:
-                    self.market_names_by_route[route.name] = {}
-                by_venue = self.market_names_by_route[route.name]
-                venue = self.venue_by_id[snap_market.venue]
-                if venue.name not in by_venue:
-                    by_venue[venue.name] = {}
-                by_base = by_venue[venue.name]
-                base = self.product_by_id[snap_market.base()]
-                if base.name not in by_base:
-                    by_base[base.name] = {}
-                by_quote = by_base[base.name]
-                quote = self.product_by_id[snap_market.quote()]
-                by_quote[quote.name] = snap_market.name
+    async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
+        notice = await self.get_first_notice_date_query(symbol)
+        if notice is None or notice.product_info is None:
+            return None
+        return notice.product_info.first_notice_date
 
-    # CR alee: make base, venue, route optional, and add optional quote.
-    # Have to think harder about efficient indexing.
-    def find_markets(
+    async def get_future_series(self, series_symbol: str) -> list[str]:
+        futures_series = await self.get_future_series_query(series_symbol)
+        return futures_series.futures_series
+
+    async def get_execution_info(
+        self, symbol: str, execution_venue: Optional[str] = None
+    ) -> ExecutionInfoFields:
+        execution_info = await self.get_execution_info_query(symbol, execution_venue)
+        return execution_info.execution_info
+
+    async def get_market_snapshots(
+        self, venue: str, symbols: list[str]
+    ) -> Sequence[MarketTickerFields]:
+        snapshots = await self.get_market_snapshots_query(venue, symbols)
+        return snapshots.tickers
+
+    async def get_account_summary(
+        self, account: str, venue: Optional[str] = None
+    ) -> AccountSummaryFields:
+        summary = await self.get_account_summary_query(account, venue)
+        return summary.account_summary
+
+    async def get_account_summaries(
         self,
-        base: str,
-        venue: str,
-        route: str = "DIRECT",
-    ) -> list[str]:
-        """
-        Lookup all markets matching the given criteria.  Requires the client to be initialized
-        and symbology to be loaded and indexed.
-        """
-        if route not in self.market_names_by_route:
-            return []
-        by_venue = self.market_names_by_route[route]
-        if venue not in by_venue:
-            return []
-        by_base = by_venue[venue]
-        if not by_base:
-            return []
-        by_quote = by_base.get(base, {})
-        return list(by_quote.values())
+        account: list[str],
+        venue: Optional[str] = None,
+        trader: Optional[str] = None,
+    ) -> Sequence[AccountSummaryFields]:
+        summaries = await self.get_account_summaries_query(venue, trader, account)
+        return summaries.account_summaries
+
+    async def get_open_orders(
+        self,
+        venue: Optional[str],
+        account: Optional[str],
+        trader: Optional[str],
+        symbol: Optional[str],
+        parent_order_id: Optional[str],
+        order_ids: list[str],
+    ) -> Sequence[OrderFields]:
+        orders = await self.get_open_orders_query(
+            venue, account, trader, symbol, parent_order_id, order_ids
+        )
+        return orders.open_orders
+
+    async def get_all_open_orders(self) -> Sequence[OrderFields]:
+        orders = await self.get_all_open_orders_query()
+        return orders.open_orders
+
+    async def get_historical_orders(
+        self,
+        from_inclusive: datetime,
+        to_exclusive: datetime,
+        venue: Optional[str] = None,
+        account: Optional[str] = None,
+        parent_order_id: Optional[str] = None,
+    ) -> Sequence[OrderFields]:
+        orders = await self.get_historical_orders_query(
+            from_inclusive, to_exclusive, venue, account, parent_order_id
+        )
+        return orders.historical_orders
+
+    async def get_fills(
+        self,
+        venue: Optional[str],
+        account: Optional[str],
+        order_id: Optional[str],
+        from_inclusive: Optional[datetime],
+        to_exclusive: Optional[datetime],
+    ) -> GetFillsQueryFolioHistoricalFills:
+        fills = await self.get_fills_query(
+            venue, account, order_id, from_inclusive, to_exclusive
+        )
+        return fills.historical_fills
+
+    async def get_primary_execution_venue(self, symbol: str) -> str:
+        exchange = await self.get_primary_execution_venue_query(symbol)
+        return exchange.get_primary_execution_venue
+
+    async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
+        # this is an alias for l1_book_snapshot
+        return await self.l1_book_snapshot(venue, symbol)
+
+    async def l1_book_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
+        snapshot = await self.get_market_snapshot_query(venue, symbol)
+        return snapshot.ticker
+
+    async def l2_book_snapshot(self, venue: str, symbol: str) -> L2BookFields:
+        l2_book = await self.get_l_2_book_snapshot_query(venue, symbol)
+        return l2_book.l_2_book_snapshot
+
+    # async def l2_book_snapshot(
+    #     self, endpoint: str, venue: Optional[str], symbol: str
+    # ) -> L2BookSnapshot:
+    #     channel = await self.grpc_channel(endpoint)
+    #     stub = JsonMarketdataStub(channel)
+    #     req = L2BookSnapshotRequest(venue=venue, symbol=symbol)
+    #     jwt = await self.refresh_grpc_credentials()
+    #     # TODO: use secure channel or force allow auth header over insecure channel
+    #     # credentials = None if jwt is None else grpc.access_token_call_credentials(jwt)
+    #     return await stub.L2BookSnapshot(
+    #         req, metadata=(("authorization", f"Bearer {jwt}"),)
+    #     )
 
     async def subscribe_l1_book_snapshots(
-        self, endpoint: str, market_ids: list[str] | None = None
+        self, endpoint: str, symbols: list[str] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
-        req = SubscribeL1BookSnapshotsRequest(market_ids=market_ids)
+        req = SubscribeL1BookSnapshotsRequest(symbols=symbols)
         return stub.SubscribeL1BookSnapshots(req)
 
-    async def l2_book_snapshot(self, endpoint: str, market_id: str) -> L2BookSnapshot:
-        channel = await self.grpc_channel(endpoint)
-        stub = JsonMarketdataStub(channel)
-        req = L2BookSnapshotRequest(market_id=market_id)
-        jwt = await self.refresh_grpc_credentials()
-        # TODO: use secure channel or force allow auth header over insecure channel
-        # credentials = None if jwt is None else grpc.access_token_call_credentials(jwt)
-        return await stub.L2BookSnapshot(
-            req, metadata=(("authorization", f"Bearer {jwt}"),)
-        )
-
     async def subscribe_l2_book_updates(
-        self, endpoint: str, market_id: str
+        self, endpoint: str, venue: Optional[str], symbol: str
     ) -> AsyncIterator[L2BookUpdate]:
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
-        req = SubscribeL2BookUpdatesRequest(market_id=market_id)
+        req = SubscribeL2BookUpdatesRequest(venue=venue, symbol=symbol)
         jwt = await self.refresh_grpc_credentials()
         return stub.SubscribeL2BookUpdates(
             req, metadata=(("authorization", f"Bearer {jwt}"),)
         )
 
     async def watch_l2_book(
-        self, endpoint: str, market_id: str
+        self, endpoint: str, venue: Optional[str], symbol: str
     ) -> AsyncIterator[tuple[int, int]]:
-        async for up in await self.subscribe_l2_book_updates(endpoint, market_id):
+        async for up in await self.subscribe_l2_book_updates(endpoint, venue, symbol):
             if isinstance(up, L2BookSnapshot):
-                self.l2_books[market_id] = L2Book(up)
+                self.l2_books[symbol] = L2Book(up)
             elif isinstance(up, L2BookDiff):
-                if market_id not in self.l2_books:
+                if symbol not in self.l2_books:
                     raise ValueError(
-                        f"received update before snapshot for L2 book {market_id}"
+                        f"received update before snapshot for L2 book {symbol}"
                     )
-                book = self.l2_books[market_id]
+                book = self.l2_books[symbol]
                 if (
                     up.sequence_id != book.sequence_id
                     or up.sequence_number != book.sequence_number + 1
                 ):
                     raise ValueError(
-                        f"received update out of order for L2 book {market_id}"
+                        f"received update out of order for L2 book {symbol}"
                     )
                 book.update_from_diff(up)
 
@@ -523,14 +541,14 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         quantity: Decimal,
         limit_price: Decimal,
         order_type: OrderType = OrderType.LIMIT,
-        post_only: bool = False,
-        trigger_price: Optional[Decimal] = None,
+        execution_venue: Optional[str] = None,
         time_in_force: TimeInForce = TimeInForce.DAY,
         good_til_date: Optional[datetime] = None,
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
-        execution_venue: Optional[str] = None,
+        post_only: bool = False,
+        trigger_price: Optional[Decimal] = None,
     ) -> OrderFields:
         """
         `account` is optional depending on the final cpty it gets to
@@ -539,7 +557,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
         if price_round_method is not None:
             execution_info = await self.get_execution_info(symbol, execution_venue)
-            if (tick_size := execution_info.execution_info.tick_size) is not None:
+            if (tick_size := execution_info.tick_size) is not None:
                 if tick_size:
                     limit_price = nearest_tick(
                         limit_price, method=price_round_method, tick_size=tick_size
@@ -572,7 +590,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         self,
         *,
         symbol: str,
-        marketdata_venue: Optional[str] = None,
+        execution_venue: Optional[str] = None,
         odir: OrderDir,
         quantity: Decimal,
         time_in_force: TimeInForce = TimeInForce.DAY,
@@ -586,9 +604,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 f"Failed to send market order with reason: no market details for {symbol}"
             )
 
+        if execution_venue is None:
+            execution_venue = await self.get_primary_execution_venue(symbol)
+
         # Check for GQL failures
-        bbo_snapshot = await self.get_market_snapshot(marketdata_venue, symbol)
-        bbo_snapshot = bbo_snapshot.ticker
+        bbo_snapshot = await self.market_snapshot(execution_venue, symbol)
         if bbo_snapshot is None:
             raise ValueError(
                 f"Failed to send market order with reason: no market snapshot for {symbol}"
@@ -623,12 +643,12 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         )
 
         execution_info = await self.get_execution_info(
-            execution_venue=marketdata_venue, symbol=symbol
+            execution_venue=execution_venue, symbol=symbol
         )
 
         if (
-            execution_info.execution_info is not None
-            and (tick_size := execution_info.execution_info.tick_size) is not None
+            execution_info is not None
+            and (tick_size := execution_info.tick_size) is not None
         ):
             limit_price = nearest_tick(
                 Decimal(limit_price),
@@ -638,6 +658,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
         return await self.send_limit_order(
             symbol=symbol,
+            execution_venue=execution_venue,
             odir=odir,
             quantity=quantity,
             account=account,
@@ -652,13 +673,12 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         return datetime.strptime(d, "%Y%m%d").date()
 
     async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
-        markets = await self.future_series(
+        markets = await self.get_future_series(
             series,
         )
 
         filtered_markets = [
-            (self.get_expiration_from_CME_name(market), market)
-            for market in markets.futures_series
+            (self.get_expiration_from_CME_name(market), market) for market in markets
         ]
 
         filtered_markets.sort(key=lambda x: x[0])
@@ -672,17 +692,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             market
             for market in await self.search_symbols(
                 regex=f"^{root} {year}{month:02d}",
-                venue="CME",
+                execution_venue="CME",
             )
         ]
 
         return market
-
-    async def get_cme_first_notice_date(self, market: str) -> Optional[date]:
-        notice = await self.get_first_notice_date(market)
-        if notice is None or notice.product_info is None:
-            return None
-        return notice.product_info.first_notice_date
 
 
 # TODO: move this somewhere else

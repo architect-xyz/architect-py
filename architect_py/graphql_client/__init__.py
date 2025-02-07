@@ -20,79 +20,90 @@ from .fragments import (
     AccountSummaryFieldsBalances,
     AccountSummaryFieldsPositions,
     CandleFields,
+    ExecutionInfoFields,
+    L2BookFields,
+    L2BookFieldsAsks,
+    L2BookFieldsBids,
+    L2BookLevelFields,
     MarketTickerFields,
     OrderFields,
     ProductInfoFields,
 )
-from .future_series import FutureSeries, FutureSeriesSymbology
-from .get_account_summaries import (
-    GetAccountSummaries,
-    GetAccountSummariesFolio,
-    GetAccountSummariesFolioAccountSummaries,
+from .get_account_summaries_query import (
+    GetAccountSummariesQuery,
+    GetAccountSummariesQueryFolio,
+    GetAccountSummariesQueryFolioAccountSummaries,
 )
-from .get_account_summary import (
-    GetAccountSummary,
-    GetAccountSummaryFolio,
-    GetAccountSummaryFolioAccountSummary,
+from .get_account_summary_query import (
+    GetAccountSummaryQuery,
+    GetAccountSummaryQueryFolio,
+    GetAccountSummaryQueryFolioAccountSummary,
 )
-from .get_all_open_orders import (
-    GetAllOpenOrders,
-    GetAllOpenOrdersOms,
-    GetAllOpenOrdersOmsOpenOrders,
+from .get_all_open_orders_query import (
+    GetAllOpenOrdersQuery,
+    GetAllOpenOrdersQueryOms,
+    GetAllOpenOrdersQueryOmsOpenOrders,
 )
-from .get_book_snapshot import (
-    GetBookSnapshot,
-    GetBookSnapshotMarketdata,
-    GetBookSnapshotMarketdataL2BookSnapshot,
-    GetBookSnapshotMarketdataL2BookSnapshotAsks,
-    GetBookSnapshotMarketdataL2BookSnapshotBids,
+from .get_execution_info_query import (
+    GetExecutionInfoQuery,
+    GetExecutionInfoQuerySymbology,
+    GetExecutionInfoQuerySymbologyExecutionInfo,
 )
-from .get_execution_info import (
-    GetExecutionInfo,
-    GetExecutionInfoSymbology,
-    GetExecutionInfoSymbologyExecutionInfo,
+from .get_fills_query import (
+    GetFillsQuery,
+    GetFillsQueryFolio,
+    GetFillsQueryFolioHistoricalFills,
+    GetFillsQueryFolioHistoricalFillsAberrantFills,
+    GetFillsQueryFolioHistoricalFillsFills,
 )
-from .get_fills import (
-    GetFills,
-    GetFillsFolio,
-    GetFillsFolioHistoricalFills,
-    GetFillsFolioHistoricalFillsAberrantFills,
-    GetFillsFolioHistoricalFillsFills,
+from .get_first_notice_date_query import (
+    GetFirstNoticeDateQuery,
+    GetFirstNoticeDateQuerySymbology,
+    GetFirstNoticeDateQuerySymbologyProductInfo,
 )
-from .get_first_notice_date import (
-    GetFirstNoticeDate,
-    GetFirstNoticeDateSymbology,
-    GetFirstNoticeDateSymbologyProductInfo,
+from .get_future_series_query import GetFutureSeriesQuery, GetFutureSeriesQuerySymbology
+from .get_historical_orders_query import (
+    GetHistoricalOrdersQuery,
+    GetHistoricalOrdersQueryFolio,
+    GetHistoricalOrdersQueryFolioHistoricalOrders,
 )
-from .get_historical_orders import (
-    GetHistoricalOrders,
-    GetHistoricalOrdersFolio,
-    GetHistoricalOrdersFolioHistoricalOrders,
+from .get_l_2_book_snapshot_query import (
+    GetL2BookSnapshotQuery,
+    GetL2BookSnapshotQueryMarketdata,
+    GetL2BookSnapshotQueryMarketdataL2BookSnapshot,
 )
-from .get_market_snapshot import (
-    GetMarketSnapshot,
-    GetMarketSnapshotMarketdata,
-    GetMarketSnapshotMarketdataTicker,
+from .get_market_snapshot_query import (
+    GetMarketSnapshotQuery,
+    GetMarketSnapshotQueryMarketdata,
+    GetMarketSnapshotQueryMarketdataTicker,
 )
-from .get_market_snapshots import (
-    GetMarketSnapshots,
-    GetMarketSnapshotsMarketdata,
-    GetMarketSnapshotsMarketdataTickers,
+from .get_market_snapshots_query import (
+    GetMarketSnapshotsQuery,
+    GetMarketSnapshotsQueryMarketdata,
+    GetMarketSnapshotsQueryMarketdataTickers,
 )
-from .get_open_orders import GetOpenOrders, GetOpenOrdersOms, GetOpenOrdersOmsOpenOrders
-from .get_product_info import (
-    GetProductInfo,
-    GetProductInfoSymbology,
-    GetProductInfoSymbologyProductInfo,
+from .get_open_orders_query import (
+    GetOpenOrdersQuery,
+    GetOpenOrdersQueryOms,
+    GetOpenOrdersQueryOmsOpenOrders,
 )
-from .get_product_infos import (
-    GetProductInfos,
-    GetProductInfosSymbology,
-    GetProductInfosSymbologyProductInfos,
+from .get_primary_execution_venue_query import (
+    GetPrimaryExecutionVenueQuery,
+    GetPrimaryExecutionVenueQuerySymbology,
+)
+from .get_product_info_query import (
+    GetProductInfoQuery,
+    GetProductInfoQuerySymbology,
+    GetProductInfoQuerySymbologyProductInfo,
+)
+from .get_product_infos_query import (
+    GetProductInfosQuery,
+    GetProductInfosQuerySymbology,
+    GetProductInfosQuerySymbologyProductInfos,
 )
 from .juniper_base_client import JuniperBaseClient
 from .place_order import PlaceOrder, PlaceOrderOms, PlaceOrderOmsPlaceOrder
-from .search_symbols_request import SearchSymbolsRequest, SearchSymbolsRequestSymbology
+from .search_symbols_query import SearchSymbolsQuery, SearchSymbolsQuerySymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
 from .subscribe_orderflow import (
     SubscribeOrderflow,
@@ -125,54 +136,59 @@ __all__ = [
     "CandleWidth",
     "CreateJwt",
     "CreateJwtUser",
+    "ExecutionInfoFields",
     "FillKind",
-    "FutureSeries",
-    "FutureSeriesSymbology",
-    "GetAccountSummaries",
-    "GetAccountSummariesFolio",
-    "GetAccountSummariesFolioAccountSummaries",
-    "GetAccountSummary",
-    "GetAccountSummaryFolio",
-    "GetAccountSummaryFolioAccountSummary",
-    "GetAllOpenOrders",
-    "GetAllOpenOrdersOms",
-    "GetAllOpenOrdersOmsOpenOrders",
-    "GetBookSnapshot",
-    "GetBookSnapshotMarketdata",
-    "GetBookSnapshotMarketdataL2BookSnapshot",
-    "GetBookSnapshotMarketdataL2BookSnapshotAsks",
-    "GetBookSnapshotMarketdataL2BookSnapshotBids",
-    "GetExecutionInfo",
-    "GetExecutionInfoSymbology",
-    "GetExecutionInfoSymbologyExecutionInfo",
-    "GetFills",
-    "GetFillsFolio",
-    "GetFillsFolioHistoricalFills",
-    "GetFillsFolioHistoricalFillsAberrantFills",
-    "GetFillsFolioHistoricalFillsFills",
-    "GetFirstNoticeDate",
-    "GetFirstNoticeDateSymbology",
-    "GetFirstNoticeDateSymbologyProductInfo",
-    "GetHistoricalOrders",
-    "GetHistoricalOrdersFolio",
-    "GetHistoricalOrdersFolioHistoricalOrders",
-    "GetMarketSnapshot",
-    "GetMarketSnapshotMarketdata",
-    "GetMarketSnapshotMarketdataTicker",
-    "GetMarketSnapshots",
-    "GetMarketSnapshotsMarketdata",
-    "GetMarketSnapshotsMarketdataTickers",
-    "GetOpenOrders",
-    "GetOpenOrdersOms",
-    "GetOpenOrdersOmsOpenOrders",
-    "GetProductInfo",
-    "GetProductInfoSymbology",
-    "GetProductInfoSymbologyProductInfo",
-    "GetProductInfos",
-    "GetProductInfosSymbology",
-    "GetProductInfosSymbologyProductInfos",
+    "GetAccountSummariesQuery",
+    "GetAccountSummariesQueryFolio",
+    "GetAccountSummariesQueryFolioAccountSummaries",
+    "GetAccountSummaryQuery",
+    "GetAccountSummaryQueryFolio",
+    "GetAccountSummaryQueryFolioAccountSummary",
+    "GetAllOpenOrdersQuery",
+    "GetAllOpenOrdersQueryOms",
+    "GetAllOpenOrdersQueryOmsOpenOrders",
+    "GetExecutionInfoQuery",
+    "GetExecutionInfoQuerySymbology",
+    "GetExecutionInfoQuerySymbologyExecutionInfo",
+    "GetFillsQuery",
+    "GetFillsQueryFolio",
+    "GetFillsQueryFolioHistoricalFills",
+    "GetFillsQueryFolioHistoricalFillsAberrantFills",
+    "GetFillsQueryFolioHistoricalFillsFills",
+    "GetFirstNoticeDateQuery",
+    "GetFirstNoticeDateQuerySymbology",
+    "GetFirstNoticeDateQuerySymbologyProductInfo",
+    "GetFutureSeriesQuery",
+    "GetFutureSeriesQuerySymbology",
+    "GetHistoricalOrdersQuery",
+    "GetHistoricalOrdersQueryFolio",
+    "GetHistoricalOrdersQueryFolioHistoricalOrders",
+    "GetL2BookSnapshotQuery",
+    "GetL2BookSnapshotQueryMarketdata",
+    "GetL2BookSnapshotQueryMarketdataL2BookSnapshot",
+    "GetMarketSnapshotQuery",
+    "GetMarketSnapshotQueryMarketdata",
+    "GetMarketSnapshotQueryMarketdataTicker",
+    "GetMarketSnapshotsQuery",
+    "GetMarketSnapshotsQueryMarketdata",
+    "GetMarketSnapshotsQueryMarketdataTickers",
+    "GetOpenOrdersQuery",
+    "GetOpenOrdersQueryOms",
+    "GetOpenOrdersQueryOmsOpenOrders",
+    "GetPrimaryExecutionVenueQuery",
+    "GetPrimaryExecutionVenueQuerySymbology",
+    "GetProductInfoQuery",
+    "GetProductInfoQuerySymbology",
+    "GetProductInfoQuerySymbologyProductInfo",
+    "GetProductInfosQuery",
+    "GetProductInfosQuerySymbology",
+    "GetProductInfosQuerySymbologyProductInfos",
     "GraphQLClient",
     "JuniperBaseClient",
+    "L2BookFields",
+    "L2BookFieldsAsks",
+    "L2BookFieldsBids",
+    "L2BookLevelFields",
     "MarketTickerFields",
     "MinOrderQuantityUnit",
     "OrderFields",
@@ -183,8 +199,8 @@ __all__ = [
     "PlaceOrderOms",
     "PlaceOrderOmsPlaceOrder",
     "ProductInfoFields",
-    "SearchSymbolsRequest",
-    "SearchSymbolsRequestSymbology",
+    "SearchSymbolsQuery",
+    "SearchSymbolsQuerySymbology",
     "SubscribeCandles",
     "SubscribeCandlesCandles",
     "SubscribeOrderflow",

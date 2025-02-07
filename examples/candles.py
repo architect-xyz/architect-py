@@ -9,10 +9,11 @@ from .common import create_async_client
 
 async def main():
     c: AsyncClient = create_async_client()
-    market_id = "BTC Crypto/USD*COINBASE/DIRECT"
+    symbol = "ES 20250321 CME Future"
+    venue = "CME"
     try:
         stream = c.subscribe_candles(
-            market_id, width=CandleWidth.ONE_MINUTE, ping_interval=None
+            venue, symbol, width=CandleWidth.ONE_MINUTE, ping_interval=None
         )
         async for candle in stream:
             print(candle)

@@ -11,7 +11,14 @@ from pydantic import Field
 from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
-from .enums import CandleWidth, OrderSource, OrderStatus, OrderType, TimeInForce
+from .enums import (
+    CandleWidth,
+    MinOrderQuantityUnit,
+    OrderSource,
+    OrderStatus,
+    OrderType,
+    TimeInForce,
+)
 
 
 class AccountSummaryFields(BaseModel):
@@ -51,6 +58,35 @@ class CandleFields(BaseModel):
     low: Optional[Decimal]
     close: Optional[Decimal]
     volume: Decimal
+
+
+class ExecutionInfoFields(BaseModel):
+    symbol: str
+    execution_venue: str = Field(alias="executionVenue")
+    tick_size: Optional[Decimal] = Field(alias="tickSize")
+    step_size: Decimal = Field(alias="stepSize")
+    min_order_quantity: Decimal = Field(alias="minOrderQuantity")
+    min_order_quantity_unit: MinOrderQuantityUnit = Field(alias="minOrderQuantityUnit")
+    is_delisted: bool = Field(alias="isDelisted")
+
+
+class L2BookLevelFields(BaseModel):
+    price: Decimal
+    size: Decimal
+
+
+class L2BookFields(BaseModel):
+    timestamp: Optional[datetime]
+    bids: List["L2BookFieldsBids"]
+    asks: List["L2BookFieldsAsks"]
+
+
+class L2BookFieldsBids(L2BookLevelFields):
+    pass
+
+
+class L2BookFieldsAsks(L2BookLevelFields):
+    pass
 
 
 class MarketTickerFields(BaseModel):
@@ -99,6 +135,9 @@ class ProductInfoFields(BaseModel):
 
 AccountSummaryFields.model_rebuild()
 CandleFields.model_rebuild()
+ExecutionInfoFields.model_rebuild()
+L2BookLevelFields.model_rebuild()
+L2BookFields.model_rebuild()
 MarketTickerFields.model_rebuild()
 OrderFields.model_rebuild()
 ProductInfoFields.model_rebuild()

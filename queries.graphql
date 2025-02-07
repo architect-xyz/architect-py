@@ -8,6 +8,16 @@ fragment ProductInfoFields on ProductInfo {
   firstNoticeDate
 }
 
+fragment ExecutionInfoFields on ExecutionInfo {
+  symbol
+  executionVenue
+  tickSize
+  stepSize
+  minOrderQuantity
+  minOrderQuantityUnit
+  isDelisted
+}
+
 fragment OrderFields on Order {
   id
   parentId
@@ -78,15 +88,30 @@ fragment MarketTickerFields on Ticker {
   lastSize
 }
 
+fragment L2BookLevelFields on L2BookLevel {
+  price
+  size
+}
 
-
-query SearchSymbolsRequest($searchString: String, $executionVenue: ExecutionVenue, $marketdataVenue: MarketdataVenue, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
-  symbology {
-    searchSymbols(searchString: $searchString, executionVenue: $executionVenue, marketdataVenue: $marketdataVenue, underlying: $underlying, maxResults: $maxResults, resultsOffset: $resultsOffset, sortByVolumeDesc: $sortByVolumeDesc)
+fragment L2BookFields on L2Book {
+  timestamp
+  bids {
+    ...L2BookLevelFields
+  }
+  asks {
+    ...L2BookLevelFields
   }
 }
 
-query GetProductInfo($symbol: String!) {
+
+
+query SearchSymbolsQuery($searchString: String, $underlying: String, $executionVenue: ExecutionVenue, $maxResults: Int, $sortByVolumeDescGivenExecutionVenue: Boolean!) {
+  symbology {
+    searchSymbols(searchString: $searchString, underlying: $underlying, executionVenue: $executionVenue, maxResults: $maxResults, sortByVolumeDescGivenExecutionVenue: $sortByVolumeDescGivenExecutionVenue)
+  }
+}
+
+query GetProductInfoQuery($symbol: String!) {
   symbology {
     productInfo(symbol: $symbol) {
       ...ProductInfoFields
@@ -94,7 +119,7 @@ query GetProductInfo($symbol: String!) {
   }
 }
 
-query GetProductInfos($symbols: [String!]!) {
+query GetProductInfosQuery($symbols: [String!]!) {
   symbology {
     productInfos(symbols: $symbols) {
       ...ProductInfoFields
@@ -103,7 +128,7 @@ query GetProductInfos($symbols: [String!]!) {
 }
 
 
-query GetFirstNoticeDate($symbol: String!) {
+query GetFirstNoticeDateQuery($symbol: String!) {
   symbology {
     productInfo(symbol: $symbol) {
       firstNoticeDate
@@ -111,28 +136,22 @@ query GetFirstNoticeDate($symbol: String!) {
   }
 }
 
-query FutureSeries($seriesSymbol: String!) {
+query GetFutureSeriesQuery($seriesSymbol: String!) {
   symbology {
     futuresSeries(seriesSymbol: $seriesSymbol)
   }
 }
 
-query GetExecutionInfo($symbol: String!, $executionVenue: ExecutionVenue!) {
+query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue) {
   symbology {
     executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
-      symbol
-      executionVenue
-      tickSize
-      stepSize
-      minOrderQuantity
-      minOrderQuantityUnit
-      isDelisted
+      ...ExecutionInfoFields
     }
   }
 }
 
 
-query GetMarketSnapshot($venue: MarketdataVenue!, $symbol: String!) {
+query GetMarketSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
   marketdata {
     ticker(venue: $venue, symbol: $symbol) {
       ...MarketTickerFields
@@ -140,7 +159,7 @@ query GetMarketSnapshot($venue: MarketdataVenue!, $symbol: String!) {
   }
 }
 
-query GetMarketSnapshots($venue: MarketdataVenue!, $symbols: [String!]) {
+query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
   marketdata{
     tickers(venue: $venue, symbols: $symbols) {
       ...MarketTickerFields
@@ -149,7 +168,7 @@ query GetMarketSnapshots($venue: MarketdataVenue!, $symbols: [String!]) {
 }
 
 
-query GetAccountSummary($venue: ExecutionVenue, $account: String!) {
+query GetAccountSummaryQuery($venue: ExecutionVenue, $account: String!) {
   folio {
     accountSummary(venue: $venue, account: $account) {
       ...AccountSummaryFields
@@ -157,7 +176,7 @@ query GetAccountSummary($venue: ExecutionVenue, $account: String!) {
   }
 }
 
-query GetAccountSummaries($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
+query GetAccountSummariesQuery($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
   folio {
     accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
       ...AccountSummaryFields
@@ -165,7 +184,7 @@ query GetAccountSummaries($venue: ExecutionVenue, $trader: String, $accounts: [S
   }
 }
 
-query GetOpenOrders($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
+query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
   oms {
     openOrders(venue: $venue, account: $account, trader: $trader, symbol: $symbol, parentOrderId: $parentOrderId, orderIds: $orderIds) {
       ...OrderFields
@@ -173,7 +192,7 @@ query GetOpenOrders($venue: ExecutionVenue, $account: String, $trader: String, $
   }
 }
 
-query GetAllOpenOrders {
+query GetAllOpenOrdersQuery{
   oms {
     openOrders {
       ...OrderFields
@@ -181,11 +200,62 @@ query GetAllOpenOrders {
   }
 }
 
-query GetHistoricalOrders($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+query GetHistoricalOrdersQuery($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
   folio {
     historicalOrders(venue: $venue, account: $account, parentOrderId: $parentOrderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
       ...OrderFields
     }
+  }
+}
+
+query GetFillsQuery($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
+  folio {
+    historicalFills(venue: $venue, account: $account, orderId: $orderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+      fills {
+        fillId
+        fillKind
+        executionVenue
+        exchangeFillId
+        orderId
+        trader
+        account
+        symbol
+        dir
+        quantity
+        price
+        recvTime
+        tradeTime
+      }
+      aberrantFills {
+        fillId
+        fillKind
+        executionVenue
+        exchangeFillId
+        orderId
+        trader
+        account
+        symbol
+        dir
+        quantity
+        price
+        recvTime
+        tradeTime
+      }
+    }
+  }
+}
+
+query GetL2BookSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
+  marketdata {
+    l2BookSnapshot(venue: $venue, symbol: $symbol) {
+      ...L2BookFields
+    }
+  }
+}
+
+query GetPrimaryExecutionVenueQuery($symbol: String!) {
+  symbology {
+    getPrimaryExecutionVenue(symbol: $symbol)
   }
 }
 
@@ -498,58 +568,6 @@ query GetHistoricalOrders($venue: ExecutionVenue, $account: String, $parentOrder
 #   }
 # }
 
-query GetFills($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
-  folio {
-    historicalFills(venue: $venue, account: $account, orderId: $orderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
-      fills {
-        fillId
-        fillKind
-        executionVenue
-        exchangeFillId
-        orderId
-        trader
-        account
-        symbol
-        dir
-        quantity
-        price
-        recvTime
-        tradeTime
-      }
-      aberrantFills {
-        fillId
-        fillKind
-        executionVenue
-        exchangeFillId
-        orderId
-        trader
-        account
-        symbol
-        dir
-        quantity
-        price
-        recvTime
-        tradeTime
-      }
-    }
-  }
-}
-
-query GetBookSnapshot($venue: MarketdataVenue!, $symbol: String!) {
-  marketdata {
-    l2BookSnapshot(venue: $venue, symbol: $symbol) {
-      timestamp
-      bids {
-        price
-        size
-      }
-      asks {
-        price
-        size
-      }
-    }
-  }
-}
 
 
 subscription SubscribeTrades($venue: MarketdataVenue!, $symbol: String!) {

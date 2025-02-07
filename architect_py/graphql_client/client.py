@@ -12,23 +12,51 @@ from .cancel_all_orders import CancelAllOrders, CancelAllOrdersOms
 from .cancel_order import CancelOrder, CancelOrderOms
 from .create_jwt import CreateJwt, CreateJwtUser
 from .enums import CandleWidth, OrderType, TimeInForce
-from .future_series import FutureSeries, FutureSeriesSymbology
-from .get_account_summaries import GetAccountSummaries, GetAccountSummariesFolio
-from .get_account_summary import GetAccountSummary, GetAccountSummaryFolio
-from .get_all_open_orders import GetAllOpenOrders, GetAllOpenOrdersOms
-from .get_book_snapshot import GetBookSnapshot, GetBookSnapshotMarketdata
-from .get_execution_info import GetExecutionInfo, GetExecutionInfoSymbology
-from .get_fills import GetFills, GetFillsFolio
-from .get_first_notice_date import GetFirstNoticeDate, GetFirstNoticeDateSymbology
-from .get_historical_orders import GetHistoricalOrders, GetHistoricalOrdersFolio
-from .get_market_snapshot import GetMarketSnapshot, GetMarketSnapshotMarketdata
-from .get_market_snapshots import GetMarketSnapshots, GetMarketSnapshotsMarketdata
-from .get_open_orders import GetOpenOrders, GetOpenOrdersOms
-from .get_product_info import GetProductInfo, GetProductInfoSymbology
-from .get_product_infos import GetProductInfos, GetProductInfosSymbology
+from .get_account_summaries_query import (
+    GetAccountSummariesQuery,
+    GetAccountSummariesQueryFolio,
+)
+from .get_account_summary_query import (
+    GetAccountSummaryQuery,
+    GetAccountSummaryQueryFolio,
+)
+from .get_all_open_orders_query import GetAllOpenOrdersQuery, GetAllOpenOrdersQueryOms
+from .get_execution_info_query import (
+    GetExecutionInfoQuery,
+    GetExecutionInfoQuerySymbology,
+)
+from .get_fills_query import GetFillsQuery, GetFillsQueryFolio
+from .get_first_notice_date_query import (
+    GetFirstNoticeDateQuery,
+    GetFirstNoticeDateQuerySymbology,
+)
+from .get_future_series_query import GetFutureSeriesQuery, GetFutureSeriesQuerySymbology
+from .get_historical_orders_query import (
+    GetHistoricalOrdersQuery,
+    GetHistoricalOrdersQueryFolio,
+)
+from .get_l_2_book_snapshot_query import (
+    GetL2BookSnapshotQuery,
+    GetL2BookSnapshotQueryMarketdata,
+)
+from .get_market_snapshot_query import (
+    GetMarketSnapshotQuery,
+    GetMarketSnapshotQueryMarketdata,
+)
+from .get_market_snapshots_query import (
+    GetMarketSnapshotsQuery,
+    GetMarketSnapshotsQueryMarketdata,
+)
+from .get_open_orders_query import GetOpenOrdersQuery, GetOpenOrdersQueryOms
+from .get_primary_execution_venue_query import (
+    GetPrimaryExecutionVenueQuery,
+    GetPrimaryExecutionVenueQuerySymbology,
+)
+from .get_product_info_query import GetProductInfoQuery, GetProductInfoQuerySymbology
+from .get_product_infos_query import GetProductInfosQuery, GetProductInfosQuerySymbology
 from .juniper_base_client import JuniperBaseClient
 from .place_order import PlaceOrder, PlaceOrderOms
-from .search_symbols_request import SearchSymbolsRequest, SearchSymbolsRequestSymbology
+from .search_symbols_query import SearchSymbolsQuery, SearchSymbolsQuerySymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
 from .subscribe_orderflow import (
     SubscribeOrderflow,
@@ -52,29 +80,25 @@ def gql(q: str) -> str:
 
 
 class GraphQLClient(JuniperBaseClient):
-    async def search_symbols_request(
+    async def search_symbols_query(
         self,
-        sort_by_volume_desc: bool,
+        sort_by_volume_desc_given_execution_venue: bool,
         search_string: Union[Optional[str], UnsetType] = UNSET,
-        execution_venue: Union[Optional[str], UnsetType] = UNSET,
-        marketdata_venue: Union[Optional[str], UnsetType] = UNSET,
         underlying: Union[Optional[str], UnsetType] = UNSET,
+        execution_venue: Union[Optional[str], UnsetType] = UNSET,
         max_results: Union[Optional[int], UnsetType] = UNSET,
-        results_offset: Union[Optional[int], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> SearchSymbolsRequestSymbology:
+    ) -> SearchSymbolsQuerySymbology:
         query = gql(
             """
-            query SearchSymbolsRequest($searchString: String, $executionVenue: ExecutionVenue, $marketdataVenue: MarketdataVenue, $underlying: String, $maxResults: Int, $resultsOffset: Int, $sortByVolumeDesc: Boolean!) {
+            query SearchSymbolsQuery($searchString: String, $underlying: String, $executionVenue: ExecutionVenue, $maxResults: Int, $sortByVolumeDescGivenExecutionVenue: Boolean!) {
               symbology {
                 searchSymbols(
                   searchString: $searchString
-                  executionVenue: $executionVenue
-                  marketdataVenue: $marketdataVenue
                   underlying: $underlying
+                  executionVenue: $executionVenue
                   maxResults: $maxResults
-                  resultsOffset: $resultsOffset
-                  sortByVolumeDesc: $sortByVolumeDesc
+                  sortByVolumeDescGivenExecutionVenue: $sortByVolumeDescGivenExecutionVenue
                 )
               }
             }
@@ -82,28 +106,26 @@ class GraphQLClient(JuniperBaseClient):
         )
         variables: Dict[str, object] = {
             "searchString": search_string,
-            "executionVenue": execution_venue,
-            "marketdataVenue": marketdata_venue,
             "underlying": underlying,
+            "executionVenue": execution_venue,
             "maxResults": max_results,
-            "resultsOffset": results_offset,
-            "sortByVolumeDesc": sort_by_volume_desc,
+            "sortByVolumeDescGivenExecutionVenue": sort_by_volume_desc_given_execution_venue,
         }
         response = await self.execute(
             query=query,
-            operation_name="SearchSymbolsRequest",
+            operation_name="SearchSymbolsQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return SearchSymbolsRequest.model_validate(data).symbology
+        return SearchSymbolsQuery.model_validate(data).symbology
 
-    async def get_product_info(
+    async def get_product_info_query(
         self, symbol: str, **kwargs: Any
-    ) -> GetProductInfoSymbology:
+    ) -> GetProductInfoQuerySymbology:
         query = gql(
             """
-            query GetProductInfo($symbol: String!) {
+            query GetProductInfoQuery($symbol: String!) {
               symbology {
                 productInfo(symbol: $symbol) {
                   ...ProductInfoFields
@@ -124,17 +146,20 @@ class GraphQLClient(JuniperBaseClient):
         )
         variables: Dict[str, object] = {"symbol": symbol}
         response = await self.execute(
-            query=query, operation_name="GetProductInfo", variables=variables, **kwargs
+            query=query,
+            operation_name="GetProductInfoQuery",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return GetProductInfo.model_validate(data).symbology
+        return GetProductInfoQuery.model_validate(data).symbology
 
-    async def get_product_infos(
+    async def get_product_infos_query(
         self, symbols: List[str], **kwargs: Any
-    ) -> GetProductInfosSymbology:
+    ) -> GetProductInfosQuerySymbology:
         query = gql(
             """
-            query GetProductInfos($symbols: [String!]!) {
+            query GetProductInfosQuery($symbols: [String!]!) {
               symbology {
                 productInfos(symbols: $symbols) {
                   ...ProductInfoFields
@@ -155,17 +180,20 @@ class GraphQLClient(JuniperBaseClient):
         )
         variables: Dict[str, object] = {"symbols": symbols}
         response = await self.execute(
-            query=query, operation_name="GetProductInfos", variables=variables, **kwargs
+            query=query,
+            operation_name="GetProductInfosQuery",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return GetProductInfos.model_validate(data).symbology
+        return GetProductInfosQuery.model_validate(data).symbology
 
-    async def get_first_notice_date(
+    async def get_first_notice_date_query(
         self, symbol: str, **kwargs: Any
-    ) -> GetFirstNoticeDateSymbology:
+    ) -> GetFirstNoticeDateQuerySymbology:
         query = gql(
             """
-            query GetFirstNoticeDate($symbol: String!) {
+            query GetFirstNoticeDateQuery($symbol: String!) {
               symbology {
                 productInfo(symbol: $symbol) {
                   firstNoticeDate
@@ -177,19 +205,19 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {"symbol": symbol}
         response = await self.execute(
             query=query,
-            operation_name="GetFirstNoticeDate",
+            operation_name="GetFirstNoticeDateQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetFirstNoticeDate.model_validate(data).symbology
+        return GetFirstNoticeDateQuery.model_validate(data).symbology
 
-    async def future_series(
+    async def get_future_series_query(
         self, series_symbol: str, **kwargs: Any
-    ) -> FutureSeriesSymbology:
+    ) -> GetFutureSeriesQuerySymbology:
         query = gql(
             """
-            query FutureSeries($seriesSymbol: String!) {
+            query GetFutureSeriesQuery($seriesSymbol: String!) {
               symbology {
                 futuresSeries(seriesSymbol: $seriesSymbol)
               }
@@ -198,28 +226,38 @@ class GraphQLClient(JuniperBaseClient):
         )
         variables: Dict[str, object] = {"seriesSymbol": series_symbol}
         response = await self.execute(
-            query=query, operation_name="FutureSeries", variables=variables, **kwargs
+            query=query,
+            operation_name="GetFutureSeriesQuery",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return FutureSeries.model_validate(data).symbology
+        return GetFutureSeriesQuery.model_validate(data).symbology
 
-    async def get_execution_info(
-        self, symbol: str, execution_venue: str, **kwargs: Any
-    ) -> GetExecutionInfoSymbology:
+    async def get_execution_info_query(
+        self,
+        symbol: str,
+        execution_venue: Union[Optional[str], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetExecutionInfoQuerySymbology:
         query = gql(
             """
-            query GetExecutionInfo($symbol: String!, $executionVenue: ExecutionVenue!) {
+            query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue) {
               symbology {
                 executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
-                  symbol
-                  executionVenue
-                  tickSize
-                  stepSize
-                  minOrderQuantity
-                  minOrderQuantityUnit
-                  isDelisted
+                  ...ExecutionInfoFields
                 }
               }
+            }
+
+            fragment ExecutionInfoFields on ExecutionInfo {
+              symbol
+              executionVenue
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              isDelisted
             }
             """
         )
@@ -229,19 +267,19 @@ class GraphQLClient(JuniperBaseClient):
         }
         response = await self.execute(
             query=query,
-            operation_name="GetExecutionInfo",
+            operation_name="GetExecutionInfoQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetExecutionInfo.model_validate(data).symbology
+        return GetExecutionInfoQuery.model_validate(data).symbology
 
-    async def get_market_snapshot(
+    async def get_market_snapshot_query(
         self, venue: str, symbol: str, **kwargs: Any
-    ) -> GetMarketSnapshotMarketdata:
+    ) -> GetMarketSnapshotQueryMarketdata:
         query = gql(
             """
-            query GetMarketSnapshot($venue: MarketdataVenue!, $symbol: String!) {
+            query GetMarketSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
               marketdata {
                 ticker(venue: $venue, symbol: $symbol) {
                   ...MarketTickerFields
@@ -264,22 +302,22 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
         response = await self.execute(
             query=query,
-            operation_name="GetMarketSnapshot",
+            operation_name="GetMarketSnapshotQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetMarketSnapshot.model_validate(data).marketdata
+        return GetMarketSnapshotQuery.model_validate(data).marketdata
 
-    async def get_market_snapshots(
+    async def get_market_snapshots_query(
         self,
         venue: str,
         symbols: Union[Optional[List[str]], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetMarketSnapshotsMarketdata:
+    ) -> GetMarketSnapshotsQueryMarketdata:
         query = gql(
             """
-            query GetMarketSnapshots($venue: MarketdataVenue!, $symbols: [String!]) {
+            query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
               marketdata {
                 tickers(venue: $venue, symbols: $symbols) {
                   ...MarketTickerFields
@@ -302,22 +340,22 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {"venue": venue, "symbols": symbols}
         response = await self.execute(
             query=query,
-            operation_name="GetMarketSnapshots",
+            operation_name="GetMarketSnapshotsQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetMarketSnapshots.model_validate(data).marketdata
+        return GetMarketSnapshotsQuery.model_validate(data).marketdata
 
-    async def get_account_summary(
+    async def get_account_summary_query(
         self,
         account: str,
         venue: Union[Optional[str], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetAccountSummaryFolio:
+    ) -> GetAccountSummaryQueryFolio:
         query = gql(
             """
-            query GetAccountSummary($venue: ExecutionVenue, $account: String!) {
+            query GetAccountSummaryQuery($venue: ExecutionVenue, $account: String!) {
               folio {
                 accountSummary(venue: $venue, account: $account) {
                   ...AccountSummaryFields
@@ -354,23 +392,23 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {"venue": venue, "account": account}
         response = await self.execute(
             query=query,
-            operation_name="GetAccountSummary",
+            operation_name="GetAccountSummaryQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetAccountSummary.model_validate(data).folio
+        return GetAccountSummaryQuery.model_validate(data).folio
 
-    async def get_account_summaries(
+    async def get_account_summaries_query(
         self,
         venue: Union[Optional[str], UnsetType] = UNSET,
         trader: Union[Optional[str], UnsetType] = UNSET,
         accounts: Union[Optional[List[str]], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetAccountSummariesFolio:
+    ) -> GetAccountSummariesQueryFolio:
         query = gql(
             """
-            query GetAccountSummaries($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
+            query GetAccountSummariesQuery($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
               folio {
                 accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
                   ...AccountSummaryFields
@@ -411,14 +449,14 @@ class GraphQLClient(JuniperBaseClient):
         }
         response = await self.execute(
             query=query,
-            operation_name="GetAccountSummaries",
+            operation_name="GetAccountSummariesQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetAccountSummaries.model_validate(data).folio
+        return GetAccountSummariesQuery.model_validate(data).folio
 
-    async def get_open_orders(
+    async def get_open_orders_query(
         self,
         venue: Union[Optional[str], UnsetType] = UNSET,
         account: Union[Optional[str], UnsetType] = UNSET,
@@ -427,10 +465,10 @@ class GraphQLClient(JuniperBaseClient):
         parent_order_id: Union[Optional[str], UnsetType] = UNSET,
         order_ids: Union[Optional[List[str]], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetOpenOrdersOms:
+    ) -> GetOpenOrdersQueryOms:
         query = gql(
             """
-            query GetOpenOrders($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
+            query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
               oms {
                 openOrders(
                   venue: $venue
@@ -478,15 +516,20 @@ class GraphQLClient(JuniperBaseClient):
             "orderIds": order_ids,
         }
         response = await self.execute(
-            query=query, operation_name="GetOpenOrders", variables=variables, **kwargs
+            query=query,
+            operation_name="GetOpenOrdersQuery",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return GetOpenOrders.model_validate(data).oms
+        return GetOpenOrdersQuery.model_validate(data).oms
 
-    async def get_all_open_orders(self, **kwargs: Any) -> GetAllOpenOrdersOms:
+    async def get_all_open_orders_query(
+        self, **kwargs: Any
+    ) -> GetAllOpenOrdersQueryOms:
         query = gql(
             """
-            query GetAllOpenOrders {
+            query GetAllOpenOrdersQuery {
               oms {
                 openOrders {
                   ...OrderFields
@@ -521,14 +564,14 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {}
         response = await self.execute(
             query=query,
-            operation_name="GetAllOpenOrders",
+            operation_name="GetAllOpenOrdersQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetAllOpenOrders.model_validate(data).oms
+        return GetAllOpenOrdersQuery.model_validate(data).oms
 
-    async def get_historical_orders(
+    async def get_historical_orders_query(
         self,
         from_inclusive: datetime,
         to_exclusive: datetime,
@@ -536,10 +579,10 @@ class GraphQLClient(JuniperBaseClient):
         account: Union[Optional[str], UnsetType] = UNSET,
         parent_order_id: Union[Optional[str], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetHistoricalOrdersFolio:
+    ) -> GetHistoricalOrdersQueryFolio:
         query = gql(
             """
-            query GetHistoricalOrders($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+            query GetHistoricalOrdersQuery($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
               folio {
                 historicalOrders(
                   venue: $venue
@@ -586,14 +629,14 @@ class GraphQLClient(JuniperBaseClient):
         }
         response = await self.execute(
             query=query,
-            operation_name="GetHistoricalOrders",
+            operation_name="GetHistoricalOrdersQuery",
             variables=variables,
             **kwargs
         )
         data = self.get_data(response)
-        return GetHistoricalOrders.model_validate(data).folio
+        return GetHistoricalOrdersQuery.model_validate(data).folio
 
-    async def get_fills(
+    async def get_fills_query(
         self,
         venue: Union[Optional[str], UnsetType] = UNSET,
         account: Union[Optional[str], UnsetType] = UNSET,
@@ -601,10 +644,10 @@ class GraphQLClient(JuniperBaseClient):
         from_inclusive: Union[Optional[datetime], UnsetType] = UNSET,
         to_exclusive: Union[Optional[datetime], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> GetFillsFolio:
+    ) -> GetFillsQueryFolio:
         query = gql(
             """
-            query GetFills($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
+            query GetFillsQuery($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
               folio {
                 historicalFills(
                   venue: $venue
@@ -656,39 +699,71 @@ class GraphQLClient(JuniperBaseClient):
             "toExclusive": convert_datetime_to_utc_str(to_exclusive),
         }
         response = await self.execute(
-            query=query, operation_name="GetFills", variables=variables, **kwargs
+            query=query, operation_name="GetFillsQuery", variables=variables, **kwargs
         )
         data = self.get_data(response)
-        return GetFills.model_validate(data).folio
+        return GetFillsQuery.model_validate(data).folio
 
-    async def get_book_snapshot(
+    async def get_l_2_book_snapshot_query(
         self, venue: str, symbol: str, **kwargs: Any
-    ) -> GetBookSnapshotMarketdata:
+    ) -> GetL2BookSnapshotQueryMarketdata:
         query = gql(
             """
-            query GetBookSnapshot($venue: MarketdataVenue!, $symbol: String!) {
+            query GetL2BookSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
               marketdata {
                 l2BookSnapshot(venue: $venue, symbol: $symbol) {
-                  timestamp
-                  bids {
-                    price
-                    size
-                  }
-                  asks {
-                    price
-                    size
-                  }
+                  ...L2BookFields
                 }
               }
+            }
+
+            fragment L2BookFields on L2Book {
+              timestamp
+              bids {
+                ...L2BookLevelFields
+              }
+              asks {
+                ...L2BookLevelFields
+              }
+            }
+
+            fragment L2BookLevelFields on L2BookLevel {
+              price
+              size
             }
             """
         )
         variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
         response = await self.execute(
-            query=query, operation_name="GetBookSnapshot", variables=variables, **kwargs
+            query=query,
+            operation_name="GetL2BookSnapshotQuery",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return GetBookSnapshot.model_validate(data).marketdata
+        return GetL2BookSnapshotQuery.model_validate(data).marketdata
+
+    async def get_primary_execution_venue_query(
+        self, symbol: str, **kwargs: Any
+    ) -> GetPrimaryExecutionVenueQuerySymbology:
+        query = gql(
+            """
+            query GetPrimaryExecutionVenueQuery($symbol: String!) {
+              symbology {
+                getPrimaryExecutionVenue(symbol: $symbol)
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"symbol": symbol}
+        response = await self.execute(
+            query=query,
+            operation_name="GetPrimaryExecutionVenueQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetPrimaryExecutionVenueQuery.model_validate(data).symbology
 
     async def subscribe_trades(
         self, venue: str, symbol: str, **kwargs: Any
