@@ -29,6 +29,7 @@ Improvement:
 
 
 Todo:
+- test subscriptions
 - algos need to work again
 
 - test Date scalar in firstNoticeDate in the ProductInfo type
