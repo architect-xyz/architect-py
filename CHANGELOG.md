@@ -14,7 +14,6 @@ Breaking Changes:
 - getOutedOrders replaced with GetHistoricalOrders
 - removed GetAllMarketSnapshots, replaced with GetMarketSnapshots
 - removed SearchSymbols, replaced with SearchSymbols
-- algos currently not working
 - removed get_balance_anmd_position in favor of client.get_account_summaries
 - subscribe_book replaced with watch_L2_book
 - getBookSnapshot replaced with L2BookSnapshot
