@@ -19,6 +19,9 @@ from .fragments import (
     AccountSummaryFields,
     AccountSummaryFieldsBalances,
     AccountSummaryFieldsPositions,
+    AccountWithPermissionsFields,
+    AccountWithPermissionsFieldsAccount,
+    AccountWithPermissionsFieldsPermissions,
     CandleFields,
     ExecutionInfoFields,
     L2BookFields,
@@ -102,6 +105,11 @@ from .get_product_infos_query import (
     GetProductInfosQuerySymbologyProductInfos,
 )
 from .juniper_base_client import JuniperBaseClient
+from .list_accounts_query import (
+    ListAccountsQuery,
+    ListAccountsQueryUser,
+    ListAccountsQueryUserAccounts,
+)
 from .place_order import PlaceOrder, PlaceOrderOms, PlaceOrderOmsPlaceOrder
 from .search_symbols_query import SearchSymbolsQuery, SearchSymbolsQuerySymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
@@ -125,6 +133,9 @@ __all__ = [
     "AccountSummaryFields",
     "AccountSummaryFieldsBalances",
     "AccountSummaryFieldsPositions",
+    "AccountWithPermissionsFields",
+    "AccountWithPermissionsFieldsAccount",
+    "AccountWithPermissionsFieldsPermissions",
     "BaseModel",
     "CancelAllOrders",
     "CancelAllOrdersOms",
@@ -189,6 +200,9 @@ __all__ = [
     "L2BookFieldsAsks",
     "L2BookFieldsBids",
     "L2BookLevelFields",
+    "ListAccountsQuery",
+    "ListAccountsQueryUser",
+    "ListAccountsQueryUserAccounts",
     "MarketTickerFields",
     "MinOrderQuantityUnit",
     "OrderFields",

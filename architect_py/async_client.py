@@ -48,6 +48,7 @@ from .graphql_client.enums import (
 )
 from .graphql_client.fragments import (
     AccountSummaryFields,
+    AccountWithPermissionsFields,
     ExecutionInfoFields,
     L2BookFields,
     MarketTickerFields,
@@ -73,13 +74,12 @@ from .protocol.marketdata import (
     ExternalL2BookSnapshot,
     L2BookDiff,
     L2BookSnapshot,
-    L2BookSnapshotRequest,
     L2BookUpdate,
     L3BookSnapshot,
     SubscribeL1BookSnapshotsRequest,
     SubscribeL2BookUpdatesRequest,
 )
-from .protocol.symbology import Market, Product, Route, Venue
+from .protocol.symbology import Market
 
 from .utils.price_bands import price_band_pairs
 
@@ -368,6 +368,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         snapshots = await self.get_market_snapshots_query(venue, symbols)
         return snapshots.tickers
 
+    async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
+        accounts = await self.list_accounts_query()
+        return accounts.accounts
+
     async def get_account_summary(
         self, account: str, venue: Optional[str] = None
     ) -> AccountSummaryFields:
@@ -511,13 +515,13 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             yield (up.sequence_id, up.sequence_number)
 
     async def get_external_l2_book_snapshot(
-        self, market: str
+        self, symbol: str
     ) -> ExternalL2BookSnapshot:
-        [_, cpty] = market.split("*", 1)
+        [_, cpty] = symbol.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
-            market_id = Market.derive_id(market)
-            return await client.get_l2_book_snapshot(market_id)
+            market_id = Market.derive_id(symbol)
+            return await client.get_l2_book_snapshot(symbol)
         else:
             raise ValueError(f"cpty {cpty} not configured for L2 marketdata")
 

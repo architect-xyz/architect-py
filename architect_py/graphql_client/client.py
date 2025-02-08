@@ -55,6 +55,7 @@ from .get_primary_execution_venue_query import (
 from .get_product_info_query import GetProductInfoQuery, GetProductInfoQuerySymbology
 from .get_product_infos_query import GetProductInfosQuery, GetProductInfosQuerySymbology
 from .juniper_base_client import JuniperBaseClient
+from .list_accounts_query import ListAccountsQuery, ListAccountsQueryUser
 from .place_order import PlaceOrder, PlaceOrderOms
 from .search_symbols_query import SearchSymbolsQuery, SearchSymbolsQuerySymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
@@ -346,6 +347,43 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetMarketSnapshotsQuery.model_validate(data).marketdata
+
+    async def list_accounts_query(self, **kwargs: Any) -> ListAccountsQueryUser:
+        query = gql(
+            """
+            query ListAccountsQuery {
+              user {
+                accounts {
+                  ...AccountWithPermissionsFields
+                }
+              }
+            }
+
+            fragment AccountWithPermissionsFields on AccountWithPermissions {
+              account {
+                id
+                name
+              }
+              trader
+              permissions {
+                list
+                view
+                trade
+                reduceOrClose
+                setLimits
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query,
+            operation_name="ListAccountsQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return ListAccountsQuery.model_validate(data).user
 
     async def get_account_summary_query(
         self,

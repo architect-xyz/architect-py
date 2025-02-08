@@ -52,6 +52,21 @@ fragment CandleFields on Candle {
   volume
 }
 
+fragment AccountWithPermissionsFields on AccountWithPermissions {
+  account {
+    id
+    name
+  }
+  trader
+  permissions {
+    list
+    view
+    trade
+    reduceOrClose
+    setLimits
+  }
+}
+
 fragment AccountSummaryFields on AccountSummary {
   account
   timestamp
@@ -163,6 +178,14 @@ query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
   marketdata{
     tickers(venue: $venue, symbols: $symbols) {
       ...MarketTickerFields
+    }
+  }
+}
+
+query ListAccountsQuery {
+  user {
+    accounts {
+      ...AccountWithPermissionsFields
     }
   }
 }

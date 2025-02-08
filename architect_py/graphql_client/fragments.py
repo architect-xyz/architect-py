@@ -50,6 +50,25 @@ class AccountSummaryFieldsPositions(BaseModel):
     liquidation_price: Optional[Decimal] = Field(alias="liquidationPrice")
 
 
+class AccountWithPermissionsFields(BaseModel):
+    account: "AccountWithPermissionsFieldsAccount"
+    trader: str
+    permissions: "AccountWithPermissionsFieldsPermissions"
+
+
+class AccountWithPermissionsFieldsAccount(BaseModel):
+    id: UUID
+    name: str
+
+
+class AccountWithPermissionsFieldsPermissions(BaseModel):
+    list: bool
+    view: bool
+    trade: bool
+    reduce_or_close: bool = Field(alias="reduceOrClose")
+    set_limits: bool = Field(alias="setLimits")
+
+
 class CandleFields(BaseModel):
     timestamp: Optional[datetime]
     width: CandleWidth
@@ -134,6 +153,7 @@ class ProductInfoFields(BaseModel):
 
 
 AccountSummaryFields.model_rebuild()
+AccountWithPermissionsFields.model_rebuild()
 CandleFields.model_rebuild()
 ExecutionInfoFields.model_rebuild()
 L2BookLevelFields.model_rebuild()
