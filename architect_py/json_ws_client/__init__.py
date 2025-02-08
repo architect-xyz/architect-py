@@ -74,15 +74,15 @@ class JsonWsClient:
         snap = SymbologySnapshot.from_dict(res)
         return snap
 
-    async def get_l2_book_snapshot(self, market_id: uuid.UUID) -> ExternalL2BookSnapshot:
+    async def get_l2_book_snapshot(self, symbol: str) -> ExternalL2BookSnapshot:
         res = await self.request(
-            "marketdata/book/l2/snapshot", QueryL2BookSnapshot(market_id=market_id)
+            "marketdata/book/l2/snapshot", QueryL2BookSnapshot(symbol=symbol)
         )
         return ExternalL2BookSnapshot(**res)
 
-    async def get_l3_book_snapshot(self, market_id: uuid.UUID) -> L3BookSnapshot:
+    async def get_l3_book_snapshot(self, symbol: str) -> L3BookSnapshot:
         res = await self.request(
-            "marketdata/book/l3/snapshot", QueryL3BookSnapshot(market_id=market_id)
+            "marketdata/book/l3/snapshot", QueryL3BookSnapshot(symbol=symbol)
         )
         snap = L3BookSnapshot.from_dict(res)
         return snap

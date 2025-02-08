@@ -1,5 +1,7 @@
 # architect-gql schema > ../architect-py/schema.graphql
 poetry run ariadne-codegen --config ariadne-codegen.toml
+
+echo "\nGenerating client protocol"
 python generate_protocol.py > architect_py/protocol/client_protocol.py
 
 

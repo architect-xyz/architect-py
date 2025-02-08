@@ -15,10 +15,10 @@ class SubscribeTrades(BaseModel):
 
 
 class SubscribeTradesTrades(BaseModel):
-    time: Optional[datetime]
+    timestamp: Optional[datetime]
+    direction: Optional[OrderDir]
     price: Decimal
     size: Decimal
-    direction: Optional[OrderDir]
 
 
 SubscribeTrades.model_rebuild()

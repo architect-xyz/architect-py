@@ -1,4 +1,4 @@
-import logging
+from decimal import Decimal
 
 import pytest
 
@@ -21,27 +21,35 @@ async def test_market_pro_order(async_client: AsyncClient):
 @pytest.mark.asyncio
 @pytest.mark.timeout(3)
 @pytest.mark.parametrize(
-    "market_id",
+    "symbol,venue",
     [
-        "BTC Crypto/USDT Crypto*BINANCE/DIRECT",
-        "ETH Crypto/USDT Crypto*BINANCE/DIRECT",
-        "SOL Crypto/USDT Crypto*BINANCE/DIRECT",
+        ("BTC Crypto/USDT Crypto*BINANCE/DIRECT", "BINANCE"),
+        ("ETH Crypto/USDT Crypto*BINANCE/DIRECT", "BINANCE"),
+        ("SOL Crypto/USDT Crypto*BINANCE/DIRECT", "BINANCE"),
     ],
 )
-async def test_live_far_order_cancel(async_client: AsyncClient, market_id: str):
+async def test_live_far_order_cancel(
+    async_client: AsyncClient, symbol: str, venue: str
+):
     """
     Place's a book far above the spread, waits for placement, then should successfully cancel order
     """
 
     # Get snapshot
-    market = await async_client.get_market(market_id)
-    assert market is not None, f"Market does not exist for {market_id}"
+    market = await async_client.get_execution_info(symbol, venue)
+    assert market is not None, f"execution_info does not exist for {symbol}, {venue}"
 
-    snapshot = await async_client.get_market_snapshot(market_id)
-    assert snapshot is not None, f"Snapshot does not exist for {market_id}"
+    snapshot = await async_client.market_snapshot(venue, symbol)
+    assert (
+        snapshot is not None
+    ), f"Snapshot does not exist for {symbol} at venue {venue}"
 
-    min_qty = float(market.min_order_quantity)
-    far_price = float(snapshot.last_price) * 0.1
+    min_qty = Decimal(market.min_order_quantity)
+
+    if last_price := snapshot.last_price:
+        far_price = last_price * Decimal("1.1")
+    else:
+        raise ValueError("No last price in snapshot")
 
     assert (
         min_qty * far_price < 10
@@ -49,7 +57,7 @@ async def test_live_far_order_cancel(async_client: AsyncClient, market_id: str):
 
     # Make a very cheap
     order = await async_client.send_limit_order(
-        market=market_id,
+        symbol=symbol,
         odir=OrderDir.BUY,
         quantity=min_qty,  # not sure what's going here with min qty not being accurate
         limit_price=far_price,
@@ -57,6 +65,6 @@ async def test_live_far_order_cancel(async_client: AsyncClient, market_id: str):
 
     assert order is not None
 
-    cancel = await async_client.cancel_order(order.order.id)
+    cancel = await async_client.cancel_order(order.id)
 
     assert cancel

@@ -38,15 +38,13 @@ class JsonMarketdataStub:
 
 
 class SubscribeL1BookSnapshotsRequest(msgspec.Struct, kw_only=True):
-    market_ids: list[str] | None
+    symbols: list[str] | None
 
 
 class L1BookSnapshot(msgspec.Struct, kw_only=True):
-    market_id: UUID = msgspec.field(name="m")
+    symbol: str = msgspec.field(name="s")
     timestamp_s: int = msgspec.field(name="ts")
     timestamp_ns: int = msgspec.field(name="tn")
-    epoch: int | None = msgspec.field(name="e", default=None)
-    seqno: int | None = msgspec.field(name="n", default=None)
     best_bid: tuple[Decimal, Decimal] | None = msgspec.field(name="b")
     best_ask: tuple[Decimal, Decimal] | None = msgspec.field(name="a")
 
@@ -56,11 +54,13 @@ class L1BookSnapshot(msgspec.Struct, kw_only=True):
 
 
 class L2BookSnapshotRequest(msgspec.Struct, kw_only=True):
-    market_id: str
+    venue: Optional[str]
+    symbol: str
 
 
 class SubscribeL2BookUpdatesRequest(msgspec.Struct, kw_only=True):
-    market_id: str
+    venue: Optional[str]
+    symbol: str
 
 
 class L2BookSnapshot(msgspec.Struct, kw_only=True, tag_field="t", tag="s"):
@@ -98,7 +98,7 @@ L2BookUpdate = Union[L2BookSnapshot, L2BookDiff]
 
 @dataclass(kw_only=True)
 class QueryL2BookSnapshot:
-    market_id: uuid.UUID
+    symbol: str
 
 
 @dataclass(kw_only=True)
@@ -112,7 +112,7 @@ class ExternalL2BookSnapshot:
 
 @dataclass(kw_only=True)
 class QueryL3BookSnapshot:
-    market_id: uuid.UUID
+    symbol: str
 
 
 @dataclass(kw_only=True)
