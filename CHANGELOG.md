@@ -3,9 +3,9 @@
 Breaking Changes:
 - Removed GetFilteredMarkets query, replaced by SearchMarkets
 - Removed GetBalancesForCpty query, replace by GetAccountSummaries
-- CreateOrder was replaced by PlaceOrder
-- Removed SendOrders and CancelOrders (for now...)
-- moved utils.dt.convert_datetime_to_utc_str to scalars.convert_datetime_to_utc_str 
+- CreateOrder was replaced by PlaceOrder, most people should use send_limit_order anyway
+- Removed SendOrders and CancelOrders for now (note the plural)
+- moved utils.dt.convert_datetime_to_utc_str to scalars.
 - Most scalars were changed as they were changed in the backend
 - Temporarily removed ability to send algos via python API
 - Removed get_accounts in favor of just using accountSummaries with no account field (returns all AccountSummaries)

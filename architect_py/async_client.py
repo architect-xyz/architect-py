@@ -33,10 +33,13 @@ import dns.name
 import grpc.aio
 
 from architect_py.graphql_client.base_model import UNSET
+from architect_py.graphql_client.cancel_all_orders_mutation import (
+    CancelAllOrdersMutationOms,
+)
 from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
-from architect_py.graphql_client.place_order import PlaceOrderOms
+from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
@@ -49,6 +52,7 @@ from .graphql_client.enums import (
 from .graphql_client.fragments import (
     AccountSummaryFields,
     AccountWithPermissionsFields,
+    CancelFields,
     ExecutionInfoFields,
     L2BookFields,
     MarketTickerFields,
@@ -517,6 +521,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     async def get_external_l2_book_snapshot(
         self, symbol: str
     ) -> ExternalL2BookSnapshot:
+        # CR acho: fix this
         [_, cpty] = symbol.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
@@ -525,12 +530,13 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         else:
             raise ValueError(f"cpty {cpty} not configured for L2 marketdata")
 
-    async def get_l3_book_snapshot(self, market: str) -> L3BookSnapshot:
-        [_, cpty] = market.split("*", 1)
+    async def get_l3_book_snapshot(self, symbol: str) -> L3BookSnapshot:
+        # CR acho: fix this
+        [_, cpty] = symbol.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
-            market_id = Market.derive_id(market)
-            return await client.get_l3_book_snapshot(market_id)
+            market_id = Market.derive_id(symbol)
+            return await client.get_l3_book_snapshot(symbol)
         else:
             raise ValueError(f"cpty {cpty} not configured for L3 marketdata")
 
@@ -584,7 +590,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if not isinstance(trigger_price, Decimal) and trigger_price is not None:
             trigger_price = Decimal(trigger_price)
 
-        order: PlaceOrderOms = await self.place_order(
+        order: PlaceOrderMutationOms = await self.place_order_mutation(
             symbol,
             odir,
             quantity,
@@ -682,6 +688,14 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             limit_price=limit_price,
             time_in_force=time_in_force,
         )
+
+    async def cancel_order(self, order_id: str) -> CancelFields:
+        cancel = await self.cancel_order_mutation(order_id)
+        return cancel.cancel_order
+
+    async def cancel_all_orders(self) -> bool:
+        b = await self.cancel_all_orders_mutation()
+        return b.cancel_all_orders
 
     @staticmethod
     def get_expiration_from_CME_name(name: str) -> date:

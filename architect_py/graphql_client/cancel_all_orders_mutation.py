@@ -6,12 +6,12 @@ from pydantic import Field
 from .base_model import BaseModel
 
 
-class CancelAllOrders(BaseModel):
-    oms: "CancelAllOrdersOms"
+class CancelAllOrdersMutation(BaseModel):
+    oms: "CancelAllOrdersMutationOms"
 
 
-class CancelAllOrdersOms(BaseModel):
+class CancelAllOrdersMutationOms(BaseModel):
     cancel_all_orders: bool = Field(alias="cancelAllOrders")
 
 
-CancelAllOrders.model_rebuild()
+CancelAllOrdersMutation.model_rebuild()

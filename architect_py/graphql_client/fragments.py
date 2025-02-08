@@ -12,6 +12,7 @@ from architect_py.scalars import OrderDir
 
 from .base_model import BaseModel
 from .enums import (
+    CancelStatus,
     CandleWidth,
     MinOrderQuantityUnit,
     OrderSource,
@@ -67,6 +68,14 @@ class AccountWithPermissionsFieldsPermissions(BaseModel):
     trade: bool
     reduce_or_close: bool = Field(alias="reduceOrClose")
     set_limits: bool = Field(alias="setLimits")
+
+
+class CancelFields(BaseModel):
+    cancel_id: UUID = Field(alias="cancelId")
+    order_id: str = Field(alias="orderId")
+    recv_time: Optional[datetime] = Field(alias="recvTime")
+    status: CancelStatus
+    reject_reason: Optional[str] = Field(alias="rejectReason")
 
 
 class CandleFields(BaseModel):
@@ -154,6 +163,7 @@ class ProductInfoFields(BaseModel):
 
 AccountSummaryFields.model_rebuild()
 AccountWithPermissionsFields.model_rebuild()
+CancelFields.model_rebuild()
 CandleFields.model_rebuild()
 ExecutionInfoFields.model_rebuild()
 L2BookLevelFields.model_rebuild()

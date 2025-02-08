@@ -8,8 +8,11 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from architect_py.scalars import OrderDir, convert_datetime_to_utc_str, serialize
 
 from .base_model import UNSET, UnsetType
-from .cancel_all_orders import CancelAllOrders, CancelAllOrdersOms
-from .cancel_order import CancelOrder, CancelOrderOms
+from .cancel_all_orders_mutation import (
+    CancelAllOrdersMutation,
+    CancelAllOrdersMutationOms,
+)
+from .cancel_order_mutation import CancelOrderMutation, CancelOrderMutationOms
 from .create_jwt import CreateJwt, CreateJwtUser
 from .enums import CandleWidth, OrderType, TimeInForce
 from .get_account_summaries_query import (
@@ -56,7 +59,7 @@ from .get_product_info_query import GetProductInfoQuery, GetProductInfoQuerySymb
 from .get_product_infos_query import GetProductInfosQuery, GetProductInfosQuerySymbology
 from .juniper_base_client import JuniperBaseClient
 from .list_accounts_query import ListAccountsQuery, ListAccountsQueryUser
-from .place_order import PlaceOrder, PlaceOrderOms
+from .place_order_mutation import PlaceOrderMutation, PlaceOrderMutationOms
 from .search_symbols_query import SearchSymbolsQuery, SearchSymbolsQuerySymbology
 from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
 from .subscribe_orderflow import (
@@ -863,33 +866,44 @@ class GraphQLClient(JuniperBaseClient):
         ):
             yield SubscribeCandles.model_validate(data).candles
 
-    async def cancel_order(self, order_id: str, **kwargs: Any) -> CancelOrderOms:
+    async def cancel_order_mutation(
+        self, order_id: str, **kwargs: Any
+    ) -> CancelOrderMutationOms:
         query = gql(
             """
-            mutation CancelOrder($orderId: OrderId!) {
+            mutation CancelOrderMutation($orderId: OrderId!) {
               oms {
                 cancelOrder(orderId: $orderId) {
-                  cancelId
-                  orderId
-                  recvTime
-                  status
-                  rejectReason
+                  ...CancelFields
                 }
               }
+            }
+
+            fragment CancelFields on Cancel {
+              cancelId
+              orderId
+              recvTime
+              status
+              rejectReason
             }
             """
         )
         variables: Dict[str, object] = {"orderId": order_id}
         response = await self.execute(
-            query=query, operation_name="CancelOrder", variables=variables, **kwargs
+            query=query,
+            operation_name="CancelOrderMutation",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return CancelOrder.model_validate(data).oms
+        return CancelOrderMutation.model_validate(data).oms
 
-    async def cancel_all_orders(self, **kwargs: Any) -> CancelAllOrdersOms:
+    async def cancel_all_orders_mutation(
+        self, **kwargs: Any
+    ) -> CancelAllOrdersMutationOms:
         query = gql(
             """
-            mutation CancelAllOrders {
+            mutation CancelAllOrdersMutation {
               oms {
                 cancelAllOrders
               }
@@ -898,12 +912,15 @@ class GraphQLClient(JuniperBaseClient):
         )
         variables: Dict[str, object] = {}
         response = await self.execute(
-            query=query, operation_name="CancelAllOrders", variables=variables, **kwargs
+            query=query,
+            operation_name="CancelAllOrdersMutation",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return CancelAllOrders.model_validate(data).oms
+        return CancelAllOrdersMutation.model_validate(data).oms
 
-    async def place_order(
+    async def place_order_mutation(
         self,
         symbol: str,
         dir: OrderDir,
@@ -919,10 +936,10 @@ class GraphQLClient(JuniperBaseClient):
         good_til_date: Union[Optional[datetime], UnsetType] = UNSET,
         execution_venue: Union[Optional[str], UnsetType] = UNSET,
         **kwargs: Any
-    ) -> PlaceOrderOms:
+    ) -> PlaceOrderMutationOms:
         query = gql(
             """
-            mutation PlaceOrder($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
+            mutation PlaceOrderMutation($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
               oms {
                 placeOrder(
                   id: $id
@@ -984,10 +1001,13 @@ class GraphQLClient(JuniperBaseClient):
             "executionVenue": execution_venue,
         }
         response = await self.execute(
-            query=query, operation_name="PlaceOrder", variables=variables, **kwargs
+            query=query,
+            operation_name="PlaceOrderMutation",
+            variables=variables,
+            **kwargs
         )
         data = self.get_data(response)
-        return PlaceOrder.model_validate(data).oms
+        return PlaceOrderMutation.model_validate(data).oms
 
     async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
         Union[

@@ -41,6 +41,14 @@ fragment OrderFields on Order {
   executionVenue
 }
 
+fragment CancelFields on Cancel {
+  cancelId
+  orderId
+  recvTime
+  status
+  rejectReason
+}
+
 
 fragment CandleFields on Candle {
   timestamp
@@ -639,26 +647,22 @@ subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $width
 }
 
 
-mutation CancelOrder($orderId: OrderId!) {
+mutation CancelOrderMutation($orderId: OrderId!) {
   oms {
     cancelOrder(orderId: $orderId) {
-      cancelId
-      orderId
-      recvTime
-      status
-      rejectReason
+      ...CancelFields
     }
   }
 }
 
-mutation CancelAllOrders {
+mutation CancelAllOrdersMutation {
   oms {
     cancelAllOrders
   }
 }
 
 
-mutation PlaceOrder($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
+mutation PlaceOrderMutation($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
   oms {
     placeOrder(id: $id, symbol: $symbol, dir: $dir, quantity: $quantity, trader: $trader, account: $account, orderType: $orderType, limitPrice: $limitPrice, postOnly: $postOnly, triggerPrice: $triggerPrice, timeInForce: $timeInForce, goodTilDate: $goodTilDate, executionVenue: $executionVenue) {
       ...OrderFields
