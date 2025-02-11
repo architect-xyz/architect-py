@@ -20,6 +20,7 @@ from .enums import (
     OrderSource,
     OrderStatus,
     OrderType,
+    SortTickersBy,
     TimeInForce,
 )
 from .fragments import (
@@ -97,10 +98,6 @@ from .get_open_orders_query import (
     GetOpenOrdersQuery,
     GetOpenOrdersQueryOms,
     GetOpenOrdersQueryOmsOpenOrders,
-)
-from .get_primary_execution_venue_query import (
-    GetPrimaryExecutionVenueQuery,
-    GetPrimaryExecutionVenueQuerySymbology,
 )
 from .get_product_info_query import (
     GetProductInfoQuery,
@@ -199,8 +196,6 @@ __all__ = [
     "GetOpenOrdersQuery",
     "GetOpenOrdersQueryOms",
     "GetOpenOrdersQueryOmsOpenOrders",
-    "GetPrimaryExecutionVenueQuery",
-    "GetPrimaryExecutionVenueQuerySymbology",
     "GetProductInfoQuery",
     "GetProductInfoQuerySymbology",
     "GetProductInfoQuerySymbologyProductInfo",
@@ -228,6 +223,7 @@ __all__ = [
     "ProductInfoFields",
     "SearchSymbolsQuery",
     "SearchSymbolsQuerySymbology",
+    "SortTickersBy",
     "SubscribeCandles",
     "SubscribeCandlesCandles",
     "SubscribeOrderflow",

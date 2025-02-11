@@ -57,6 +57,13 @@ enum OrderType {
   TAKE_PROFIT_LIMIT
 }
 
+enum SortTickersBy {
+  VOLUME_DESC
+  CHANGE_ASC
+  CHANGE_DESC
+  ABS_CHANGE_DESC
+}
+
 enum TimeInForce {
   GTC
   GTD
@@ -211,6 +218,11 @@ type AccountWithPermissions {
   permissions: AccountPermissions!
 }
 
+type AdminMutationRoot {
+  debugAsUser(user: String!): Boolean!
+  stopDebuggingAsUser: Boolean!
+}
+
 type ApiKey {
   subject: String!
   created: DateTime!
@@ -348,12 +360,13 @@ type MarketStatus {
 type MarketdataQueryRoot {
   historicalCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, start: DateTime!, end: DateTime!): [Candle!]!
   l2BookSnapshot(venue: MarketdataVenue!, symbol: String!): L2Book!
-  ticker(venue: MarketdataVenue, symbol: String!): Ticker!
-  tickers(venue: MarketdataVenue!, symbols: [String!]): [Ticker!]!
+  ticker(venue: MarketdataVenue!, symbol: String!): Ticker!
+  tickers(venue: MarketdataVenue!, symbols: [String!], offset: Int, limit: Int, sortBy: SortTickersBy): [Ticker!]!
   marketStatus(venue: MarketdataVenue!, symbol: String!): MarketStatus!
 }
 
 type MutationRoot {
+  admin: AdminMutationRoot!
   user: UserMutationRoot!
   oms: OmsMutationRoot!
 }
@@ -449,12 +462,11 @@ type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
-  executionInfo(symbol: String!, executionVenue: ExecutionVenue): ExecutionInfo!
-  getPrimaryExecutionVenue(symbol: String!): ExecutionVenue!
-  getExecutionVenues(symbol: String!): [ExecutionVenue!]!
+  executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
+  executionInfos(symbols: [String!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(searchString: String, underlying: String, executionVenue: ExecutionVenue, maxResults: Int, sortByVolumeDescGivenExecutionVenue: Boolean!): [String!]!
+  searchSymbols(search: String): [String!]!
 }
 
 type Ticker {
@@ -500,6 +512,7 @@ type UserMutationRoot {
   createApiKey: ApiKey!
   "Remove an API key"
   removeApiKey(apiKey: String!): Boolean!
+  enablePaperTrading: Boolean!
 }
 
 type UserQueryRoot {

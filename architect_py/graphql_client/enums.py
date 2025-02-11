@@ -57,6 +57,13 @@ class OrderType(str, Enum):
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
 
 
+class SortTickersBy(str, Enum):
+    VOLUME_DESC = "VOLUME_DESC"
+    CHANGE_ASC = "CHANGE_ASC"
+    CHANGE_DESC = "CHANGE_DESC"
+    ABS_CHANGE_DESC = "ABS_CHANGE_DESC"
+
+
 class TimeInForce(str, Enum):
     GTC = "GTC"
     GTD = "GTD"

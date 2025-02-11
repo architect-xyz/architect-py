@@ -126,13 +126,17 @@ fragment L2BookFields on L2Book {
   }
 }
 
-
-
-query SearchSymbolsQuery($searchString: String, $underlying: String, $executionVenue: ExecutionVenue, $maxResults: Int, $sortByVolumeDescGivenExecutionVenue: Boolean!) {
+query SearchSymbolsQuery($search: String) {
   symbology {
-    searchSymbols(searchString: $searchString, underlying: $underlying, executionVenue: $executionVenue, maxResults: $maxResults, sortByVolumeDescGivenExecutionVenue: $sortByVolumeDescGivenExecutionVenue)
+    searchSymbols(search: $search)
   }
 }
+
+# query SearchSymbolsQuery($searchString: String, $underlying: String, $executionVenue: ExecutionVenue, $maxResults: Int, $sortByVolumeDescGivenExecutionVenue: Boolean!) {
+#   symbology {
+#     searchSymbols(searchString: $searchString, underlying: $underlying, executionVenue: $executionVenue, maxResults: $maxResults, sortByVolumeDescGivenExecutionVenue: $sortByVolumeDescGivenExecutionVenue)
+#   }
+# }
 
 query GetProductInfoQuery($symbol: String!) {
   symbology {
@@ -165,7 +169,7 @@ query GetFutureSeriesQuery($seriesSymbol: String!) {
   }
 }
 
-query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue) {
+query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
   symbology {
     executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
       ...ExecutionInfoFields
@@ -284,11 +288,11 @@ query GetL2BookSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
   }
 }
 
-query GetPrimaryExecutionVenueQuery($symbol: String!) {
-  symbology {
-    getPrimaryExecutionVenue(symbol: $symbol)
-  }
-}
+# query GetPrimaryExecutionVenueQuery($symbol: String!) {
+#   symbology {
+#     getPrimaryExecutionVenue(symbol: $symbol)
+#   }
+# }
 
 
 # query GetAlgoStatus($orderId: OrderId!) {

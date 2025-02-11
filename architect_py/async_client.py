@@ -289,53 +289,9 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def search_symbols(
         self,
-        *,
         search_string: Optional[str] = None,
-        glob: Optional[str] = None,
-        regex: Optional[str] = None,
-        underlying: Optional[str] = None,
-        execution_venue: Optional[str] = None,
-        sort_by_volume_desc_given_execution_venue: bool = False,
-        max_results: Optional[int] = None,
     ) -> List[str]:
-
-        if execution_venue is None and sort_by_volume_desc_given_execution_venue:
-            raise ValueError(
-                "sort_by_volume_desc_given_execution_venue requires execution_venue"
-            )
-
-        if glob or regex:
-            markets = (
-                await self.search_symbols_query(
-                    sort_by_volume_desc_given_execution_venue,
-                    search_string,
-                    underlying,
-                    execution_venue,
-                    UNSET,
-                )
-            ).search_symbols
-
-            if glob is not None:
-                markets = [
-                    market for market in markets if fnmatch.fnmatch(market, glob)
-                ]
-
-            if regex is not None:
-                markets = [market for market in markets if re.match(regex, market)]
-
-            if isinstance(max_results, int):
-                markets = markets[:max_results]
-
-        else:
-            markets = (
-                await self.search_symbols_query(
-                    sort_by_volume_desc_given_execution_venue,
-                    search_string,
-                    underlying,
-                    execution_venue,
-                    max_results,
-                )
-            ).search_symbols
+        markets = (await self.search_symbols_query(search_string)).search_symbols
 
         return markets
 
@@ -361,7 +317,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         return futures_series.futures_series
 
     async def get_execution_info(
-        self, symbol: str, execution_venue: Optional[str] = None
+        self, symbol: str, execution_venue: str
     ) -> ExecutionInfoFields:
         execution_info = await self.get_execution_info_query(symbol, execution_venue)
         return execution_info.execution_info
@@ -434,10 +390,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             venue, account, order_id, from_inclusive, to_exclusive
         )
         return fills.historical_fills
-
-    async def get_primary_execution_venue(self, symbol: str) -> str:
-        exchange = await self.get_primary_execution_venue_query(symbol)
-        return exchange.get_primary_execution_venue
 
     async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
         # this is an alias for l1_book_snapshot
@@ -562,8 +514,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         odir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
+        execution_venue: str,
         order_type: OrderType = OrderType.LIMIT,
-        execution_venue: Optional[str] = None,
         time_in_force: TimeInForce = TimeInForce.DAY,
         good_til_date: Optional[datetime] = None,
         price_round_method: Optional[TickRoundMethod] = None,
@@ -612,7 +564,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         self,
         *,
         symbol: str,
-        execution_venue: Optional[str] = None,
+        execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,
         time_in_force: TimeInForce = TimeInForce.DAY,
@@ -625,9 +577,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             raise ValueError(
                 f"Failed to send market order with reason: no market details for {symbol}"
             )
-
-        if execution_venue is None:
-            execution_venue = await self.get_primary_execution_venue(symbol)
 
         # Check for GQL failures
         bbo_snapshot = await self.market_snapshot(execution_venue, symbol)
@@ -721,8 +670,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         [market] = [
             market
             for market in await self.search_symbols(
-                regex=f"^{root} {year}{month:02d}",
-                execution_venue="CME",
+                f"{root} {year}{month:02d}",
             )
         ]
 

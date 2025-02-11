@@ -51,10 +51,6 @@ from .get_market_snapshots_query import (
     GetMarketSnapshotsQueryMarketdata,
 )
 from .get_open_orders_query import GetOpenOrdersQuery, GetOpenOrdersQueryOms
-from .get_primary_execution_venue_query import (
-    GetPrimaryExecutionVenueQuery,
-    GetPrimaryExecutionVenueQuerySymbology,
-)
 from .get_product_info_query import GetProductInfoQuery, GetProductInfoQuerySymbology
 from .get_product_infos_query import GetProductInfosQuery, GetProductInfosQuerySymbology
 from .juniper_base_client import JuniperBaseClient
@@ -85,36 +81,18 @@ def gql(q: str) -> str:
 
 class GraphQLClient(JuniperBaseClient):
     async def search_symbols_query(
-        self,
-        sort_by_volume_desc_given_execution_venue: bool,
-        search_string: Union[Optional[str], UnsetType] = UNSET,
-        underlying: Union[Optional[str], UnsetType] = UNSET,
-        execution_venue: Union[Optional[str], UnsetType] = UNSET,
-        max_results: Union[Optional[int], UnsetType] = UNSET,
-        **kwargs: Any
+        self, search: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
     ) -> SearchSymbolsQuerySymbology:
         query = gql(
             """
-            query SearchSymbolsQuery($searchString: String, $underlying: String, $executionVenue: ExecutionVenue, $maxResults: Int, $sortByVolumeDescGivenExecutionVenue: Boolean!) {
+            query SearchSymbolsQuery($search: String) {
               symbology {
-                searchSymbols(
-                  searchString: $searchString
-                  underlying: $underlying
-                  executionVenue: $executionVenue
-                  maxResults: $maxResults
-                  sortByVolumeDescGivenExecutionVenue: $sortByVolumeDescGivenExecutionVenue
-                )
+                searchSymbols(search: $search)
               }
             }
             """
         )
-        variables: Dict[str, object] = {
-            "searchString": search_string,
-            "underlying": underlying,
-            "executionVenue": execution_venue,
-            "maxResults": max_results,
-            "sortByVolumeDescGivenExecutionVenue": sort_by_volume_desc_given_execution_venue,
-        }
+        variables: Dict[str, object] = {"search": search}
         response = await self.execute(
             query=query,
             operation_name="SearchSymbolsQuery",
@@ -239,14 +217,11 @@ class GraphQLClient(JuniperBaseClient):
         return GetFutureSeriesQuery.model_validate(data).symbology
 
     async def get_execution_info_query(
-        self,
-        symbol: str,
-        execution_venue: Union[Optional[str], UnsetType] = UNSET,
-        **kwargs: Any
+        self, symbol: str, execution_venue: str, **kwargs: Any
     ) -> GetExecutionInfoQuerySymbology:
         query = gql(
             """
-            query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue) {
+            query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
               symbology {
                 executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
                   ...ExecutionInfoFields
@@ -783,28 +758,6 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetL2BookSnapshotQuery.model_validate(data).marketdata
-
-    async def get_primary_execution_venue_query(
-        self, symbol: str, **kwargs: Any
-    ) -> GetPrimaryExecutionVenueQuerySymbology:
-        query = gql(
-            """
-            query GetPrimaryExecutionVenueQuery($symbol: String!) {
-              symbology {
-                getPrimaryExecutionVenue(symbol: $symbol)
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {"symbol": symbol}
-        response = await self.execute(
-            query=query,
-            operation_name="GetPrimaryExecutionVenueQuery",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetPrimaryExecutionVenueQuery.model_validate(data).symbology
 
     async def subscribe_trades(
         self, venue: str, symbol: str, **kwargs: Any

@@ -144,6 +144,10 @@ def autogenerate_protocol(cls) -> str:
         params = []
         keyword_only = False
         for param_name, param in signature.parameters.items():
+            if param_name == "self":
+                params.append("self")
+                continue
+
             param_type = format_type_hint_with_generics(param.annotation)
             if param.kind == inspect.Parameter.POSITIONAL_ONLY:
                 params.append(f"{param_name}: {param_type}")
