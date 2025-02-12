@@ -19,49 +19,54 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-import asyncio
 import fnmatch
 import logging
 import re
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import Any, AsyncIterator, Dict, List, Optional, Sequence, Union
+from typing import Any, AsyncIterator, Dict, List, Optional, Sequence
 from urllib.parse import urlparse
-from uuid import UUID
 
 import dns.asyncresolver
 import dns.name
 
 import grpc.aio
 
-from architect_py.graphql_client.base_model import UNSET, UnsetType
-from architect_py.graphql_client.get_market import GetMarketMarket
-from architect_py.graphql_client.search_markets import SearchMarketsFilterMarkets
+from architect_py.graphql_client.get_fills_query import (
+    GetFillsQueryFolioHistoricalFills,
+)
+from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
-from architect_py.utils.balance_and_positions import (
-    Balance,
-    BalancesAndPositions,
-    SimplePosition,
-)
-from architect_py.utils.dt import get_expiration_from_CME_name
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
-from .graphql_client.enums import CreateOrderType, OrderSource, ReferencePrice
-from .graphql_client.fragments import MarketFieldsKindExchangeMarketKind, OrderFields
-from .graphql_client.get_order import GetOrderOrder
-from .graphql_client.input_types import (
-    CreateMMAlgo,
-    CreateOrder,
-    CreatePovAlgo,
-    CreateSmartOrderRouterAlgo,
-    CreateSpreadAlgo,
-    CreateSpreadAlgoHedgeMarket,
-    CreateTimeInForce,
-    CreateTimeInForceInstruction,
-    CreateTwapAlgo,
+from .graphql_client.enums import (
+    OrderType,
+    TimeInForce,
 )
+from .graphql_client.fragments import (
+    AccountSummaryFields,
+    AccountWithPermissionsFields,
+    CancelFields,
+    ExecutionInfoFields,
+    L2BookFields,
+    MarketTickerFields,
+    OrderFields,
+    ProductInfoFields,
+)
+
+# from .graphql_client.input_types import (
+#     CreateMMAlgo,
+#     CreateOrder,
+#     CreatePovAlgo,
+#     CreateSmartOrderRouterAlgo,
+#     CreateSpreadAlgo,
+#     CreateSpreadAlgoHedgeMarket,
+#     CreateTimeInForce,
+#     CreateTimeInForceInstruction,
+#     CreateTwapAlgo,
+# )
 from .json_ws_client import JsonWsClient
 from .protocol.marketdata import (
     JsonMarketdataStub,
@@ -69,13 +74,12 @@ from .protocol.marketdata import (
     ExternalL2BookSnapshot,
     L2BookDiff,
     L2BookSnapshot,
-    L2BookSnapshotRequest,
     L2BookUpdate,
     L3BookSnapshot,
     SubscribeL1BookSnapshotsRequest,
     SubscribeL2BookUpdatesRequest,
 )
-from .protocol.symbology import Market, Product, Route, Venue
+from .protocol.symbology import Market
 
 from .utils.price_bands import price_band_pairs
 
@@ -231,12 +235,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 -----END CERTIFICATE-----
 """
         self.marketdata: Dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
-        self.route_by_id: Dict[UUID, Route] = {}
-        self.venue_by_id: Dict[UUID, Venue] = {}
-        self.product_by_id: Dict[UUID, Product] = {}
-        self.market_by_id: Dict[UUID, Market] = {}
-        # route => venue => base => quote => market
-        self.market_names_by_route: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
         self.l2_books: dict[str, L2Book] = {}
 
     async def grpc_channel(self, endpoint: str):
@@ -273,7 +271,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             )
         ):
             try:
-                self.grpc_jwt = await self.create_jwt()
+                self.grpc_jwt = (await self.create_jwt()).create_jwt
                 self.grpc_jwt_expiration = datetime.now() + timedelta(
                     hours=23
                 )  # TODO: actually inspect the JWT exp
@@ -285,219 +283,208 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     def configure_marketdata(self, *, cpty: str, url: str):
         self.marketdata[cpty] = JsonWsClient(url=url)
 
-    async def start_session(self):
-        await self.load_and_index_symbology()
-
-    async def get_market(self, id: str, **kwargs: Any) -> Optional[GetMarketMarket]:
-        # TODO: cache this function output
-        market = await super().get_market(id, **kwargs)
-        return market
-
-    async def search_markets(
+    async def search_symbols(
         self,
-        venue: str | None | UnsetType = UNSET,
-        base: str | None | UnsetType = UNSET,
-        quote: str | None | UnsetType = UNSET,
-        underlying: str | None | UnsetType = UNSET,
-        max_results: int | None | UnsetType = UNSET,
-        results_offset: int | None | UnsetType = UNSET,
-        search_string: str | None | UnsetType = UNSET,
-        only_favorites: bool | None | UnsetType = UNSET,
-        sort_by_volume_desc: bool | None | UnsetType = UNSET,
-        glob: str | None = None,
-        regex: str | None = None,
-        **kwargs: Any,
-    ) -> List[SearchMarketsFilterMarkets]:
-
-        if glob or regex:
-            markets = await super().search_markets(
-                venue,
-                base,
-                quote,
-                underlying,
-                UNSET,
-                results_offset,
-                search_string,
-                only_favorites,
-                sort_by_volume_desc,
-                **kwargs,
-            )
-
-            if glob is not None:
-                markets = [
-                    market for market in markets if fnmatch.fnmatch(market.name, glob)
-                ]
-
-            if regex is not None:
-                markets = [market for market in markets if re.match(regex, market.name)]
-
-            markets = markets[:max_results] if isinstance(max_results, int) else markets
-
-        else:
-            markets = await super().search_markets(
-                venue,
-                base,
-                quote,
-                underlying,
-                max_results,
-                results_offset,
-                search_string,
-                only_favorites,
-                sort_by_volume_desc,
-                **kwargs,
-            )
+        search_string: Optional[str] = None,
+    ) -> List[str]:
+        markets = (await self.search_symbols_query(search_string)).search_symbols
 
         return markets
 
-    async def load_and_index_symbology(self, cpty: Optional[str] = None):
-        # TODO: consider locking
-        self.route_by_id = {}
-        self.venue_by_id = {}
-        self.product_by_id = {}
-        self.market_by_id = {}
-        self.market_names_by_route = {}
-        if not self.no_gql:
-            logger.info("Loading symbology...")
-            markets = await self.search_markets()
-            logger.info("Loaded %d markets", len(markets))
-            for market in markets:
-                if market.route.name not in self.market_names_by_route:
-                    self.market_names_by_route[market.route.name] = {}
-                by_venue = self.market_names_by_route[market.route.name]
-                if market.venue.name not in by_venue:
-                    by_venue[market.venue.name] = {}
-                by_base = by_venue[market.venue.name]
+    async def get_product_info(self, symbol: str) -> Optional[ProductInfoFields]:
+        # this reduces the indirection count
+        info = await self.get_product_info_query(symbol)
+        return info.product_info
 
-                if isinstance(market.kind, MarketFieldsKindExchangeMarketKind):
-                    if market.kind.base.name not in by_base:
-                        by_base[market.kind.base.name] = {}
-                    by_quote = by_base[market.kind.base.name]
-                    by_quote[market.kind.quote.name] = market.name
-            logger.info("Indexed %d markets", len(markets))
-        # get symbology from marketdata clients
-        clients: list[JsonWsClient] = []
-        if cpty is None:
-            clients = list(self.marketdata.values())
-        elif cpty in self.marketdata:
-            clients = [self.marketdata[cpty]]
-        for client in clients:
-            snap = await client.get_symbology_snapshot()
-            for route in snap.routes:
-                self.route_by_id[route.id] = route
-            for venue in snap.venues:
-                self.venue_by_id[venue.id] = venue
-            for product in snap.products:
-                self.product_by_id[product.id] = product
-            for snap_market in snap.markets:
-                self.market_by_id[snap_market.id] = snap_market
-                route = self.route_by_id[snap_market.route]
-                if route.name not in self.market_names_by_route:
-                    self.market_names_by_route[route.name] = {}
-                by_venue = self.market_names_by_route[route.name]
-                venue = self.venue_by_id[snap_market.venue]
-                if venue.name not in by_venue:
-                    by_venue[venue.name] = {}
-                by_base = by_venue[venue.name]
-                base = self.product_by_id[snap_market.base()]
-                if base.name not in by_base:
-                    by_base[base.name] = {}
-                by_quote = by_base[base.name]
-                quote = self.product_by_id[snap_market.quote()]
-                by_quote[quote.name] = snap_market.name
+    async def get_product_infos(
+        self, symbols: list[str]
+    ) -> Sequence[ProductInfoFields]:
+        infos = await self.get_product_infos_query(symbols)
+        return infos.product_infos
 
-    # CR alee: make base, venue, route optional, and add optional quote.
-    # Have to think harder about efficient indexing.
-    def find_markets(
+    async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
+        notice = await self.get_first_notice_date_query(symbol)
+        if notice is None or notice.product_info is None:
+            return None
+        return notice.product_info.first_notice_date
+
+    async def get_future_series(self, series_symbol: str) -> list[str]:
+        futures_series = await self.get_future_series_query(series_symbol)
+        return futures_series.futures_series
+
+    async def get_execution_info(
+        self, symbol: str, execution_venue: str
+    ) -> ExecutionInfoFields:
+        execution_info = await self.get_execution_info_query(symbol, execution_venue)
+        return execution_info.execution_info
+
+    async def get_market_snapshots(
+        self, venue: str, symbols: list[str]
+    ) -> Sequence[MarketTickerFields]:
+        snapshots = await self.get_market_snapshots_query(venue, symbols)
+        return snapshots.tickers
+
+    async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
+        accounts = await self.list_accounts_query()
+        return accounts.accounts
+
+    async def get_account_summary(
+        self, account: str, venue: Optional[str] = None
+    ) -> AccountSummaryFields:
+        summary = await self.get_account_summary_query(account, venue)
+        return summary.account_summary
+
+    async def get_account_summaries(
         self,
-        base: str,
-        venue: str,
-        route: str = "DIRECT",
-    ) -> list[str]:
-        """
-        Lookup all markets matching the given criteria.  Requires the client to be initialized
-        and symbology to be loaded and indexed.
-        """
-        if route not in self.market_names_by_route:
-            return []
-        by_venue = self.market_names_by_route[route]
-        if venue not in by_venue:
-            return []
-        by_base = by_venue[venue]
-        if not by_base:
-            return []
-        by_quote = by_base.get(base, {})
-        return list(by_quote.values())
+        account: list[str],
+        venue: Optional[str] = None,
+        trader: Optional[str] = None,
+    ) -> Sequence[AccountSummaryFields]:
+        summaries = await self.get_account_summaries_query(venue, trader, account)
+        return summaries.account_summaries
+
+    async def get_open_orders(
+        self,
+        order_ids: list[str] = [],
+        venue: Optional[str] = None,
+        account: Optional[str] = None,
+        trader: Optional[str] = None,
+        symbol: Optional[str] = None,
+        parent_order_id: Optional[str] = None,
+    ) -> Sequence[OrderFields]:
+        orders = await self.get_open_orders_query(
+            venue, account, trader, symbol, parent_order_id, order_ids
+        )
+        return orders.open_orders
+
+    async def get_all_open_orders(self) -> Sequence[OrderFields]:
+        orders = await self.get_all_open_orders_query()
+        return orders.open_orders
+
+    async def get_historical_orders(
+        self,
+        from_inclusive: datetime,
+        to_exclusive: datetime,
+        venue: Optional[str] = None,
+        account: Optional[str] = None,
+        parent_order_id: Optional[str] = None,
+    ) -> Sequence[OrderFields]:
+        orders = await self.get_historical_orders_query(
+            from_inclusive, to_exclusive, venue, account, parent_order_id
+        )
+        return orders.historical_orders
+
+    async def get_fills(
+        self,
+        venue: Optional[str],
+        account: Optional[str],
+        order_id: Optional[str],
+        from_inclusive: Optional[datetime],
+        to_exclusive: Optional[datetime],
+    ) -> GetFillsQueryFolioHistoricalFills:
+        fills = await self.get_fills_query(
+            venue, account, order_id, from_inclusive, to_exclusive
+        )
+        return fills.historical_fills
+
+    async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
+        # this is an alias for l1_book_snapshot
+        return await self.l1_book_snapshot(venue, symbol)
+
+    async def market_snapshots(
+        self, venue: str, symbols: list[str]
+    ) -> Sequence[MarketTickerFields]:
+        # this is an alias for l1_book_snapshots
+        return await self.l1_book_snapshots(venue, symbols)
+
+    async def l1_book_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
+        snapshot = await self.get_market_snapshot_query(venue, symbol)
+        return snapshot.ticker
+
+    async def l1_book_snapshots(
+        self, venue: str, symbols: list[str]
+    ) -> Sequence[MarketTickerFields]:
+        snapshot = await self.get_market_snapshots_query(venue, symbols)
+        return snapshot.tickers
+
+    async def l2_book_snapshot(self, venue: str, symbol: str) -> L2BookFields:
+        l2_book = await self.get_l_2_book_snapshot_query(venue, symbol)
+        return l2_book.l_2_book_snapshot
+
+    # async def l2_book_snapshot(
+    #     self, endpoint: str, venue: Optional[str], symbol: str
+    # ) -> L2BookSnapshot:
+    #     channel = await self.grpc_channel(endpoint)
+    #     stub = JsonMarketdataStub(channel)
+    #     req = L2BookSnapshotRequest(venue=venue, symbol=symbol)
+    #     jwt = await self.refresh_grpc_credentials()
+    #     # TODO: use secure channel or force allow auth header over insecure channel
+    #     # credentials = None if jwt is None else grpc.access_token_call_credentials(jwt)
+    #     return await stub.L2BookSnapshot(
+    #         req, metadata=(("authorization", f"Bearer {jwt}"),)
+    #     )
 
     async def subscribe_l1_book_snapshots(
-        self, endpoint: str, market_ids: list[str] | None = None
+        self, endpoint: str, symbols: list[str] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
-        req = SubscribeL1BookSnapshotsRequest(market_ids=market_ids)
+        req = SubscribeL1BookSnapshotsRequest(symbols=symbols)
         return stub.SubscribeL1BookSnapshots(req)
 
-    async def l2_book_snapshot(self, endpoint: str, market_id: str) -> L2BookSnapshot:
-        channel = await self.grpc_channel(endpoint)
-        stub = JsonMarketdataStub(channel)
-        req = L2BookSnapshotRequest(market_id=market_id)
-        jwt = await self.refresh_grpc_credentials()
-        # TODO: use secure channel or force allow auth header over insecure channel
-        # credentials = None if jwt is None else grpc.access_token_call_credentials(jwt)
-        return await stub.L2BookSnapshot(
-            req, metadata=(("authorization", f"Bearer {jwt}"),)
-        )
-
     async def subscribe_l2_book_updates(
-        self, endpoint: str, market_id: str
+        self, endpoint: str, venue: Optional[str], symbol: str
     ) -> AsyncIterator[L2BookUpdate]:
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
-        req = SubscribeL2BookUpdatesRequest(market_id=market_id)
+        req = SubscribeL2BookUpdatesRequest(venue=venue, symbol=symbol)
         jwt = await self.refresh_grpc_credentials()
         return stub.SubscribeL2BookUpdates(
             req, metadata=(("authorization", f"Bearer {jwt}"),)
         )
 
     async def watch_l2_book(
-        self, endpoint: str, market_id: str
+        self, endpoint: str, venue: Optional[str], symbol: str
     ) -> AsyncIterator[tuple[int, int]]:
-        async for up in await self.subscribe_l2_book_updates(endpoint, market_id):
+        async for up in await self.subscribe_l2_book_updates(endpoint, venue, symbol):
             if isinstance(up, L2BookSnapshot):
-                self.l2_books[market_id] = L2Book(up)
+                self.l2_books[symbol] = L2Book(up)
             elif isinstance(up, L2BookDiff):
-                if market_id not in self.l2_books:
+                if symbol not in self.l2_books:
                     raise ValueError(
-                        f"received update before snapshot for L2 book {market_id}"
+                        f"received update before snapshot for L2 book {symbol}"
                     )
-                book = self.l2_books[market_id]
+                book = self.l2_books[symbol]
                 if (
                     up.sequence_id != book.sequence_id
                     or up.sequence_number != book.sequence_number + 1
                 ):
                     raise ValueError(
-                        f"received update out of order for L2 book {market_id}"
+                        f"received update out of order for L2 book {symbol}"
                     )
                 book.update_from_diff(up)
 
             yield (up.sequence_id, up.sequence_number)
 
     async def get_external_l2_book_snapshot(
-        self, market: str
+        self, symbol: str
     ) -> ExternalL2BookSnapshot:
-        [_, cpty] = market.split("*", 1)
+        # CR acho: fix this
+        [_, cpty] = symbol.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
-            market_id = Market.derive_id(market)
-            return await client.get_l2_book_snapshot(market_id)
+            market_id = Market.derive_id(symbol)
+            return await client.get_l2_book_snapshot(symbol)
         else:
             raise ValueError(f"cpty {cpty} not configured for L2 marketdata")
 
-    async def get_l3_book_snapshot(self, market: str) -> L3BookSnapshot:
-        [_, cpty] = market.split("*", 1)
+    async def get_l3_book_snapshot(self, symbol: str) -> L3BookSnapshot:
+        # CR acho: fix this
+        [_, cpty] = symbol.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
-            market_id = Market.derive_id(market)
-            return await client.get_l3_book_snapshot(market_id)
+            market_id = Market.derive_id(symbol)
+            return await client.get_l3_book_snapshot(symbol)
         else:
             raise ValueError(f"cpty {cpty} not configured for L3 marketdata")
 
@@ -516,149 +503,84 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
                 f"cpty {cpty} not configured for marketdata and no GQL server"
             )
 
-    async def get_open_orders(
-        self,
-        venue: Optional[str] = None,
-        route: Optional[str] = None,
-        cpty: Optional[str] = None,
-    ):
-        """
-        Get open orders known to the OMS.  Optionally filter by specific venue (e.g. "COINBASE")
-        or counterparty (e.g. "COINBASE/DIRECT").
-        """
-        cpty_venue = None
-        cpty_route = None
-        if cpty:
-            cpty_venue, cpty_route = cpty.split("/", 1)
-        open_orders = await self.get_all_open_orders()
-        filtered_orders = []
-        for oo in open_orders:
-            if venue and oo.order.market.venue.name != venue:
-                continue
-            if route and oo.order.market.route.name != route:
-                continue
-            if cpty_venue and oo.order.market.venue.name != cpty_venue:
-                continue
-            if cpty_route and oo.order.market.route.name != cpty_route:
-                continue
-            filtered_orders.append(oo)
-        return filtered_orders
-
     async def send_limit_order(
         self,
         *,
-        market: str,
+        symbol: str,
         odir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
-        order_type: CreateOrderType = CreateOrderType.LIMIT,
-        post_only: bool = False,
-        trigger_price: Optional[Decimal] = None,
-        time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.GTC,
+        execution_venue: str,
+        order_type: OrderType = OrderType.LIMIT,
+        time_in_force: TimeInForce = TimeInForce.DAY,
         good_til_date: Optional[datetime] = None,
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
-        quote_id: Optional[str] = None,
-        source: OrderSource = OrderSource.API,
-        wait_for_confirm: bool = False,
-    ) -> GetOrderOrder:
+        trader: Optional[str] = None,
+        post_only: bool = False,
+        trigger_price: Optional[Decimal] = None,
+    ) -> OrderFields:
         """
         `account` is optional depending on the final cpty it gets to
         For CME orders, the account is required
         """
+
         if price_round_method is not None:
-            market_info = await self.get_market(market)
-            if market_info is not None:
-                tick_size = Decimal(market_info.tick_size)
-                limit_price = nearest_tick(
-                    limit_price, method=price_round_method, tick_size=tick_size
-                )
+            execution_info = await self.get_execution_info(symbol, execution_venue)
+            if (tick_size := execution_info.tick_size) is not None:
+                if tick_size:
+                    limit_price = nearest_tick(
+                        limit_price, method=price_round_method, tick_size=tick_size
+                    )
             else:
-                raise ValueError(f"Could not find market information for {market}")
+                raise ValueError(f"Could not find market information for {symbol}")
 
         if not isinstance(trigger_price, Decimal) and trigger_price is not None:
             trigger_price = Decimal(trigger_price)
 
-        order: str = await self.send_order(
-            CreateOrder(
-                market=market,
-                dir=odir,
-                quantity=quantity,
-                account=account,
-                orderType=order_type,
-                limitPrice=limit_price,
-                postOnly=post_only,
-                triggerPrice=trigger_price,
-                timeInForce=CreateTimeInForce(
-                    instruction=time_in_force_instruction,
-                    goodTilDate=good_til_date,
-                ),
-                quoteId=quote_id,
-                source=source,
-            )
+        order: PlaceOrderMutationOms = await self.place_order_mutation(
+            symbol,
+            odir,
+            quantity,
+            order_type,
+            time_in_force,
+            None,
+            trader,
+            account,
+            limit_price,
+            post_only,
+            trigger_price,
+            good_til_date,
+            execution_venue,
         )
 
-        if wait_for_confirm:
-            i = 0
-            while i < 30:
-                order_info = await self.get_order(order_id=order)
-                if order_info is None:
-                    raise ValueError(
-                        "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
-                    )
-                else:
-                    if len(order_info.order_state) > 1:
-                        return order_info
-                    elif order_info.order_state[0] != "OPEN":
-                        return order_info
-                    else:
-                        i += 1
-                await asyncio.sleep(0.1)
-
-        order_return = await self.get_order(order)
-
-        if order_return is None:
-            raise ValueError(
-                "Unknown error occurred. Please double check GUI to ensure correct positions and orders. Please contact support if the issue persists."
-            )
-
-        return order_return
+        return order.place_order
 
     async def send_market_pro_order(
         self,
         *,
-        market: str,
+        symbol: str,
+        execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,
-        time_in_force_instruction: CreateTimeInForceInstruction = CreateTimeInForceInstruction.DAY,
+        time_in_force: TimeInForce = TimeInForce.DAY,
         account: Optional[str] = None,
-        source: OrderSource = OrderSource.API,
         fraction_through_market: Decimal = Decimal("0.001"),
-    ) -> GetOrderOrder:
-
-        market_details = await self.get_market(market)
-        if market_details is None:
-            raise ValueError(
-                f"Failed to send market order with reason: no market details for {market}"
-            )
+    ) -> OrderFields:
 
         # Check for GQL failures
-        bbo_snapshot = await self.get_market_snapshot(market)
+        bbo_snapshot = await self.market_snapshot(execution_venue, symbol)
         if bbo_snapshot is None:
             raise ValueError(
-                f"Failed to send market order with reason: no market snapshot for {market}"
+                f"Failed to send market order with reason: no market snapshot for {symbol}"
             )
 
-        if market_details.venue.name == "CME":
-            name: str = market_details.name.split(" ")[0]
-            price_band = price_band_pairs.get(name, None)
-        else:
-            price_band = None
+        price_band = price_band_pairs.get(symbol, None)
 
         if odir == OrderDir.BUY:
             if bbo_snapshot.ask_price is None:
                 raise ValueError(
-                    f"Failed to send market order with reason: no ask price for {market}"
+                    f"Failed to send market order with reason: no ask price for {symbol}"
                 )
             limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
 
@@ -669,7 +591,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         else:
             if bbo_snapshot.bid_price is None:
                 raise ValueError(
-                    f"Failed to send market order with reason: no bid price for {market}"
+                    f"Failed to send market order with reason: no bid price for {symbol}"
                 )
             limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
             if price_band and bbo_snapshot.last_price:
@@ -680,221 +602,52 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         tick_round_method = (
             TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
         )
-        limit_price = nearest_tick(
-            Decimal(limit_price), tick_round_method, Decimal(market_details.tick_size)
+
+        execution_info = await self.get_execution_info(
+            execution_venue=execution_venue, symbol=symbol
         )
 
+        if (
+            execution_info is not None
+            and (tick_size := execution_info.tick_size) is not None
+        ):
+            limit_price = nearest_tick(
+                Decimal(limit_price),
+                tick_round_method,
+                tick_size=tick_size,
+            )
+
         return await self.send_limit_order(
-            market=market,
+            symbol=symbol,
+            execution_venue=execution_venue,
             odir=odir,
             quantity=quantity,
             account=account,
-            order_type=CreateOrderType.LIMIT,
+            order_type=OrderType.LIMIT,
             limit_price=limit_price,
-            time_in_force_instruction=time_in_force_instruction,
-            source=source,
+            time_in_force=time_in_force,
         )
 
-    async def send_twap_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        odir: OrderDir,
-        quantity: Decimal,
-        interval_ms: int,
-        reject_lockout_ms: int,
-        end_time: datetime,
-        account: Optional[str] = None,
-        take_through_frac: Optional[Decimal] = None,
-    ) -> str:
-        return await self.send_twap_algo_request(
-            CreateTwapAlgo(
-                name=name,
-                market=market,
-                dir=odir,
-                quantity=quantity,
-                intervalMs=interval_ms,
-                rejectLockoutMs=reject_lockout_ms,
-                endTime=end_time,
-                account=account,
-                takeThroughFrac=take_through_frac,
-            )
-        )
+    async def cancel_order(self, order_id: str) -> CancelFields:
+        cancel = await self.cancel_order_mutation(order_id)
+        return cancel.cancel_order
 
-    async def send_pov_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        odir: OrderDir,
-        target_volume_frac: Decimal,
-        min_order_quantity: Decimal,
-        max_quantity: Decimal,
-        order_lockout_ms: int,
-        end_time: datetime,
-        account: Optional[str] = None,
-        take_through_frac: Optional[Decimal] = None,
-    ) -> str:
-        return await self.send_pov_algo_request(
-            CreatePovAlgo(
-                name=name,
-                market=market,
-                dir=odir,
-                targetVolumeFrac=target_volume_frac,
-                minOrderQuantity=min_order_quantity,
-                maxQuantity=max_quantity,
-                orderLockoutMs=order_lockout_ms,
-                endTime=end_time,
-                account=account,
-                takeThroughFrac=take_through_frac,
-            )
-        )
+    async def cancel_all_orders(self) -> bool:
+        b = await self.cancel_all_orders_mutation()
+        return b.cancel_all_orders
 
-    async def send_smart_order_router_algo(
-        self,
-        *,
-        markets: list[str],
-        base: str,
-        quote: str,
-        odir: OrderDir,
-        limit_price: Decimal,
-        target_size: Decimal,
-        execution_time_limit_ms: int,
-    ) -> str:
-        return await self.send_smart_order_router_algo_request(
-            CreateSmartOrderRouterAlgo(
-                markets=markets,
-                base=base,
-                quote=quote,
-                dir=odir,
-                limitPrice=limit_price,
-                targetSize=target_size,
-                executionTimeLimitMs=execution_time_limit_ms,
-            )
-        )
+    @staticmethod
+    def get_expiration_from_CME_name(name: str) -> date:
+        _, d, *_ = name.split(" ")
+        return datetime.strptime(d, "%Y%m%d").date()
 
-    async def preview_smart_order_router(
-        self,
-        *,
-        markets: list[str],
-        base: str,
-        quote: str,
-        odir: OrderDir,
-        limit_price: Decimal,
-        target_size: Decimal,
-        execution_time_limit_ms: int,
-    ) -> Optional[Sequence[OrderFields]]:
-        algo = await self.preview_smart_order_router_algo_request(
-            CreateSmartOrderRouterAlgo(
-                markets=markets,
-                base=base,
-                quote=quote,
-                dir=odir,
-                limitPrice=limit_price,
-                targetSize=target_size,
-                executionTimeLimitMs=execution_time_limit_ms,
-            )
-        )
-
-        if algo:
-            return algo.orders
-        else:
-            return None
-
-    async def send_mm_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        account: Optional[str] = None,
-        buy_quantity: Decimal,
-        sell_quantity: Decimal,
-        min_position: Decimal,
-        max_position: Decimal,
-        max_improve_bbo: Decimal,
-        position_tilt: Decimal,
-        reference_price: ReferencePrice,
-        ref_dist_frac: Decimal,
-        tolerance_frac: Decimal,
-        fill_lockout_ms: int,
-        order_lockout_ms: int,
-        reject_lockout_ms: int,
-    ):
-        return await self.send_mm_algo_request(
-            CreateMMAlgo(
-                name=name,
-                market=market,
-                account=account,
-                buyQuantity=buy_quantity,
-                sellQuantity=sell_quantity,
-                minPosition=min_position,
-                maxPosition=max_position,
-                maxImproveBbo=max_improve_bbo,
-                positionTilt=position_tilt,
-                referencePrice=reference_price,
-                refDistFrac=ref_dist_frac,
-                toleranceFrac=tolerance_frac,
-                fillLockoutMs=fill_lockout_ms,
-                orderLockoutMs=order_lockout_ms,
-                rejectLockoutMs=reject_lockout_ms,
-            )
-        )
-
-    async def send_spread_algo(
-        self,
-        *,
-        name: str,
-        market: str,
-        buy_quantity: Decimal,
-        sell_quantity: Decimal,
-        min_position: Decimal,
-        max_position: Decimal,
-        max_improve_bbo: Decimal,
-        position_tilt: Decimal,
-        reference_price: ReferencePrice,
-        ref_dist_frac: Decimal,
-        tolerance_frac: Decimal,
-        hedge_market: CreateSpreadAlgoHedgeMarket,
-        fill_lockout_ms: int,
-        order_lockout_ms: int,
-        reject_lockout_ms: int,
-        account: Optional[str] = None,
-    ) -> str:
-        return await self.send_spread_algo_request(
-            CreateSpreadAlgo(
-                name=name,
-                market=market,
-                account=account,
-                buyQuantity=buy_quantity,
-                sellQuantity=sell_quantity,
-                minPosition=min_position,
-                maxPosition=max_position,
-                maxImproveBbo=max_improve_bbo,
-                positionTilt=position_tilt,
-                referencePrice=reference_price,
-                refDistFrac=ref_dist_frac,
-                toleranceFrac=tolerance_frac,
-                hedgeMarket=hedge_market,
-                fillLockoutMs=fill_lockout_ms,
-                orderLockoutMs=order_lockout_ms,
-                rejectLockoutMs=reject_lockout_ms,
-            )
-        )
-
-    async def get_cme_futures_series(
-        self, series: str
-    ) -> list[tuple[date, SearchMarketsFilterMarkets]]:
-        markets = await self.search_markets(
-            search_string=series,
-            venue="CME",
+    async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
+        markets = await self.get_future_series(
+            series,
         )
 
         filtered_markets = [
-            (get_expiration_from_CME_name(market.kind.base.name), market)
-            for market in markets
-            if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
-            and market.kind.base.name.startswith(series)
+            (self.get_expiration_from_CME_name(market), market) for market in markets
         ]
 
         filtered_markets.sort(key=lambda x: x[0])
@@ -903,129 +656,15 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def get_cme_future_from_root_month_year(
         self, root: str, month: int, year: int
-    ) -> SearchMarketsFilterMarkets:
+    ) -> str:
         [market] = [
             market
-            for market in await self.search_markets(
-                regex=f"^{root} {year}{month:02d}",
-                venue="CME",
+            for market in await self.search_symbols(
+                f"{root} {year}{month:02d}",
             )
-            if isinstance(market.kind, MarketFieldsKindExchangeMarketKind)
-            and market.kind.base.name.startswith(root)
         ]
 
         return market
-
-    async def get_balances_and_positions(self) -> list["BalancesAndPositions"]:
-        # returns data in the shape account => venue => { usd_balance: xxx, ...usd margin info, then product: balance, etc. }
-        summaries = await self.get_account_summaries()
-
-        bps = []
-
-        for summary in summaries:
-            for account in summary.by_account:
-                if account.account is None:
-                    continue
-                name = account.account.name
-
-                usd = Balance.new_empty()
-                for balance in account.balances:
-                    if balance.product is None:
-                        continue
-                    if balance.product.name == "USD":
-                        usd_amount = Decimal(balance.amount) if balance.amount else None
-                        total_margin = (
-                            Decimal(balance.total_margin)
-                            if balance.total_margin
-                            else None
-                        )
-                        position_margin = (
-                            Decimal(balance.position_margin)
-                            if balance.position_margin
-                            else None
-                        )
-                        purchasing_power = (
-                            Decimal(balance.purchasing_power)
-                            if balance.purchasing_power
-                            else None
-                        )
-                        cash_excess = (
-                            Decimal(balance.cash_excess)
-                            if balance.cash_excess
-                            else None
-                        )
-                        yesterday_balance = (
-                            Decimal(balance.yesterday_balance)
-                            if balance.yesterday_balance
-                            else None
-                        )
-
-                        usd = Balance(
-                            usd_amount,
-                            total_margin,
-                            position_margin,
-                            purchasing_power,
-                            cash_excess,
-                            yesterday_balance,
-                        )
-                        break
-
-                positions = {}
-                for position in account.positions:
-                    if position.market is None:
-                        continue
-
-                    quantity = Decimal(position.quantity) if position.quantity else None
-                    if quantity:
-                        quantity = (
-                            quantity if position.dir == OrderDir.SELL else -quantity
-                        )
-                    average_price = (
-                        position.average_price if position.average_price else None
-                    )
-
-                    if isinstance(
-                        position.market.kind, MarketFieldsKindExchangeMarketKind
-                    ):
-                        if position.market.kind.base.mark_usd is None:
-                            mark = None
-                        else:
-                            try:
-                                mark = Decimal(position.market.kind.base.mark_usd)
-                            except Exception:
-                                mark = None
-                    else:
-                        mark = None
-
-                    positions[position.market.name] = SimplePosition(
-                        quantity, average_price, mark
-                    )
-
-                bps.append(
-                    BalancesAndPositions(
-                        name,
-                        usd_balance=usd,
-                        positions=positions,
-                    )
-                )
-        return bps
-
-    async def get_cme_first_notice_date(self, market: str) -> Optional[date]:
-        notice = await self.get_first_notice_date(market)
-        if notice is None or notice.first_notice_date is None:
-            return None
-        return notice.first_notice_date.date()
-
-    async def cancel_all_orders(
-        self, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
-    ) -> Optional[str]:
-        # TODO: add back the graphql cancel_all_orders once fixed
-        orders = await self.get_open_orders()
-
-        for order in orders:
-            await self.cancel_order(order.order_id)
-
-        return None
 
 
 # TODO: move this somewhere else

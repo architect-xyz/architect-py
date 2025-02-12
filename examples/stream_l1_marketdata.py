@@ -8,7 +8,7 @@ from .common import create_async_client
 
 async def main():
     c: AsyncClient = create_async_client()
-    markets = await c.search_markets(venue="BINANCE-FUTURES-USD-M")
+    markets = await c.search_symbols(execution_venue="BINANCE-FUTURES-USD-M")
     markets_by_id = {}
     for market in markets:
         markets_by_id[UUID(market.id)] = market
@@ -39,7 +39,7 @@ async def main():
     """
     async for snap in c.subscribe_l1_book_snapshots(
         "binance-futures-usd-m.marketdata.architect.co",
-        market_ids=[
+        symbols=[
             "POPCAT-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT"
         ],
     ):

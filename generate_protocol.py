@@ -2,7 +2,8 @@ import inspect
 from decimal import Decimal
 from enum import Enum
 
-from typing import Any, get_args, get_origin, Protocol, Union
+from typing import Any, Sequence, get_args, get_origin, Union
+import collections.abc
 
 import architect_py.async_client
 
@@ -20,13 +21,20 @@ def format_type_hint_with_generics(type_hint) -> str:
     origin = get_origin(type_hint)
     if origin is Union:
         args = get_args(type_hint)
-        if len(args) == 2 and type(None) in args:
-            # Handle Optional[X]
-            non_none_type = args[0] if args[1] is type(None) else args[1]
-            return f"Optional[{format_type_hint_with_generics(non_none_type)}]"
+        if type(None) in args:
+            if len(args) == 2:
+                # Handle Optional[X]
+                non_none_type = args[0] if args[1] is type(None) else args[1]
+                return f"Optional[{format_type_hint_with_generics(non_none_type)}]"
         return (
             f"Union[{', '.join(format_type_hint_with_generics(arg) for arg in args)}]"
-        )
+        ).replace("NoneType", "None")
+
+    elif origin in (Sequence, collections.abc.Sequence):
+        args = get_args(type_hint)
+        if args:
+            return f"Sequence[{format_type_hint_with_generics(args[0])}]"
+        return "Sequence[Any]"
 
     elif origin is list:
         args = get_args(type_hint)
@@ -62,6 +70,7 @@ def autogenerate_protocol(cls) -> str:
     """
     protocol_name = f"{cls.__name__}Protocol"
     methods = {}
+    method_decorators = {}
     attributes = {}
 
     # Inspect class members
@@ -72,6 +81,14 @@ def autogenerate_protocol(cls) -> str:
             # Collect methods
             signature = inspect.signature(member)
             methods[name] = signature
+
+            raw_member = inspect.getattr_static(cls, name)
+            decorators = []
+            if isinstance(raw_member, staticmethod):
+                decorators.append("@staticmethod")
+            elif isinstance(raw_member, classmethod):
+                decorators.append("@classmethod")
+            method_decorators[name] = decorators
         elif not inspect.isroutine(member):
             # Collect attributes
             attributes[name] = getattr(cls, name, Any)
@@ -99,12 +116,11 @@ def autogenerate_protocol(cls) -> str:
         "# It is not used for anything else",
         "# For maintainers: ensure that the types in this file are correct for correct type hinting",
         "\n",
-        "from types import NoneType",
-        "import architect_py.graphql_client",
+        "from typing import Union",
         "from architect_py.graphql_client import *",
         "from architect_py.async_client import *",
+        "from architect_py.graphql_client.base_model import UnsetType, UNSET",
         "from httpx import Response",
-        "from dns.name import Name",
         "\n",
         f"class {protocol_name}:",
     ]
@@ -119,9 +135,19 @@ def autogenerate_protocol(cls) -> str:
     for name, signature in methods.items():
         if "subscribe" in name:
             continue
+
+        # for decorators like @staticmethod and @classmethod
+        if name in method_decorators:
+            for deco in method_decorators[name]:
+                protocol_lines.append(f"    {deco}")
+
         params = []
         keyword_only = False
         for param_name, param in signature.parameters.items():
+            if param_name == "self":
+                params.append("self")
+                continue
+
             param_type = format_type_hint_with_generics(param.annotation)
             if param.kind == inspect.Parameter.POSITIONAL_ONLY:
                 params.append(f"{param_name}: {param_type}")

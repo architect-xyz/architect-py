@@ -1,107 +1,58 @@
-fragment ProductFields on Product {
+fragment ProductInfoFields on ProductInfo {
   __typename
-  id
-  name
-  kind
-  markUsd
+  symbol
+  productType
+  underlying
+  multiplier
+  derivativeKind
+  firstNoticeDate
 }
 
-fragment MarketFields on Market {
-  __typename
-  venue {
-    id
-    name
-  }
-  exchangeSymbol
-  id
-  cmeProductGroupInfo {
-    productName
-    securityType
-    category
-    subCategory
-    mainFraction
-    priceBand
-  }
-  kind {
-    ... on ExchangeMarketKind {
-      __typename
-      base {
-        ...ProductFields
-      }
-      quote {
-        ...ProductFields
-      }
-    }
-    ... on PoolMarketKind {
-      __typename
-      products {
-        ...ProductFields
-      }
-    }
-  }
-  name
+fragment ExecutionInfoFields on ExecutionInfo {
+  symbol
+  executionVenue
   tickSize
   stepSize
   minOrderQuantity
   minOrderQuantityUnit
-  route {
-    id
-    name
-  }
-  isFavorite
+  isDelisted
 }
-
 
 fragment OrderFields on Order {
   id
-  marketId
-  market {
-    ...MarketFields
-  }
+  parentId
+  recvTime
+  status
+  rejectReason
+  symbol
+  trader
+  account
   dir
   quantity
-  accountId
-  orderType {
-    __typename
-    ... on LimitOrderType {
-      limitPrice
-      postOnly
-    }
-    ... on StopLossLimitOrderType {
-      limitPrice
-      triggerPrice
-    }
-    ... on TakeProfitLimitOrderType {
-      limitPrice
-      triggerPrice
-    }
-  }
-  timeInForce {
-    instruction
-    goodTilDate
-  }
-  quoteId
+  filledQuantity
+  averageFillPrice
+  orderType
+  limitPrice
+  postOnly
+  triggerPrice
+  timeInForce
+  goodTilDate
   source
+  executionVenue
+}
+
+fragment CancelFields on Cancel {
+  cancelId
+  orderId
+  recvTime
+  status
+  rejectReason
 }
 
 
-fragment MarketSnapshotFields on MarketSnapshot {
-  __typename
-  marketId
-  market {
-    name
-  }
-  high24h
-  lastPrice
-  low24h
-  volume24h
-  open24h
-  bidPrice
-  askPrice
-}
-
-fragment CandleFields on CandleV1 {
-  time
+fragment CandleFields on Candle {
+  timestamp
+  width
   open
   high
   low
@@ -109,657 +60,618 @@ fragment CandleFields on CandleV1 {
   volume
 }
 
-fragment OrderLogFields on OrderLog {
-  __typename
-  timestamp
-  order {
+fragment AccountWithPermissionsFields on AccountWithPermissions {
+  account {
     id
-    market {
-      ...MarketFields
-    }
-    dir
+    name
+  }
+  trader
+  permissions {
+    list
+    view
+    trade
+    reduceOrClose
+    setLimits
+  }
+}
+
+fragment AccountSummaryFields on AccountSummary {
+  account
+  timestamp
+  balances {
+    product
+    balance
+  }
+  positions {
+    symbol
     quantity
-    orderType {
-      __typename
-      ... on LimitOrderType {
-        limitPrice
-      }
-      ... on StopLossLimitOrderType {
-        limitPrice
-        triggerPrice
-      }
-      ... on TakeProfitLimitOrderType {
-        limitPrice
-        triggerPrice
-      }
-    }
-    timeInForce {
-      instruction
-      goodTilDate
-    }
-  }
-  orderState
-  filledQty
-  avgFillPrice
-  rejectReason
-}
-
-fragment AccountSummariesFields on AccountSummaries {
-  snapshotTs
-  byAccount {
-    account {
-      id
-      name
-    }
-    balances {
-      product {
-        ...ProductFields
-      }
-      account {
-        id
-        name
-      }
-      venue {
-        id
-        name
-      }
-      amount
-      totalMargin
-      positionMargin
-      purchasingPower
-      cashExcess
-      yesterdayBalance
-    }
-    positions {
-      account {
-        id
-        name
-      }
-      venue {
-        id
-        name
-      }
-      market {
-        ...MarketFields
-      }
-      dir
-      quantity
-      averagePrice
-      tradeDate
-      tradeTime
-    }
-  }
-}
-
-query GetMarket($id: MarketId!) {
-  market(id: $id) {
-    ...MarketFields
-  }
-}
-
-query GetMarkets($ids: [MarketId!]!) {
-  markets(id: $ids) {
-    ...MarketFields
-  }
-}
-
-# [2024-09-23] deprecated in favor of SearchMarkets
-query GetFilteredMarkets(
-  $venue: Str
-  $base: Str
-  $quote: Str
-  $underlying: Str
-  $maxResults: Int
-  $resultsOffset: Int
-  $searchString: Str
-  $onlyFavorites: Boolean
-  $sortByVolumeDesc: Boolean
-) {
-  filterMarkets(
-    filter: {
-      venue: $venue
-      base: $base
-      quote: $quote
-      underlying: $underlying
-      maxResults: $maxResults
-      resultsOffset: $resultsOffset
-      searchString: $searchString
-      onlyFavorites: $onlyFavorites
-      sortByVolumeDesc: $sortByVolumeDesc
-    }
-  ) {
-    ...MarketFields
-  }
-}
-
-query SearchMarkets(
-  $venue: Str
-  $base: Str
-  $quote: Str
-  $underlying: Str
-  $maxResults: Int
-  $resultsOffset: Int
-  $searchString: Str
-  $onlyFavorites: Boolean
-  $sortByVolumeDesc: Boolean
-) {
-  filterMarkets(
-    filter: {
-      venue: $venue
-      base: $base
-      quote: $quote
-      underlying: $underlying
-      maxResults: $maxResults
-      resultsOffset: $resultsOffset
-      searchString: $searchString
-      onlyFavorites: $onlyFavorites
-      sortByVolumeDesc: $sortByVolumeDesc
-    }
-  ) {
-    ...MarketFields
-  }
-}
-
-query GetFirstNoticeDate($id: MarketId!) {
-  market(id: $id) {
-    firstNoticeDate
-  }
-}
-
-query GetMarketSnapshot($id: MarketId!) {
-  marketSnapshot(market: $id) {
-    ...MarketSnapshotFields
-  }
-}
-
-query GetAllMarketSnapshots {
-  marketsSnapshots {
-    ...MarketSnapshotFields
-  }
-}
-
-query GetAccountSummaries {
-  accountSummaries {
-    ...AccountSummariesFields
-  }
-}
-
-query GetAccountSummariesForCpty($venue: VenueId!, $route: RouteId!) {
-  accountSummariesForCpty(venue: $venue, route: $route) {
-    ...AccountSummariesFields
-  }
-}
-
-# [2024-07-01] deprecated in favor of GetAccountSummariesForCpty
-query GetBalancesForCpty($venue: VenueId!, $route: RouteId!) {
-  accountSummariesForCpty(venue: $venue, route: $route) {
-    snapshotTs
-    byAccount {
-      balances {
-        product {
-          ...ProductFields
-        }
-        amount
-      }
-    }
-  }
-}
-
-query GetAllOpenOrders {
-  openOrders {
-    ...OrderLogFields
-  }
-}
-
-query GetOutOrders($fromInclusive: DateTime!, $toExclusive: DateTime!) {
-  outedOrders(fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
-    ...OrderLogFields
-  }
-}
-
-query GetOrder($orderId: OrderId!) {
-  order(orderId: $orderId) {
-    ...OrderLogFields
-  }
-}
-
-query GetAlgoStatus($orderId: OrderId!) {
-  algoStatus(orderId: $orderId) {
-    orderId
-    order {
-      orderId
-      trader
-      account
-      algo
-      parentOrderId
-      markets
-    }
-    creationTime
-    status
-    lastStatusChange
-    fractionComplete
-  }
-}
-
-query GetAlgoOrder($orderId: OrderId!) {
-  algoOrder(orderId: $orderId) {
-    orderId
-    trader
-    account
-    algo
-    parentOrderId
-    markets
-  }
-}
-
-
-query GetTwapStatus($orderId: OrderId!) {
-  twapStatus(orderId: $orderId) {
-    orderId
-    order {
-      name
-      orderId
-      marketId
-      dir
-      quantity
-      endTime
-      accountId
-      intervalMs
-      rejectLockoutMs
-      takeThroughFrac
-    }
-    creationTime
-    status
-    fractionComplete
-    realizedTwap
-    quantityFilled
-  }
-}
-
-query GetTwapOrder($orderId: OrderId!) {
-  twapOrder(orderId: $orderId) {
-    name
-    orderId
-    marketId
-    dir
-    quantity
-    endTime
-    accountId
-    intervalMs
-    rejectLockoutMs
-    takeThroughFrac
-  }
-}
-
-query GetPovStatus($orderId: OrderId!) {
-  povStatus(orderId: $orderId) {
-    orderId
-    order {
-      name
-      orderId
-      marketId
-      dir
-      targetVolumeFrac
-      minOrderQuantity
-      maxQuantity
-      endTime
-      accountId
-      takeThroughFrac
-    }
-    creationTime
-    status
-    fractionComplete
-    realizedVolumeFrac
-    marketVolume
-    quantityFilled
-  }
-}
-
-query GetPovOrder($orderId: OrderId!) {
-  povOrder(orderId: $orderId) {
-    name
-    orderId
-    marketId
-    dir
-    targetVolumeFrac
-    minOrderQuantity
-    maxQuantity
-    endTime
-    accountId
-    takeThroughFrac
-  }
-}
-
-
-query GetSmartOrderRouterStatus($orderId: OrderId!) {
-  smartOrderRouterStatus(orderId: $orderId) {
-    status {
-      orderId
-      order {
-        orderId
-        trader
-        account
-        algo
-        parentOrderId
-        markets
-      }
-      creationTime
-      status
-      lastStatusChange
-      fractionComplete
-    }
-    order {
-      orderId
-      markets {
-        id
-      }
-      # base
-      # quote
-      dir
-      limitPrice
-      targetSize
-      executionTimeLimitMs
-      parentOrderId
-    }
-  }
-}
-
-
-query GetSmartOrderRouterOrder($orderId: OrderId!) {
-  smartOrderRouterOrder(orderId: $orderId) {
-    orderId
-    markets {
-      id
-    }
-    # base
-    # quote
-    dir
-    limitPrice
-    targetSize
-    executionTimeLimitMs
-    parentOrderId
-  }
-}
-
-
-query GetMmStatus($orderId: OrderId!) {
-  mmAlgoStatus(orderId: $orderId) {
-    orderId
-    order {
-      name
-      orderId
-      marketId
-      # market
-      quantityBuy
-      quantitySell
-      minPosition
-      maxPosition
-      maxImproveBbo
-      positionTilt
-      referencePrice
-      refDistFrac
-      toleranceFrac
-      account
-    }
-    creationTime
-    status
-    position
-    hedgePosition
-    missRatio
-    effectiveSpread
-    buyStatus {
-      # lastDecision
-      lastOrderTime
-      lastFillTime
-      lastRejectTime
-      openOrder {
-        orderId
-        price
-        quantity
-        cancelPending
-      }
-      referencePrice
-    }
-    sellStatus {
-      # lastDecision
-      lastOrderTime
-      lastFillTime
-      lastRejectTime
-      openOrder {
-        orderId
-        price
-        quantity
-        cancelPending
-      }
-      referencePrice
-    }
-    kind
-  }
-}
-
-
-query GetMmOrder($orderId: OrderId!) {
-  mmAlgoOrder(orderId: $orderId) {
-    name
-    orderId
-    marketId
-    quantityBuy
-    quantitySell
-    minPosition
-    maxPosition
-    maxImproveBbo
-    positionTilt
-    referencePrice
-    refDistFrac
-    toleranceFrac
-    account
-  }
-}
-
-
-query GetSpreadStatus($orderId: OrderId!) {
-  spreadAlgoStatus(orderId: $orderId) {
-    orderId
-    order {
-      name
-      orderId
-      marketId
-      # market
-      quantityBuy
-      quantitySell
-      minPosition
-      maxPosition
-      maxImproveBbo
-      positionTilt
-      referencePrice
-      refDistFrac
-      toleranceFrac
-      account
-    }
-    creationTime
-    status
-    position
-    hedgePosition
-    missRatio
-    effectiveSpread
-    buyStatus {
-      # lastDecision
-      lastOrderTime
-      lastFillTime
-      lastRejectTime
-      openOrder {
-        orderId
-        price
-        quantity
-        cancelPending
-      }
-      referencePrice
-    }
-    sellStatus {
-      # lastDecision
-      lastOrderTime
-      lastFillTime
-      lastRejectTime
-      openOrder {
-        orderId
-        price
-        quantity
-        cancelPending
-      }
-      referencePrice
-    }
-    kind
-  }
-}
-
-
-query GetSpreadOrder($orderId: OrderId!) {
-  spreadAlgoOrder(orderId: $orderId) {
-    name
-    orderId
-    marketId
-    quantityBuy
-    quantitySell
-    minPosition
-    maxPosition
-    maxImproveBbo
-    positionTilt
-    referencePrice
-    refDistFrac
-    toleranceFrac
-    account
-  }
-}
-
-
-query GetFills($venue: VenueId, $route: RouteId, $base: ProductId, $quote: ProductId) {
-  fills(venue: $venue, route: $route, base: $base, quote: $quote) {
-    normal {
-      kind
-      fillId
-      orderId
-      market {
-        ...MarketFields
-      }
-      dir
-      price
-      quantity
-      recvTime
-      tradeTime
-    }
-  }
-}
-
-subscription SubscribeTrades($market: MarketId!) {
-  trades(market: $market) {
-    time
-    price
-    size
-    direction
-  }
-}
-
-subscription SubscribeCandles($id: MarketId!, $width: CandleWidth!) {
-  candles(market: $id, candleWidth: $width) {
-    ...CandleFields
-  }
-}
-
-subscription FillsSubscription {
-  fills {
-    dir
-    fillId
-    kind
-    marketId
-    orderId
-    price
-    quantity
-    recvTime
     tradeTime
-    market {
-      ...MarketFields
+    costBasis
+    breakEvenPrice
+    liquidationPrice
+  }
+  unrealizedPnl
+  realizedPnl
+  equity
+  yesterdayEquity
+  cashExcess
+  purchasingPower
+  totalMargin
+  positionMargin
+}
+
+fragment MarketTickerFields on Ticker {
+  symbol
+  timestamp
+  bidPrice
+  bidSize
+  askPrice
+  askSize
+  lastPrice
+  lastSize
+}
+
+fragment L2BookLevelFields on L2BookLevel {
+  price
+  size
+}
+
+fragment L2BookFields on L2Book {
+  timestamp
+  bids {
+    ...L2BookLevelFields
+  }
+  asks {
+    ...L2BookLevelFields
+  }
+}
+
+query SearchSymbolsQuery($search: String) {
+  symbology {
+    searchSymbols(search: $search)
+  }
+}
+
+# query SearchSymbolsQuery($searchString: String, $underlying: String, $executionVenue: ExecutionVenue, $maxResults: Int, $sortByVolumeDescGivenExecutionVenue: Boolean!) {
+#   symbology {
+#     searchSymbols(searchString: $searchString, underlying: $underlying, executionVenue: $executionVenue, maxResults: $maxResults, sortByVolumeDescGivenExecutionVenue: $sortByVolumeDescGivenExecutionVenue)
+#   }
+# }
+
+query GetProductInfoQuery($symbol: String!) {
+  symbology {
+    productInfo(symbol: $symbol) {
+      ...ProductInfoFields
     }
   }
 }
 
-subscription SubscribeBook($id: MarketId!, $precision: Decimal) {
-  book(market: $id, precision: $precision) {
-    bids {
-      price
-      amount
-      total
+query GetProductInfosQuery($symbols: [String!]!) {
+  symbology {
+    productInfos(symbols: $symbols) {
+      ...ProductInfoFields
     }
-    asks {
-      price
-      amount
-      total
-    }
-    timestamp
   }
 }
 
-subscription SubscribeExchangeSpecific($markets: [MarketId!]!, $fields: [String!]!) {
-  exchangeSpecific(markets: $markets, fields: $fields) {
-    market {
-      ...MarketFields
+
+query GetFirstNoticeDateQuery($symbol: String!) {
+  symbology {
+    productInfo(symbol: $symbol) {
+      firstNoticeDate
     }
-    field
-    value
   }
 }
 
-mutation SendOrder($order: CreateOrder!) {
-  createOrder(order: $order)
+query GetFutureSeriesQuery($seriesSymbol: String!) {
+  symbology {
+    futuresSeries(seriesSymbol: $seriesSymbol)
+  }
 }
 
-mutation SendOrders($orders: [CreateOrder!]!) {
-  createOrders(orders: $orders)
+query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
+  symbology {
+    executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
+      ...ExecutionInfoFields
+    }
+  }
 }
 
-mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
-  createTwapAlgo(twapAlgo: $algo)
+
+query GetMarketSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
+  marketdata {
+    ticker(venue: $venue, symbol: $symbol) {
+      ...MarketTickerFields
+    }
+  }
 }
 
-mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
-  createPovAlgo(povAlgo: $algo)
+query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
+  marketdata{
+    tickers(venue: $venue, symbols: $symbols) {
+      ...MarketTickerFields
+    }
+  }
 }
 
-mutation PreviewSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
-  previewSmartOrderRouterAlgo(algo: $algo) {
-    orders {
+query ListAccountsQuery {
+  user {
+    accounts {
+      ...AccountWithPermissionsFields
+    }
+  }
+}
+
+
+query GetAccountSummaryQuery($venue: ExecutionVenue, $account: String!) {
+  folio {
+    accountSummary(venue: $venue, account: $account) {
+      ...AccountSummaryFields
+    }
+  }
+}
+
+query GetAccountSummariesQuery($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
+  folio {
+    accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
+      ...AccountSummaryFields
+    }
+  }
+}
+
+query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
+  oms {
+    openOrders(venue: $venue, account: $account, trader: $trader, symbol: $symbol, parentOrderId: $parentOrderId, orderIds: $orderIds) {
       ...OrderFields
     }
   }
 }
 
-mutation SendSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
-  createSmartOrderRouterAlgo(algo: $algo)
+query GetAllOpenOrdersQuery{
+  oms {
+    openOrders {
+      ...OrderFields
+    }
+  }
 }
 
-
-mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
-  createMmAlgo(mmAlgo: $algo)
+query GetHistoricalOrdersQuery($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+  folio {
+    historicalOrders(venue: $venue, account: $account, parentOrderId: $parentOrderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+      ...OrderFields
+    }
+  }
 }
 
-mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
-  createSpreadAlgo(spreadAlgo: $algo)
+query GetFillsQuery($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
+  folio {
+    historicalFills(venue: $venue, account: $account, orderId: $orderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+      fills {
+        fillId
+        fillKind
+        executionVenue
+        exchangeFillId
+        orderId
+        trader
+        account
+        symbol
+        dir
+        quantity
+        price
+        recvTime
+        tradeTime
+      }
+      aberrantFills {
+        fillId
+        fillKind
+        executionVenue
+        exchangeFillId
+        orderId
+        trader
+        account
+        symbol
+        dir
+        quantity
+        price
+        recvTime
+        tradeTime
+      }
+    }
+  }
 }
 
-
-mutation CancelOrder($orderId: OrderId!) {
-  cancelOrder(orderId: $orderId)
+query GetL2BookSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
+  marketdata {
+    l2BookSnapshot(venue: $venue, symbol: $symbol) {
+      ...L2BookFields
+    }
+  }
 }
 
-mutation CancelOrders($orderIds: [OrderId!]!) {
-  cancelOrders(orderIds: $orderIds)
-}
-
-# mutation CancelAllOrders($venue: VenueId) {
-#   cancelAllOrders(venueId: $venue)
+# query GetPrimaryExecutionVenueQuery($symbol: String!) {
+#   symbology {
+#     getPrimaryExecutionVenue(symbol: $symbol)
+#   }
 # }
 
-mutation RemoveTelegramApiKeys {
-  removeTelegramApiKeys
+
+# query GetAlgoStatus($orderId: OrderId!) {
+#   algoStatus(orderId: $orderId) {
+#     orderId
+#     order {
+#       orderId
+#       trader
+#       account
+#       algo
+#       parentOrderId
+#       markets
+#     }
+#     creationTime
+#     status
+#     lastStatusChange
+#     fractionComplete
+#   }
+# }
+# 
+# query GetAlgoOrder($orderId: OrderId!) {
+#   algoOrder(orderId: $orderId) {
+#     orderId
+#     trader
+#     account
+#     algo
+#     parentOrderId
+#     markets
+#   }
+# }
+# 
+# 
+# query GetTwapStatus($orderId: OrderId!) {
+#   twapStatus(orderId: $orderId) {
+#     orderId
+#     order {
+#       name
+#       orderId
+#       marketId
+#       dir
+#       quantity
+#       endTime
+#       accountId
+#       intervalMs
+#       rejectLockoutMs
+#       takeThroughFrac
+#     }
+#     creationTime
+#     status
+#     fractionComplete
+#     realizedTwap
+#     quantityFilled
+#   }
+# }
+# 
+# query GetTwapOrder($orderId: OrderId!) {
+#   twapOrder(orderId: $orderId) {
+#     name
+#     orderId
+#     marketId
+#     dir
+#     quantity
+#     endTime
+#     accountId
+#     intervalMs
+#     rejectLockoutMs
+#     takeThroughFrac
+#   }
+# }
+# 
+# query GetPovStatus($orderId: OrderId!) {
+#   povStatus(orderId: $orderId) {
+#     orderId
+#     order {
+#       name
+#       orderId
+#       marketId
+#       dir
+#       targetVolumeFrac
+#       minOrderQuantity
+#       maxQuantity
+#       endTime
+#       accountId
+#       takeThroughFrac
+#     }
+#     creationTime
+#     status
+#     fractionComplete
+#     realizedVolumeFrac
+#     marketVolume
+#     quantityFilled
+#   }
+# }
+# 
+# query GetPovOrder($orderId: OrderId!) {
+#   povOrder(orderId: $orderId) {
+#     name
+#     orderId
+#     marketId
+#     dir
+#     targetVolumeFrac
+#     minOrderQuantity
+#     maxQuantity
+#     endTime
+#     accountId
+#     takeThroughFrac
+#   }
+# }
+# 
+# 
+# query GetSmartOrderRouterStatus($orderId: OrderId!) {
+#   smartOrderRouterStatus(orderId: $orderId) {
+#     status {
+#       orderId
+#       order {
+#         orderId
+#         trader
+#         account
+#         algo
+#         parentOrderId
+#         markets
+#       }
+#       creationTime
+#       status
+#       lastStatusChange
+#       fractionComplete
+#     }
+#     order {
+#       orderId
+#       markets {
+#         id
+#       }
+#       # base
+#       # quote
+#       dir
+#       limitPrice
+#       targetSize
+#       executionTimeLimitMs
+#       parentOrderId
+#     }
+#   }
+# }
+# 
+# 
+# query GetSmartOrderRouterOrder($orderId: OrderId!) {
+#   smartOrderRouterOrder(orderId: $orderId) {
+#     orderId
+#     markets {
+#       id
+#     }
+#     # base
+#     # quote
+#     dir
+#     limitPrice
+#     targetSize
+#     executionTimeLimitMs
+#     parentOrderId
+#   }
+# }
+# 
+# 
+# query GetMmStatus($orderId: OrderId!) {
+#   mmAlgoStatus(orderId: $orderId) {
+#     orderId
+#     order {
+#       name
+#       orderId
+#       marketId
+#       # market
+#       quantityBuy
+#       quantitySell
+#       minPosition
+#       maxPosition
+#       maxImproveBbo
+#       positionTilt
+#       referencePrice
+#       refDistFrac
+#       toleranceFrac
+#       account
+#     }
+#     creationTime
+#     status
+#     position
+#     hedgePosition
+#     missRatio
+#     effectiveSpread
+#     buyStatus {
+#       # lastDecision
+#       lastOrderTime
+#       lastFillTime
+#       lastRejectTime
+#       openOrder {
+#         orderId
+#         price
+#         quantity
+#         cancelPending
+#       }
+#       referencePrice
+#     }
+#     sellStatus {
+#       # lastDecision
+#       lastOrderTime
+#       lastFillTime
+#       lastRejectTime
+#       openOrder {
+#         orderId
+#         price
+#         quantity
+#         cancelPending
+#       }
+#       referencePrice
+#     }
+#     kind
+#   }
+# }
+# 
+# 
+# query GetMmOrder($orderId: OrderId!) {
+#   mmAlgoOrder(orderId: $orderId) {
+#     name
+#     orderId
+#     marketId
+#     quantityBuy
+#     quantitySell
+#     minPosition
+#     maxPosition
+#     maxImproveBbo
+#     positionTilt
+#     referencePrice
+#     refDistFrac
+#     toleranceFrac
+#     account
+#   }
+# }
+# 
+# 
+# query GetSpreadStatus($orderId: OrderId!) {
+#   spreadAlgoStatus(orderId: $orderId) {
+#     orderId
+#     order {
+#       name
+#       orderId
+#       marketId
+#       # market
+#       quantityBuy
+#       quantitySell
+#       minPosition
+#       maxPosition
+#       maxImproveBbo
+#       positionTilt
+#       referencePrice
+#       refDistFrac
+#       toleranceFrac
+#       account
+#     }
+#     creationTime
+#     status
+#     position
+#     hedgePosition
+#     missRatio
+#     effectiveSpread
+#     buyStatus {
+#       # lastDecision
+#       lastOrderTime
+#       lastFillTime
+#       lastRejectTime
+#       openOrder {
+#         orderId
+#         price
+#         quantity
+#         cancelPending
+#       }
+#       referencePrice
+#     }
+#     sellStatus {
+#       # lastDecision
+#       lastOrderTime
+#       lastFillTime
+#       lastRejectTime
+#       openOrder {
+#         orderId
+#         price
+#         quantity
+#         cancelPending
+#       }
+#       referencePrice
+#     }
+#     kind
+#   }
+# }
+# 
+# 
+# query GetSpreadOrder($orderId: OrderId!) {
+#   spreadAlgoOrder(orderId: $orderId) {
+#     name
+#     orderId
+#     marketId
+#     quantityBuy
+#     quantitySell
+#     minPosition
+#     maxPosition
+#     maxImproveBbo
+#     positionTilt
+#     referencePrice
+#     refDistFrac
+#     toleranceFrac
+#     account
+#   }
+# }
+
+
+
+# mutation SendTwapAlgoRequest($algo: CreateTwapAlgo!) {
+#   createTwapAlgo(twapAlgo: $algo)
+# }
+# 
+# mutation SendPovAlgoRequest($algo: CreatePovAlgo!) {
+#   createPovAlgo(povAlgo: $algo)
+# }
+# 
+# mutation PreviewSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
+#   previewSmartOrderRouterAlgo(algo: $algo) {
+#     orders {
+#       ...OrderFields
+#     }
+#   }
+# }
+# 
+# mutation SendSmartOrderRouterAlgoRequest($algo: CreateSmartOrderRouterAlgo!) {
+#   createSmartOrderRouterAlgo(algo: $algo)
+# }
+# 
+# 
+# mutation SendMmAlgoRequest($algo: CreateMMAlgo!) {
+#   createMmAlgo(mmAlgo: $algo)
+# }
+# 
+# mutation SendSpreadAlgoRequest($algo: CreateSpreadAlgo!) {
+#   createSpreadAlgo(spreadAlgo: $algo)
+# }
+
+
+subscription SubscribeTrades($venue: MarketdataVenue!, $symbol: String!) {
+  trades(venue: $venue, symbol: $symbol) {
+    timestamp
+    direction
+    price
+    size
+  }
+}
+
+subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $widths: [CandleWidth!]) {
+  candles(venue: $venue, symbol: $symbol, candleWidths: $widths) {
+    ...CandleFields
+  }
+}
+
+
+mutation CancelOrderMutation($orderId: OrderId!) {
+  oms {
+    cancelOrder(orderId: $orderId) {
+      ...CancelFields
+    }
+  }
+}
+
+mutation CancelAllOrdersMutation {
+  oms {
+    cancelAllOrders
+  }
+}
+
+
+mutation PlaceOrderMutation($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
+  oms {
+    placeOrder(id: $id, symbol: $symbol, dir: $dir, quantity: $quantity, trader: $trader, account: $account, orderType: $orderType, limitPrice: $limitPrice, postOnly: $postOnly, triggerPrice: $triggerPrice, timeInForce: $timeInForce, goodTilDate: $goodTilDate, executionVenue: $executionVenue) {
+      ...OrderFields
+    }
+  }
 }
 
 
@@ -767,90 +679,49 @@ subscription SubscribeOrderflow {
   orderflow {
     __typename
     ... on Order {
-      id
-      marketId
-      dir
-      quantity
-      accountId
-      orderType {
-        ... on LimitOrderType {
-          limitPrice
-          postOnly
-        }
-        ... on StopLossLimitOrderType {
-          limitPrice
-          triggerPrice
-        }
-        ... on TakeProfitLimitOrderType {
-          limitPrice
-          triggerPrice
-        }
-      }
-      timeInForce {
-        instruction
-        goodTilDate
-      }
-      quoteId
-      source
+      ...OrderFields
     }
-    ... on Ack {
+    ... on OrderAck {
       orderId
     }
-    ... on Reject {
+    ... on OrderCanceled {
+      orderId
+      cancelId
+    }
+    ... on GqlOrderReject {
       orderId
       reason
+      message
     }
-    ... on OmsOrderUpdate {
+    ... on CancelReject {
       orderId
-      orderState: state
-      filledQty
-      avgFillPrice
+      message
     }
     ... on Fill {
       fillOrderId: orderId
-      fillKind: kind
-      marketId
+      fillId
+      fillKind
+      executionVenue
+      exchangeFillId
+      symbol
       dir
-      price
       quantity
+      price
+      recvTime
       tradeTime
     }
-    ... on Out {
+    ... on OrderOut {
+      orderId
+    }
+    ... on OrderStale {
       orderId
     }
   }
 }
 
-query GetBookSnapshot($market: MarketId!, $numLevels: Int!, $precision: Decimal, $retainSeconds: Int) {
-  bookSnapshot(market: $market, numLevels: $numLevels, precision: $precision, retainSubscriptionForNSeconds: $retainSeconds) {
-    timestamp
-    bids {
-      price
-      amount
-      total
-    }
-    asks {
-      price
-      amount
-      total
-    }
-  }
-}
-
-query GetAccounts {
-  accounts {
-    id
-    name
-  }
-}
 
 mutation CreateJwt {
-  createJwt
-}
-
-query GetMargin($id: MarketId!) {
-  market(id: $id) {
-    initialMargin
-    maintenanceMargin
+  user {
+    createJwt
   }
 }
