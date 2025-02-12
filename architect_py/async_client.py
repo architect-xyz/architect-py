@@ -32,10 +32,6 @@ import dns.name
 
 import grpc.aio
 
-from architect_py.graphql_client.base_model import UNSET
-from architect_py.graphql_client.cancel_all_orders_mutation import (
-    CancelAllOrdersMutationOms,
-)
 from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
@@ -349,12 +345,12 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def get_open_orders(
         self,
-        venue: Optional[str],
-        account: Optional[str],
-        trader: Optional[str],
-        symbol: Optional[str],
-        parent_order_id: Optional[str],
-        order_ids: list[str],
+        order_ids: list[str] = [],
+        venue: Optional[str] = None,
+        account: Optional[str] = None,
+        trader: Optional[str] = None,
+        symbol: Optional[str] = None,
+        parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         orders = await self.get_open_orders_query(
             venue, account, trader, symbol, parent_order_id, order_ids
@@ -571,12 +567,6 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> OrderFields:
-
-        product_info = await self.get_product_info(symbol)
-        if product_info is None:
-            raise ValueError(
-                f"Failed to send market order with reason: no market details for {symbol}"
-            )
 
         # Check for GQL failures
         bbo_snapshot = await self.market_snapshot(execution_venue, symbol)
