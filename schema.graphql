@@ -359,10 +359,10 @@ type MarketStatus {
 
 type MarketdataQueryRoot {
   historicalCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, start: DateTime!, end: DateTime!): [Candle!]!
-  l2BookSnapshot(venue: MarketdataVenue!, symbol: String!): L2Book!
-  ticker(venue: MarketdataVenue!, symbol: String!): Ticker!
+  l2BookSnapshot(venue: MarketdataVenue, symbol: String!): L2Book!
+  ticker(venue: MarketdataVenue, symbol: String!): Ticker!
   tickers(venue: MarketdataVenue!, symbols: [String!], offset: Int, limit: Int, sortBy: SortTickersBy): [Ticker!]!
-  marketStatus(venue: MarketdataVenue!, symbol: String!): MarketStatus!
+  marketStatus(venue: MarketdataVenue, symbol: String!): MarketStatus!
 }
 
 type MutationRoot {
@@ -388,6 +388,7 @@ type Order {
   recvTime: DateTime
   status: OrderStatus!
   rejectReason: String
+  rejectMessage: String
   symbol: String!
   trader: UserId!
   account: Uuid!
@@ -436,6 +437,7 @@ type ProductInfo {
   expiration: DateTime
   derivativeKind: String
   firstNoticeDate: Date
+  primaryVenue: String
 }
 
 type QueryRoot {
@@ -443,6 +445,8 @@ type QueryRoot {
   config: ConfigQueryRoot!
   "Information about current authenticated user, API keys, etc."
   user: UserQueryRoot!
+  "Get account details by id or name"
+  account(id: Uuid, name: AccountName): AccountWithPermissions
   symbology: SymbologyQueryRoot!
   marketdata: MarketdataQueryRoot!
   oms: OmsQueryRoot!
@@ -466,7 +470,7 @@ type SymbologyQueryRoot {
   executionInfos(symbols: [String!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(search: String): [String!]!
+  searchSymbols(searchString: String, executionVenue: ExecutionVenue): [Product!]!
 }
 
 type Ticker {
@@ -518,6 +522,7 @@ type UserMutationRoot {
 type UserQueryRoot {
   userId: UserId!
   userEmail: String!
+  debuggingAsUser: String
   "List user's accounts"
   accounts: [AccountWithPermissions!]!
   "List user's API keys"

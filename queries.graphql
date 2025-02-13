@@ -6,6 +6,7 @@ fragment ProductInfoFields on ProductInfo {
   multiplier
   derivativeKind
   firstNoticeDate
+  primaryVenue
 }
 
 fragment ExecutionInfoFields on ExecutionInfo {
@@ -24,6 +25,7 @@ fragment OrderFields on Order {
   recvTime
   status
   rejectReason
+  rejectMessage
   symbol
   trader
   account
@@ -111,6 +113,12 @@ fragment MarketTickerFields on Ticker {
   lastSize
 }
 
+fragment MarketStatusFields on MarketStatus {
+  symbol
+  isTrading
+  isQuoting
+}
+
 fragment L2BookLevelFields on L2BookLevel {
   price
   size
@@ -126,9 +134,9 @@ fragment L2BookFields on L2Book {
   }
 }
 
-query SearchSymbolsQuery($search: String) {
+query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue) {
   symbology {
-    searchSymbols(search: $search)
+    searchSymbols(searchString: $searchString, executionVenue: $executionVenue)
   }
 }
 
@@ -178,7 +186,7 @@ query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) 
 }
 
 
-query GetMarketSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
+query GetMarketSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   marketdata {
     ticker(venue: $venue, symbol: $symbol) {
       ...MarketTickerFields
@@ -193,6 +201,22 @@ query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
     }
   }
 }
+
+query GetMarketStatusQuery($venue: MarketdataVenue, $symbol: String!) {
+  marketdata {
+    marketStatus(venue: $venue, symbol: $symbol) {
+      ...MarketStatusFields
+    }
+  }
+}
+
+# query GetAccountQuery($id: Uui, $name AccountName) {
+#   user {
+#     account(id: $id, name: $name) {
+#       ...AccountWithPermissionsFields
+#     }
+#   }
+# }
 
 query ListAccountsQuery {
   user {
@@ -280,7 +304,7 @@ query GetFillsQuery($venue: ExecutionVenue, $account: String, $orderId: OrderId,
   }
 }
 
-query GetL2BookSnapshotQuery($venue: MarketdataVenue!, $symbol: String!) {
+query GetL2BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   marketdata {
     l2BookSnapshot(venue: $venue, symbol: $symbol) {
       ...L2BookFields

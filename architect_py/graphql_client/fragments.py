@@ -117,6 +117,12 @@ class L2BookFieldsAsks(L2BookLevelFields):
     pass
 
 
+class MarketStatusFields(BaseModel):
+    symbol: str
+    is_trading: Optional[bool] = Field(alias="isTrading")
+    is_quoting: Optional[bool] = Field(alias="isQuoting")
+
+
 class MarketTickerFields(BaseModel):
     symbol: str
     timestamp: Optional[datetime]
@@ -134,6 +140,7 @@ class OrderFields(BaseModel):
     recv_time: Optional[datetime] = Field(alias="recvTime")
     status: OrderStatus
     reject_reason: Optional[str] = Field(alias="rejectReason")
+    reject_message: Optional[str] = Field(alias="rejectMessage")
     symbol: str
     trader: str
     account: UUID
@@ -159,6 +166,7 @@ class ProductInfoFields(BaseModel):
     multiplier: Optional[Decimal]
     derivative_kind: Optional[str] = Field(alias="derivativeKind")
     first_notice_date: Optional[date] = Field(alias="firstNoticeDate")
+    primary_venue: Optional[str] = Field(alias="primaryVenue")
 
 
 AccountSummaryFields.model_rebuild()
@@ -168,6 +176,7 @@ CandleFields.model_rebuild()
 ExecutionInfoFields.model_rebuild()
 L2BookLevelFields.model_rebuild()
 L2BookFields.model_rebuild()
+MarketStatusFields.model_rebuild()
 MarketTickerFields.model_rebuild()
 OrderFields.model_rebuild()
 ProductInfoFields.model_rebuild()

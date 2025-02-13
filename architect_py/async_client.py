@@ -286,8 +286,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
     async def search_symbols(
         self,
         search_string: Optional[str] = None,
+        execution_venue: Optional[str] = None,
     ) -> List[str]:
-        markets = (await self.search_symbols_query(search_string)).search_symbols
+        markets = (
+            await self.search_symbols_query(search_string, execution_venue)
+        ).search_symbols
 
         return markets
 
@@ -345,7 +348,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def get_open_orders(
         self,
-        order_ids: list[str] = [],
+        order_ids: Optional[list[str]] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
@@ -387,6 +390,10 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         )
         return fills.historical_fills
 
+    async def get_market_status(self, symbol: str, venue: str):
+        market_status = await self.get_market_status_query(symbol, venue)
+        return market_status.market_status
+
     async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
         # this is an alias for l1_book_snapshot
         return await self.l1_book_snapshot(venue, symbol)
@@ -397,8 +404,12 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         # this is an alias for l1_book_snapshots
         return await self.l1_book_snapshots(venue, symbols)
 
-    async def l1_book_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
-        snapshot = await self.get_market_snapshot_query(venue, symbol)
+    async def l1_book_snapshot(
+        self,
+        symbol: str,
+        venue: str,
+    ) -> MarketTickerFields:
+        snapshot = await self.get_market_snapshot_query(symbol, venue)
         return snapshot.ticker
 
     async def l1_book_snapshots(

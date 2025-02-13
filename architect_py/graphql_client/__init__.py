@@ -37,6 +37,7 @@ from .fragments import (
     L2BookFieldsAsks,
     L2BookFieldsBids,
     L2BookLevelFields,
+    MarketStatusFields,
     MarketTickerFields,
     OrderFields,
     ProductInfoFields,
@@ -93,6 +94,11 @@ from .get_market_snapshots_query import (
     GetMarketSnapshotsQuery,
     GetMarketSnapshotsQueryMarketdata,
     GetMarketSnapshotsQueryMarketdataTickers,
+)
+from .get_market_status_query import (
+    GetMarketStatusQuery,
+    GetMarketStatusQueryMarketdata,
+    GetMarketStatusQueryMarketdataMarketStatus,
 )
 from .get_open_orders_query import (
     GetOpenOrdersQuery,
@@ -193,6 +199,9 @@ __all__ = [
     "GetMarketSnapshotsQuery",
     "GetMarketSnapshotsQueryMarketdata",
     "GetMarketSnapshotsQueryMarketdataTickers",
+    "GetMarketStatusQuery",
+    "GetMarketStatusQueryMarketdata",
+    "GetMarketStatusQueryMarketdataMarketStatus",
     "GetOpenOrdersQuery",
     "GetOpenOrdersQueryOms",
     "GetOpenOrdersQueryOmsOpenOrders",
@@ -211,6 +220,7 @@ __all__ = [
     "ListAccountsQuery",
     "ListAccountsQueryUser",
     "ListAccountsQueryUserAccounts",
+    "MarketStatusFields",
     "MarketTickerFields",
     "MinOrderQuantityUnit",
     "OrderFields",
