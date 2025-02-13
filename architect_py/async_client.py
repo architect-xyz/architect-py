@@ -339,11 +339,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def get_account_summaries(
         self,
-        account: list[str],
+        accounts: list[str],
         venue: Optional[str] = None,
         trader: Optional[str] = None,
     ) -> Sequence[AccountSummaryFields]:
-        summaries = await self.get_account_summaries_query(venue, trader, account)
+        summaries = await self.get_account_summaries_query(venue, trader, accounts)
         return summaries.account_summaries
 
     async def get_open_orders(
@@ -379,11 +379,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def get_fills(
         self,
-        venue: Optional[str],
-        account: Optional[str],
-        order_id: Optional[str],
         from_inclusive: Optional[datetime],
         to_exclusive: Optional[datetime],
+        venue: Optional[str] = None,
+        account: Optional[str] = None,
+        order_id: Optional[str] = None,
     ) -> GetFillsQueryFolioHistoricalFills:
         fills = await self.get_fills_query(
             venue, account, order_id, from_inclusive, to_exclusive
@@ -396,13 +396,13 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
 
     async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
         # this is an alias for l1_book_snapshot
-        return await self.l1_book_snapshot(venue, symbol)
+        return await self.l1_book_snapshot(symbol=symbol, venue=venue)
 
     async def market_snapshots(
         self, venue: str, symbols: list[str]
     ) -> Sequence[MarketTickerFields]:
         # this is an alias for l1_book_snapshots
-        return await self.l1_book_snapshots(venue, symbols)
+        return await self.l1_book_snapshots(venue=venue, symbols=symbols)
 
     async def l1_book_snapshot(
         self,
@@ -521,7 +521,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         odir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
-        execution_venue: str,
+        execution_venue: Optional[str],
         order_type: OrderType = OrderType.LIMIT,
         time_in_force: TimeInForce = TimeInForce.DAY,
         good_til_date: Optional[datetime] = None,
@@ -532,11 +532,25 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         trigger_price: Optional[Decimal] = None,
     ) -> OrderFields:
         """
-        `account` is optional depending on the final cpty it gets to
-        For CME orders, the account is required
+        if execution_venue is set to None, the OMS will send the order to the primary_exchange
+
+        the primary_exchange can be deduced from `get_product_info`
+
+        While technically optional, for most order types, the account is required
         """
 
         if price_round_method is not None:
+            if execution_venue is None:
+                product_info = await self.get_product_info(symbol)
+                if product_info is None:
+                    raise ValueError(
+                        f"Could not find product information for {symbol} while trying to get execution venue for rounding price"
+                    )
+                execution_venue = product_info.primary_venue
+                if execution_venue is None:
+                    raise ValueError(
+                        f"Could not find primary exchange for {symbol} while trying to get execution venue for rounding price"
+                    )
             execution_info = await self.get_execution_info(symbol, execution_venue)
             if (tick_size := execution_info.tick_size) is not None:
                 if tick_size:
