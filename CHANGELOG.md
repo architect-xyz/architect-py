@@ -1,3 +1,7 @@
+3.1.3
+Fixes:
+  - Fix send_market_pro_order
+
 3.1.2 / 3.1.1
 Features:
   - added marketStatus
