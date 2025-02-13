@@ -1,3 +1,14 @@
+3.1.2 / 3.1.1
+Features:
+  - added marketStatus
+
+
+Fixes:
+  - fixed search_symbol
+  - added rejectMessage attribute to Order
+
+
+
 3.0.0
 
 Breaking Changes:
@@ -26,7 +37,6 @@ Improvement:
 - removed _version.py and just put __version__ in __init__.py
 
 
-
 Todo:
 - test subscriptions
 - algos need to work again
@@ -43,26 +53,4 @@ query GetMargin($id: MarketId!) {
 - need this
 mutation RemoveTelegramApiKeys {
   removeTelegramApiKeys
-}
-subscription FillsSubscription {
-  fills {
-    dir
-    fillId
-    kind
-    marketId
-    orderId
-    price
-    quantity
-    recvTime
-    tradeTime
-    market {
-      ...MarketFields
-    }
-  }
-}
-
-query GetOrder($orderId: OrderId!) {
-  order(orderId: $orderId) {
-    ...OrderLogFields
-  }
 }
