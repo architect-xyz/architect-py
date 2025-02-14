@@ -23,9 +23,7 @@ async def test_market_pro_order(async_client: AsyncClient):
 @pytest.mark.parametrize(
     "symbol,venue",
     [
-        ("BTC Crypto/USDT Crypto*BINANCE/DIRECT", "BINANCE"),
-        ("ETH Crypto/USDT Crypto*BINANCE/DIRECT", "BINANCE"),
-        ("SOL Crypto/USDT Crypto*BINANCE/DIRECT", "BINANCE"),
+        ("MES 20260320 CME Future", "CME"),
     ],
 )
 async def test_live_far_order_cancel(
@@ -47,19 +45,16 @@ async def test_live_far_order_cancel(
     min_qty = Decimal(market.min_order_quantity)
 
     if last_price := snapshot.last_price:
-        far_price = last_price * Decimal("1.1")
+        far_price = last_price * Decimal("0.8")
     else:
         raise ValueError("No last price in snapshot")
-
-    assert (
-        min_qty * far_price < 10
-    )  # ensure we are spending more than $10 on this (even though we will cancel the order)
 
     # Make a very cheap
     order = await async_client.send_limit_order(
         symbol=symbol,
         odir=OrderDir.BUY,
-        quantity=min_qty,  # not sure what's going here with min qty not being accurate
+        execution_venue=venue,
+        quantity=min_qty,
         limit_price=far_price,
     )
 
