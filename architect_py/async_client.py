@@ -19,9 +19,7 @@ are the generic functions to get the status of an algo
 it may not have all the information that the specific get_algo functions have
 """
 
-import fnmatch
 import logging
-import re
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any, AsyncIterator, Dict, List, Optional, Sequence
