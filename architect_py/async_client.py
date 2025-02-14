@@ -400,36 +400,28 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if historical_orders.historical_orders:
             return historical_orders.historical_orders[0]
 
-    async def get_orders(
-        self,
-        order_ids: list[str],
-    ) -> list[Optional[OrderFields]]:
+    async def get_orders(self, order_ids: list[str]) -> list[Optional[OrderFields]]:
+        orders_dict: dict[str, Optional[OrderFields]] = {
+            order_id: None for order_id in order_ids
+        }
 
-        orders: list[Optional[OrderFields]] = [None] * len(order_ids)
-        not_open_orders_indexes: list[int] = []
+        open_orders = (
+            await self.get_open_orders_query(order_ids=order_ids)
+        ).open_orders
+        for open_order in open_orders:
+            orders_dict[open_order.id] = open_order
 
-        open_orders = await self.get_open_orders_query(order_ids=order_ids)
-        idx = 0
-        for open_order in open_orders.open_orders:
-            if order_ids[idx] == open_order.id:
-                orders[idx] = open_order
-            else:
-                not_open_orders_indexes.append(idx)
-            idx += 1
+        not_open_order_ids = [
+            order_id for order_id in order_ids if orders_dict[order_id] is None
+        ]
 
-        not_open_order_ids = [order_ids[i] for i in not_open_orders_indexes]
-        historical_orders = await self.get_historical_orders_query(
-            order_ids=not_open_order_ids
-        )
+        historical_orders = (
+            await self.get_historical_orders_query(order_ids=not_open_order_ids)
+        ).historical_orders
+        for historical_order in historical_orders:
+            orders_dict[historical_order.id] = historical_order
 
-        idx = 0
-        for historical_order in historical_orders.historical_orders:
-            order_idx = not_open_orders_indexes[idx]
-            if order_ids[order_idx] == historical_order.id:
-                orders[order_idx] = historical_order
-            idx += 1
-
-        return orders
+        return [orders_dict[order_id] for order_id in order_ids]
 
     async def get_fills(
         self,
