@@ -356,26 +356,79 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         orders = await self.get_open_orders_query(
-            venue, account, trader, symbol, parent_order_id, order_ids
+            venue=venue,
+            account=account,
+            trader=trader,
+            symbol=symbol,
+            parent_order_id=parent_order_id,
+            order_ids=order_ids,
         )
         return orders.open_orders
 
     async def get_all_open_orders(self) -> Sequence[OrderFields]:
-        orders = await self.get_all_open_orders_query()
+        orders = await self.get_open_orders_query()
         return orders.open_orders
 
     async def get_historical_orders(
         self,
-        from_inclusive: datetime,
-        to_exclusive: datetime,
+        order_ids: Optional[list[str]] = None,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         orders = await self.get_historical_orders_query(
-            from_inclusive, to_exclusive, venue, account, parent_order_id
+            venue=venue,
+            account=account,
+            parent_order_id=parent_order_id,
+            from_inclusive=from_inclusive,
+            to_exclusive=to_exclusive,
         )
         return orders.historical_orders
+
+    async def get_order(self, order_id: str) -> Optional[OrderFields]:
+        open_orders = await self.get_open_orders_query(order_ids=[order_id])
+
+        for open_order in open_orders.open_orders:
+            if open_order.id == order_id:
+                return open_order
+
+        historical_orders = await self.get_historical_orders_query(order_ids=[order_id])
+
+        if historical_orders.historical_orders:
+            return historical_orders.historical_orders[0]
+
+    async def get_orders(
+        self,
+        order_ids: list[str],
+    ) -> list[Optional[OrderFields]]:
+
+        orders: list[Optional[OrderFields]] = [None] * len(order_ids)
+        not_open_orders_indexes: list[int] = []
+
+        open_orders = await self.get_open_orders_query(order_ids=order_ids)
+        idx = 0
+        for open_order in open_orders.open_orders:
+            if order_ids[idx] == open_order.id:
+                orders[idx] = open_order
+            else:
+                not_open_orders_indexes.append(idx)
+            idx += 1
+
+        not_open_order_ids = [order_ids[i] for i in not_open_orders_indexes]
+        historical_orders = await self.get_historical_orders_query(
+            order_ids=not_open_order_ids
+        )
+
+        idx = 0
+        for historical_order in historical_orders.historical_orders:
+            order_idx = not_open_orders_indexes[idx]
+            if order_ids[order_idx] == historical_order.id:
+                orders[order_idx] = historical_order
+            idx += 1
+
+        return orders
 
     async def get_fills(
         self,

@@ -210,13 +210,13 @@ query GetMarketStatusQuery($venue: MarketdataVenue, $symbol: String!) {
   }
 }
 
-# query GetAccountQuery($id: Uui, $name AccountName) {
-#   user {
-#     account(id: $id, name: $name) {
-#       ...AccountWithPermissionsFields
-#     }
-#   }
-# }
+query GetAccountQuery($id: Uuid, $name: AccountName) {
+  user {
+    account(id: $id, name: $name) {
+      ...AccountWithPermissionsFields
+    }
+  }
+}
 
 query ListAccountsQuery {
   user {
@@ -251,17 +251,9 @@ query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: Stri
   }
 }
 
-query GetAllOpenOrdersQuery{
-  oms {
-    openOrders {
-      ...OrderFields
-    }
-  }
-}
-
-query GetHistoricalOrdersQuery($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+query GetHistoricalOrdersQuery($orderIds: [OrderId!], $venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
   folio {
-    historicalOrders(venue: $venue, account: $account, parentOrderId: $parentOrderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+    historicalOrders(orderIds: $orderIds, venue: $venue, account: $account, parentOrderId: $parentOrderId, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
       ...OrderFields
     }
   }

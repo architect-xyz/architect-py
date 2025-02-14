@@ -4,6 +4,7 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
+from uuid import UUID
 
 from architect_py.scalars import OrderDir, convert_datetime_to_utc_str, serialize
 
@@ -15,6 +16,7 @@ from .cancel_all_orders_mutation import (
 from .cancel_order_mutation import CancelOrderMutation, CancelOrderMutationOms
 from .create_jwt import CreateJwt, CreateJwtUser
 from .enums import CandleWidth, OrderType, TimeInForce
+from .get_account_query import GetAccountQuery, GetAccountQueryUser
 from .get_account_summaries_query import (
     GetAccountSummariesQuery,
     GetAccountSummariesQueryFolio,
@@ -23,7 +25,6 @@ from .get_account_summary_query import (
     GetAccountSummaryQuery,
     GetAccountSummaryQueryFolio,
 )
-from .get_all_open_orders_query import GetAllOpenOrdersQuery, GetAllOpenOrdersQueryOms
 from .get_execution_info_query import (
     GetExecutionInfoQuery,
     GetExecutionInfoQuerySymbology,
@@ -368,6 +369,45 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetMarketStatusQuery.model_validate(data).marketdata
 
+    async def get_account_query(
+        self,
+        id: Union[Optional[UUID], UnsetType] = UNSET,
+        name: Union[Optional[str], UnsetType] = UNSET,
+        **kwargs: Any
+    ) -> GetAccountQueryUser:
+        query = gql(
+            """
+            query GetAccountQuery($id: Uuid, $name: AccountName) {
+              user {
+                account(id: $id, name: $name) {
+                  ...AccountWithPermissionsFields
+                }
+              }
+            }
+
+            fragment AccountWithPermissionsFields on AccountWithPermissions {
+              account {
+                id
+                name
+              }
+              trader
+              permissions {
+                list
+                view
+                trade
+                reduceOrClose
+                setLimits
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {"id": id, "name": name}
+        response = await self.execute(
+            query=query, operation_name="GetAccountQuery", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return GetAccountQuery.model_validate(data).user
+
     async def list_accounts_query(self, **kwargs: Any) -> ListAccountsQueryUser:
         query = gql(
             """
@@ -583,68 +623,22 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetOpenOrdersQuery.model_validate(data).oms
 
-    async def get_all_open_orders_query(
-        self, **kwargs: Any
-    ) -> GetAllOpenOrdersQueryOms:
-        query = gql(
-            """
-            query GetAllOpenOrdersQuery {
-              oms {
-                openOrders {
-                  ...OrderFields
-                }
-              }
-            }
-
-            fragment OrderFields on Order {
-              id
-              parentId
-              recvTime
-              status
-              rejectReason
-              rejectMessage
-              symbol
-              trader
-              account
-              dir
-              quantity
-              filledQuantity
-              averageFillPrice
-              orderType
-              limitPrice
-              postOnly
-              triggerPrice
-              timeInForce
-              goodTilDate
-              source
-              executionVenue
-            }
-            """
-        )
-        variables: Dict[str, object] = {}
-        response = await self.execute(
-            query=query,
-            operation_name="GetAllOpenOrdersQuery",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetAllOpenOrdersQuery.model_validate(data).oms
-
     async def get_historical_orders_query(
         self,
-        from_inclusive: datetime,
-        to_exclusive: datetime,
+        order_ids: Union[Optional[List[str]], UnsetType] = UNSET,
         venue: Union[Optional[str], UnsetType] = UNSET,
         account: Union[Optional[str], UnsetType] = UNSET,
         parent_order_id: Union[Optional[str], UnsetType] = UNSET,
+        from_inclusive: Union[Optional[datetime], UnsetType] = UNSET,
+        to_exclusive: Union[Optional[datetime], UnsetType] = UNSET,
         **kwargs: Any
     ) -> GetHistoricalOrdersQueryFolio:
         query = gql(
             """
-            query GetHistoricalOrdersQuery($venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime!, $toExclusive: DateTime!) {
+            query GetHistoricalOrdersQuery($orderIds: [OrderId!], $venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
               folio {
                 historicalOrders(
+                  orderIds: $orderIds
                   venue: $venue
                   account: $account
                   parentOrderId: $parentOrderId
@@ -682,6 +676,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {
+            "orderIds": order_ids,
             "venue": venue,
             "account": account,
             "parentOrderId": parent_order_id,

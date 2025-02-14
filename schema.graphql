@@ -326,7 +326,7 @@ type FolioQueryRoot {
   accountSummaries(venue: ExecutionVenue, trader: String, accounts: [String!]): [AccountSummary!]!
   accountHistory(venue: ExecutionVenue, account: String!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
   historicalFills(venue: ExecutionVenue, account: String, trader: String, orderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): HistoricalFillsResponse!
-  historicalOrders(venue: ExecutionVenue, account: String, trader: String, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): [Order!]!
+  historicalOrders(orderIds: [OrderId!], venue: ExecutionVenue, account: String, trader: String, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): [Order!]!
 }
 
 type GqlOrderReject {
@@ -445,8 +445,6 @@ type QueryRoot {
   config: ConfigQueryRoot!
   "Information about current authenticated user, API keys, etc."
   user: UserQueryRoot!
-  "Get account details by id or name"
-  account(id: Uuid, name: AccountName): AccountWithPermissions
   symbology: SymbologyQueryRoot!
   marketdata: MarketdataQueryRoot!
   oms: OmsQueryRoot!
@@ -522,7 +520,10 @@ type UserMutationRoot {
 type UserQueryRoot {
   userId: UserId!
   userEmail: String!
+  canDebugAsUser: Boolean!
   debuggingAsUser: String
+  "Get account details by id or name"
+  account(id: Uuid, name: AccountName): AccountWithPermissions
   "List user's accounts"
   accounts: [AccountWithPermissions!]!
   "List user's API keys"
