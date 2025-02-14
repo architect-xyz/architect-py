@@ -1,3 +1,8 @@
+3.1.4
+Features:
+  - added get_order and get_orders
+
+
 3.1.3
 Fixes:
   - Fix send_market_pro_order
