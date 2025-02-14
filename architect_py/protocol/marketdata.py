@@ -175,3 +175,55 @@ class TradeV1(SubscribeTradesTrades):
         self.size = size
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+class L2Book:
+    timestamp_s: int
+    timestamp_ns: int
+    sequence_id: int
+    sequence_number: int
+    bids: dict[Decimal, Decimal]
+    asks: dict[Decimal, Decimal]
+
+    def __init__(self, snapshot: L2BookSnapshot):
+        self.timestamp_s = snapshot.timestamp_s
+        self.timestamp_ns = snapshot.timestamp_ns
+        self.sequence_id = snapshot.sequence_id
+        self.sequence_number = snapshot.sequence_number
+        self.bids = {}
+        self.asks = {}
+        for price, size in snapshot.bids:
+            self.bids[price] = size
+        for price, size in snapshot.asks:
+            self.asks[price] = size
+
+    def update_from_diff(self, diff: L2BookDiff):
+        self.timestamp_s = diff.timestamp_s
+        self.timestamp_ns = diff.timestamp_ns
+        self.sequence_id = diff.sequence_id
+        self.sequence_number = diff.sequence_number
+        for price, size in diff.bids:
+            if size.is_zero():
+                if price in self.bids:
+                    del self.bids[price]
+            else:
+                self.bids[price] = size
+        for price, size in diff.asks:
+            if size.is_zero():
+                if price in self.asks:
+                    del self.asks[price]
+            else:
+                self.asks[price] = size
+
+    def timestamp(self):
+        dt = datetime.fromtimestamp(self.timestamp_s)
+        return dt.replace(microsecond=self.timestamp_ns // 1000)
+
+    def snapshot(self) -> L2BookSnapshot:
+        return L2BookSnapshot(
+            timestamp_s=self.timestamp_s,
+            timestamp_ns=self.timestamp_ns,
+            sequence_id=self.sequence_id,
+            sequence_number=self.sequence_number,
+            bids=list(self.bids.items()),
+            asks=list(self.asks.items()),
+        )

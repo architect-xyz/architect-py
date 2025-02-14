@@ -116,12 +116,8 @@ def autogenerate_protocol(cls) -> str:
         "# It is not used for anything else",
         "# For maintainers: ensure that the types in this file are correct for correct type hinting",
         "\n",
-        "from typing import Union",
         "from architect_py.graphql_client import *",
-        "from uuid import UUID",
         "from architect_py.async_client import *",
-        "from architect_py.graphql_client.base_model import UnsetType, UNSET",
-        "from httpx import Response",
         "\n",
         f"class {protocol_name}:",
     ]

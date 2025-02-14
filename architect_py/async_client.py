@@ -1,5 +1,5 @@
 """
-This file extends the GraphQLClient class to provide a higher-level interface
+This file composes the GraphQLClient class to provide a higher-level interface
 for order entry with the Architect API.
 
 These are not required to send orders, but provide typed interfaces for the
@@ -10,13 +10,6 @@ The functions to send orders will return the order ID string
 After sending the order, this string can be used to retrieve the order status
 
 send_limit_order -> get_order
-send_twap_algo -> get_twap_status / get_twap_order
-send_pov_algo -> get_pov_status / get_pov_order
-etc.
-
-get_algo_status / get_algo_order
-are the generic functions to get the status of an algo
-it may not have all the information that the specific get_algo functions have
 """
 
 import logging
@@ -71,6 +64,7 @@ from .protocol.marketdata import (
     JsonMarketdataStub,
     L1BookSnapshot,
     ExternalL2BookSnapshot,
+    L2Book,
     L2BookDiff,
     L2BookSnapshot,
     L2BookUpdate,
@@ -647,57 +641,3 @@ class AsyncClient:
         ]
 
         return market
-
-
-# TODO: move this somewhere else
-class L2Book:
-    timestamp_s: int
-    timestamp_ns: int
-    sequence_id: int
-    sequence_number: int
-    bids: dict[Decimal, Decimal]
-    asks: dict[Decimal, Decimal]
-
-    def __init__(self, snapshot: L2BookSnapshot):
-        self.timestamp_s = snapshot.timestamp_s
-        self.timestamp_ns = snapshot.timestamp_ns
-        self.sequence_id = snapshot.sequence_id
-        self.sequence_number = snapshot.sequence_number
-        self.bids = {}
-        self.asks = {}
-        for price, size in snapshot.bids:
-            self.bids[price] = size
-        for price, size in snapshot.asks:
-            self.asks[price] = size
-
-    def update_from_diff(self, diff: L2BookDiff):
-        self.timestamp_s = diff.timestamp_s
-        self.timestamp_ns = diff.timestamp_ns
-        self.sequence_id = diff.sequence_id
-        self.sequence_number = diff.sequence_number
-        for price, size in diff.bids:
-            if size.is_zero():
-                if price in self.bids:
-                    del self.bids[price]
-            else:
-                self.bids[price] = size
-        for price, size in diff.asks:
-            if size.is_zero():
-                if price in self.asks:
-                    del self.asks[price]
-            else:
-                self.asks[price] = size
-
-    def timestamp(self):
-        dt = datetime.fromtimestamp(self.timestamp_s)
-        return dt.replace(microsecond=self.timestamp_ns // 1000)
-
-    def snapshot(self) -> L2BookSnapshot:
-        return L2BookSnapshot(
-            timestamp_s=self.timestamp_s,
-            timestamp_ns=self.timestamp_ns,
-            sequence_id=self.sequence_id,
-            sequence_number=self.sequence_number,
-            bids=list(self.bids.items()),
-            asks=list(self.asks.items()),
-        )

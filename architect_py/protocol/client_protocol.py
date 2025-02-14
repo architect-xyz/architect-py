@@ -10,12 +10,8 @@
 # For maintainers: ensure that the types in this file are correct for correct type hinting
 
 
-from typing import Union
 from architect_py.graphql_client import *
-from uuid import UUID
 from architect_py.async_client import *
-from architect_py.graphql_client.base_model import UnsetType, UNSET
-from httpx import Response
 
 
 class AsyncClientProtocol:
