@@ -34,6 +34,7 @@ from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
+from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
@@ -84,154 +85,56 @@ from .utils.price_bands import price_band_pairs
 logger = logging.getLogger(__name__)
 
 
-class AsyncClient(GraphQLClient):
+class AsyncClient:
+    graphql_client: GraphQLClient
+    # grpc_jwt: str
+    # grpc_jwt_expiration: datetime
+    # grpc_root_certificates: bytes
+    # marketdata: dict[str, JsonWsClient]
+    # l2_books: dict[str, "L2Book"]
+
     def __init__(
         self,
-        no_gql: bool = False,
-        **kwargs,
+        api_key: str,
+        api_secret: str,
+        host: str = "https://app.architect.co",
+        paper_trading: bool = True,
+        port: Optional[int] = None,
     ):
         """
         Please see the GraphQLClient class for the full list of arguments.
-
-        TODO: make paper trading port change to 6789 automatic
         """
-        if kwargs["api_key"] is None:
-            raise ValueError("API key is required.")
-        elif kwargs["api_secret"] is None:
-            raise ValueError("API secret is required.")
-        elif not kwargs["api_key"].isalnum():
+
+        if not api_key.isalnum():
             raise ValueError(
                 "API key must be alphanumeric, please double check your credentials."
             )
-        elif "," in kwargs["api_key"] or "," in kwargs["api_secret"]:
+        elif "," in api_key or "," in api_secret:
             raise ValueError(
                 "API key and secret cannot contain commas, please double check your credentials."
             )
-        elif " " in kwargs["api_key"] or " " in kwargs["api_secret"]:
+        elif " " in api_key or " " in api_secret:
             raise ValueError(
                 "API key and secret cannot contain spaces, please double check your credentials."
             )
-        elif len(kwargs["api_key"]) != 24 or len(kwargs["api_secret"]) != 44:
+        elif len(api_key) != 24 or len(api_secret) != 44:
             raise ValueError(
                 "API key and secret are not the correct length, please double check your credentials."
             )
 
-        super().__init__(**kwargs)
-        self.no_gql = no_gql
+        if port is None:
+            if paper_trading:
+                port = 6789
+            else:
+                port = 4567
+
+        self.graphql_client = GraphQLClient(
+            api_key=api_key, api_secret=api_secret, host=host, port=port
+        )
+
         self.grpc_jwt: Optional[str] = None
         self.grpc_jwt_expiration: Optional[datetime] = None
-        self.grpc_root_certificates = b"""
------BEGIN CERTIFICATE-----
-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
-H2IV
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-MIIGdTCCBF2gAwIBAgIUf1fY1R1VdphhdrwGBuMFC8zeLx8wDQYJKoZIhvcNAQEL
-BQAwYzEbMBkGA1UEAwwScm9vdC5hcmNoaXRlY3QueHl6MQswCQYDVQQGEwJVUzER
-MA8GA1UECAwISWxsaW5vaXMxEDAOBgNVBAcMB0NoaWNhZ28xEjAQBgNVBAoMCWFy
-Y2hpdGVjdDAeFw0yNDA0MDEwMjM4MDdaFw0yNTA0MDEwMjM4MDdaMH4xGTAXBgNV
-BAMMEGwyLmFyY2hpdGVjdC54eXoxCzAJBgNVBAYTAlVTMREwDwYDVQQIDAhJbGxp
-bm9pczEQMA4GA1UEBwwHQ2hpY2FnbzEvMC0GA1UECgwmQXJjaGl0ZWN0IEZpbmFu
-Y2lhbCBUZWNobm9sb2dpZXMsIEluYy4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAw
-ggIKAoICAQDO2+4m/++VI1qqgVY0btfPvM1tHEPCTeJkVbJllTHQsi51tr2AhBKE
-vmSS40c4WTwrr0ArTkH64OeHiv2ff+XPOrA46lL1rzGYgT51wshIVZcEvYKsqq9x
-9gPYrotYkNAK0luvuYXUo2PQcWNEm89ub8PMhDQEX4TedWHZbkYzeFteqbGxpL1W
-hY3hlAHTsIgyFjRC6qz+jFuPIAXGLwF0cBbawY2dOowMS44BviQh12wqxsiTk47G
-o/VJVMKP9XCUVGdb+MMvb9R1fpSHs080aXhw5ncLauHaBm4pFOo3mk+Bt1aEnkvt
-ZjYRDWuvPiuyeCeqj67SmXGu5kgvCaZdRQchR8tTB7ih66grwiN3DId56dUcrkpy
-T0tAsS1wCOlIBOxAkFQk5cb3T2vAwWTSqi45TG/tezxuX/r1RB0B7a/JsK6OpWNQ
-8tfKyKnF1qxkvIKglnGzmHBXff3GbU6CykbyEMHnzx8MYqMzqOlfP86LW7E6uRir
-y+fdcMRxGbwwmil3hjkvtg+UG8Bb6PUCYxaV6yJWgTD24nI+115n+1bEwv/7MX3l
-xHW9uP+1ko5GyNdP+vzHd5AfV6sALm/E43VRmPovMUzQEMqBXBhiGCaMrtV3L+57
-pvkwO9HSTt+mzI9l1cgu+KBdLsmqoX3mWhBXonLQdHBj+xH82WI8hQIDAQABo4IB
-BDCCAQAwEgYDVR0TAQH/BAgwBgEB/wIBATALBgNVHQ8EBAMCAeYwHQYDVR0OBBYE
-FEN1HRIBn5UW5C26ituGKMx5umxDMIGgBgNVHSMEgZgwgZWAFPactYgo/THaW4JP
-MS+/04UvKuDVoWekZTBjMRswGQYDVQQDDBJyb290LmFyY2hpdGVjdC54eXoxCzAJ
-BgNVBAYTAlVTMREwDwYDVQQIDAhJbGxpbm9pczEQMA4GA1UEBwwHQ2hpY2FnbzES
-MBAGA1UECgwJYXJjaGl0ZWN0ghQc6t2vhCFLPpKo8MUtYKoUCYB6tzAbBgNVHREE
-FDASghBsMi5hcmNoaXRlY3QueHl6MA0GCSqGSIb3DQEBCwUAA4ICAQCShDEE9N44
-nl6ZXubD7hdRxFjM3JvZuz8FwX17dlJFJN2OJswEo4UtgFb4iecNPwBAUQ4ds+lD
-Elu6x7oKXTGpjPVn3bCtzjMw+zLwSNgsVKw4gPuIwgOjEe9+nDRwD6c7TidrvIfW
-RgABaWWGo4dXj8tkjRAdh/k47u3XdNJB3lQNF2R9qmtuJV98OoM1takrqykJr8VE
-mY4yUzlahZrfuiRcrndAQw92mWtHvJyBjxK1oWDvTAegIE0Gh2HgocFYT82n0kzt
-JhFELk3hZsFentH9HfaFWD0xfXy/ophOjQhc1t77eUQG8SPI1jMkebiIijNuhTix
-cHiZPwfFrB9fQPoP4sg2wHmRQB5hiOhW2BNVcoQ0xVR8we8M9l0l9wIZEzKtB8f1
-5UbLJojeOR+WXy2gug+ZzmzmPHziXa+cP1oSn1lcvDDSgVrjCJYR/HUasK2ElVUT
-uQlp77pZRevF/Pjw50MNspzM2rXBySFALuM0IGlSxvbE3NCs6zDPbzyiaajNWerK
-3TloCzizdLpd6h8VI0sQk8xIRoGuAJZJlYQzQ90h/WmAj0KlR+41QL7HPH0AqcWJ
-kTbNZmaL0zkO6ugSXf3LmFMdsTHxrVCm7Wnnt+20mBKQMpqrwR5b+IcBpiqxC/E/
-/NH29tMBSSc6bhrkTx1vPgu2ZyjMGgpbEw==
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-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
------END CERTIFICATE-----
-"""
+        self.grpc_root_certificates = grpc_root_certificates
         self.marketdata: Dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
         self.l2_books: dict[str, L2Book] = {}
 
@@ -269,7 +172,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             )
         ):
             try:
-                self.grpc_jwt = (await self.create_jwt()).create_jwt
+                self.grpc_jwt = (await self.graphql_client.create_jwt()).create_jwt
                 self.grpc_jwt_expiration = datetime.now() + timedelta(
                     hours=23
                 )  # TODO: actually inspect the JWT exp
@@ -287,52 +190,58 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         execution_venue: Optional[str] = None,
     ) -> List[str]:
         markets = (
-            await self.search_symbols_query(search_string, execution_venue)
+            await self.graphql_client.search_symbols_query(
+                search_string, execution_venue
+            )
         ).search_symbols
 
         return markets
 
     async def get_product_info(self, symbol: str) -> Optional[ProductInfoFields]:
         # this reduces the indirection count
-        info = await self.get_product_info_query(symbol)
+        info = await self.graphql_client.get_product_info_query(symbol)
         return info.product_info
 
     async def get_product_infos(
         self, symbols: list[str]
     ) -> Sequence[ProductInfoFields]:
-        infos = await self.get_product_infos_query(symbols)
+        infos = await self.graphql_client.get_product_infos_query(symbols)
         return infos.product_infos
 
     async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
-        notice = await self.get_first_notice_date_query(symbol)
+        notice = await self.graphql_client.get_first_notice_date_query(symbol)
         if notice is None or notice.product_info is None:
             return None
         return notice.product_info.first_notice_date
 
     async def get_future_series(self, series_symbol: str) -> list[str]:
-        futures_series = await self.get_future_series_query(series_symbol)
+        futures_series = await self.graphql_client.get_future_series_query(
+            series_symbol
+        )
         return futures_series.futures_series
 
     async def get_execution_info(
         self, symbol: str, execution_venue: str
     ) -> ExecutionInfoFields:
-        execution_info = await self.get_execution_info_query(symbol, execution_venue)
+        execution_info = await self.graphql_client.get_execution_info_query(
+            symbol, execution_venue
+        )
         return execution_info.execution_info
 
     async def get_market_snapshots(
         self, venue: str, symbols: list[str]
     ) -> Sequence[MarketTickerFields]:
-        snapshots = await self.get_market_snapshots_query(venue, symbols)
+        snapshots = await self.graphql_client.get_market_snapshots_query(venue, symbols)
         return snapshots.tickers
 
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
-        accounts = await self.list_accounts_query()
+        accounts = await self.graphql_client.list_accounts_query()
         return accounts.accounts
 
     async def get_account_summary(
         self, account: str, venue: Optional[str] = None
     ) -> AccountSummaryFields:
-        summary = await self.get_account_summary_query(account, venue)
+        summary = await self.graphql_client.get_account_summary_query(account, venue)
         return summary.account_summary
 
     async def get_account_summaries(
@@ -341,7 +250,9 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         venue: Optional[str] = None,
         trader: Optional[str] = None,
     ) -> Sequence[AccountSummaryFields]:
-        summaries = await self.get_account_summaries_query(venue, trader, accounts)
+        summaries = await self.graphql_client.get_account_summaries_query(
+            venue, trader, accounts
+        )
         return summaries.account_summaries
 
     async def get_open_orders(
@@ -353,7 +264,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         symbol: Optional[str] = None,
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
-        orders = await self.get_open_orders_query(
+        orders = await self.graphql_client.get_open_orders_query(
             venue=venue,
             account=account,
             trader=trader,
@@ -364,7 +275,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         return orders.open_orders
 
     async def get_all_open_orders(self) -> Sequence[OrderFields]:
-        orders = await self.get_open_orders_query()
+        orders = await self.graphql_client.get_open_orders_query()
         return orders.open_orders
 
     async def get_historical_orders(
@@ -376,7 +287,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
-        orders = await self.get_historical_orders_query(
+        orders = await self.graphql_client.get_historical_orders_query(
             order_ids=order_ids,
             venue=venue,
             account=account,
@@ -387,13 +298,17 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         return orders.historical_orders
 
     async def get_order(self, order_id: str) -> Optional[OrderFields]:
-        open_orders = await self.get_open_orders_query(order_ids=[order_id])
+        open_orders = await self.graphql_client.get_open_orders_query(
+            order_ids=[order_id]
+        )
 
         for open_order in open_orders.open_orders:
             if open_order.id == order_id:
                 return open_order
 
-        historical_orders = await self.get_historical_orders_query(order_ids=[order_id])
+        historical_orders = await self.graphql_client.get_historical_orders_query(
+            order_ids=[order_id]
+        )
 
         if historical_orders.historical_orders:
             return historical_orders.historical_orders[0]
@@ -404,7 +319,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         }
 
         open_orders = (
-            await self.get_open_orders_query(order_ids=order_ids)
+            await self.graphql_client.get_open_orders_query(order_ids=order_ids)
         ).open_orders
         for open_order in open_orders:
             orders_dict[open_order.id] = open_order
@@ -414,7 +329,9 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         ]
 
         historical_orders = (
-            await self.get_historical_orders_query(order_ids=not_open_order_ids)
+            await self.graphql_client.get_historical_orders_query(
+                order_ids=not_open_order_ids
+            )
         ).historical_orders
         for historical_order in historical_orders:
             orders_dict[historical_order.id] = historical_order
@@ -429,13 +346,13 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         account: Optional[str] = None,
         order_id: Optional[str] = None,
     ) -> GetFillsQueryFolioHistoricalFills:
-        fills = await self.get_fills_query(
+        fills = await self.graphql_client.get_fills_query(
             venue, account, order_id, from_inclusive, to_exclusive
         )
         return fills.historical_fills
 
     async def get_market_status(self, symbol: str, venue: str):
-        market_status = await self.get_market_status_query(symbol, venue)
+        market_status = await self.graphql_client.get_market_status_query(symbol, venue)
         return market_status.market_status
 
     async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
@@ -453,17 +370,17 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         symbol: str,
         venue: str,
     ) -> MarketTickerFields:
-        snapshot = await self.get_market_snapshot_query(symbol, venue)
+        snapshot = await self.graphql_client.get_market_snapshot_query(symbol, venue)
         return snapshot.ticker
 
     async def l1_book_snapshots(
         self, venue: str, symbols: list[str]
     ) -> Sequence[MarketTickerFields]:
-        snapshot = await self.get_market_snapshots_query(venue, symbols)
+        snapshot = await self.graphql_client.get_market_snapshots_query(venue, symbols)
         return snapshot.tickers
 
     async def l2_book_snapshot(self, venue: str, symbol: str) -> L2BookFields:
-        l2_book = await self.get_l_2_book_snapshot_query(venue, symbol)
+        l2_book = await self.graphql_client.get_l_2_book_snapshot_query(venue, symbol)
         return l2_book.l_2_book_snapshot
 
     # async def l2_book_snapshot(
@@ -551,12 +468,8 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
             client = self.marketdata[cpty]
             market_id = Market.derive_id(market)
             return client.subscribe_trades(market_id)
-        elif not self.no_gql:
-            return super().subscribe_trades(market, *args, **kwargs)
         else:
-            raise ValueError(
-                f"cpty {cpty} not configured for marketdata and no GQL server"
-            )
+            return self.graphql_client.subscribe_trades(market, *args, **kwargs)
 
     async def send_limit_order(
         self,
@@ -607,7 +520,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         if not isinstance(trigger_price, Decimal) and trigger_price is not None:
             trigger_price = Decimal(trigger_price)
 
-        order: PlaceOrderMutationOms = await self.place_order_mutation(
+        order: PlaceOrderMutationOms = await self.graphql_client.place_order_mutation(
             symbol,
             odir,
             quantity,
@@ -698,11 +611,11 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         )
 
     async def cancel_order(self, order_id: str) -> CancelFields:
-        cancel = await self.cancel_order_mutation(order_id)
+        cancel = await self.graphql_client.cancel_order_mutation(order_id)
         return cancel.cancel_order
 
     async def cancel_all_orders(self) -> bool:
-        b = await self.cancel_all_orders_mutation()
+        b = await self.graphql_client.cancel_all_orders_mutation()
         return b.cancel_all_orders
 
     @staticmethod

@@ -10,10 +10,12 @@ from .common import create_async_client
 async def main():
     c: AsyncClient = create_async_client()
     symbol = "ES 20250321 CME Future"
+    quote = "USD"
+    tradable_product = f"{symbol}/{quote}"
     venue = "CME"
     try:
         stream = c.subscribe_candles(
-            venue, symbol, width=CandleWidth.ONE_MINUTE, ping_interval=None
+            venue, tradable_product, width=CandleWidth.ONE_MINUTE, ping_interval=None
         )
         async for candle in stream:
             print(candle)

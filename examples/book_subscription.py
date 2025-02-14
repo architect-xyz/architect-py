@@ -1,5 +1,4 @@
 import asyncio
-from decimal import Decimal
 import os
 
 from architect_py.async_client import AsyncClient
@@ -35,7 +34,6 @@ def print_book(book):
 
 async def main():
     c: AsyncClient = create_async_client()
-    # market_id = "BTC Crypto/USD*COINBASE/DIRECT"
     endpoint = "app.architect.co"
     symbol = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
     try:

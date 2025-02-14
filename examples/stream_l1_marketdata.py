@@ -8,10 +8,10 @@ from .common import create_async_client
 
 async def main():
     c: AsyncClient = create_async_client()
-    markets = await c.search_symbols(execution_venue="BINANCE-FUTURES-USD-M")
+    markets = await c.search_symbols(execution_venue="ES")
     markets_by_id = {}
     for market in markets:
-        markets_by_id[UUID(market.id)] = market
+        markets_by_id[UUID(market)] = market
     print(f"Loaded {len(markets)} markets")
 
     """

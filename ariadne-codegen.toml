@@ -10,6 +10,7 @@ files_to_include = ["./templates/exceptions.py"]
 plugins = [
     "ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin",
     "ariadne_codegen.contrib.client_forward_refs.ClientForwardRefsPlugin",
+    # adding a plugin for making __slots__ is not a good idea because it is not compatible with Pydantic
 ]
 
 [tool.ariadne-codegen.scalars]

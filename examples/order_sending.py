@@ -30,7 +30,6 @@ async def search_symbol() -> tuple[str, str]:
     markets = await client.search_symbols(
         search_string="ES",
         execution_venue=venue,
-        sort_by_volume_desc_given_execution_venue=True,
     )
     market = markets[0]
     return venue, market
@@ -51,6 +50,7 @@ async def test_send_order():
         odir=OrderDir.BUY,
         quantity=Decimal(1),
         order_type=OrderType.LIMIT,
+        execution_venue="CME",
         post_only=True,
         limit_price=snapshot.bid_price
         - (snapshot.ask_price - snapshot.bid_price) * Decimal(10),

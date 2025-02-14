@@ -1,3 +1,10 @@
+"""
+This example is outdated and will not work with the current version of the library due to
+`subscribe_exchange_specific` not existing anymore.
+
+Please contact Architect if you would like this functionality added back.
+"""
+
 import asyncio
 from decimal import Decimal
 from typing import Optional
@@ -13,7 +20,7 @@ from .common import create_async_client
 venue = "BINANCE-FUTURES-USD-M"
 route = "DIRECT"
 product = f"BTC-USDT Perpetual"
-market = f"{product}/USDT Crypto*{venue}/{route}"
+tradable_product = f"{product}/USDT Crypto"
 best_bid_price: Optional[Decimal] = None
 best_ask_price: Optional[Decimal] = None
 current_funding_rate: Optional[Decimal] = None  # as fraction, e.g. 0.0001 = 1 bp
@@ -23,7 +30,7 @@ current_position = 0
 
 async def update_marketdata(c: AsyncClient):
     s = c.subscribe_exchange_specific(
-        markets=[market],
+        markets=[tradable_product],
         fields=["funding_rate", "best_bid_price", "best_ask_price"],
     )
     async for batched in s:
@@ -87,9 +94,10 @@ async def step_to_target_position(c: AsyncClient):
                 # buy 1 contract
                 try:
                     order = await c.send_limit_order(
-                        market=market,
+                        symbol=tradable_product,
                         odir=OrderDir.BUY,
                         quantity=Decimal(1),
+                        execution_venue=None,
                         limit_price=best_ask_price,
                         price_round_method=TickRoundMethod.ROUND,
                         # account = account
@@ -106,35 +114,37 @@ async def step_to_target_position(c: AsyncClient):
                 # sell 1 contract
                 try:
                     order = await c.send_limit_order(
-                        market=market,
+                        symbol=tradable_product,
                         odir=OrderDir.SELL,
                         quantity=Decimal(1),
+                        execution_venue=None,
                         limit_price=best_bid_price,
                         price_round_method=TickRoundMethod.ROUND,
                         # account = account
                     )
-                    if order is None:
-                        raise ValueError("No response")
-                    print(f"Order #{order.order}: SELL 1 contract @ {best_bid_price}")
+                    print(f"Order #{order}: SELL 1 contract @ {best_bid_price}")
                 except GraphQLClientHttpError as e:
                     print(e.response.json())
                     raise e
 
 
 async def print_info(c: AsyncClient):
+    accounts = await c.list_accounts()
     while True:
         await asyncio.sleep(3)
-        r = await c.get_balances_for_cpty(venue, route)
+        account_summaries = await c.get_account_summaries(
+            accounts=[account.account.name for account in accounts]
+        )
         pos = 0
-        for account in r.by_account:
+        for account in account_summaries:
             for balance in account.balances:
                 if balance.product is None:
                     name = "UNKNOWN NAME"
                 else:
-                    name = balance.product.name
-                print(f"balance for {name}: {balance.amount}")
-                if name and balance.amount is not None:
-                    pos += float(balance.amount)
+                    name = balance.product
+                print(f"balance for {name}: {balance.balance}")
+                if name and balance.balance is not None:
+                    pos += float(balance.balance)
         global current_position
         current_position = pos
         print(f"---")

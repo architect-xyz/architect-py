@@ -3,81 +3,53 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, AsyncIterator, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
 from architect_py.scalars import OrderDir, convert_datetime_to_utc_str, serialize
 
-from .base_model import UNSET, UnsetType
-from .cancel_all_orders_mutation import (
-    CancelAllOrdersMutation,
-    CancelAllOrdersMutationOms,
-)
-from .cancel_order_mutation import CancelOrderMutation, CancelOrderMutationOms
-from .create_jwt import CreateJwt, CreateJwtUser
-from .enums import CandleWidth, OrderType, TimeInForce
-from .get_account_query import GetAccountQuery, GetAccountQueryUser
-from .get_account_summaries_query import (
-    GetAccountSummariesQuery,
-    GetAccountSummariesQueryFolio,
-)
-from .get_account_summary_query import (
-    GetAccountSummaryQuery,
-    GetAccountSummaryQueryFolio,
-)
-from .get_execution_info_query import (
-    GetExecutionInfoQuery,
-    GetExecutionInfoQuerySymbology,
-)
-from .get_fills_query import GetFillsQuery, GetFillsQueryFolio
-from .get_first_notice_date_query import (
-    GetFirstNoticeDateQuery,
-    GetFirstNoticeDateQuerySymbology,
-)
-from .get_future_series_query import GetFutureSeriesQuery, GetFutureSeriesQuerySymbology
-from .get_historical_orders_query import (
-    GetHistoricalOrdersQuery,
-    GetHistoricalOrdersQueryFolio,
-)
-from .get_l_2_book_snapshot_query import (
-    GetL2BookSnapshotQuery,
-    GetL2BookSnapshotQueryMarketdata,
-)
-from .get_market_snapshot_query import (
-    GetMarketSnapshotQuery,
-    GetMarketSnapshotQueryMarketdata,
-)
-from .get_market_snapshots_query import (
-    GetMarketSnapshotsQuery,
-    GetMarketSnapshotsQueryMarketdata,
-)
-from .get_market_status_query import (
-    GetMarketStatusQuery,
-    GetMarketStatusQueryMarketdata,
-)
-from .get_open_orders_query import GetOpenOrdersQuery, GetOpenOrdersQueryOms
-from .get_product_info_query import GetProductInfoQuery, GetProductInfoQuerySymbology
-from .get_product_infos_query import GetProductInfosQuery, GetProductInfosQuerySymbology
+from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient
-from .list_accounts_query import ListAccountsQuery, ListAccountsQueryUser
-from .place_order_mutation import PlaceOrderMutation, PlaceOrderMutationOms
-from .search_symbols_query import SearchSymbolsQuery, SearchSymbolsQuerySymbology
-from .subscribe_candles import SubscribeCandles, SubscribeCandlesCandles
-from .subscribe_orderflow import (
-    SubscribeOrderflow,
-    SubscribeOrderflowOrderflowAberrantFill,
-    SubscribeOrderflowOrderflowCancel,
-    SubscribeOrderflowOrderflowCancelReject,
-    SubscribeOrderflowOrderflowFill,
-    SubscribeOrderflowOrderflowGqlOrderReject,
-    SubscribeOrderflowOrderflowOrder,
-    SubscribeOrderflowOrderflowOrderAck,
-    SubscribeOrderflowOrderflowOrderCanceled,
-    SubscribeOrderflowOrderflowOrderCanceling,
-    SubscribeOrderflowOrderflowOrderOut,
-    SubscribeOrderflowOrderflowOrderStale,
-)
-from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
+
+if TYPE_CHECKING:
+    from .base_model import UnsetType
+    from .cancel_all_orders_mutation import CancelAllOrdersMutationOms
+    from .cancel_order_mutation import CancelOrderMutationOms
+    from .create_jwt import CreateJwtUser
+    from .enums import CandleWidth, OrderType, TimeInForce
+    from .get_account_query import GetAccountQueryUser
+    from .get_account_summaries_query import GetAccountSummariesQueryFolio
+    from .get_account_summary_query import GetAccountSummaryQueryFolio
+    from .get_execution_info_query import GetExecutionInfoQuerySymbology
+    from .get_fills_query import GetFillsQueryFolio
+    from .get_first_notice_date_query import GetFirstNoticeDateQuerySymbology
+    from .get_future_series_query import GetFutureSeriesQuerySymbology
+    from .get_historical_orders_query import GetHistoricalOrdersQueryFolio
+    from .get_l_2_book_snapshot_query import GetL2BookSnapshotQueryMarketdata
+    from .get_market_snapshot_query import GetMarketSnapshotQueryMarketdata
+    from .get_market_snapshots_query import GetMarketSnapshotsQueryMarketdata
+    from .get_market_status_query import GetMarketStatusQueryMarketdata
+    from .get_open_orders_query import GetOpenOrdersQueryOms
+    from .get_product_info_query import GetProductInfoQuerySymbology
+    from .get_product_infos_query import GetProductInfosQuerySymbology
+    from .list_accounts_query import ListAccountsQueryUser
+    from .place_order_mutation import PlaceOrderMutationOms
+    from .search_symbols_query import SearchSymbolsQuerySymbology
+    from .subscribe_candles import SubscribeCandlesCandles
+    from .subscribe_orderflow import (
+        SubscribeOrderflowOrderflowAberrantFill,
+        SubscribeOrderflowOrderflowCancel,
+        SubscribeOrderflowOrderflowCancelReject,
+        SubscribeOrderflowOrderflowFill,
+        SubscribeOrderflowOrderflowGqlOrderReject,
+        SubscribeOrderflowOrderflowOrder,
+        SubscribeOrderflowOrderflowOrderAck,
+        SubscribeOrderflowOrderflowOrderCanceled,
+        SubscribeOrderflowOrderflowOrderCanceling,
+        SubscribeOrderflowOrderflowOrderOut,
+        SubscribeOrderflowOrderflowOrderStale,
+    )
+    from .subscribe_trades import SubscribeTradesTrades
 
 
 def gql(q: str) -> str:
@@ -87,10 +59,12 @@ def gql(q: str) -> str:
 class GraphQLClient(JuniperBaseClient):
     async def search_symbols_query(
         self,
-        search_string: Union[Optional[str], UnsetType] = UNSET,
-        execution_venue: Union[Optional[str], UnsetType] = UNSET,
+        search_string: Union[Optional[str], "UnsetType"] = UNSET,
+        execution_venue: Union[Optional[str], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> SearchSymbolsQuerySymbology:
+    ) -> "SearchSymbolsQuerySymbology":
+        from .search_symbols_query import SearchSymbolsQuery
+
         query = gql(
             """
             query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue) {
@@ -115,7 +89,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_product_info_query(
         self, symbol: str, **kwargs: Any
-    ) -> GetProductInfoQuerySymbology:
+    ) -> "GetProductInfoQuerySymbology":
+        from .get_product_info_query import GetProductInfoQuery
+
         query = gql(
             """
             query GetProductInfoQuery($symbol: String!) {
@@ -150,7 +126,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_product_infos_query(
         self, symbols: List[str], **kwargs: Any
-    ) -> GetProductInfosQuerySymbology:
+    ) -> "GetProductInfosQuerySymbology":
+        from .get_product_infos_query import GetProductInfosQuery
+
         query = gql(
             """
             query GetProductInfosQuery($symbols: [String!]!) {
@@ -185,7 +163,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_first_notice_date_query(
         self, symbol: str, **kwargs: Any
-    ) -> GetFirstNoticeDateQuerySymbology:
+    ) -> "GetFirstNoticeDateQuerySymbology":
+        from .get_first_notice_date_query import GetFirstNoticeDateQuery
+
         query = gql(
             """
             query GetFirstNoticeDateQuery($symbol: String!) {
@@ -209,7 +189,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_future_series_query(
         self, series_symbol: str, **kwargs: Any
-    ) -> GetFutureSeriesQuerySymbology:
+    ) -> "GetFutureSeriesQuerySymbology":
+        from .get_future_series_query import GetFutureSeriesQuery
+
         query = gql(
             """
             query GetFutureSeriesQuery($seriesSymbol: String!) {
@@ -231,7 +213,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_execution_info_query(
         self, symbol: str, execution_venue: str, **kwargs: Any
-    ) -> GetExecutionInfoQuerySymbology:
+    ) -> "GetExecutionInfoQuerySymbology":
+        from .get_execution_info_query import GetExecutionInfoQuery
+
         query = gql(
             """
             query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
@@ -267,8 +251,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetExecutionInfoQuery.model_validate(data).symbology
 
     async def get_market_snapshot_query(
-        self, symbol: str, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
-    ) -> GetMarketSnapshotQueryMarketdata:
+        self,
+        symbol: str,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetMarketSnapshotQueryMarketdata":
+        from .get_market_snapshot_query import GetMarketSnapshotQuery
+
         query = gql(
             """
             query GetMarketSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
@@ -304,9 +293,11 @@ class GraphQLClient(JuniperBaseClient):
     async def get_market_snapshots_query(
         self,
         venue: str,
-        symbols: Union[Optional[List[str]], UnsetType] = UNSET,
+        symbols: Union[Optional[List[str]], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetMarketSnapshotsQueryMarketdata:
+    ) -> "GetMarketSnapshotsQueryMarketdata":
+        from .get_market_snapshots_query import GetMarketSnapshotsQuery
+
         query = gql(
             """
             query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
@@ -340,8 +331,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetMarketSnapshotsQuery.model_validate(data).marketdata
 
     async def get_market_status_query(
-        self, symbol: str, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
-    ) -> GetMarketStatusQueryMarketdata:
+        self,
+        symbol: str,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetMarketStatusQueryMarketdata":
+        from .get_market_status_query import GetMarketStatusQuery
+
         query = gql(
             """
             query GetMarketStatusQuery($venue: MarketdataVenue, $symbol: String!) {
@@ -371,10 +367,12 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_account_query(
         self,
-        id: Union[Optional[UUID], UnsetType] = UNSET,
-        name: Union[Optional[str], UnsetType] = UNSET,
+        id: Union[Optional[UUID], "UnsetType"] = UNSET,
+        name: Union[Optional[str], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetAccountQueryUser:
+    ) -> "GetAccountQueryUser":
+        from .get_account_query import GetAccountQuery
+
         query = gql(
             """
             query GetAccountQuery($id: Uuid, $name: AccountName) {
@@ -408,7 +406,9 @@ class GraphQLClient(JuniperBaseClient):
         data = self.get_data(response)
         return GetAccountQuery.model_validate(data).user
 
-    async def list_accounts_query(self, **kwargs: Any) -> ListAccountsQueryUser:
+    async def list_accounts_query(self, **kwargs: Any) -> "ListAccountsQueryUser":
+        from .list_accounts_query import ListAccountsQuery
+
         query = gql(
             """
             query ListAccountsQuery {
@@ -448,9 +448,11 @@ class GraphQLClient(JuniperBaseClient):
     async def get_account_summary_query(
         self,
         account: str,
-        venue: Union[Optional[str], UnsetType] = UNSET,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetAccountSummaryQueryFolio:
+    ) -> "GetAccountSummaryQueryFolio":
+        from .get_account_summary_query import GetAccountSummaryQuery
+
         query = gql(
             """
             query GetAccountSummaryQuery($venue: ExecutionVenue, $account: String!) {
@@ -499,11 +501,13 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_account_summaries_query(
         self,
-        venue: Union[Optional[str], UnsetType] = UNSET,
-        trader: Union[Optional[str], UnsetType] = UNSET,
-        accounts: Union[Optional[List[str]], UnsetType] = UNSET,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        trader: Union[Optional[str], "UnsetType"] = UNSET,
+        accounts: Union[Optional[List[str]], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetAccountSummariesQueryFolio:
+    ) -> "GetAccountSummariesQueryFolio":
+        from .get_account_summaries_query import GetAccountSummariesQuery
+
         query = gql(
             """
             query GetAccountSummariesQuery($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
@@ -556,14 +560,16 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_open_orders_query(
         self,
-        venue: Union[Optional[str], UnsetType] = UNSET,
-        account: Union[Optional[str], UnsetType] = UNSET,
-        trader: Union[Optional[str], UnsetType] = UNSET,
-        symbol: Union[Optional[str], UnsetType] = UNSET,
-        parent_order_id: Union[Optional[str], UnsetType] = UNSET,
-        order_ids: Union[Optional[List[str]], UnsetType] = UNSET,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        account: Union[Optional[str], "UnsetType"] = UNSET,
+        trader: Union[Optional[str], "UnsetType"] = UNSET,
+        symbol: Union[Optional[str], "UnsetType"] = UNSET,
+        parent_order_id: Union[Optional[str], "UnsetType"] = UNSET,
+        order_ids: Union[Optional[List[str]], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetOpenOrdersQueryOms:
+    ) -> "GetOpenOrdersQueryOms":
+        from .get_open_orders_query import GetOpenOrdersQuery
+
         query = gql(
             """
             query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
@@ -625,14 +631,16 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_historical_orders_query(
         self,
-        order_ids: Union[Optional[List[str]], UnsetType] = UNSET,
-        venue: Union[Optional[str], UnsetType] = UNSET,
-        account: Union[Optional[str], UnsetType] = UNSET,
-        parent_order_id: Union[Optional[str], UnsetType] = UNSET,
-        from_inclusive: Union[Optional[datetime], UnsetType] = UNSET,
-        to_exclusive: Union[Optional[datetime], UnsetType] = UNSET,
+        order_ids: Union[Optional[List[str]], "UnsetType"] = UNSET,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        account: Union[Optional[str], "UnsetType"] = UNSET,
+        parent_order_id: Union[Optional[str], "UnsetType"] = UNSET,
+        from_inclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
+        to_exclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetHistoricalOrdersQueryFolio:
+    ) -> "GetHistoricalOrdersQueryFolio":
+        from .get_historical_orders_query import GetHistoricalOrdersQuery
+
         query = gql(
             """
             query GetHistoricalOrdersQuery($orderIds: [OrderId!], $venue: ExecutionVenue, $account: String, $parentOrderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
@@ -694,13 +702,15 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_fills_query(
         self,
-        venue: Union[Optional[str], UnsetType] = UNSET,
-        account: Union[Optional[str], UnsetType] = UNSET,
-        order_id: Union[Optional[str], UnsetType] = UNSET,
-        from_inclusive: Union[Optional[datetime], UnsetType] = UNSET,
-        to_exclusive: Union[Optional[datetime], UnsetType] = UNSET,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        account: Union[Optional[str], "UnsetType"] = UNSET,
+        order_id: Union[Optional[str], "UnsetType"] = UNSET,
+        from_inclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
+        to_exclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> GetFillsQueryFolio:
+    ) -> "GetFillsQueryFolio":
+        from .get_fills_query import GetFillsQuery
+
         query = gql(
             """
             query GetFillsQuery($venue: ExecutionVenue, $account: String, $orderId: OrderId, $fromInclusive: DateTime, $toExclusive: DateTime) {
@@ -761,8 +771,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetFillsQuery.model_validate(data).folio
 
     async def get_l_2_book_snapshot_query(
-        self, symbol: str, venue: Union[Optional[str], UnsetType] = UNSET, **kwargs: Any
-    ) -> GetL2BookSnapshotQueryMarketdata:
+        self,
+        symbol: str,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetL2BookSnapshotQueryMarketdata":
+        from .get_l_2_book_snapshot_query import GetL2BookSnapshotQuery
+
         query = gql(
             """
             query GetL2BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
@@ -801,7 +816,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def subscribe_trades(
         self, venue: str, symbol: str, **kwargs: Any
-    ) -> AsyncIterator[SubscribeTradesTrades]:
+    ) -> AsyncIterator["SubscribeTradesTrades"]:
+        from .subscribe_trades import SubscribeTrades
+
         query = gql(
             """
             subscription SubscribeTrades($venue: MarketdataVenue!, $symbol: String!) {
@@ -824,9 +841,11 @@ class GraphQLClient(JuniperBaseClient):
         self,
         venue: str,
         symbol: str,
-        widths: Union[Optional[List[CandleWidth]], UnsetType] = UNSET,
+        widths: Union[Optional[List["CandleWidth"]], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> AsyncIterator[SubscribeCandlesCandles]:
+    ) -> AsyncIterator["SubscribeCandlesCandles"]:
+        from .subscribe_candles import SubscribeCandles
+
         query = gql(
             """
             subscription SubscribeCandles($venue: MarketdataVenue!, $symbol: String!, $widths: [CandleWidth!]) {
@@ -861,7 +880,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def cancel_order_mutation(
         self, order_id: str, **kwargs: Any
-    ) -> CancelOrderMutationOms:
+    ) -> "CancelOrderMutationOms":
+        from .cancel_order_mutation import CancelOrderMutation
+
         query = gql(
             """
             mutation CancelOrderMutation($orderId: OrderId!) {
@@ -893,7 +914,9 @@ class GraphQLClient(JuniperBaseClient):
 
     async def cancel_all_orders_mutation(
         self, **kwargs: Any
-    ) -> CancelAllOrdersMutationOms:
+    ) -> "CancelAllOrdersMutationOms":
+        from .cancel_all_orders_mutation import CancelAllOrdersMutation
+
         query = gql(
             """
             mutation CancelAllOrdersMutation {
@@ -918,18 +941,20 @@ class GraphQLClient(JuniperBaseClient):
         symbol: str,
         dir: OrderDir,
         quantity: Decimal,
-        order_type: OrderType,
-        time_in_force: TimeInForce,
-        id: Union[Optional[str], UnsetType] = UNSET,
-        trader: Union[Optional[str], UnsetType] = UNSET,
-        account: Union[Optional[str], UnsetType] = UNSET,
-        limit_price: Union[Optional[Decimal], UnsetType] = UNSET,
-        post_only: Union[Optional[bool], UnsetType] = UNSET,
-        trigger_price: Union[Optional[Decimal], UnsetType] = UNSET,
-        good_til_date: Union[Optional[datetime], UnsetType] = UNSET,
-        execution_venue: Union[Optional[str], UnsetType] = UNSET,
+        order_type: "OrderType",
+        time_in_force: "TimeInForce",
+        id: Union[Optional[str], "UnsetType"] = UNSET,
+        trader: Union[Optional[str], "UnsetType"] = UNSET,
+        account: Union[Optional[str], "UnsetType"] = UNSET,
+        limit_price: Union[Optional[Decimal], "UnsetType"] = UNSET,
+        post_only: Union[Optional[bool], "UnsetType"] = UNSET,
+        trigger_price: Union[Optional[Decimal], "UnsetType"] = UNSET,
+        good_til_date: Union[Optional[datetime], "UnsetType"] = UNSET,
+        execution_venue: Union[Optional[str], "UnsetType"] = UNSET,
         **kwargs: Any
-    ) -> PlaceOrderMutationOms:
+    ) -> "PlaceOrderMutationOms":
+        from .place_order_mutation import PlaceOrderMutation
+
         query = gql(
             """
             mutation PlaceOrderMutation($id: OrderId, $symbol: String!, $dir: Dir!, $quantity: Decimal!, $trader: String, $account: String, $orderType: OrderType!, $limitPrice: Decimal, $postOnly: Boolean, $triggerPrice: Decimal, $timeInForce: TimeInForce!, $goodTilDate: DateTime, $executionVenue: ExecutionVenue) {
@@ -1005,19 +1030,21 @@ class GraphQLClient(JuniperBaseClient):
 
     async def subscribe_orderflow(self, **kwargs: Any) -> AsyncIterator[
         Union[
-            SubscribeOrderflowOrderflowOrder,
-            SubscribeOrderflowOrderflowOrderAck,
-            SubscribeOrderflowOrderflowGqlOrderReject,
-            SubscribeOrderflowOrderflowOrderOut,
-            SubscribeOrderflowOrderflowOrderStale,
-            SubscribeOrderflowOrderflowCancel,
-            SubscribeOrderflowOrderflowCancelReject,
-            SubscribeOrderflowOrderflowOrderCanceling,
-            SubscribeOrderflowOrderflowOrderCanceled,
-            SubscribeOrderflowOrderflowFill,
-            SubscribeOrderflowOrderflowAberrantFill,
+            "SubscribeOrderflowOrderflowOrder",
+            "SubscribeOrderflowOrderflowOrderAck",
+            "SubscribeOrderflowOrderflowGqlOrderReject",
+            "SubscribeOrderflowOrderflowOrderOut",
+            "SubscribeOrderflowOrderflowOrderStale",
+            "SubscribeOrderflowOrderflowCancel",
+            "SubscribeOrderflowOrderflowCancelReject",
+            "SubscribeOrderflowOrderflowOrderCanceling",
+            "SubscribeOrderflowOrderflowOrderCanceled",
+            "SubscribeOrderflowOrderflowFill",
+            "SubscribeOrderflowOrderflowAberrantFill",
         ]
     ]:
+        from .subscribe_orderflow import SubscribeOrderflow
+
         query = gql(
             """
             subscription SubscribeOrderflow {
@@ -1098,7 +1125,9 @@ class GraphQLClient(JuniperBaseClient):
         ):
             yield SubscribeOrderflow.model_validate(data).orderflow
 
-    async def create_jwt(self, **kwargs: Any) -> CreateJwtUser:
+    async def create_jwt(self, **kwargs: Any) -> "CreateJwtUser":
+        from .create_jwt import CreateJwt
+
         query = gql(
             """
             mutation CreateJwt {
