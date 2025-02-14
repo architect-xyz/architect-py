@@ -118,6 +118,7 @@ def autogenerate_protocol(cls) -> str:
         "\n",
         "from typing import Union",
         "from architect_py.graphql_client import *",
+        "from uuid import UUID",
         "from architect_py.async_client import *",
         "from architect_py.graphql_client.base_model import UnsetType, UNSET",
         "from httpx import Response",
