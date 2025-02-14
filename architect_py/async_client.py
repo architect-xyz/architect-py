@@ -379,6 +379,7 @@ P4NC7VHNfGr8p4Zk29eaRBJy78sqSzkrQpiO4RxMf5r8XTmhjwEjlo0KYjU=
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         orders = await self.get_historical_orders_query(
+            order_ids=order_ids,
             venue=venue,
             account=account,
             parent_order_id=parent_order_id,
