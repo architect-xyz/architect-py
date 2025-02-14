@@ -1,3 +1,8 @@
+3.1.5
+Fixes:
+  - fix get_historical_orders
+  - fix the sync client import
+
 3.1.4
 Features:
   - added get_order and get_orders
