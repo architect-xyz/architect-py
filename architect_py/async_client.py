@@ -439,7 +439,6 @@ class AsyncClient:
         [_, cpty] = symbol.split("*", 1)
         if cpty in self.marketdata:
             client = self.marketdata[cpty]
-            market_id = Market.derive_id(symbol)
             return await client.get_l2_book_snapshot(symbol)
         else:
             raise ValueError(f"cpty {cpty} not configured for L2 marketdata")

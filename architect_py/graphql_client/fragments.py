@@ -8,7 +8,7 @@ from uuid import UUID
 
 from pydantic import Field
 
-from architect_py.scalars import OrderDir
+from architect_py.scalars import OrderDir, TradableProduct
 
 from .base_model import BaseModel
 from .enums import (
@@ -43,7 +43,7 @@ class AccountSummaryFieldsBalances(BaseModel):
 
 
 class AccountSummaryFieldsPositions(BaseModel):
-    symbol: str
+    symbol: TradableProduct
     quantity: Decimal
     trade_time: Optional[datetime] = Field(alias="tradeTime")
     cost_basis: Optional[Decimal] = Field(alias="costBasis")

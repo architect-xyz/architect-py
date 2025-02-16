@@ -19,6 +19,33 @@ def deserialize(value):
     return value.deserialize(value)
 
 
+class TradableProduct(str):
+    def __new__(cls, value: str) -> "TradableProduct":
+        assert (
+            "/" in value
+        ), f"TradableProduct must be in the form of 'base/quote'. Got: {value}"
+        return super().__new__(cls, value)
+
+    def serialize(self) -> str:
+        return self
+
+    @classmethod
+    def deserialize(cls, value: str) -> "TradableProduct":
+        return cls(value)
+
+    @property
+    def base_quote(self) -> list[str]:
+        return self.split("/")
+
+    @property
+    def base(self) -> str:
+        return self.split("/")[0]
+
+    @property
+    def quote(self) -> str:
+        return self.split("/")[1]
+
+
 class OrderDir(Enum):
     BUY = "buy"
     SELL = "sell"
