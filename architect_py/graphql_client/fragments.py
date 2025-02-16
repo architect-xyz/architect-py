@@ -3,12 +3,12 @@
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Annotated, List, Optional
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import BeforeValidator, Field
 
-from architect_py.scalars import OrderDir, TradableProduct
+from architect_py.scalars import OrderDir, TradableProduct, parse_tradable_product
 
 from .base_model import BaseModel
 from .enums import (
@@ -43,7 +43,7 @@ class AccountSummaryFieldsBalances(BaseModel):
 
 
 class AccountSummaryFieldsPositions(BaseModel):
-    symbol: TradableProduct
+    symbol: Annotated[TradableProduct, BeforeValidator(parse_tradable_product)]
     quantity: Decimal
     trade_time: Optional[datetime] = Field(alias="tradeTime")
     cost_basis: Optional[Decimal] = Field(alias="costBasis")

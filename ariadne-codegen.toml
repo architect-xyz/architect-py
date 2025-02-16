@@ -21,15 +21,15 @@ ExecutionVenue.type = "str"
 MarketdataVenue.type = "str"
 OrderId.type = "str"
 Product.type = "str"
+
 TradableProduct.type = "architect_py.scalars.TradableProduct"
 TradableProduct.serialize = "architect_py.scalars.serialize"
-TradableProduct.deserialize = "architect_py.scalars.deserialize"
+TradableProduct.parse = "architect_py.scalars.parse_tradable_product"
+
 UserId.type = "str"
 Uuid.type = "uuid.UUID"
 
-Dir.type = "architect_py.scalars.OrderDir"
-Dir.serialize = "architect_py.scalars.serialize"
-Dir.deserialize = "architect_py.scalars.deserialize"
+Dir.type = "architect_py.scalars.OrderDir"  # enums auto serialize/parse
 
 DateTime.type = "datetime.datetime"
 DateTime.serialize = "architect_py.scalars.convert_datetime_to_utc_str"

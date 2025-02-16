@@ -54,6 +54,57 @@ The sync clients and async clients usage is identical, except one removes the `a
 Check the `examples` folder or the `architect_py/tests` folders for example usages.
 
 
+## Function Breakdown
+
+
+The `async` client has the following functions
+```
+""" SYMBOLOGY + PRODUCT INFO """
+    search_symbols
+    get_product_info
+    get_product_infos
+    get_cme_first_notice_date
+    get_future_series
+    get_execution_info
+    get_expiration_from_CME_name
+    get_cme_futures_series
+    get_cme_future_from_root_month_year
+
+""" ACCOUNT INFO """
+    list_accounts
+    get_account_summary
+    get_account_summaries
+
+""" ORDER HISTORY """
+    get_open_orders
+    get_all_open_orders
+    get_historical_orders
+    get_order
+    get_orders
+    get_fills
+
+""" MARKET DATA """
+    get_market_status
+    market_snapshot
+    market_snapshots
+    l1_book_snapshot
+    l1_book_snapshots
+    l2_book_snapshot
+    subscribe_l1_book_snapshots
+    subscribe_l2_book_updates
+    watch_l2_book
+    get_external_l2_book_snapshot
+    get_l3_book_snapshot
+    subscribe_trades
+
+""" ORDER SENDING """
+    send_limit_order
+    send_market_pro_order
+    cancel_order
+    cancel_all_orders
+```
+
+
 ### Running examples from this package
 
 Clone this repository to run examples in the `examples` directory. This package

@@ -6,7 +6,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from architect_py.scalars import OrderDir, convert_datetime_to_utc_str, serialize
+from architect_py.scalars import OrderDir, convert_datetime_to_utc_str
 
 from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient
@@ -1007,7 +1007,7 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {
             "id": id,
             "symbol": symbol,
-            "dir": serialize(dir),
+            "dir": dir,
             "quantity": quantity,
             "trader": trader,
             "account": account,

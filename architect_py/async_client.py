@@ -477,12 +477,11 @@ class AsyncClient:
     async def get_l3_book_snapshot(self, symbol: str, venue: str) -> L3BookSnapshot:
         if venue in self.marketdata:
             client = self.marketdata[venue]
-            market_id = Market.derive_id(symbol)
             return await client.get_l3_book_snapshot(symbol)
         else:
             raise ValueError(f"venue {venue} not configured for L3 marketdata")
 
-    def subscribe_trades(
+    async def subscribe_trades(
         self, symbol: str, venue: str
     ) -> AsyncIterator[SubscribeTradesTrades]:
         if venue in self.marketdata:

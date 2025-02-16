@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Literal, Optional
+from typing import Literal, Optional, TypeVar
 
 from datetime import datetime, timezone
 
@@ -11,12 +11,8 @@ Custom Serialize / Deserializing functions for the scalars
 """
 
 
-def serialize(value):
+def serialize(value) -> str:
     return value.serialize()
-
-
-def deserialize(value):
-    return value.deserialize(value)
 
 
 class TradableProduct(str):
@@ -30,7 +26,7 @@ class TradableProduct(str):
         return self
 
     @classmethod
-    def deserialize(cls, value: str) -> "TradableProduct":
+    def parse(cls, value: str) -> "TradableProduct":
         return cls(value)
 
     @property
@@ -44,6 +40,10 @@ class TradableProduct(str):
     @property
     def quote(self) -> str:
         return self.split("/")[1]
+
+
+def parse_tradable_product(value: str) -> TradableProduct:
+    return TradableProduct(value)
 
 
 class OrderDir(Enum):
@@ -70,7 +70,7 @@ class OrderDir(Enum):
             raise ValueError(f"Unknown Dir: {self}")
 
     @classmethod
-    def deserialize(cls, value: str) -> "OrderDir":
+    def parse(cls, value: str) -> "OrderDir":
         if value == "buy":
             return cls.BUY
         elif value == "sell":

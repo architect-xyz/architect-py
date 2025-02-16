@@ -1,3 +1,14 @@
+3.1.6
+Features:
+  - added explicit paper trading mode arg for client
+  - composes graphql client instead of inheriting
+  - added working TradableProduct scalar
+
+Fixes:
+  - fix the l2 snapshot function
+  - get_order now works
+  - fixed paper trading port
+
 3.1.5
 Fixes:
   - fix get_historical_orders
