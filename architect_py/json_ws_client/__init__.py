@@ -87,6 +87,6 @@ class JsonWsClient:
         snap = L3BookSnapshot.from_dict(res)
         return snap
 
-    async def subscribe_trades(self, market_id: uuid.UUID) -> AsyncIterator[TradeV1]:
-        async for data in self.subscribe(f"marketdata/trades/{market_id}"):
+    async def subscribe_trades(self, symbol: str) -> AsyncIterator[TradeV1]:
+        async for data in self.subscribe(f"marketdata/trades/{symbol}"):
             yield TradeV1(**data)

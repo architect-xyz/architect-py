@@ -222,11 +222,35 @@ class AsyncClient:
         )
         return execution_info.execution_info
 
-    async def get_market_snapshots(
-        self, venue: str, symbols: list[str]
-    ) -> Sequence[MarketTickerFields]:
-        snapshots = await self.graphql_client.get_market_snapshots_query(venue, symbols)
-        return snapshots.tickers
+    @staticmethod
+    def get_expiration_from_CME_name(name: str) -> date:
+        _, d, *_ = name.split(" ")
+        return datetime.strptime(d, "%Y%m%d").date()
+
+    async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
+        markets = await self.get_future_series(
+            series,
+        )
+
+        filtered_markets = [
+            (self.get_expiration_from_CME_name(market), market) for market in markets
+        ]
+
+        filtered_markets.sort(key=lambda x: x[0])
+
+        return filtered_markets
+
+    async def get_cme_future_from_root_month_year(
+        self, root: str, month: int, year: int
+    ) -> str:
+        [market] = [
+            market
+            for market in await self.search_symbols(
+                f"{root} {year}{month:02d}",
+            )
+        ]
+
+        return market
 
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
         accounts = await self.graphql_client.list_accounts_query()
@@ -364,17 +388,23 @@ class AsyncClient:
         symbol: str,
         venue: str,
     ) -> MarketTickerFields:
-        snapshot = await self.graphql_client.get_market_snapshot_query(symbol, venue)
+        snapshot = await self.graphql_client.get_market_snapshot_query(
+            symbol=symbol, venue=venue
+        )
         return snapshot.ticker
 
     async def l1_book_snapshots(
         self, venue: str, symbols: list[str]
     ) -> Sequence[MarketTickerFields]:
-        snapshot = await self.graphql_client.get_market_snapshots_query(venue, symbols)
+        snapshot = await self.graphql_client.get_market_snapshots_query(
+            venue=venue, symbols=symbols
+        )
         return snapshot.tickers
 
     async def l2_book_snapshot(self, venue: str, symbol: str) -> L2BookFields:
-        l2_book = await self.graphql_client.get_l_2_book_snapshot_query(venue, symbol)
+        l2_book = await self.graphql_client.get_l_2_book_snapshot_query(
+            symbol=symbol, venue=venue
+        )
         return l2_book.l_2_book_snapshot
 
     # async def l2_book_snapshot(
@@ -433,36 +463,30 @@ class AsyncClient:
             yield (up.sequence_id, up.sequence_number)
 
     async def get_external_l2_book_snapshot(
-        self, symbol: str
+        self, symbol: str, venue: str
     ) -> ExternalL2BookSnapshot:
-        # CR acho: fix this
-        [_, cpty] = symbol.split("*", 1)
-        if cpty in self.marketdata:
-            client = self.marketdata[cpty]
+        if venue in self.marketdata:
+            client = self.marketdata[venue]
             return await client.get_l2_book_snapshot(symbol)
         else:
-            raise ValueError(f"cpty {cpty} not configured for L2 marketdata")
+            raise ValueError(f"venue {venue} not configured for L2 marketdata")
 
-    async def get_l3_book_snapshot(self, symbol: str) -> L3BookSnapshot:
-        # CR acho: fix this
-        [_, cpty] = symbol.split("*", 1)
-        if cpty in self.marketdata:
-            client = self.marketdata[cpty]
+    async def get_l3_book_snapshot(self, symbol: str, venue: str) -> L3BookSnapshot:
+        if venue in self.marketdata:
+            client = self.marketdata[venue]
             market_id = Market.derive_id(symbol)
             return await client.get_l3_book_snapshot(symbol)
         else:
-            raise ValueError(f"cpty {cpty} not configured for L3 marketdata")
+            raise ValueError(f"venue {venue} not configured for L3 marketdata")
 
     def subscribe_trades(
-        self, market: str, *args, **kwargs
+        self, symbol: str, venue: str
     ) -> AsyncIterator[SubscribeTradesTrades]:
-        [_, cpty] = market.split("*", 1)
-        if cpty in self.marketdata:
-            client = self.marketdata[cpty]
-            market_id = Market.derive_id(market)
-            return client.subscribe_trades(market_id)
+        if venue in self.marketdata:
+            client = self.marketdata[venue]
+            return client.subscribe_trades(symbol)
         else:
-            return self.graphql_client.subscribe_trades(market, *args, **kwargs)
+            return self.graphql_client.subscribe_trades(venue=venue, symbol=symbol)
 
     async def send_limit_order(
         self,
@@ -610,33 +634,3 @@ class AsyncClient:
     async def cancel_all_orders(self) -> bool:
         b = await self.graphql_client.cancel_all_orders_mutation()
         return b.cancel_all_orders
-
-    @staticmethod
-    def get_expiration_from_CME_name(name: str) -> date:
-        _, d, *_ = name.split(" ")
-        return datetime.strptime(d, "%Y%m%d").date()
-
-    async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
-        markets = await self.get_future_series(
-            series,
-        )
-
-        filtered_markets = [
-            (self.get_expiration_from_CME_name(market), market) for market in markets
-        ]
-
-        filtered_markets.sort(key=lambda x: x[0])
-
-        return filtered_markets
-
-    async def get_cme_future_from_root_month_year(
-        self, root: str, month: int, year: int
-    ) -> str:
-        [market] = [
-            market
-            for market in await self.search_symbols(
-                f"{root} {year}{month:02d}",
-            )
-        ]
-
-        return market
