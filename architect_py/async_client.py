@@ -118,7 +118,7 @@ class AsyncClient:
 
         if port is None:
             if paper_trading:
-                port = 6789
+                port = 5678
             else:
                 port = 4567
 
