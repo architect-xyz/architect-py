@@ -373,14 +373,14 @@ class AsyncClient:
         market_status = await self.graphql_client.get_market_status_query(symbol, venue)
         return market_status.market_status
 
-    async def market_snapshot(self, venue: str, symbol: str) -> MarketTickerFields:
-        # this is an alias for l1_book_snapshot
+    async def market_snapshot(self, symbol: str, venue: str) -> MarketTickerFields:
+        """this is an alias for l1_book_snapshot"""
         return await self.l1_book_snapshot(symbol=symbol, venue=venue)
 
     async def market_snapshots(
-        self, venue: str, symbols: list[str]
+        self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
-        # this is an alias for l1_book_snapshots
+        """this is an alias for l1_book_snapshots"""
         return await self.l1_book_snapshots(venue=venue, symbols=symbols)
 
     async def l1_book_snapshot(
@@ -394,14 +394,14 @@ class AsyncClient:
         return snapshot.ticker
 
     async def l1_book_snapshots(
-        self, venue: str, symbols: list[str]
+        self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
         snapshot = await self.graphql_client.get_market_snapshots_query(
             venue=venue, symbols=symbols
         )
         return snapshot.tickers
 
-    async def l2_book_snapshot(self, venue: str, symbol: str) -> L2BookFields:
+    async def l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
         l2_book = await self.graphql_client.get_l_2_book_snapshot_query(
             symbol=symbol, venue=venue
         )
@@ -429,7 +429,10 @@ class AsyncClient:
         return stub.SubscribeL1BookSnapshots(req)
 
     async def subscribe_l2_book_updates(
-        self, endpoint: str, venue: Optional[str], symbol: str
+        self,
+        endpoint: str,
+        symbol: str,
+        venue: Optional[str],
     ) -> AsyncIterator[L2BookUpdate]:
         channel = await self.grpc_channel(endpoint)
         stub = JsonMarketdataStub(channel)
@@ -440,7 +443,7 @@ class AsyncClient:
         )
 
     async def watch_l2_book(
-        self, endpoint: str, venue: Optional[str], symbol: str
+        self, endpoint: str, symbol: str, venue: Optional[str]
     ) -> AsyncIterator[tuple[int, int]]:
         async for up in await self.subscribe_l2_book_updates(endpoint, venue, symbol):
             if isinstance(up, L2BookSnapshot):
