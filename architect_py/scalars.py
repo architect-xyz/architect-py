@@ -133,10 +133,12 @@ def convert_datetime_to_utc_str(dt: Optional[datetime] | UnsetType):
 
     if dt.tzinfo is None:
         raise ValueError(
-            "in sent_limit_order, the good_til_date must be timezone-aware. Try \n"
+            "in a datetime sent to the backend, the good_til_date must be timezone-aware. Try \n"
             "import pytz\n"
-            "datetime(..., tzinfo={your_local_timezone})\n"
-            "# examples of local timezones: pytz.timezone('US/Eastern'), "
+            "datetime(..., tzinfo={your_local_timezone}) or "
+            "datetime.now(tz=pytz.timezone('UTC'))\n"
+            "# examples of local timezones:\n"
+            "pytz.timezone('US/Eastern'), "
             "pytz.timezone('US/Pacific'), pytz.timezone('US/Central')"
         )
     utc_str = dt.astimezone(timezone.utc).isoformat()[:-6]

@@ -1,3 +1,12 @@
+3.1.7
+Features:
+  - added historical_candles_snapshot
+  - ExecutionInfo now has `initialMargin` and `maintenanceMargin`
+
+Fixes:
+  - small type changes on return types and function args
+  - added back candle_snapshot
+
 3.1.6
 Features:
   - added explicit paper trading mode arg for client

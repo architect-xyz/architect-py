@@ -96,6 +96,8 @@ class ExecutionInfoFields(BaseModel):
     min_order_quantity: Decimal = Field(alias="minOrderQuantity")
     min_order_quantity_unit: MinOrderQuantityUnit = Field(alias="minOrderQuantityUnit")
     is_delisted: bool = Field(alias="isDelisted")
+    initial_margin: Optional[Decimal] = Field(alias="initialMargin")
+    maintenance_margin: Optional[Decimal] = Field(alias="maintenanceMargin")
 
 
 class L2BookLevelFields(BaseModel):
@@ -167,6 +169,7 @@ class ProductInfoFields(BaseModel):
     derivative_kind: Optional[str] = Field(alias="derivativeKind")
     first_notice_date: Optional[date] = Field(alias="firstNoticeDate")
     primary_venue: Optional[str] = Field(alias="primaryVenue")
+    price_display_format: Optional[str] = Field(alias="priceDisplayFormat")
 
 
 AccountSummaryFields.model_rebuild()

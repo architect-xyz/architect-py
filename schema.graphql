@@ -301,6 +301,8 @@ type ExecutionInfo {
   minOrderQuantity: Decimal!
   minOrderQuantityUnit: MinOrderQuantityUnit!
   isDelisted: Boolean!
+  initialMargin: Decimal
+  maintenanceMargin: Decimal
 }
 
 type Fill {
@@ -432,12 +434,13 @@ type OrderStale {
 type ProductInfo {
   symbol: String!
   productType: String!
-  underlying: String
+  underlying: Product
   multiplier: Decimal
   expiration: DateTime
   derivativeKind: String
   firstNoticeDate: Date
   primaryVenue: String
+  priceDisplayFormat: String
 }
 
 type QueryRoot {
@@ -464,11 +467,11 @@ type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
-  executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
-  executionInfos(symbols: [String!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
+  executionInfo(symbol: TradableProduct!, executionVenue: ExecutionVenue!): ExecutionInfo!
+  executionInfos(symbols: [TradableProduct!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(searchString: String, executionVenue: ExecutionVenue): [Product!]!
+  searchSymbols(searchString: String, executionVenue: ExecutionVenue, offset: Int, limit: Int): [TradableProduct!]!
 }
 
 type Ticker {

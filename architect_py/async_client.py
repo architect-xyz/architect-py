@@ -29,11 +29,12 @@ from architect_py.graphql_client.get_fills_query import (
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
-from architect_py.scalars import OrderDir
+from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
+    CandleWidth,
     OrderType,
     TimeInForce,
 )
@@ -41,6 +42,7 @@ from .graphql_client.fragments import (
     AccountSummaryFields,
     AccountWithPermissionsFields,
     CancelFields,
+    CandleFields,
     ExecutionInfoFields,
     L2BookFields,
     MarketTickerFields,
@@ -182,7 +184,7 @@ class AsyncClient:
         self,
         search_string: Optional[str] = None,
         execution_venue: Optional[str] = None,
-    ) -> List[str]:
+    ) -> List[TradableProduct]:
         markets = (
             await self.graphql_client.search_symbols_query(
                 search_string, execution_venue
@@ -259,17 +261,19 @@ class AsyncClient:
     async def get_account_summary(
         self, account: str, venue: Optional[str] = None
     ) -> AccountSummaryFields:
-        summary = await self.graphql_client.get_account_summary_query(account, venue)
+        summary = await self.graphql_client.get_account_summary_query(
+            account=account, venue=venue
+        )
         return summary.account_summary
 
     async def get_account_summaries(
         self,
-        accounts: list[str],
+        accounts: Optional[list[str]] = None,
         venue: Optional[str] = None,
         trader: Optional[str] = None,
     ) -> Sequence[AccountSummaryFields]:
         summaries = await self.graphql_client.get_account_summaries_query(
-            venue, trader, accounts
+            venue=venue, trader=trader, accounts=accounts
         )
         return summaries.account_summaries
 
@@ -383,7 +387,23 @@ class AsyncClient:
         """this is an alias for l1_book_snapshots"""
         return await self.l1_book_snapshots(venue=venue, symbols=symbols)
 
-    async def l1_book_snapshot(
+    async def get_historical_candles_snapshot(
+        self,
+        symbol: str,
+        venue: str,
+        candle_width: CandleWidth,
+        start: datetime,
+        end: Optional[datetime] = None,
+    ) -> Sequence[CandleFields]:
+        start.tzinfo
+        if end is None:
+            end = datetime.now(tz=start.tzinfo)
+        candles = await self.graphql_client.get_candle_snapshot_query(
+            venue=venue, symbol=symbol, candle_width=candle_width, start=start, end=end
+        )
+        return candles.historical_candles
+
+    async def get_l1_book_snapshot(
         self,
         symbol: str,
         venue: str,
@@ -393,7 +413,7 @@ class AsyncClient:
         )
         return snapshot.ticker
 
-    async def l1_book_snapshots(
+    async def get_l1_book_snapshots(
         self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
         snapshot = await self.graphql_client.get_market_snapshots_query(
@@ -401,7 +421,7 @@ class AsyncClient:
         )
         return snapshot.tickers
 
-    async def l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
+    async def get_l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
         l2_book = await self.graphql_client.get_l_2_book_snapshot_query(
             symbol=symbol, venue=venue
         )
@@ -445,7 +465,9 @@ class AsyncClient:
     async def watch_l2_book(
         self, endpoint: str, symbol: str, venue: Optional[str]
     ) -> AsyncIterator[tuple[int, int]]:
-        async for up in await self.subscribe_l2_book_updates(endpoint, venue, symbol):
+        async for up in await self.subscribe_l2_book_updates(
+            endpoint, symbol=symbol, venue=venue
+        ):
             if isinstance(up, L2BookSnapshot):
                 self.l2_books[symbol] = L2Book(up)
             elif isinstance(up, L2BookDiff):
@@ -514,6 +536,7 @@ class AsyncClient:
 
         While technically optional, for most order types, the account is required
         """
+        assert quantity > 0, "quantity must be positive"
 
         if price_round_method is not None:
             if execution_venue is None:

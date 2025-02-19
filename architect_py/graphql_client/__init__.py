@@ -57,6 +57,11 @@ from .get_account_summary_query import (
     GetAccountSummaryQueryFolio,
     GetAccountSummaryQueryFolioAccountSummary,
 )
+from .get_candle_snapshot_query import (
+    GetCandleSnapshotQuery,
+    GetCandleSnapshotQueryMarketdata,
+    GetCandleSnapshotQueryMarketdataHistoricalCandles,
+)
 from .get_execution_info_query import (
     GetExecutionInfoQuery,
     GetExecutionInfoQuerySymbology,
@@ -174,6 +179,9 @@ __all__ = [
     "GetAccountSummaryQuery",
     "GetAccountSummaryQueryFolio",
     "GetAccountSummaryQueryFolioAccountSummary",
+    "GetCandleSnapshotQuery",
+    "GetCandleSnapshotQueryMarketdata",
+    "GetCandleSnapshotQueryMarketdataHistoricalCandles",
     "GetExecutionInfoQuery",
     "GetExecutionInfoQuerySymbology",
     "GetExecutionInfoQuerySymbologyExecutionInfo",

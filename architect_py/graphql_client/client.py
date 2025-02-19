@@ -6,7 +6,12 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from architect_py.scalars import OrderDir, convert_datetime_to_utc_str
+from architect_py.scalars import (
+    OrderDir,
+    TradableProduct,
+    convert_datetime_to_utc_str,
+    serialize,
+)
 
 from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient
@@ -20,6 +25,7 @@ if TYPE_CHECKING:
     from .get_account_query import GetAccountQueryUser
     from .get_account_summaries_query import GetAccountSummariesQueryFolio
     from .get_account_summary_query import GetAccountSummaryQueryFolio
+    from .get_candle_snapshot_query import GetCandleSnapshotQueryMarketdata
     from .get_execution_info_query import GetExecutionInfoQuerySymbology
     from .get_fills_query import GetFillsQueryFolio
     from .get_first_notice_date_query import GetFirstNoticeDateQuerySymbology
@@ -61,15 +67,22 @@ class GraphQLClient(JuniperBaseClient):
         self,
         search_string: Union[Optional[str], "UnsetType"] = UNSET,
         execution_venue: Union[Optional[str], "UnsetType"] = UNSET,
+        offset: Union[Optional[int], "UnsetType"] = UNSET,
+        limit: Union[Optional[int], "UnsetType"] = UNSET,
         **kwargs: Any
     ) -> "SearchSymbolsQuerySymbology":
         from .search_symbols_query import SearchSymbolsQuery
 
         query = gql(
             """
-            query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue) {
+            query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $offset: Int, $limit: Int) {
               symbology {
-                searchSymbols(searchString: $searchString, executionVenue: $executionVenue)
+                searchSymbols(
+                  searchString: $searchString
+                  executionVenue: $executionVenue
+                  offset: $offset
+                  limit: $limit
+                )
               }
             }
             """
@@ -77,6 +90,8 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {
             "searchString": search_string,
             "executionVenue": execution_venue,
+            "offset": offset,
+            "limit": limit,
         }
         response = await self.execute(
             query=query,
@@ -111,6 +126,7 @@ class GraphQLClient(JuniperBaseClient):
               derivativeKind
               firstNoticeDate
               primaryVenue
+              priceDisplayFormat
             }
             """
         )
@@ -148,6 +164,7 @@ class GraphQLClient(JuniperBaseClient):
               derivativeKind
               firstNoticeDate
               primaryVenue
+              priceDisplayFormat
             }
             """
         )
@@ -212,13 +229,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetFutureSeriesQuery.model_validate(data).symbology
 
     async def get_execution_info_query(
-        self, symbol: str, execution_venue: str, **kwargs: Any
+        self, symbol: TradableProduct, execution_venue: str, **kwargs: Any
     ) -> "GetExecutionInfoQuerySymbology":
         from .get_execution_info_query import GetExecutionInfoQuery
 
         query = gql(
             """
-            query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
+            query GetExecutionInfoQuery($symbol: TradableProduct!, $executionVenue: ExecutionVenue!) {
               symbology {
                 executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
                   ...ExecutionInfoFields
@@ -234,11 +251,13 @@ class GraphQLClient(JuniperBaseClient):
               minOrderQuantity
               minOrderQuantityUnit
               isDelisted
+              initialMargin
+              maintenanceMargin
             }
             """
         )
         variables: Dict[str, object] = {
-            "symbol": symbol,
+            "symbol": serialize(symbol),
             "executionVenue": execution_venue,
         }
         response = await self.execute(
@@ -249,6 +268,104 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetExecutionInfoQuery.model_validate(data).symbology
+
+    async def get_candle_snapshot_query(
+        self,
+        venue: str,
+        symbol: str,
+        candle_width: "CandleWidth",
+        start: datetime,
+        end: datetime,
+        **kwargs: Any
+    ) -> "GetCandleSnapshotQueryMarketdata":
+        from .get_candle_snapshot_query import GetCandleSnapshotQuery
+
+        query = gql(
+            """
+            query GetCandleSnapshotQuery($venue: MarketdataVenue!, $symbol: String!, $candleWidth: CandleWidth!, $start: DateTime!, $end: DateTime!) {
+              marketdata {
+                historicalCandles(
+                  venue: $venue
+                  symbol: $symbol
+                  candleWidth: $candleWidth
+                  start: $start
+                  end: $end
+                ) {
+                  ...CandleFields
+                }
+              }
+            }
+
+            fragment CandleFields on Candle {
+              timestamp
+              width
+              open
+              high
+              low
+              close
+              volume
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "venue": venue,
+            "symbol": symbol,
+            "candleWidth": candle_width,
+            "start": convert_datetime_to_utc_str(start),
+            "end": convert_datetime_to_utc_str(end),
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetCandleSnapshotQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetCandleSnapshotQuery.model_validate(data).marketdata
+
+    async def get_l_2_book_snapshot_query(
+        self,
+        symbol: str,
+        venue: Union[Optional[str], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetL2BookSnapshotQueryMarketdata":
+        from .get_l_2_book_snapshot_query import GetL2BookSnapshotQuery
+
+        query = gql(
+            """
+            query GetL2BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
+              marketdata {
+                l2BookSnapshot(venue: $venue, symbol: $symbol) {
+                  ...L2BookFields
+                }
+              }
+            }
+
+            fragment L2BookFields on L2Book {
+              timestamp
+              bids {
+                ...L2BookLevelFields
+              }
+              asks {
+                ...L2BookLevelFields
+              }
+            }
+
+            fragment L2BookLevelFields on L2BookLevel {
+              price
+              size
+            }
+            """
+        )
+        variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
+        response = await self.execute(
+            query=query,
+            operation_name="GetL2BookSnapshotQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetL2BookSnapshotQuery.model_validate(data).marketdata
 
     async def get_market_snapshot_query(
         self,
@@ -769,50 +886,6 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetFillsQuery.model_validate(data).folio
-
-    async def get_l_2_book_snapshot_query(
-        self,
-        symbol: str,
-        venue: Union[Optional[str], "UnsetType"] = UNSET,
-        **kwargs: Any
-    ) -> "GetL2BookSnapshotQueryMarketdata":
-        from .get_l_2_book_snapshot_query import GetL2BookSnapshotQuery
-
-        query = gql(
-            """
-            query GetL2BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
-              marketdata {
-                l2BookSnapshot(venue: $venue, symbol: $symbol) {
-                  ...L2BookFields
-                }
-              }
-            }
-
-            fragment L2BookFields on L2Book {
-              timestamp
-              bids {
-                ...L2BookLevelFields
-              }
-              asks {
-                ...L2BookLevelFields
-              }
-            }
-
-            fragment L2BookLevelFields on L2BookLevel {
-              price
-              size
-            }
-            """
-        )
-        variables: Dict[str, object] = {"venue": venue, "symbol": symbol}
-        response = await self.execute(
-            query=query,
-            operation_name="GetL2BookSnapshotQuery",
-            variables=variables,
-            **kwargs
-        )
-        data = self.get_data(response)
-        return GetL2BookSnapshotQuery.model_validate(data).marketdata
 
     async def subscribe_trades(
         self, venue: str, symbol: str, **kwargs: Any
