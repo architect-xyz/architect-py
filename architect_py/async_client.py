@@ -217,7 +217,7 @@ class AsyncClient:
         return futures_series.futures_series
 
     async def get_execution_info(
-        self, symbol: str, execution_venue: str
+        self, symbol: TradableProduct, execution_venue: str
     ) -> ExecutionInfoFields:
         execution_info = await self.graphql_client.get_execution_info_query(
             symbol, execution_venue
@@ -379,13 +379,13 @@ class AsyncClient:
 
     async def market_snapshot(self, symbol: str, venue: str) -> MarketTickerFields:
         """this is an alias for l1_book_snapshot"""
-        return await self.l1_book_snapshot(symbol=symbol, venue=venue)
+        return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
     async def market_snapshots(
         self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
         """this is an alias for l1_book_snapshots"""
-        return await self.l1_book_snapshots(venue=venue, symbols=symbols)
+        return await self.get_l1_book_snapshots(venue=venue, symbols=symbols)
 
     async def get_historical_candles_snapshot(
         self,
@@ -550,7 +550,9 @@ class AsyncClient:
                     raise ValueError(
                         f"Could not find primary exchange for {symbol} while trying to get execution venue for rounding price"
                     )
-            execution_info = await self.get_execution_info(symbol, execution_venue)
+            execution_info = await self.get_execution_info(
+                TradableProduct(symbol), execution_venue
+            )
             if (tick_size := execution_info.tick_size) is not None:
                 if tick_size:
                     limit_price = nearest_tick(
@@ -583,7 +585,7 @@ class AsyncClient:
     async def send_market_pro_order(
         self,
         *,
-        symbol: str,
+        symbol: TradableProduct,
         execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,

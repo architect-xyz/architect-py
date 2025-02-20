@@ -1,3 +1,7 @@
+3.1.8
+Fixes:
+  - Minor function fixes
+
 3.1.7
 Features:
   - added historical_candles_snapshot
