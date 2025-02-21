@@ -174,7 +174,7 @@ query GetFutureSeriesQuery($seriesSymbol: String!) {
   }
 }
 
-query GetExecutionInfoQuery($symbol: TradableProduct!, $executionVenue: ExecutionVenue!) {
+query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
   symbology {
     executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
       ...ExecutionInfoFields

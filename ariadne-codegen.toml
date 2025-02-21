@@ -23,7 +23,6 @@ OrderId.type = "str"
 Product.type = "str"
 
 TradableProduct.type = "architect_py.scalars.TradableProduct"
-TradableProduct.serialize = "architect_py.scalars.serialize"
 TradableProduct.parse = "architect_py.scalars.parse_tradable_product"
 
 UserId.type = "str"

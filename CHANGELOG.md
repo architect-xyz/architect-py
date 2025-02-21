@@ -1,3 +1,6 @@
+3.1.10
+  - Fix part 2 for send_market_pro_order, prematurely updated the schema
+
 3.1.9
   - Fix for send_market_pro_order
   - Minor internal renaming of functions

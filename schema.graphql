@@ -467,8 +467,8 @@ type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
-  executionInfo(symbol: TradableProduct!, executionVenue: ExecutionVenue!): ExecutionInfo!
-  executionInfos(symbols: [TradableProduct!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
+  executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
+  executionInfos(symbols: [String!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
   searchSymbols(searchString: String, executionVenue: ExecutionVenue, offset: Int, limit: Int): [TradableProduct!]!

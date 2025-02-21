@@ -6,12 +6,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from architect_py.scalars import (
-    OrderDir,
-    TradableProduct,
-    convert_datetime_to_utc_str,
-    serialize,
-)
+from architect_py.scalars import OrderDir, convert_datetime_to_utc_str
 
 from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient
@@ -229,13 +224,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetFutureSeriesQuery.model_validate(data).symbology
 
     async def get_execution_info_query(
-        self, symbol: TradableProduct, execution_venue: str, **kwargs: Any
+        self, symbol: str, execution_venue: str, **kwargs: Any
     ) -> "GetExecutionInfoQuerySymbology":
         from .get_execution_info_query import GetExecutionInfoQuery
 
         query = gql(
             """
-            query GetExecutionInfoQuery($symbol: TradableProduct!, $executionVenue: ExecutionVenue!) {
+            query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
               symbology {
                 executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
                   ...ExecutionInfoFields
@@ -257,7 +252,7 @@ class GraphQLClient(JuniperBaseClient):
             """
         )
         variables: Dict[str, object] = {
-            "symbol": serialize(symbol),
+            "symbol": symbol,
             "executionVenue": execution_venue,
         }
         response = await self.execute(

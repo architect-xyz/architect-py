@@ -3,7 +3,11 @@ from typing import Literal, Optional
 
 from datetime import datetime, timezone
 
-from architect_py.graphql_client.base_model import UnsetType
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from architect_py.graphql_client.base_model import UnsetType
 
 
 """
@@ -22,24 +26,17 @@ class TradableProduct(str):
         ), f"TradableProduct must be in the form of 'base/quote'. Got: {value}"
         return super().__new__(cls, value)
 
-    def serialize(self) -> str:
-        return self
+    @staticmethod
+    def base_quote(tp: "TradableProduct") -> list[str]:
+        return tp.split("/")
 
-    @classmethod
-    def parse(cls, value: str) -> "TradableProduct":
-        return cls(value)
+    @staticmethod
+    def base(tp: "TradableProduct") -> str:
+        return tp.split("/", 1)[0]
 
-    @property
-    def base_quote(self) -> list[str]:
-        return self.split("/")
-
-    @property
-    def base(self) -> str:
-        return self.split("/")[0]
-
-    @property
-    def quote(self) -> str:
-        return self.split("/")[1]
+    @staticmethod
+    def quote(tp: "TradableProduct") -> str:
+        return tp.split("/", 1)[1]
 
 
 def parse_tradable_product(value: str) -> TradableProduct:
@@ -127,8 +124,8 @@ class OrderDir(Enum):
             raise ValueError(f"Unknown Dir: {value}")
 
 
-def convert_datetime_to_utc_str(dt: Optional[datetime] | UnsetType):
-    if dt is None or isinstance(dt, UnsetType):
+def convert_datetime_to_utc_str(dt: "Optional[datetime] | UnsetType") -> Optional[str]:
+    if not isinstance(dt, datetime):
         return None
 
     if dt.tzinfo is None:
