@@ -199,7 +199,7 @@ query GetL2BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   }
 }
 
-query GetMarketSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
+query GetL1BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   marketdata {
     ticker(venue: $venue, symbol: $symbol) {
       ...MarketTickerFields
@@ -207,7 +207,7 @@ query GetMarketSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   }
 }
 
-query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
+query GetL1BookSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
   marketdata{
     tickers(venue: $venue, symbols: $symbols) {
       ...MarketTickerFields

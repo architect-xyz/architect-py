@@ -17,7 +17,7 @@ async def test_client_init():
 
 @pytest.mark.asyncio
 async def test_client_jwt(async_client: AsyncClient):
-    jwt = await async_client.create_jwt()
+    jwt = await async_client.graphql_client.create_jwt()
     assert jwt is not None, "jwt should not be None"
 
 

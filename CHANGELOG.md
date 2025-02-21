@@ -1,3 +1,8 @@
+3.1.9
+  - Fix for send_market_pro_order
+  - Minor internal renaming of functions
+  - updated dependencies + poetry lock
+
 3.1.8
 Fixes:
   - Minor function fixes

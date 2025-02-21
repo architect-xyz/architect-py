@@ -387,7 +387,7 @@ class AsyncClient:
         """this is an alias for l1_book_snapshots"""
         return await self.get_l1_book_snapshots(venue=venue, symbols=symbols)
 
-    async def get_historical_candles_snapshot(
+    async def get_candles_snapshot(
         self,
         symbol: str,
         venue: str,
@@ -408,7 +408,7 @@ class AsyncClient:
         symbol: str,
         venue: str,
     ) -> MarketTickerFields:
-        snapshot = await self.graphql_client.get_market_snapshot_query(
+        snapshot = await self.graphql_client.get_l_1_book_snapshot_query(
             symbol=symbol, venue=venue
         )
         return snapshot.ticker
@@ -416,7 +416,7 @@ class AsyncClient:
     async def get_l1_book_snapshots(
         self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
-        snapshot = await self.graphql_client.get_market_snapshots_query(
+        snapshot = await self.graphql_client.get_l_1_book_snapshots_query(
             venue=venue, symbols=symbols
         )
         return snapshot.tickers
@@ -595,7 +595,7 @@ class AsyncClient:
     ) -> OrderFields:
 
         # Check for GQL failures
-        bbo_snapshot = await self.market_snapshot(execution_venue, symbol)
+        bbo_snapshot = await self.market_snapshot(symbol=symbol, venue=execution_venue)
         if bbo_snapshot is None:
             raise ValueError(
                 f"Failed to send market order with reason: no market snapshot for {symbol}"
