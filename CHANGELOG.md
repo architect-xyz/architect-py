@@ -1,3 +1,9 @@
+3.2.0
+Features
+  - Added get_account_history query
+  - Added gRPC client
+
+
 3.1.11
 Features:
   - Added the who_am_i function to get userid + email

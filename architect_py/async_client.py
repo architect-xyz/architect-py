@@ -16,21 +16,14 @@ The individual graphql types are subject to change, so it is not recommended to 
 """
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, AsyncIterator, Dict, List, Optional, Sequence
-from urllib.parse import urlparse
-
-import dns.asyncresolver
-import dns.name
-
-import grpc.aio
+from typing import Any, AsyncIterator, List, Optional, Sequence
 
 from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
-from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
@@ -64,20 +57,12 @@ from .graphql_client.fragments import (
 #     CreateTimeInForceInstruction,
 #     CreateTwapAlgo,
 # )
-from .json_ws_client import JsonWsClient
+from .grpc_client import GRPCClient
 from .protocol.marketdata import (
-    JsonMarketdataStub,
     L1BookSnapshot,
-    ExternalL2BookSnapshot,
-    L2Book,
-    L2BookDiff,
-    L2BookSnapshot,
     L2BookUpdate,
     L3BookSnapshot,
-    SubscribeL1BookSnapshotsRequest,
-    SubscribeL2BookUpdatesRequest,
 )
-from .protocol.symbology import Market
 
 from .utils.price_bands import price_band_pairs
 
@@ -86,11 +71,7 @@ logger = logging.getLogger(__name__)
 
 class AsyncClient:
     graphql_client: GraphQLClient
-    # grpc_jwt: str
-    # grpc_jwt_expiration: datetime
-    # grpc_root_certificates: bytes
-    # marketdata: dict[str, JsonWsClient]
-    # l2_books: dict[str, "L2Book"]
+    grpc_client: GRPCClient
 
     def __init__(
         self,
@@ -130,11 +111,7 @@ class AsyncClient:
             api_key=api_key, api_secret=api_secret, host=host, port=port, **kwargs
         )
 
-        self.grpc_jwt: Optional[str] = None
-        self.grpc_jwt_expiration: Optional[datetime] = None
-        self.grpc_root_certificates = grpc_root_certificates
-        self.marketdata: Dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
-        self.l2_books: dict[str, L2Book] = {}
+        self.grpc_client = GRPCClient(self.graphql_client)
 
     async def who_am_i(self) -> tuple[str, str]:
         """
@@ -145,52 +122,6 @@ class AsyncClient:
         email = await self.graphql_client.user_email_query()
 
         return user_id.user_id, email.user_email
-
-    async def grpc_channel(self, endpoint: str):
-        if "://" not in endpoint:
-            endpoint = f"http://{endpoint}"
-        url = urlparse(endpoint)
-        if url.hostname is None:
-            raise Exception(f"Invalid endpoint: {endpoint}")
-        is_https = url.scheme == "https"
-        srv_records: list = await dns.asyncresolver.resolve(url.hostname, "SRV")
-        if len(srv_records) == 0:
-            raise Exception(f"No SRV records found for {url.hostname}")
-        connect_str = f"{srv_records[0].target}:{srv_records[0].port}"
-        if is_https:
-            credentials = grpc.ssl_channel_credentials(
-                root_certificates=self.grpc_root_certificates
-            )
-            options = (("grpc.ssl_target_name_override", "service.architect.xyz"),)
-            return grpc.aio.secure_channel(connect_str, credentials, options=options)
-        else:
-            return grpc.aio.insecure_channel(connect_str)
-
-    async def refresh_grpc_credentials(self, force: bool = False) -> Optional[str]:
-        """
-        Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
-        If force is True, refresh the JWT unconditionally.
-        """
-        if (
-            force
-            or self.grpc_jwt is None
-            or (
-                self.grpc_jwt_expiration is not None
-                and datetime.now() > self.grpc_jwt_expiration - timedelta(minutes=1)
-            )
-        ):
-            try:
-                self.grpc_jwt = (await self.graphql_client.create_jwt()).create_jwt
-                self.grpc_jwt_expiration = datetime.now() + timedelta(
-                    hours=23
-                )  # TODO: actually inspect the JWT exp
-            except Exception as e:
-                logger.error("Failed to refresh gRPC credentials: %s", e)
-
-        return self.grpc_jwt
-
-    def configure_marketdata(self, *, cpty: str, url: str):
-        self.marketdata[cpty] = JsonWsClient(url=url)
 
     async def search_symbols(
         self,
@@ -448,26 +379,10 @@ class AsyncClient:
         )
         return l2_book.l_2_book_snapshot
 
-    # async def l2_book_snapshot(
-    #     self, endpoint: str, venue: Optional[str], symbol: str
-    # ) -> L2BookSnapshot:
-    #     channel = await self.grpc_channel(endpoint)
-    #     stub = JsonMarketdataStub(channel)
-    #     req = L2BookSnapshotRequest(venue=venue, symbol=symbol)
-    #     jwt = await self.refresh_grpc_credentials()
-    #     # TODO: use secure channel or force allow auth header over insecure channel
-    #     # credentials = None if jwt is None else grpc.access_token_call_credentials(jwt)
-    #     return await stub.L2BookSnapshot(
-    #         req, metadata=(("authorization", f"Bearer {jwt}"),)
-    #     )
-
     async def subscribe_l1_book_snapshots(
         self, endpoint: str, symbols: list[str] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
-        channel = await self.grpc_channel(endpoint)
-        stub = JsonMarketdataStub(channel)
-        req = SubscribeL1BookSnapshotsRequest(symbols=symbols)
-        return stub.SubscribeL1BookSnapshots(req)
+        raise NotImplementedError
 
     async def subscribe_l2_book_updates(
         self,
@@ -475,63 +390,20 @@ class AsyncClient:
         symbol: str,
         venue: Optional[str],
     ) -> AsyncIterator[L2BookUpdate]:
-        channel = await self.grpc_channel(endpoint)
-        stub = JsonMarketdataStub(channel)
-        req = SubscribeL2BookUpdatesRequest(venue=venue, symbol=symbol)
-        jwt = await self.refresh_grpc_credentials()
-        return stub.SubscribeL2BookUpdates(
-            req, metadata=(("authorization", f"Bearer {jwt}"),)
-        )
+        raise NotImplementedError
 
-    async def watch_l2_book(
-        self, endpoint: str, symbol: str, venue: Optional[str]
-    ) -> AsyncIterator[tuple[int, int]]:
-        async for up in await self.subscribe_l2_book_updates(
-            endpoint, symbol=symbol, venue=venue
-        ):
-            if isinstance(up, L2BookSnapshot):
-                self.l2_books[symbol] = L2Book(up)
-            elif isinstance(up, L2BookDiff):
-                if symbol not in self.l2_books:
-                    raise ValueError(
-                        f"received update before snapshot for L2 book {symbol}"
-                    )
-                book = self.l2_books[symbol]
-                if (
-                    up.sequence_id != book.sequence_id
-                    or up.sequence_number != book.sequence_number + 1
-                ):
-                    raise ValueError(
-                        f"received update out of order for L2 book {symbol}"
-                    )
-                book.update_from_diff(up)
-
-            yield (up.sequence_id, up.sequence_number)
-
-    async def get_external_l2_book_snapshot(
-        self, symbol: str, venue: str
-    ) -> ExternalL2BookSnapshot:
-        if venue in self.marketdata:
-            client = self.marketdata[venue]
-            return await client.get_l2_book_snapshot(symbol)
-        else:
-            raise ValueError(f"venue {venue} not configured for L2 marketdata")
-
-    async def get_l3_book_snapshot(self, symbol: str, venue: str) -> L3BookSnapshot:
-        if venue in self.marketdata:
-            client = self.marketdata[venue]
-            return await client.get_l3_book_snapshot(symbol)
-        else:
-            raise ValueError(f"venue {venue} not configured for L3 marketdata")
+    async def subscribe_l3_book_updates(
+        self,
+        endpoint: str,
+        symbol: str,
+        venue: Optional[str],
+    ) -> AsyncIterator[L3BookSnapshot]:
+        raise NotImplementedError
 
     async def subscribe_trades(
         self, symbol: str, venue: str
     ) -> AsyncIterator[SubscribeTradesTrades]:
-        if venue in self.marketdata:
-            client = self.marketdata[venue]
-            return client.subscribe_trades(symbol)
-        else:
-            return self.graphql_client.subscribe_trades(venue=venue, symbol=symbol)
+        raise NotImplementedError
 
     async def send_limit_order(
         self,
