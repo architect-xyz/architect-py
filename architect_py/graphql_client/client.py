@@ -6,7 +6,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from architect_py.scalars import OrderDir, convert_datetime_to_utc_str
+from architect_py.scalars import OrderDir, TradableProduct, convert_datetime_to_utc_str
 
 from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient
@@ -51,6 +51,8 @@ if TYPE_CHECKING:
         SubscribeOrderflowOrderflowOrderStale,
     )
     from .subscribe_trades import SubscribeTradesTrades
+    from .user_email_query import UserEmailQueryUser
+    from .user_id_query import UserIdQueryUser
 
 
 def gql(q: str) -> str:
@@ -58,6 +60,44 @@ def gql(q: str) -> str:
 
 
 class GraphQLClient(JuniperBaseClient):
+    async def user_id_query(self, **kwargs: Any) -> "UserIdQueryUser":
+        from .user_id_query import UserIdQuery
+
+        query = gql(
+            """
+            query UserIdQuery {
+              user {
+                userId
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query, operation_name="UserIdQuery", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return UserIdQuery.model_validate(data).user
+
+    async def user_email_query(self, **kwargs: Any) -> "UserEmailQueryUser":
+        from .user_email_query import UserEmailQuery
+
+        query = gql(
+            """
+            query UserEmailQuery {
+              user {
+                userEmail
+              }
+            }
+            """
+        )
+        variables: Dict[str, object] = {}
+        response = await self.execute(
+            query=query, operation_name="UserEmailQuery", variables=variables, **kwargs
+        )
+        data = self.get_data(response)
+        return UserEmailQuery.model_validate(data).user
+
     async def search_symbols_query(
         self,
         search_string: Union[Optional[str], "UnsetType"] = UNSET,
@@ -224,13 +264,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetFutureSeriesQuery.model_validate(data).symbology
 
     async def get_execution_info_query(
-        self, symbol: str, execution_venue: str, **kwargs: Any
+        self, symbol: TradableProduct, execution_venue: str, **kwargs: Any
     ) -> "GetExecutionInfoQuerySymbology":
         from .get_execution_info_query import GetExecutionInfoQuery
 
         query = gql(
             """
-            query GetExecutionInfoQuery($symbol: String!, $executionVenue: ExecutionVenue!) {
+            query GetExecutionInfoQuery($symbol: TradableProduct!, $executionVenue: ExecutionVenue!) {
               symbology {
                 executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
                   ...ExecutionInfoFields
@@ -558,18 +598,15 @@ class GraphQLClient(JuniperBaseClient):
         return ListAccountsQuery.model_validate(data).user
 
     async def get_account_summary_query(
-        self,
-        account: str,
-        venue: Union[Optional[str], "UnsetType"] = UNSET,
-        **kwargs: Any
+        self, account: str, **kwargs: Any
     ) -> "GetAccountSummaryQueryFolio":
         from .get_account_summary_query import GetAccountSummaryQuery
 
         query = gql(
             """
-            query GetAccountSummaryQuery($venue: ExecutionVenue, $account: String!) {
+            query GetAccountSummaryQuery($account: String!) {
               folio {
-                accountSummary(venue: $venue, account: $account) {
+                accountSummary(account: $account) {
                   ...AccountSummaryFields
                 }
               }
@@ -601,7 +638,7 @@ class GraphQLClient(JuniperBaseClient):
             }
             """
         )
-        variables: Dict[str, object] = {"venue": venue, "account": account}
+        variables: Dict[str, object] = {"account": account}
         response = await self.execute(
             query=query,
             operation_name="GetAccountSummaryQuery",
@@ -613,7 +650,6 @@ class GraphQLClient(JuniperBaseClient):
 
     async def get_account_summaries_query(
         self,
-        venue: Union[Optional[str], "UnsetType"] = UNSET,
         trader: Union[Optional[str], "UnsetType"] = UNSET,
         accounts: Union[Optional[List[str]], "UnsetType"] = UNSET,
         **kwargs: Any
@@ -622,9 +658,9 @@ class GraphQLClient(JuniperBaseClient):
 
         query = gql(
             """
-            query GetAccountSummariesQuery($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
+            query GetAccountSummariesQuery($trader: String, $accounts: [String!]) {
               folio {
-                accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
+                accountSummaries(trader: $trader, accounts: $accounts) {
                   ...AccountSummaryFields
                 }
               }
@@ -656,11 +692,7 @@ class GraphQLClient(JuniperBaseClient):
             }
             """
         )
-        variables: Dict[str, object] = {
-            "venue": venue,
-            "trader": trader,
-            "accounts": accounts,
-        }
+        variables: Dict[str, object] = {"trader": trader, "accounts": accounts}
         response = await self.execute(
             query=query,
             operation_name="GetAccountSummariesQuery",

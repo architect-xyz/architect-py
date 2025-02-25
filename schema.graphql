@@ -324,8 +324,8 @@ type Fill {
 }
 
 type FolioQueryRoot {
-  accountSummary(venue: ExecutionVenue, account: String!): AccountSummary!
-  accountSummaries(venue: ExecutionVenue, trader: String, accounts: [String!]): [AccountSummary!]!
+  accountSummary(account: String!): AccountSummary!
+  accountSummaries(trader: String, accounts: [String!]): [AccountSummary!]!
   accountHistory(venue: ExecutionVenue, account: String!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
   historicalFills(venue: ExecutionVenue, account: String, trader: String, orderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): HistoricalFillsResponse!
   historicalOrders(orderIds: [OrderId!], venue: ExecutionVenue, account: String, trader: String, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): [Order!]!
@@ -467,8 +467,8 @@ type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
   exchangeSymbology: ExchangeSymbologyQueryRoot!
-  executionInfo(symbol: String!, executionVenue: ExecutionVenue!): ExecutionInfo!
-  executionInfos(symbols: [String!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
+  executionInfo(symbol: TradableProduct!, executionVenue: ExecutionVenue!): ExecutionInfo!
+  executionInfos(symbols: [TradableProduct!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
   searchSymbols(searchString: String, executionVenue: ExecutionVenue, offset: Int, limit: Int): [TradableProduct!]!

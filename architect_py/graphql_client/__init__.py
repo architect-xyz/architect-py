@@ -148,6 +148,8 @@ from .subscribe_orderflow import (
     SubscribeOrderflowOrderflowOrderStale,
 )
 from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
+from .user_email_query import UserEmailQuery, UserEmailQueryUser
+from .user_id_query import UserIdQuery, UserIdQueryUser
 
 __all__ = [
     "AccountSummaryFields",
@@ -260,4 +262,8 @@ __all__ = [
     "SubscribeTradesTrades",
     "TimeInForce",
     "Upload",
+    "UserEmailQuery",
+    "UserEmailQueryUser",
+    "UserIdQuery",
+    "UserIdQueryUser",
 ]

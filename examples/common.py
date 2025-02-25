@@ -1,11 +1,21 @@
 import os
 
+from dataclasses import dataclass
+
 from architect_py.async_client import AsyncClient
 from architect_py.client import Client
 from dotenv import load_dotenv
 
 
-def create_client():
+@dataclass
+class Config:
+    host: str
+    api_key: str
+    api_secret: str
+    use_tls: bool
+
+
+def load_config() -> Config:
     load_dotenv()
     host = os.environ["ARCHITECT_HOST"]
     api_key = os.getenv("ARCHITECT_API_KEY")
@@ -13,38 +23,40 @@ def create_client():
     implicit_use_tls = api_key is not None or api_secret is not None
     explicit_use_tls = os.getenv("ARCHITECT_USE_TLS")
     use_tls = False
+
     if explicit_use_tls == "true" or explicit_use_tls == "1":
         use_tls = True
     elif explicit_use_tls is None:
         use_tls = implicit_use_tls
 
+    if api_key is None:
+        raise ValueError("API key is required")
+
+    if api_secret is None:
+        raise ValueError("API secret is required")
+
+    return Config(host, api_key, api_secret, use_tls)
+
+
+def create_client():
+    config = load_config()
+
     c = Client(
-        host=host,
-        api_key=api_key,
-        api_secret=api_secret,
-        use_tls=use_tls,
+        host=config.host,
+        api_key=config.api_key,
+        api_secret=config.api_secret,
+        use_tls=config.use_tls,
     )
     return c
 
 
 def create_async_client():
-    load_dotenv()
-    host = os.environ["ARCHITECT_HOST"]
-    api_key = os.getenv("ARCHITECT_API_KEY")
-    api_secret = os.getenv("ARCHITECT_API_SECRET")
-    implicit_use_tls = api_key is not None or api_secret is not None
-    explicit_use_tls = os.getenv("ARCHITECT_USE_TLS")
-    use_tls = False
-    if explicit_use_tls == "true" or explicit_use_tls == "1":
-        use_tls = True
-    elif explicit_use_tls is None:
-        use_tls = implicit_use_tls
-
+    config = load_config()
     c = AsyncClient(
-        host=host,
-        api_key=api_key,
-        api_secret=api_secret,
-        use_tls=use_tls,
+        host=config.host,
+        api_key=config.api_key,
+        api_secret=config.api_secret,
+        use_tls=config.use_tls,
     )
     return c
 
