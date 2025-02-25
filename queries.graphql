@@ -269,6 +269,15 @@ query GetAccountSummariesQuery($trader: String, $accounts: [String!]) {
   }
 }
 
+query GetAccountHistoryQuery($account: String!, $fromInclusive: DateTime, $toExclusive: DateTime) {
+  folio {
+    accountHistory(account: $account, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+      ...AccountSummaryFields
+    }
+  }
+}
+
+
 query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
   oms {
     openOrders(venue: $venue, account: $account, trader: $trader, symbol: $symbol, parentOrderId: $parentOrderId, orderIds: $orderIds) {

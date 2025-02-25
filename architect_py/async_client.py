@@ -287,6 +287,17 @@ class AsyncClient:
         )
         return summaries.account_summaries
 
+    async def get_account_history(
+        self,
+        account: str,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
+    ) -> Sequence[AccountSummaryFields]:
+        history = await self.graphql_client.get_account_history_query(
+            account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
+        )
+        return history.account_history
+
     async def get_open_orders(
         self,
         order_ids: Optional[list[str]] = None,
