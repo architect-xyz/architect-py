@@ -28,16 +28,12 @@ async def async_client():
         raise ValueError(
             "You have set the HOST to the production server. Please change it to the sandbox server."
         )
+    if api_key is None or api_secret is None:
+        raise ValueError(
+            "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
+        )
 
-    # if ACCOUNT is not None and "PAPER" in ACCOUNT:
-    #     PORT = 6789
-    # else:
-    #     PORT = 4567
-
-    async with AsyncClient(
-        host=host, port=port, api_key=api_key, api_secret=api_secret
-    ) as client:
-        yield client
+    return AsyncClient(host=host, port=port, api_key=api_key, api_secret=api_secret)
 
 
 def test_sync_client(async_client: AsyncClient):

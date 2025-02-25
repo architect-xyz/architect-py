@@ -42,6 +42,11 @@ from .fragments import (
     OrderFields,
     ProductInfoFields,
 )
+from .get_account_history_query import (
+    GetAccountHistoryQuery,
+    GetAccountHistoryQueryFolio,
+    GetAccountHistoryQueryFolioAccountHistory,
+)
 from .get_account_query import (
     GetAccountQuery,
     GetAccountQueryUser,
@@ -172,6 +177,9 @@ __all__ = [
     "CreateJwtUser",
     "ExecutionInfoFields",
     "FillKind",
+    "GetAccountHistoryQuery",
+    "GetAccountHistoryQueryFolio",
+    "GetAccountHistoryQueryFolioAccountHistory",
     "GetAccountQuery",
     "GetAccountQueryUser",
     "GetAccountQueryUserAccount",

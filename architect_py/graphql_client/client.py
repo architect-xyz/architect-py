@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from .cancel_order_mutation import CancelOrderMutationOms
     from .create_jwt import CreateJwtUser
     from .enums import CandleWidth, OrderType, TimeInForce
+    from .get_account_history_query import GetAccountHistoryQueryFolio
     from .get_account_query import GetAccountQueryUser
     from .get_account_summaries_query import GetAccountSummariesQueryFolio
     from .get_account_summary_query import GetAccountSummaryQueryFolio
@@ -701,6 +702,69 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetAccountSummariesQuery.model_validate(data).folio
+
+    async def get_account_history_query(
+        self,
+        account: str,
+        from_inclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
+        to_exclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetAccountHistoryQueryFolio":
+        from .get_account_history_query import GetAccountHistoryQuery
+
+        query = gql(
+            """
+            query GetAccountHistoryQuery($account: String!, $fromInclusive: DateTime, $toExclusive: DateTime) {
+              folio {
+                accountHistory(
+                  account: $account
+                  fromInclusive: $fromInclusive
+                  toExclusive: $toExclusive
+                ) {
+                  ...AccountSummaryFields
+                }
+              }
+            }
+
+            fragment AccountSummaryFields on AccountSummary {
+              account
+              timestamp
+              balances {
+                product
+                balance
+              }
+              positions {
+                symbol
+                quantity
+                tradeTime
+                costBasis
+                breakEvenPrice
+                liquidationPrice
+              }
+              unrealizedPnl
+              realizedPnl
+              equity
+              yesterdayEquity
+              cashExcess
+              purchasingPower
+              totalMargin
+              positionMargin
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "account": account,
+            "fromInclusive": convert_datetime_to_utc_str(from_inclusive),
+            "toExclusive": convert_datetime_to_utc_str(to_exclusive),
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetAccountHistoryQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetAccountHistoryQuery.model_validate(data).folio
 
     async def get_open_orders_query(
         self,

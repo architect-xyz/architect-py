@@ -28,6 +28,7 @@ websockets = ">=11"
 
 [tool.poetry.group.dev.dependencies]
 ariadne-codegen = { extras = ["subscriptions"], version = ">=0.13.0" }
+datamodel-code-generator = ">=0.28.0"
 black = ">=24"
 mypy = "^1"
 python-dotenv = "^1"
