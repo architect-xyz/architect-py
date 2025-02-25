@@ -1,8 +1,6 @@
 import argparse
-from collections import defaultdict
 import json
 import os
-from pathlib import Path
 
 
 def preprocess_json(input_file: str, output_dir: str) -> None:
@@ -14,61 +12,40 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
     :param output_dir: Directory where extracted schema files will be saved.
     """
     with open(input_file, "r") as f:
-        services: list = json.load(f)
+        services = json.load(f)
 
     # Create the output directory if it doesn't exist.
     os.makedirs(output_dir, exist_ok=True)
-    # Collect all definitions across services
-    global_defs = defaultdict(dict)
+
+    # Iterate through each service in the input array.
     for service in services:
-        for rpc in service["rpcs"]:
-            for schema_type in ["request_type", "response_type"]:
-                if schema := rpc.get(schema_type):
-                    global_defs[service["name"]].update(schema.get("definitions", {}))
+        service_name = service["name"].replace(" ", "_")
 
-    # Process each service
-    for service in services:
-        service_name = service["name"]
-        service_dir = Path(output_dir) / service_name
-        service_dir.mkdir(parents=True, exist_ok=True)
+        output_sub_dir = os.path.join(output_dir, service_name)
+        os.makedirs(output_sub_dir, exist_ok=True)
 
-        # Create definitions file for the service
-        defs_path = service_dir / "_definitions.json"
-        with open(defs_path, "w") as f:
-            json.dump(
-                {
-                    "$schema": "http://json-schema.org/draft-07/schema#",
-                    "definitions": global_defs[service["name"]],
-                },
-                f,
-                indent=2,
-            )
+        rpcs = service.get("rpcs", [])
+        for rpc in rpcs:
+            # Process the request type schema.
+            req_schema = rpc.get("request_type")
+            if req_schema:
+                req_title = req_schema.get("title", "Request").replace(" ", "_")
+                req_filename = f"{service_name}_{req_title}.json"
+                req_path = os.path.join(output_sub_dir, req_filename)
+                with open(req_path, "w") as out_file:
+                    json.dump(req_schema, out_file, indent=2)
+                print(f"Extracted request schema to: {req_path}")
 
-        # Process each RPC with references to definitions
-        for rpc in service["rpcs"]:
-            for schema_type in ["request_type", "response_type"]:
-                if not (schema := rpc.get(schema_type)):
-                    continue
+            # Process the response type schema.
+            resp_schema = rpc.get("response_type")
+            if resp_schema:
+                resp_title = resp_schema.get("title", "Response").replace(" ", "_")
+                resp_filename = f"{service_name}_{resp_title}.json"
 
-                # Create standalone schema with ref to definitions
-                full_schema = {
-                    "$schema": "http://json-schema.org/draft-07/schema#",
-                    "$ref": f"#/definitions/{schema['title']}",
-                    "definitions": {
-                        **global_defs[service["name"]],
-                        schema["title"]: {
-                            k: v for k, v in schema.items() if k != "definitions"
-                        },
-                    },
-                }
-
-                # Clean filename
-                route = rpc["route"].split("/")[-1]
-                filename = f"{route}_{schema_type}.json"
-                output_path = service_dir / filename
-
-                with open(output_path, "w") as f:
-                    json.dump(full_schema, f, indent=2)
+                resp_path = os.path.join(output_sub_dir, resp_filename)
+                with open(resp_path, "w") as out_file:
+                    json.dump(resp_schema, out_file, indent=2)
+                print(f"Extracted response schema to: {resp_path}")
 
 
 if __name__ == "__main__":

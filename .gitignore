@@ -8,7 +8,7 @@ scratch*.py.*
 .DS_Store
 *.ipynb
 
-processed_schema
+processed_schemas
 
 
 pytest.env
