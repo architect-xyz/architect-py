@@ -24,6 +24,3 @@ class CancelOrderRequest(Struct):
             ),
         ]
     ] = None
-    """
-    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
-    """

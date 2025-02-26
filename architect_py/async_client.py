@@ -24,12 +24,10 @@ from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
-from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
 from architect_py.grpc_models.Marketdata.Marketdata_Array_of_L1BookSnapshot import (
     L1BookSnapshot,
 )
 from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_models.Marketdata.Marketdata_L2BookUpdate import L2BookUpdate
 from architect_py.grpc_models.Marketdata.Marketdata_Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod

@@ -21,9 +21,6 @@ class AccountPosition(Struct):
             Meta(description='The meaning of this field varies by reporting venue.'),
         ]
     ] = None
-    """
-    The meaning of this field varies by reporting venue.
-    """
 
 
 class AccountSummary(Struct):
@@ -34,9 +31,6 @@ class AccountSummary(Struct):
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description='Cash available to withdraw.')]
     ] = None
-    """
-    Cash available to withdraw.
-    """
     equity: Optional[Decimal] = None
     position_margin: Optional[
         Annotated[
@@ -44,9 +38,6 @@ class AccountSummary(Struct):
             Meta(description='Margin requirement based on current positions only.'),
         ]
     ] = None
-    """
-    Margin requirement based on current positions only.
-    """
     purchasing_power: Optional[Decimal] = None
     realized_pnl: Optional[Decimal] = None
     total_margin: Optional[
@@ -57,8 +48,5 @@ class AccountSummary(Struct):
             ),
         ]
     ] = None
-    """
-    Margin requirement calculated for worst-case based on open positions and working orders.
-    """
     unrealized_pnl: Optional[Decimal] = None
     yesterday_equity: Optional[Decimal] = None

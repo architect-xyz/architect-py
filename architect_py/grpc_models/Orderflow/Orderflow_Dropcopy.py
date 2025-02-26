@@ -190,9 +190,6 @@ class Dropcopy4(Struct):
         int,
         Meta(description='When the cpty claims the trade happened', title='trade_time'),
     ]
-    """
-    When the cpty claims the trade happened
-    """
     x: Annotated[str, Meta(title='execution_venue')]
     a: Optional[Annotated[Optional[str], Meta(title='account')]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None
@@ -205,9 +202,6 @@ class Dropcopy4(Struct):
             ),
         ]
     ] = None
-    """
-    When Architect received the fill, if realtime
-    """
     f: Optional[Annotated[Optional[Decimal], Meta(title='fee')]] = None
     fu: Optional[
         Annotated[
@@ -218,9 +212,6 @@ class Dropcopy4(Struct):
             ),
         ]
     ] = None
-    """
-    Fee currency, if different from the price currency
-    """
     oid: Optional[Annotated[Optional[OrderId], Meta(title='order_id')]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title='trader')]] = None
     xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None

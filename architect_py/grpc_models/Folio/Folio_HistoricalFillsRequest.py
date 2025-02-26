@@ -24,9 +24,6 @@ class HistoricalFillsRequest(Struct):
     limit: Optional[
         Annotated[Optional[int], Meta(description='Default maximum is 1000.', ge=0)]
     ] = None
-    """
-    Default maximum is 1000.
-    """
     order_id: Optional[OrderId] = None
     to_exclusive: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None

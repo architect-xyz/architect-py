@@ -44,9 +44,6 @@ class Diff(Struct):
             title='asks',
         ),
     ]
-    """
-    Set of (price, level) updates. If zero, the price level has been removed from the book.
-    """
     b: Annotated[
         List[Bid],
         Meta(
@@ -54,9 +51,6 @@ class Diff(Struct):
             title='bids',
         ),
     ]
-    """
-    Set of (price, level) updates. If zero, the price level has been removed from the book.
-    """
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     t: T1

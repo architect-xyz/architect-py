@@ -17,6 +17,3 @@ class PruneExpiredSymbolsRequest(Struct):
             ),
         ]
     ] = None
-    """
-    If None then it will just use server current time; otherwise, specify a unix timestamp in seconds
-    """
