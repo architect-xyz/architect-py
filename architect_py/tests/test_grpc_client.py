@@ -23,6 +23,8 @@ async def main():
 
     endpoint = "app.architect.co"
     endpoint = "binance.marketdata.architect.co"
+    endpoint = "bybit.marketdata.architect.co"
+    endpoint = "binance-futures-usd-m.marketdata.architect.co"
 
     grpc_client = GRPCClient(graphql_client)
 

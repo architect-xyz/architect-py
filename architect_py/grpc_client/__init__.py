@@ -45,6 +45,12 @@ from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 
+# TODO:
+# FIX decimal.Decimal in the generated code
+# make field titles take the main name
+# Fix the duplication issue in the generated code
+
+
 class GRPCClient:
     def __init__(self, graphql_client: GraphQLClient):
         self.grpc_jwt: Optional[str] = None
