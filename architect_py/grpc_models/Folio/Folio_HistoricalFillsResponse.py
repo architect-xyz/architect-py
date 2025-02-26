@@ -62,9 +62,6 @@ class Fill(Struct):
         int,
         Meta(description='When the cpty claims the trade happened', title='trade_time'),
     ]
-    """
-    When the cpty claims the trade happened
-    """
     x: Annotated[str, Meta(title='execution_venue')]
     a: Optional[Annotated[Optional[str], Meta(title='account')]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None
@@ -77,9 +74,6 @@ class Fill(Struct):
             ),
         ]
     ] = None
-    """
-    When Architect received the fill, if realtime
-    """
     f: Optional[Annotated[Optional[Decimal], Meta(title='fee')]] = None
     fu: Optional[
         Annotated[
@@ -90,9 +84,6 @@ class Fill(Struct):
             ),
         ]
     ] = None
-    """
-    Fee currency, if different from the price currency
-    """
     oid: Optional[Annotated[Optional[OrderId], Meta(title='order_id')]] = None
     t: Optional[Annotated[int, Meta(title='is_taker')]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title='trader')]] = None

@@ -19,6 +19,3 @@ class AccountsRequest(Struct):
             ),
         ]
     ] = None
-    """
-    Request accounts from the perspective of this trader; if not specified, defaults to the caller user.
-    """
