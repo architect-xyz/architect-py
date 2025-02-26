@@ -97,6 +97,9 @@ class OrderflowRequest1(Struct):
             ),
         ]
     ] = None
+    """
+    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
+    """
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     src: Optional[Annotated[Optional[OrderSource], Meta(title='source')]] = None
     u: Optional[Annotated[Optional[TraderIdOrEmail], Meta(title='trader')]] = None
@@ -121,6 +124,9 @@ class OrderflowRequest2(Struct):
             ),
         ]
     ] = None
+    """
+    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
+    """
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     src: Optional[Annotated[Optional[OrderSource], Meta(title='source')]] = None
     u: Optional[Annotated[Optional[TraderIdOrEmail], Meta(title='trader')]] = None
@@ -145,6 +151,9 @@ class OrderflowRequest3(Struct):
             ),
         ]
     ] = None
+    """
+    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
+    """
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     src: Optional[Annotated[Optional[OrderSource], Meta(title='source')]] = None
     u: Optional[Annotated[Optional[TraderIdOrEmail], Meta(title='trader')]] = None
@@ -163,6 +172,9 @@ class OrderflowRequest4(Struct):
             ),
         ]
     ] = None
+    """
+    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
+    """
 
 
 class OrderflowRequest5(Struct):

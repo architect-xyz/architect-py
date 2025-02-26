@@ -28,12 +28,12 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
         --disable-timestamp \
-        # --collapse-root-models \
-        # --use-title-as-name \
-        # --use-field-description \
-        # --reuse-model \
+        --use-title-as-name \
+        --use-field-description \
+        # --use-union-operator \
         # --allow-population-by-field-name \
-        # --use-union-operator
+        # --collapse-root-models \
+        # --reuse-model \
 done
 
 VERSION_FILE="version"
