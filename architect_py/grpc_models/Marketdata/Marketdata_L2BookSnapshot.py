@@ -10,15 +10,15 @@ from msgspec import Meta, Struct
 Decimal = str
 
 
-AItem = List[Decimal]
+Ask = List[Decimal]
 
 
-BItem = List[Decimal]
+Bid = List[Decimal]
 
 
 class L2BookSnapshot(Struct):
-    a: Annotated[List[AItem], Meta(title='asks')]
-    b: Annotated[List[BItem], Meta(title='bids')]
+    a: Annotated[List[Ask], Meta(title='asks')]
+    b: Annotated[List[Bid], Meta(title='bids')]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
