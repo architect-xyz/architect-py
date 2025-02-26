@@ -27,11 +27,13 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
         --output "${out_dir}/$(basename "$filepath" .json).py" \
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
-        --collapse-root-models \
-        --use-title-as-name \
-        --use-field-description \
-        --allow-population-by-field-name \
-        --use-union-operator
+        --disable-timestamp \
+        # --collapse-root-models \
+        # --use-title-as-name \
+        # --use-field-description \
+        # --reuse-model \
+        # --allow-population-by-field-name \
+        # --use-union-operator
 done
 
 VERSION_FILE="version"
