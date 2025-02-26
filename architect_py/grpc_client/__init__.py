@@ -14,20 +14,26 @@ import websockets.client
 
 from architect_py.graphql_client.client import GraphQLClient
 
-from architect_py.grpc_models.Marketdata_Array_of_L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_models.Marketdata_L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_models.Marketdata_L2BookSnapshotRequest import (
+
+from architect_py.grpc_models.Marketdata.Marketdata_Array_of_L1BookSnapshot import (
+    L1BookSnapshot,
+)
+from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshotRequest import (
     L2BookSnapshotRequest,
 )
-from architect_py.grpc_models.Marketdata_L2BookUpdate import L2BookUpdate
-from architect_py.grpc_models.Marketdata_SubscribeL1BookSnapshotsRequest import (
+from architect_py.grpc_models.Marketdata.Marketdata_L2BookUpdate import (
+    Diff,
+    L2BookUpdate,
+    Snapshot,
+)
+from architect_py.grpc_models.Marketdata.Marketdata_SubscribeL1BookSnapshotsRequest import (
     SubscribeL1BookSnapshotsRequest,
 )
-from architect_py.grpc_models.Marketdata_SubscribeL2BookUpdatesRequest import (
+from architect_py.grpc_models.Marketdata.Marketdata_SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
-from architect_py.grpc_models.Marketdata_Trade import Trade
-
+from architect_py.grpc_models.Marketdata.Marketdata_Trade import Trade
 from architect_py.protocol import (
     ProtocolQueryMessage,
     ProtocolResponseMessage,
@@ -47,7 +53,7 @@ class GRPCClient:
         self.graphql_client = graphql_client
 
         self.marketdata: dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
-        self.l2_books: dict[TradableProduct, L2BookSnapshot] = {}
+        self.l2_books: dict[TradableProduct, Snapshot] = {}
 
     async def grpc_channel(self, endpoint: str):
         if "://" not in endpoint:
@@ -139,9 +145,9 @@ class GRPCClient:
         async for up in self.subscribe_l2_book_updates(
             endpoint, symbol=symbol, venue=venue
         ):
-            if isinstance(up, L2BookSnapshot):
+            if isinstance(up, Snapshot):  # if up.t.value = "s":
                 self.l2_books[symbol] = up
-            elif isinstance(up, L2BookUpdate):
+            if isinstance(up, Diff):  # elif up.t.value = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(
                         f"received update before snapshot for L2 book {symbol}"

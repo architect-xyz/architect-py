@@ -25,6 +25,12 @@ from architect_py.graphql_client.get_fills_query import (
 )
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.graphql_client.subscribe_trades import SubscribeTradesTrades
+from architect_py.grpc_models.Marketdata.Marketdata_Array_of_L1BookSnapshot import (
+    L1BookSnapshot,
+)
+from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_models.Marketdata.Marketdata_L2BookUpdate import L2BookUpdate
+from architect_py.grpc_models.Marketdata.Marketdata_Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
 
@@ -58,11 +64,6 @@ from .graphql_client.fragments import (
 #     CreateTwapAlgo,
 # )
 from .grpc_client import GRPCClient
-from .protocol.marketdata import (
-    L1BookSnapshot,
-    L2BookUpdate,
-    L3BookSnapshot,
-)
 
 from .utils.price_bands import price_band_pairs
 
@@ -379,30 +380,20 @@ class AsyncClient:
         )
         return l2_book.l_2_book_snapshot
 
-    async def subscribe_l1_book_snapshots(
+    async def subscribe_l1_book(
         self, endpoint: str, symbols: list[str] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
         raise NotImplementedError
 
-    async def subscribe_l2_book_updates(
+    async def subscribe_l2_book(
         self,
         endpoint: str,
         symbol: str,
         venue: Optional[str],
-    ) -> AsyncIterator[L2BookUpdate]:
+    ) -> AsyncIterator[L2BookSnapshot]:
         raise NotImplementedError
 
-    async def subscribe_l3_book_updates(
-        self,
-        endpoint: str,
-        symbol: str,
-        venue: Optional[str],
-    ) -> AsyncIterator[L3BookSnapshot]:
-        raise NotImplementedError
-
-    async def subscribe_trades(
-        self, symbol: str, venue: str
-    ) -> AsyncIterator[SubscribeTradesTrades]:
+    async def subscribe_trades(self, symbol: str, venue: str) -> AsyncIterator[Trade]:
         raise NotImplementedError
 
     async def send_limit_order(
