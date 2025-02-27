@@ -72,6 +72,11 @@ from .get_execution_info_query import (
     GetExecutionInfoQuerySymbology,
     GetExecutionInfoQuerySymbologyExecutionInfo,
 )
+from .get_execution_infos_query import (
+    GetExecutionInfosQuery,
+    GetExecutionInfosQuerySymbology,
+    GetExecutionInfosQuerySymbologyExecutionInfos,
+)
 from .get_fills_query import (
     GetFillsQuery,
     GetFillsQueryFolio,
@@ -195,6 +200,9 @@ __all__ = [
     "GetExecutionInfoQuery",
     "GetExecutionInfoQuerySymbology",
     "GetExecutionInfoQuerySymbologyExecutionInfo",
+    "GetExecutionInfosQuery",
+    "GetExecutionInfosQuerySymbology",
+    "GetExecutionInfosQuerySymbologyExecutionInfos",
     "GetFillsQuery",
     "GetFillsQueryFolio",
     "GetFillsQueryFolioHistoricalFills",
