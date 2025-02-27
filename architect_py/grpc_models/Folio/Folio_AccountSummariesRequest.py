@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from msgspec import Struct
+from msgspec import Meta, Struct
 
 AccountIdOrName = str
 
@@ -14,5 +14,12 @@ TraderIdOrEmail = str
 
 
 class AccountSummariesRequest(Struct):
-    accounts: Optional[List[AccountIdOrName]] = None
+    accounts: Optional[
+        Annotated[
+            List[AccountIdOrName],
+            Meta(
+                description='If trader and accounts are both None, return all accounts for the user'
+            ),
+        ]
+    ] = None
     trader: Optional[TraderIdOrEmail] = None

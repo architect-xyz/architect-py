@@ -1,5 +1,5 @@
 from asyncio.log import logger
-from typing import Any, AsyncIterator, Optional, cast
+from typing import Any, AsyncIterator, Optional, Type, cast
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
@@ -9,6 +9,7 @@ import dns.resolver
 from dns.rdtypes.IN.SRV import SRV
 
 import grpc
+import msgspec
 import orjson
 import websockets.client
 
@@ -45,10 +46,23 @@ from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 
-# TODO:
-# FIX decimal.Decimal in the generated code
-# make field titles take the main name
-# Fix the duplication issue in the generated code
+"""
+TODO:
+FIX decimal.Decimal in the generated code
+make getters and setters for field titles for every field
+    -  e.g. for L2BookSnapshot, the title should have an alias of symbol
+    class L2BookSnapshot(Struct):
+        a: Annotated[List[Ask], Meta(title='asks')]
+        b: Annotated[List[Bid], Meta(title='bids')]
+        sid: Annotated[int, Meta(ge=0, title='sequence_id')]
+        sn: Annotated[int, Meta(ge=0, title='sequence_number')]
+        tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
+        ts: Annotated[int, Meta(title='timestamp')]
+    
+    we want a getter / setter for asks that will affect value of a
+Fix the duplication of types issue in the generated code
+auto route generation
+"""
 
 
 class GRPCClient:
@@ -61,7 +75,7 @@ class GRPCClient:
         self.marketdata: dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
         self.l2_books: dict[TradableProduct, Snapshot] = {}
 
-    async def grpc_channel(self, endpoint: str):
+    async def grpc_channel(self, endpoint: str) -> grpc.aio.Channel:
         if "://" not in endpoint:
             endpoint = f"http://{endpoint}"
         url = urlparse(endpoint)
@@ -248,3 +262,27 @@ class JsonWsClient:
     async def subscribe_trades(self, symbol: str) -> AsyncIterator[Trade]:
         async for data in self.subscribe(f"marketdata/trades/{symbol}"):
             yield Trade(**data)
+
+    @staticmethod
+    def create_unary(
+        channel: grpc.aio.Channel,
+        route: str,
+        response_type: Type,
+        is_stream: bool,
+    ) -> grpc.aio.UnaryStreamMultiCallable | grpc.aio.UnaryUnaryMultiCallable:
+        if is_stream:
+            return channel.unary_stream(
+                method=route,
+                request_serializer=msgspec.json.encode,
+                response_deserializer=lambda buf: msgspec.json.decode(
+                    buf, type=response_type
+                ),
+            )
+        else:
+            return channel.unary_unary(
+                method=route,
+                request_serializer=msgspec.json.encode,
+                response_deserializer=lambda buf: msgspec.json.decode(
+                    buf, type=response_type
+                ),
+            )
