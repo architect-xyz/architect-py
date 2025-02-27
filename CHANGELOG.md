@@ -1,6 +1,7 @@
 3.2.0
 Features
   - Added get_account_history query
+  - Added get_execution_infos (plural) query
   - Added gRPC client
 
 

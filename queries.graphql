@@ -195,6 +195,14 @@ query GetExecutionInfoQuery($symbol: TradableProduct!, $executionVenue: Executio
   }
 }
 
+query GetExecutionInfosQuery($symbols: [TradableProduct!], $executionVenue: ExecutionVenue) {
+  symbology {
+    executionInfos(symbols: $symbols, executionVenue: $executionVenue) {
+      ...ExecutionInfoFields
+    }
+  }
+}
+
 
 query GetCandleSnapshotQuery($venue: MarketdataVenue!, $symbol: String!, $candleWidth: CandleWidth!, $start: DateTime!, $end: DateTime!) {
   marketdata {

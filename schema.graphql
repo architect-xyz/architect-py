@@ -534,4 +534,3 @@ type UserQueryRoot {
 }
 
 union Orderflow = Order | OrderAck | GqlOrderReject | OrderOut | OrderStale | Cancel | CancelReject | OrderCanceling | OrderCanceled | Fill | AberrantFill
-
