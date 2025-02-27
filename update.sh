@@ -1,6 +1,26 @@
-# architect-gql schema > ../architect-py/schema.graphql
+# this script is used to update the generated code in the project
+
+
+# check sdchema
+if ! cmp -s schema.graphql ../architect/gql/schema.graphql; then
+    echo "Schema has changed. Updating schema (y/n)?"
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        cp ../architect/gql/schema.graphql schema.graphql
+        echo "Schema updated.\n"
+    else
+        echo "Update skipped.\n"
+    fi
+else
+    echo "Schema matches backend.\n"
+fi
+
+
+# ariadne codegen
 poetry run ariadne-codegen --config ariadne-codegen.toml
 
+
+# GRPC codegen
 echo "\nGenerating client protocol"
 python generate_sync_client_protocol.py > architect_py/protocol/client_protocol.py
 
@@ -28,12 +48,15 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
         --use-title-as-name \
+        --custom-template-dir templates \
         --disable-timestamp
 done
 
+
+
+# version check
 VERSION_FILE="version"
 
-# Extract the current version from the file
 if [ -f "$VERSION_FILE" ]; then
     echo "\nCurrent version:"
     cat "$VERSION_FILE"

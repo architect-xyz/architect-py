@@ -3,7 +3,7 @@ Features
   - Added get_account_history query
   - Added get_execution_infos (plural) query
   - Added gRPC client
-
+  - Added docs for each function
 
 3.1.11
 Features:

@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from .get_account_summary_query import GetAccountSummaryQueryFolio
     from .get_candle_snapshot_query import GetCandleSnapshotQueryMarketdata
     from .get_execution_info_query import GetExecutionInfoQuerySymbology
+    from .get_execution_infos_query import GetExecutionInfosQuerySymbology
     from .get_fills_query import GetFillsQueryFolio
     from .get_first_notice_date_query import GetFirstNoticeDateQuerySymbology
     from .get_future_series_query import GetFutureSeriesQuerySymbology
@@ -304,6 +305,50 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetExecutionInfoQuery.model_validate(data).symbology
+
+    async def get_execution_infos_query(
+        self,
+        symbols: Union[Optional[List[TradableProduct]], "UnsetType"] = UNSET,
+        execution_venue: Union[Optional[str], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetExecutionInfosQuerySymbology":
+        from .get_execution_infos_query import GetExecutionInfosQuery
+
+        query = gql(
+            """
+            query GetExecutionInfosQuery($symbols: [TradableProduct!], $executionVenue: ExecutionVenue) {
+              symbology {
+                executionInfos(symbols: $symbols, executionVenue: $executionVenue) {
+                  ...ExecutionInfoFields
+                }
+              }
+            }
+
+            fragment ExecutionInfoFields on ExecutionInfo {
+              symbol
+              executionVenue
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              isDelisted
+              initialMargin
+              maintenanceMargin
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "symbols": symbols,
+            "executionVenue": execution_venue,
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetExecutionInfosQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetExecutionInfosQuery.model_validate(data).symbology
 
     async def get_candle_snapshot_query(
         self,
