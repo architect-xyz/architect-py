@@ -1,15 +1,13 @@
-from typing import Union
-
 import grpc
 import msgspec
 
-from architect_py.grpc_client.Marketdata.Marketdata_L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_client.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_client.Marketdata.Marketdata_L2BookUpdate import L2BookUpdate
+from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
+from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.L2BookUpdate import L2BookUpdate
 
 
 class JsonMarketdataStub:
-    def __init__(self, channel: Union[grpc.Channel, grpc.aio.Channel]):
+    def __init__(self, channel: grpc.Channel | grpc.aio.Channel):
         self.SubscribeL1BookSnapshots = channel.unary_stream(
             "/json.architect.Marketdata/SubscribeL1BookSnapshots",
             request_serializer=msgspec.json.encode,

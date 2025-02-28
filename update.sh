@@ -68,7 +68,7 @@ for folder in "$PROCESSED_DIR"/*/; do
                 --custom-template-dir templates \
                 --disable-timestamp
 
-            python postprocess_grpc_types.py  --file_path $output_file
+            python postprocess_grpc_file.py  --file_path $output_file --json_folder $folder
 
         done
     fi
