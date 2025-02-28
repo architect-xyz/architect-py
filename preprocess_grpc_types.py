@@ -51,7 +51,7 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a JSON file.")
     parser.add_argument(
-        "input_file",
+        "--input_file",
         type=str,
         nargs="?",
         default="~/architect/api/schema.json",

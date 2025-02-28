@@ -50,10 +50,13 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
         --use-title-as-name \
         --enum-field-as-literal one \
         --use-subclass-enum \
+        --field-include-all-keys \
         --custom-template-dir templates \
         --disable-timestamp
 done
 
+echo "\nDone generating gRPC models"
+python postprocess_grpc_types.py  --directory $GRPC_MODELS_DIR
 
 
 # version check
