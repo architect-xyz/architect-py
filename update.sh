@@ -56,7 +56,7 @@ for folder in "$PROCESSED_DIR"/*/; do
             filename=$(basename "$filepath" .json)
             output_file="${out_dir}/$filename.py"
 
-            datamodel-codegen
+            datamodel-codegen \
                 --input "$filepath" \
                 --output "$output_file" \
                 --input-file-type jsonschema \
