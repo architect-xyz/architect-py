@@ -8,7 +8,7 @@ from enum import Enum
 from msgspec import Struct
 
 
-class HealthStatus(Enum):
+class HealthStatus(str, Enum):
     UNKNOWN = 'UNKNOWN'
     SERVING = 'SERVING'
     NOT_SERVING = 'NOT_SERVING'

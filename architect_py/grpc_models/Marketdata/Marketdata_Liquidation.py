@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 Decimal = str
 
 
-class Dir(Enum):
+class Dir(str, Enum):
     BUY = 'BUY'
     SELL = 'SELL'
 

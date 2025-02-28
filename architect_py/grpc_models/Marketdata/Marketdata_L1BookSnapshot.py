@@ -11,11 +11,11 @@ Decimal = str
 
 
 class L1BookSnapshot(Struct):
-    s: Annotated[str, Meta(title="symbol")]
-    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
-    a: Optional[Annotated[List[Decimal], Meta(title="best_ask")]] = None
-    b: Optional[Annotated[List[Decimal], Meta(title="best_bid")]] = None
+    s: Annotated[str, Meta(title='symbol')]
+    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
+    ts: Annotated[int, Meta(title='timestamp')]
+    a: Optional[Annotated[List[Decimal], Meta(title='best_ask')]] = None
+    b: Optional[Annotated[List[Decimal], Meta(title='best_bid')]] = None
 
     @property
     def symbol(self) -> str:

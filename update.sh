@@ -48,6 +48,8 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
         --use-title-as-name \
+        --enum-field-as-literal one \
+        --use-subclass-enum \
         --custom-template-dir templates \
         --disable-timestamp
 done

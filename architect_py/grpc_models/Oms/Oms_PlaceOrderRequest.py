@@ -4,22 +4,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Optional, Union
+from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
-
-
-class K(Enum):
-    LIMIT = 'LIMIT'
-
-
-class K1(Enum):
-    STOP_LOSS_LIMIT = 'STOP_LOSS_LIMIT'
-
-
-class K2(Enum):
-    TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT'
-
 
 AccountIdOrName = str
 
@@ -27,7 +14,7 @@ AccountIdOrName = str
 Decimal = str
 
 
-class Dir(Enum):
+class Dir(str, Enum):
     BUY = 'BUY'
     SELL = 'SELL'
 
@@ -37,7 +24,7 @@ class OrderId(Struct):
     seqno: Annotated[int, Meta(ge=0)]
 
 
-class OrderSource(Enum):
+class OrderSource(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2
@@ -47,7 +34,7 @@ class OrderSource(Enum):
     integer_255 = 255
 
 
-class TimeInForce1(Enum):
+class TimeInForce1(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
@@ -57,11 +44,7 @@ class TimeInForce2(Struct):
     GTD: str
 
 
-class TimeInForce3(Enum):
-    DAY = 'DAY'
-
-
-TimeInForce = Union[TimeInForce1, TimeInForce2, TimeInForce3]
+TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
 
 
 TraderIdOrEmail = str
@@ -72,7 +55,7 @@ class PlaceOrderRequest1(Struct):
     q: Annotated[Decimal, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
-    k: K
+    k: Literal['LIMIT']
     p: Annotated[Decimal, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
     a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
@@ -183,7 +166,7 @@ class PlaceOrderRequest2(Struct):
     q: Annotated[Decimal, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
-    k: K1
+    k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[Decimal, Meta(title='limit_price')]
     tp: Annotated[Decimal, Meta(title='trigger_price')]
     a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
@@ -294,7 +277,7 @@ class PlaceOrderRequest3(Struct):
     q: Annotated[Decimal, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
-    k: K2
+    k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[Decimal, Meta(title='limit_price')]
     tp: Annotated[Decimal, Meta(title='trigger_price')]
     a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None

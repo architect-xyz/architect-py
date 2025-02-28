@@ -9,7 +9,7 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
-class CandleWidth(Enum):
+class CandleWidth(int, Enum):
     integer_1 = 1
     integer_2 = 2
     integer_4 = 4

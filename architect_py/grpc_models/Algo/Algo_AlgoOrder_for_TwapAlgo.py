@@ -9,7 +9,7 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
-class AlgoState(Enum):
+class AlgoState(str, Enum):
     Pending = 'Pending'
     Running = 'Running'
     Stopped = 'Stopped'
@@ -18,7 +18,7 @@ class AlgoState(Enum):
 Decimal = str
 
 
-class Dir(Enum):
+class Dir(str, Enum):
     BUY = 'BUY'
     SELL = 'SELL'
 

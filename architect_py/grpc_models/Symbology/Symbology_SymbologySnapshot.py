@@ -4,26 +4,14 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Dict, List, Optional, Union
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
 Decimal = str
 
 
-class DerivativeKind1(Enum):
-    Linear = 'Linear'
-
-
-class DerivativeKind2(Enum):
-    Inverse = 'Inverse'
-
-
-class DerivativeKind3(Enum):
-    Quanto = 'Quanto'
-
-
-DerivativeKind = Union[DerivativeKind1, DerivativeKind2, DerivativeKind3]
+DerivativeKind = Union[Literal['Linear'], Literal['Inverse'], Literal['Quanto']]
 
 
 class OptionLike(Struct):
@@ -35,26 +23,18 @@ class EventContractSeriesInstance2(Struct):
     OptionLike: OptionLike
 
 
-class Unit(Enum):
-    base = 'base'
-
-
 class MinOrderQuantityUnit1(Struct):
-    unit: Unit
-
-
-class Unit1(Enum):
-    quote = 'quote'
+    unit: Literal['base']
 
 
 class MinOrderQuantityUnit2(Struct):
-    unit: Unit1
+    unit: Literal['quote']
 
 
 MinOrderQuantityUnit = Union[MinOrderQuantityUnit1, MinOrderQuantityUnit2]
 
 
-class OptionsExerciseType(Enum):
+class OptionsExerciseType(str, Enum):
     american = 'american'
     european = 'european'
     unknown = 'unknown'
@@ -67,92 +47,48 @@ class Outcome(Struct):
 PriceDisplayFormat = str
 
 
-class ProductType2(Enum):
-    Fiat = 'Fiat'
-
-
 class ProductType1(Struct):
-    product_type: ProductType2
+    product_type: Literal['Fiat']
 
 
-class ProductType4(Enum):
-    Commodity = 'Commodity'
+class ProductType2(Struct):
+    product_type: Literal['Commodity']
 
 
 class ProductType3(Struct):
-    product_type: ProductType4
+    product_type: Literal['Crypto']
 
 
-class ProductType6(Enum):
-    Crypto = 'Crypto'
+class ProductType4(Struct):
+    product_type: Literal['Equity']
 
 
 class ProductType5(Struct):
-    product_type: ProductType6
+    product_type: Literal['Index']
 
 
-class ProductType8(Enum):
-    Equity = 'Equity'
-
-
-class ProductType7(Struct):
-    product_type: ProductType8
-
-
-class ProductType10(Enum):
-    Index = 'Index'
-
-
-class ProductType9(Struct):
-    product_type: ProductType10
-
-
-class ProductType12(Enum):
-    Future = 'Future'
-
-
-class ProductType11(Struct):
+class ProductType6(Struct):
     derivative_kind: DerivativeKind
     expiration: str
     multiplier: Decimal
-    product_type: ProductType12
+    product_type: Literal['Future']
     first_notice_date: Optional[str] = None
     series: Optional[str] = None
     underlying: Optional[str] = None
 
 
-class ProductType14(Enum):
-    FutureSpread = 'FutureSpread'
-
-
-class ProductType16(Enum):
-    Perpetual = 'Perpetual'
-
-
-class ProductType15(Struct):
+class ProductType8(Struct):
     derivative_kind: DerivativeKind
     multiplier: Decimal
-    product_type: ProductType16
+    product_type: Literal['Perpetual']
     underlying: Optional[str] = None
 
 
-class ProductType18(Enum):
-    Option = 'Option'
+class ProductType11(Struct):
+    product_type: Literal['Unknown']
 
 
-class ProductType20(Enum):
-    EventContract = 'EventContract'
-
-
-class ProductType22(Enum):
-    Unknown = 'Unknown'
-
-
-class ProductType21(Struct):
-    product_type: ProductType22
-
-
-class PutOrCall(Enum):
+class PutOrCall(str, Enum):
     P = 'P'
     C = 'C'
 
@@ -185,7 +121,7 @@ class TickSize2(Struct):
 TickSize = Union[TickSize1, TickSize2]
 
 
-class TimeZone(Enum):
+class TimeZone(str, Enum):
     Africa_Abidjan = 'Africa/Abidjan'
     Africa_Accra = 'Africa/Accra'
     Africa_Addis_Ababa = 'Africa/Addis_Ababa'
@@ -828,35 +764,35 @@ class OptionsSeriesInstance(Struct):
     strike: Decimal
 
 
-class ProductType13(Struct):
+class ProductType7(Struct):
     legs: List[SpreadLeg]
-    product_type: ProductType14
+    product_type: Literal['FutureSpread']
 
 
-class ProductType17(Struct):
+class ProductType9(Struct):
     instance: OptionsSeriesInstance
-    product_type: ProductType18
+    product_type: Literal['Option']
     series: str
 
 
-class ProductType19(Struct):
+class ProductType10(Struct):
     instance: EventContractSeriesInstance
-    product_type: ProductType20
+    product_type: Literal['EventContract']
     series: str
 
 
 ProductType = Union[
     ProductType1,
+    ProductType2,
     ProductType3,
+    ProductType4,
     ProductType5,
+    ProductType6,
     ProductType7,
+    ProductType8,
     ProductType9,
+    ProductType10,
     ProductType11,
-    ProductType13,
-    ProductType15,
-    ProductType17,
-    ProductType19,
-    ProductType21,
 ]
 
 
