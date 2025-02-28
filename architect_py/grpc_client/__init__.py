@@ -48,18 +48,6 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 """
 TODO:
-FIX decimal.Decimal in the generated code
-make getters and setters for field titles for every field
-    -  e.g. for L2BookSnapshot, the title should have an alias of symbol
-    class L2BookSnapshot(Struct):
-        a: Annotated[List[Ask], Meta(title='asks')]
-        b: Annotated[List[Bid], Meta(title='bids')]
-        sid: Annotated[int, Meta(ge=0, title='sequence_id')]
-        sn: Annotated[int, Meta(ge=0, title='sequence_number')]
-        tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-        ts: Annotated[int, Meta(title='timestamp')]
-    
-    we want a getter / setter for asks that will affect value of a
 Fix the duplication of types issue in the generated code
 auto route generation
 """
@@ -81,13 +69,16 @@ class GRPCClient:
         url = urlparse(endpoint)
         if url.hostname is None:
             raise Exception(f"Invalid endpoint: {endpoint}")
+
         is_https = url.scheme == "https"
         srv_records: dns.resolver.Answer = await dns.asyncresolver.resolve(
             url.hostname, "SRV"
         )
         if len(srv_records) == 0:
             raise Exception(f"No SRV records found for {url.hostname}")
+
         record = cast(SRV, srv_records[0])
+
         connect_str = f"{record.target}:{record.port}"
         if is_https:
             credentials = grpc.ssl_channel_credentials(
