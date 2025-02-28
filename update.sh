@@ -56,26 +56,17 @@ for folder in "$PROCESSED_DIR"/*/; do
             filename=$(basename "$filepath" .json)
             output_file="${out_dir}/$filename.py"
 
-            cmd=(
-                datamodel-codegen
-                --input "$filepath"
-                --output "$output_file"
-                --input-file-type jsonschema
-                --output-model-type msgspec.Struct
-                --use-title-as-name
-                --enum-field-as-literal one
-                --use-subclass-enum
-                --field-include-all-keys
-                --custom-template-dir templates
+            datamodel-codegen
+                --input "$filepath" \
+                --output "$output_file" \
+                --input-file-type jsonschema \
+                --output-model-type msgspec.Struct \
+                --use-title-as-name \
+                --enum-field-as-literal one \
+                --use-subclass-enum \
+                --field-include-all-keys \
+                --custom-template-dir templates \
                 --disable-timestamp
-            )
-
-            if [[ "$filename" == *"Request"* ]]; then
-                cmd+=(--extra-template-data "${filepath}_extra_template")
-            fi
-
-            "${cmd[@]}"
-
 
             python postprocess_grpc_types.py  --file_path $output_file
 
