@@ -35,31 +35,41 @@ python preprocess_grpc_types.py  --output_dir $PROCESSED_DIR
 mkdir -p "$GRPC_CLIENT_DIR"
 touch "$GRPC_CLIENT_DIR/__init__.py"
 
-find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
-    service_dir=$(dirname "$filepath")
-    service_name=$(basename "$service_dir")
-    out_dir="${GRPC_CLIENT_DIR}/${service_name}"
-    
-    mkdir -p "${out_dir}"
+if [[ ! -d "$PROCESSED_DIR" ]]; then
+    echo "Error: Directory $PROCESSED_DIR does not exist."
+    exit 1
+fi
 
-    output_file="${out_dir}/$(basename "$filepath" .json).py"
-    
-    datamodel-codegen \
-        --input "$filepath" \
-        --output "$output_file" \
-        --input-file-type jsonschema \
-        --output-model-type msgspec.Struct \
-        --use-title-as-name \
-        --enum-field-as-literal one \
-        --use-subclass-enum \
-        --field-include-all-keys \
-        --custom-template-dir templates \
-        --disable-timestamp
-    
-    python postprocess_grpc_types.py  --file_path $output_file
+for folder in "$PROCESSED_DIR"/*/; do
+    # Check if it's a directory
+    if [[ -d "$folder" ]]; then
+        service_name=$(basename "$folder")
+        echo "Processing folder: $service_name"
+        out_dir="${GRPC_CLIENT_DIR}/${service_name}"
 
+        mkdir -p "${out_dir}"
+
+        for filepath in "$folder"/*.json; do
+            echo "\tProcessing file: $filepath"
+            output_file="${out_dir}/$(basename "$filepath" .json).py"
+
+            datamodel-codegen \
+                --input "$filepath" \
+                --output "$output_file" \
+                --input-file-type jsonschema \
+                --output-model-type msgspec.Struct \
+                --use-title-as-name \
+                --enum-field-as-literal one \
+                --use-subclass-enum \
+                --field-include-all-keys \
+                --custom-template-dir templates \
+                --disable-timestamp
+
+            python postprocess_grpc_types.py  --file_path $output_file
+
+        done
+    fi
 done
-
 
 
 # version check
