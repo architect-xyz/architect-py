@@ -56,31 +56,6 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                     json.dump(resp_schema, out_file, indent=2)
                 print(f"Extracted response schema to: {resp_path}")
 
-
-def remove_format_from_json(file_path: str) -> None:
-    """
-    Remove the errant "format" key from all JSON files in the specified directory.
-
-    uin32
-    uint64
-    int
-    partial-date-time: NaiveTime
-    """
-    for root, _, files in os.walk(file_path):
-        for file in files:
-            if file.endswith(".json"):
-                file_path = os.path.join(root, file)
-                with open(file_path, "r") as f:
-                    data = json.load(f)
-
-                for key in data:
-                    if key == "format":
-                        del data[key]
-
-                with open(file_path, "w") as f:
-                    json.dump(data, f, indent=2)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a JSON file.")
     parser.add_argument(
