@@ -178,13 +178,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetProductInfoQuery.model_validate(data).symbology
 
     async def get_product_infos_query(
-        self, symbols: List[str], **kwargs: Any
+        self, symbols: Union[Optional[List[str]], "UnsetType"] = UNSET, **kwargs: Any
     ) -> "GetProductInfosQuerySymbology":
         from .get_product_infos_query import GetProductInfosQuery
 
         query = gql(
             """
-            query GetProductInfosQuery($symbols: [String!]!) {
+            query GetProductInfosQuery($symbols: [String!]) {
               symbology {
                 productInfos(symbols: $symbols) {
                   ...ProductInfoFields

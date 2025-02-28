@@ -30,6 +30,7 @@ from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshot import L2Book
 from architect_py.grpc_models.Marketdata.Marketdata_Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
+from templates.exceptions import GraphQLClientGraphQLMultiError
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
@@ -175,7 +176,7 @@ class AsyncClient:
         return info.product_info
 
     async def get_product_infos(
-        self, symbols: list[str]
+        self, symbols: Optional[list[str]]
     ) -> Sequence[ProductInfoFields]:
         """
         Args:
@@ -183,9 +184,10 @@ class AsyncClient:
         Returns:
             a list of ProductInfoFields
 
-        Any duplicate symbols will be ignored.
-        Any invalid symbols will be ignored.
+        Any duplicate or invalid symbols will be ignored.
         The order of the symbols in the list will not necessarily be preserved in the output.
+
+        If you want the entire universe of symbols, pass in None
         """
         infos = await self.graphql_client.get_product_infos_query(symbols)
         return infos.product_infos
@@ -201,15 +203,21 @@ class AsyncClient:
         Returns:
             ExecutionInfoFields
 
-        Raises
         """
-        execution_info = await self.graphql_client.get_execution_info_query(
-            symbol, execution_venue
-        )
-        return execution_info.execution_info
+        try:
+            execution_info = await self.graphql_client.get_execution_info_query(
+                symbol, execution_venue
+            )
+            return execution_info.execution_info
+        except GraphQLClientGraphQLMultiError as e:
+            # the try/except is done so it is consistent with product_info
+            # execution info not found
+            return None
 
     async def get_execution_infos(
-        self, symbols: list[TradableProduct], execution_venue: Optional[str] = None
+        self,
+        symbols: Optional[list[TradableProduct]],
+        execution_venue: Optional[str] = None,
     ) -> Sequence[ExecutionInfoFields]:
         """
         Args:
@@ -218,6 +226,8 @@ class AsyncClient:
 
         Returns:
             a list of ExecutionInfoFields
+
+        If you want the entire universe of execution infos, pass in None
         """
         execution_infos = await self.graphql_client.get_execution_infos_query(
             symbols, execution_venue
