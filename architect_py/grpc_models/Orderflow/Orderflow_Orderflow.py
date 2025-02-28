@@ -163,6 +163,150 @@ class Orderflow1(Struct):
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
+    @property
+    def account(self) -> str:
+        return self.a
+
+    @account.setter
+    def account(self, value: str) -> None:
+        self.a = value
+
+    @property
+    def dir(self) -> Dir:
+        return self.d
+
+    @dir.setter
+    def dir(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def status(self) -> OrderStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: OrderStatus) -> None:
+        self.o = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def source(self) -> OrderSource:
+        return self.src
+
+    @source.setter
+    def source(self, value: OrderSource) -> None:
+        self.src = value
+
+    @property
+    def time_in_force(self) -> TimeInForce:
+        return self.tif
+
+    @time_in_force.setter
+    def time_in_force(self, value: TimeInForce) -> None:
+        self.tif = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> UserId:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: UserId) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.ve
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.ve = value
+
+    @property
+    def filled_quantity(self) -> Decimal:
+        return self.xq
+
+    @filled_quantity.setter
+    def filled_quantity(self, value: Decimal) -> None:
+        self.xq = value
+
+    @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def post_only(self) -> bool:
+        return self.po
+
+    @post_only.setter
+    def post_only(self, value: bool) -> None:
+        self.po = value
+
+    @property
+    def parent_id(self) -> Optional[OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def reject_reason(self) -> Optional[OrderRejectReason]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+        self.r = value
+
+    @property
+    def reject_message(self) -> Optional[str]:
+        return self.rm
+
+    @reject_message.setter
+    def reject_message(self, value: Optional[str]) -> None:
+        self.rm = value
+
+    @property
+    def average_fill_price(self) -> Optional[Decimal]:
+        return self.xp
+
+    @average_fill_price.setter
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
+        self.xp = value
+
 
 class Orderflow2(Struct):
     a: Annotated[str, Meta(title='account')]
@@ -189,6 +333,150 @@ class Orderflow2(Struct):
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
+    @property
+    def account(self) -> str:
+        return self.a
+
+    @account.setter
+    def account(self, value: str) -> None:
+        self.a = value
+
+    @property
+    def dir(self) -> Dir:
+        return self.d
+
+    @dir.setter
+    def dir(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def status(self) -> OrderStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: OrderStatus) -> None:
+        self.o = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def source(self) -> OrderSource:
+        return self.src
+
+    @source.setter
+    def source(self, value: OrderSource) -> None:
+        self.src = value
+
+    @property
+    def time_in_force(self) -> TimeInForce:
+        return self.tif
+
+    @time_in_force.setter
+    def time_in_force(self, value: TimeInForce) -> None:
+        self.tif = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> UserId:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: UserId) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.ve
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.ve = value
+
+    @property
+    def filled_quantity(self) -> Decimal:
+        return self.xq
+
+    @filled_quantity.setter
+    def filled_quantity(self, value: Decimal) -> None:
+        self.xq = value
+
+    @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def trigger_price(self) -> Decimal:
+        return self.tp
+
+    @trigger_price.setter
+    def trigger_price(self, value: Decimal) -> None:
+        self.tp = value
+
+    @property
+    def parent_id(self) -> Optional[OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def reject_reason(self) -> Optional[OrderRejectReason]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+        self.r = value
+
+    @property
+    def reject_message(self) -> Optional[str]:
+        return self.rm
+
+    @reject_message.setter
+    def reject_message(self, value: Optional[str]) -> None:
+        self.rm = value
+
+    @property
+    def average_fill_price(self) -> Optional[Decimal]:
+        return self.xp
+
+    @average_fill_price.setter
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
+        self.xp = value
+
 
 class Orderflow3(Struct):
     a: Annotated[str, Meta(title='account')]
@@ -214,6 +502,150 @@ class Orderflow3(Struct):
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+
+    @property
+    def account(self) -> str:
+        return self.a
+
+    @account.setter
+    def account(self, value: str) -> None:
+        self.a = value
+
+    @property
+    def dir(self) -> Dir:
+        return self.d
+
+    @dir.setter
+    def dir(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def status(self) -> OrderStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: OrderStatus) -> None:
+        self.o = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def source(self) -> OrderSource:
+        return self.src
+
+    @source.setter
+    def source(self, value: OrderSource) -> None:
+        self.src = value
+
+    @property
+    def time_in_force(self) -> TimeInForce:
+        return self.tif
+
+    @time_in_force.setter
+    def time_in_force(self, value: TimeInForce) -> None:
+        self.tif = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> UserId:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: UserId) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.ve
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.ve = value
+
+    @property
+    def filled_quantity(self) -> Decimal:
+        return self.xq
+
+    @filled_quantity.setter
+    def filled_quantity(self, value: Decimal) -> None:
+        self.xq = value
+
+    @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def trigger_price(self) -> Decimal:
+        return self.tp
+
+    @trigger_price.setter
+    def trigger_price(self, value: Decimal) -> None:
+        self.tp = value
+
+    @property
+    def parent_id(self) -> Optional[OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def reject_reason(self) -> Optional[OrderRejectReason]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+        self.r = value
+
+    @property
+    def reject_message(self) -> Optional[str]:
+        return self.rm
+
+    @reject_message.setter
+    def reject_message(self, value: Optional[str]) -> None:
+        self.rm = value
+
+    @property
+    def average_fill_price(self) -> Optional[Decimal]:
+        return self.xp
+
+    @average_fill_price.setter
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
+        self.xp = value
 
 
 class Orderflow4(Struct):
@@ -306,6 +738,150 @@ class Orderflow12(Struct):
     u: Optional[Annotated[Optional[UserId], Meta(title='trader')]] = None
     xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None
 
+    @property
+    def direction(self) -> Dir:
+        return self.d
+
+    @direction.setter
+    def direction(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def fill_id(self) -> str:
+        return self.id
+
+    @fill_id.setter
+    def fill_id(self, value: str) -> None:
+        self.id = value
+
+    @property
+    def fill_kind(self) -> FillKind:
+        return self.k
+
+    @fill_kind.setter
+    def fill_kind(self, value: FillKind) -> None:
+        self.k = value
+
+    @property
+    def price(self) -> Decimal:
+        return self.p
+
+    @price.setter
+    def price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def is_taker(self) -> int:
+        return self.t
+
+    @is_taker.setter
+    def is_taker(self, value: int) -> None:
+        self.t = value
+
+    @property
+    def trade_time_ns(self) -> int:
+        return self.tn
+
+    @trade_time_ns.setter
+    def trade_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def trade_time(self) -> int:
+        return self.ts
+
+    @trade_time.setter
+    def trade_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.x
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.x = value
+
+    @property
+    def account(self) -> Optional[str]:
+        return self.a
+
+    @account.setter
+    def account(self, value: Optional[str]) -> None:
+        self.a = value
+
+    @property
+    def recv_time_ns(self) -> Optional[int]:
+        return self.atn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: Optional[int]) -> None:
+        self.atn = value
+
+    @property
+    def recv_time(self) -> Optional[int]:
+        return self.ats
+
+    @recv_time.setter
+    def recv_time(self, value: Optional[int]) -> None:
+        self.ats = value
+
+    @property
+    def fee(self) -> Optional[Decimal]:
+        return self.f
+
+    @fee.setter
+    def fee(self, value: Optional[Decimal]) -> None:
+        self.f = value
+
+    @property
+    def fee_currency(self) -> Optional[str]:
+        return self.fu
+
+    @fee_currency.setter
+    def fee_currency(self, value: Optional[str]) -> None:
+        self.fu = value
+
+    @property
+    def order_id(self) -> Optional[OrderId]:
+        return self.oid
+
+    @order_id.setter
+    def order_id(self, value: Optional[OrderId]) -> None:
+        self.oid = value
+
+    @property
+    def trader(self) -> Optional[UserId]:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: Optional[UserId]) -> None:
+        self.u = value
+
+    @property
+    def exchange_fill_id(self) -> Optional[str]:
+        return self.xid
+
+    @exchange_fill_id.setter
+    def exchange_fill_id(self, value: Optional[str]) -> None:
+        self.xid = value
+
 
 class Orderflow13(Struct):
     id: Annotated[str, Meta(title='fill_id')]
@@ -326,6 +902,142 @@ class Orderflow13(Struct):
     ts: Optional[Annotated[Optional[int], Meta(title='trade_time')]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title='trader')]] = None
     xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None
+
+    @property
+    def fill_id(self) -> str:
+        return self.id
+
+    @fill_id.setter
+    def fill_id(self, value: str) -> None:
+        self.id = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.x
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.x = value
+
+    @property
+    def account(self) -> Optional[str]:
+        return self.a
+
+    @account.setter
+    def account(self, value: Optional[str]) -> None:
+        self.a = value
+
+    @property
+    def recv_time_ns(self) -> Optional[int]:
+        return self.atn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: Optional[int]) -> None:
+        self.atn = value
+
+    @property
+    def recv_time(self) -> Optional[int]:
+        return self.ats
+
+    @recv_time.setter
+    def recv_time(self, value: Optional[int]) -> None:
+        self.ats = value
+
+    @property
+    def direction(self) -> Optional[Dir]:
+        return self.d
+
+    @direction.setter
+    def direction(self, value: Optional[Dir]) -> None:
+        self.d = value
+
+    @property
+    def fee(self) -> Optional[Decimal]:
+        return self.f
+
+    @fee.setter
+    def fee(self, value: Optional[Decimal]) -> None:
+        self.f = value
+
+    @property
+    def fee_currency(self) -> Optional[str]:
+        return self.fu
+
+    @fee_currency.setter
+    def fee_currency(self, value: Optional[str]) -> None:
+        self.fu = value
+
+    @property
+    def fill_kind(self) -> Optional[FillKind]:
+        return self.k
+
+    @fill_kind.setter
+    def fill_kind(self, value: Optional[FillKind]) -> None:
+        self.k = value
+
+    @property
+    def order_id(self) -> Optional[OrderId]:
+        return self.oid
+
+    @order_id.setter
+    def order_id(self, value: Optional[OrderId]) -> None:
+        self.oid = value
+
+    @property
+    def price(self) -> Optional[Decimal]:
+        return self.p
+
+    @price.setter
+    def price(self, value: Optional[Decimal]) -> None:
+        self.p = value
+
+    @property
+    def quantity(self) -> Optional[Decimal]:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Optional[Decimal]) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> Optional[str]:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: Optional[str]) -> None:
+        self.s = value
+
+    @property
+    def trade_time_ns(self) -> Optional[int]:
+        return self.tn
+
+    @trade_time_ns.setter
+    def trade_time_ns(self, value: Optional[int]) -> None:
+        self.tn = value
+
+    @property
+    def trade_time(self) -> Optional[int]:
+        return self.ts
+
+    @trade_time.setter
+    def trade_time(self, value: Optional[int]) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> Optional[UserId]:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: Optional[UserId]) -> None:
+        self.u = value
+
+    @property
+    def exchange_fill_id(self) -> Optional[str]:
+        return self.xid
+
+    @exchange_fill_id.setter
+    def exchange_fill_id(self, value: Optional[str]) -> None:
+        self.xid = value
 
 
 Orderflow = Annotated[

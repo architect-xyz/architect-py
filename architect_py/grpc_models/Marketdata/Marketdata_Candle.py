@@ -45,3 +45,187 @@ class Candle(Struct):
     ml: Optional[Annotated[Optional[Decimal], Meta(title='mid_low')]] = None
     mo: Optional[Annotated[Optional[Decimal], Meta(title='mid_open')]] = None
     o: Optional[Annotated[Optional[Decimal], Meta(title='open')]] = None
+
+    @property
+    def sell_volume(self) -> Decimal:
+        return self.av
+
+    @sell_volume.setter
+    def sell_volume(self, value: Decimal) -> None:
+        self.av = value
+
+    @property
+    def buy_volume(self) -> Decimal:
+        return self.bv
+
+    @buy_volume.setter
+    def buy_volume(self, value: Decimal) -> None:
+        self.bv = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def timestamp_ns(self) -> int:
+        return self.tn
+
+    @timestamp_ns.setter
+    def timestamp_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def timestamp(self) -> int:
+        return self.ts
+
+    @timestamp.setter
+    def timestamp(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def volume(self) -> Decimal:
+        return self.v
+
+    @volume.setter
+    def volume(self, value: Decimal) -> None:
+        self.v = value
+
+    @property
+    def width(self) -> CandleWidth:
+        return self.w
+
+    @width.setter
+    def width(self, value: CandleWidth) -> None:
+        self.w = value
+
+    @property
+    def ask_close(self) -> Optional[Decimal]:
+        return self.ac
+
+    @ask_close.setter
+    def ask_close(self, value: Optional[Decimal]) -> None:
+        self.ac = value
+
+    @property
+    def ask_high(self) -> Optional[Decimal]:
+        return self.ah
+
+    @ask_high.setter
+    def ask_high(self, value: Optional[Decimal]) -> None:
+        self.ah = value
+
+    @property
+    def ask_low(self) -> Optional[Decimal]:
+        return self.al
+
+    @ask_low.setter
+    def ask_low(self, value: Optional[Decimal]) -> None:
+        self.al = value
+
+    @property
+    def ask_open(self) -> Optional[Decimal]:
+        return self.ao
+
+    @ask_open.setter
+    def ask_open(self, value: Optional[Decimal]) -> None:
+        self.ao = value
+
+    @property
+    def bid_close(self) -> Optional[Decimal]:
+        return self.bc
+
+    @bid_close.setter
+    def bid_close(self, value: Optional[Decimal]) -> None:
+        self.bc = value
+
+    @property
+    def bid_high(self) -> Optional[Decimal]:
+        return self.bh
+
+    @bid_high.setter
+    def bid_high(self, value: Optional[Decimal]) -> None:
+        self.bh = value
+
+    @property
+    def bid_low(self) -> Optional[Decimal]:
+        return self.bl
+
+    @bid_low.setter
+    def bid_low(self, value: Optional[Decimal]) -> None:
+        self.bl = value
+
+    @property
+    def bid_open(self) -> Optional[Decimal]:
+        return self.bo
+
+    @bid_open.setter
+    def bid_open(self, value: Optional[Decimal]) -> None:
+        self.bo = value
+
+    @property
+    def close(self) -> Optional[Decimal]:
+        return self.c
+
+    @close.setter
+    def close(self, value: Optional[Decimal]) -> None:
+        self.c = value
+
+    @property
+    def high(self) -> Optional[Decimal]:
+        return self.h
+
+    @high.setter
+    def high(self, value: Optional[Decimal]) -> None:
+        self.h = value
+
+    @property
+    def low(self) -> Optional[Decimal]:
+        return self.l
+
+    @low.setter
+    def low(self, value: Optional[Decimal]) -> None:
+        self.l = value
+
+    @property
+    def mid_close(self) -> Optional[Decimal]:
+        return self.mc
+
+    @mid_close.setter
+    def mid_close(self, value: Optional[Decimal]) -> None:
+        self.mc = value
+
+    @property
+    def mid_high(self) -> Optional[Decimal]:
+        return self.mh
+
+    @mid_high.setter
+    def mid_high(self, value: Optional[Decimal]) -> None:
+        self.mh = value
+
+    @property
+    def mid_low(self) -> Optional[Decimal]:
+        return self.ml
+
+    @mid_low.setter
+    def mid_low(self, value: Optional[Decimal]) -> None:
+        self.ml = value
+
+    @property
+    def mid_open(self) -> Optional[Decimal]:
+        return self.mo
+
+    @mid_open.setter
+    def mid_open(self, value: Optional[Decimal]) -> None:
+        self.mo = value
+
+    @property
+    def open(self) -> Optional[Decimal]:
+        return self.o
+
+    @open.setter
+    def open(self, value: Optional[Decimal]) -> None:
+        self.o = value

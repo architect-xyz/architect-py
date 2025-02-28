@@ -873,3 +873,19 @@ class SymbologySnapshot(Struct):
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     product_aliases: Optional[Dict[str, Dict[str, str]]] = {}
+
+    @property
+    def sequence_id(self) -> int:
+        return self.sid
+
+    @sequence_id.setter
+    def sequence_id(self, value: int) -> None:
+        self.sid = value
+
+    @property
+    def sequence_number(self) -> int:
+        return self.sn
+
+    @sequence_number.setter
+    def sequence_number(self, value: int) -> None:
+        self.sn = value

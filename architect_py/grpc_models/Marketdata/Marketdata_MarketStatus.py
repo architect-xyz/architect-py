@@ -12,3 +12,11 @@ class MarketStatus(Struct):
     s: Annotated[str, Meta(title='symbol')]
     is_quoting: Optional[bool] = None
     is_trading: Optional[bool] = None
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value

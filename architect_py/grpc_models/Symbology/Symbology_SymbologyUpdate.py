@@ -982,3 +982,19 @@ class SymbologyUpdate(Struct):
         SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString
     ] = None
     products: Optional[SnapshotOrUpdateForStringAndProductInfo] = None
+
+    @property
+    def sequence_id(self) -> int:
+        return self.sid
+
+    @sequence_id.setter
+    def sequence_id(self, value: int) -> None:
+        self.sid = value
+
+    @property
+    def sequence_number(self) -> int:
+        return self.sn
+
+    @sequence_number.setter
+    def sequence_number(self, value: int) -> None:
+        self.sn = value
