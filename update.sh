@@ -41,10 +41,12 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
     out_dir="${GRPC_CLIENT_DIR}/${service_name}"
     
     mkdir -p "${out_dir}"
+
+    output_file="${out_dir}/$(basename "$filepath" .json).py"
     
     datamodel-codegen \
         --input "$filepath" \
-        --output "${out_dir}/$(basename "$filepath" .json).py" \
+        --output "$output_file" \
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
         --use-title-as-name \
@@ -53,10 +55,11 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
         --field-include-all-keys \
         --custom-template-dir templates \
         --disable-timestamp
+    
+    python postprocess_grpc_types.py  --file_path $output_file
+
 done
 
-echo "\nDone generating gRPC models"
-python postprocess_grpc_types.py  --directory $GRPC_CLIENT_DIR
 
 
 # version check
