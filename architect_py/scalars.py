@@ -43,7 +43,7 @@ def parse_tradable_product(value: str) -> TradableProduct:
     return TradableProduct(value)
 
 
-class OrderDir(Enum):
+class OrderDir(str, Enum):
     BUY = "buy"
     SELL = "sell"
 
@@ -83,9 +83,6 @@ class OrderDir(Enum):
 
     def __repr__(self) -> str:
         return f"Dir.{self.name}"
-
-    def __eq__(self, other) -> bool:
-        return self.value == other.value
 
     @classmethod
     def from_string(cls, value: str) -> "OrderDir":
