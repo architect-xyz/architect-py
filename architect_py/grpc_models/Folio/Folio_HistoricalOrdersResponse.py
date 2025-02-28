@@ -108,6 +108,150 @@ class Order1(Struct):
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
+    @property
+    def account(self) -> str:
+        return self.a
+
+    @account.setter
+    def account(self, value: str) -> None:
+        self.a = value
+
+    @property
+    def dir(self) -> Dir:
+        return self.d
+
+    @dir.setter
+    def dir(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def status(self) -> OrderStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: OrderStatus) -> None:
+        self.o = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def source(self) -> OrderSource:
+        return self.src
+
+    @source.setter
+    def source(self, value: OrderSource) -> None:
+        self.src = value
+
+    @property
+    def time_in_force(self) -> TimeInForce:
+        return self.tif
+
+    @time_in_force.setter
+    def time_in_force(self, value: TimeInForce) -> None:
+        self.tif = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> UserId:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: UserId) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.ve
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.ve = value
+
+    @property
+    def filled_quantity(self) -> Decimal:
+        return self.xq
+
+    @filled_quantity.setter
+    def filled_quantity(self, value: Decimal) -> None:
+        self.xq = value
+
+    @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def post_only(self) -> bool:
+        return self.po
+
+    @post_only.setter
+    def post_only(self, value: bool) -> None:
+        self.po = value
+
+    @property
+    def parent_id(self) -> Optional[OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def reject_reason(self) -> Optional[OrderRejectReason]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+        self.r = value
+
+    @property
+    def reject_message(self) -> Optional[str]:
+        return self.rm
+
+    @reject_message.setter
+    def reject_message(self, value: Optional[str]) -> None:
+        self.rm = value
+
+    @property
+    def average_fill_price(self) -> Optional[Decimal]:
+        return self.xp
+
+    @average_fill_price.setter
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
+        self.xp = value
+
 
 class Order2(Struct):
     a: Annotated[str, Meta(title='account')]
@@ -133,6 +277,150 @@ class Order2(Struct):
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
+    @property
+    def account(self) -> str:
+        return self.a
+
+    @account.setter
+    def account(self, value: str) -> None:
+        self.a = value
+
+    @property
+    def dir(self) -> Dir:
+        return self.d
+
+    @dir.setter
+    def dir(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def status(self) -> OrderStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: OrderStatus) -> None:
+        self.o = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def source(self) -> OrderSource:
+        return self.src
+
+    @source.setter
+    def source(self, value: OrderSource) -> None:
+        self.src = value
+
+    @property
+    def time_in_force(self) -> TimeInForce:
+        return self.tif
+
+    @time_in_force.setter
+    def time_in_force(self, value: TimeInForce) -> None:
+        self.tif = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> UserId:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: UserId) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.ve
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.ve = value
+
+    @property
+    def filled_quantity(self) -> Decimal:
+        return self.xq
+
+    @filled_quantity.setter
+    def filled_quantity(self, value: Decimal) -> None:
+        self.xq = value
+
+    @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def trigger_price(self) -> Decimal:
+        return self.tp
+
+    @trigger_price.setter
+    def trigger_price(self, value: Decimal) -> None:
+        self.tp = value
+
+    @property
+    def parent_id(self) -> Optional[OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def reject_reason(self) -> Optional[OrderRejectReason]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+        self.r = value
+
+    @property
+    def reject_message(self) -> Optional[str]:
+        return self.rm
+
+    @reject_message.setter
+    def reject_message(self, value: Optional[str]) -> None:
+        self.rm = value
+
+    @property
+    def average_fill_price(self) -> Optional[Decimal]:
+        return self.xp
+
+    @average_fill_price.setter
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
+        self.xp = value
+
 
 class Order3(Struct):
     a: Annotated[str, Meta(title='account')]
@@ -157,6 +445,150 @@ class Order3(Struct):
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+
+    @property
+    def account(self) -> str:
+        return self.a
+
+    @account.setter
+    def account(self, value: str) -> None:
+        self.a = value
+
+    @property
+    def dir(self) -> Dir:
+        return self.d
+
+    @dir.setter
+    def dir(self, value: Dir) -> None:
+        self.d = value
+
+    @property
+    def status(self) -> OrderStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: OrderStatus) -> None:
+        self.o = value
+
+    @property
+    def quantity(self) -> Decimal:
+        return self.q
+
+    @quantity.setter
+    def quantity(self, value: Decimal) -> None:
+        self.q = value
+
+    @property
+    def symbol(self) -> str:
+        return self.s
+
+    @symbol.setter
+    def symbol(self, value: str) -> None:
+        self.s = value
+
+    @property
+    def source(self) -> OrderSource:
+        return self.src
+
+    @source.setter
+    def source(self, value: OrderSource) -> None:
+        self.src = value
+
+    @property
+    def time_in_force(self) -> TimeInForce:
+        return self.tif
+
+    @time_in_force.setter
+    def time_in_force(self, value: TimeInForce) -> None:
+        self.tif = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def trader(self) -> UserId:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: UserId) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> str:
+        return self.ve
+
+    @execution_venue.setter
+    def execution_venue(self, value: str) -> None:
+        self.ve = value
+
+    @property
+    def filled_quantity(self) -> Decimal:
+        return self.xq
+
+    @filled_quantity.setter
+    def filled_quantity(self, value: Decimal) -> None:
+        self.xq = value
+
+    @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def trigger_price(self) -> Decimal:
+        return self.tp
+
+    @trigger_price.setter
+    def trigger_price(self, value: Decimal) -> None:
+        self.tp = value
+
+    @property
+    def parent_id(self) -> Optional[OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def reject_reason(self) -> Optional[OrderRejectReason]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+        self.r = value
+
+    @property
+    def reject_message(self) -> Optional[str]:
+        return self.rm
+
+    @reject_message.setter
+    def reject_message(self, value: Optional[str]) -> None:
+        self.rm = value
+
+    @property
+    def average_fill_price(self) -> Optional[Decimal]:
+        return self.xp
+
+    @average_fill_price.setter
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
+        self.xp = value
 
 
 Order = Union[Order1, Order2, Order3]

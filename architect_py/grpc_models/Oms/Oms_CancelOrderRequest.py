@@ -24,3 +24,19 @@ class CancelOrderRequest(Struct):
             ),
         ]
     ] = None
+
+    @property
+    def order_id(self) -> OrderId:
+        return self.id
+
+    @order_id.setter
+    def order_id(self, value: OrderId) -> None:
+        self.id = value
+
+    @property
+    def cancel_id(self) -> Optional[str]:
+        return self.xid
+
+    @cancel_id.setter
+    def cancel_id(self, value: Optional[str]) -> None:
+        self.xid = value

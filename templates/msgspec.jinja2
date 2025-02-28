@@ -40,3 +40,15 @@ class {{ class_name }}:
     """
     {%- endif %}
 {%- endfor -%}
+
+{# Generate getter/setter properties for fields that have a metadata title #}
+{%- for field in fields if field.extras and field.extras.title %}
+    @property
+    def {{ field.extras.title }}(self) -> {{ field.type_hint }}:
+        return self.{{ field.name }}
+
+    @{{ field.extras.title }}.setter
+    def {{ field.extras.title }}(self, value: {{ field.type_hint }}) -> None:
+        self.{{ field.name }} = value
+
+{%- endfor %}
