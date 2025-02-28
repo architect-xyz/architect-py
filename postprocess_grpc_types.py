@@ -22,17 +22,10 @@ def delete_decimal_equals_str(file_path: str) -> None:
             f.writelines(new_lines)
 
 
-def scan_directory(directory):
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".py"):
-                delete_decimal_equals_str(os.path.join(root, file))
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Folder of types")
     parser.add_argument(
-        "--directory",
+        "--file_path",
         type=str,
         nargs="?",
         default="architect_py/grpc_client",
@@ -40,6 +33,6 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    directory = os.path.expanduser(args.directory)
+    file_path = os.path.expanduser(args.file_path)
 
-    scan_directory(directory)
+    delete_decimal_equals_str(file_path)
