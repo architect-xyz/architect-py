@@ -26,18 +26,33 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
 
         rpcs = service.get("rpcs", [])
         for rpc in rpcs:
+
             # Process the request type schema.
             req_schema = rpc.get("request_type")
+            resp_schema = rpc.get("response_type")
+
+            route = rpc.get("route")
+            request_type = rpc.get("type")
+
             if req_schema:
+                extra_template_data = {
+                    "service_name": service_name,
+                    "route": route,
+                    "request_type": request_type,
+                    "response_type": resp_schema["title"],
+                }
+
                 req_title = req_schema.get("title", "Request").replace(" ", "_")
                 req_filename = f"{service_name}_{req_title}.json"
                 req_path = os.path.join(output_sub_dir, req_filename)
                 with open(req_path, "w") as out_file:
                     json.dump(req_schema, out_file, indent=2)
+
+                with open(f"{req_path}_extra_template", "w") as out_file:
+                    json.dump(extra_template_data, out_file, indent=2)
                 print(f"Extracted request schema to: {req_path}")
 
             # Process the response type schema.
-            resp_schema = rpc.get("response_type")
             if resp_schema:
                 resp_title = resp_schema.get("title", "Response").replace(" ", "_")
                 resp_filename = f"{service_name}_{resp_title}.json"

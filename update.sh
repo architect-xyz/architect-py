@@ -33,7 +33,8 @@ python preprocess_grpc_types.py  --output_dir $PROCESSED_DIR
 
 
 mkdir -p "$GRPC_CLIENT_DIR"
-touch "$GRPC_CLIENT_DIR/__init__.py"
+
+# cp templates/grpc_template.py "$GRPC_CLIENT_DIR"/__init__.py
 
 if [[ ! -d "$PROCESSED_DIR" ]]; then
     echo "Error: Directory $PROCESSED_DIR does not exist."
@@ -51,19 +52,30 @@ for folder in "$PROCESSED_DIR"/*/; do
 
         for filepath in "$folder"/*.json; do
             echo "\tProcessing file: $filepath"
-            output_file="${out_dir}/$(basename "$filepath" .json).py"
 
-            datamodel-codegen \
-                --input "$filepath" \
-                --output "$output_file" \
-                --input-file-type jsonschema \
-                --output-model-type msgspec.Struct \
-                --use-title-as-name \
-                --enum-field-as-literal one \
-                --use-subclass-enum \
-                --field-include-all-keys \
-                --custom-template-dir templates \
+            filename=$(basename "$filepath" .json)
+            output_file="${out_dir}/$filename.py"
+
+            cmd=(
+                datamodel-codegen
+                --input "$filepath"
+                --output "$output_file"
+                --input-file-type jsonschema
+                --output-model-type msgspec.Struct
+                --use-title-as-name
+                --enum-field-as-literal one
+                --use-subclass-enum
+                --field-include-all-keys
+                --custom-template-dir templates
                 --disable-timestamp
+            )
+
+            if [[ "$filename" == *"Request"* ]]; then
+                cmd+=(--extra-template-data "${filepath}_extra_template")
+            fi
+
+            "${cmd[@]}"
+
 
             python postprocess_grpc_types.py  --file_path $output_file
 
