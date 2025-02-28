@@ -4,64 +4,12 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Optional, Union
+from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
 
-class T(Enum):
-    w = 'w'
-
-
-class K(Enum):
-    LIMIT = 'LIMIT'
-
-
-class K1(Enum):
-    STOP_LOSS_LIMIT = 'STOP_LOSS_LIMIT'
-
-
-class K2(Enum):
-    TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT'
-
-
-class T3(Enum):
-    a = 'a'
-
-
-class T4(Enum):
-    r = 'r'
-
-
-class T5(Enum):
-    o = 'o'
-
-
-class T6(Enum):
-    z = 'z'
-
-
-class T7(Enum):
-    xc = 'xc'
-
-
-class T8(Enum):
-    xr = 'xr'
-
-
-class T9(Enum):
-    xa = 'xa'
-
-
-class T10(Enum):
-    xx = 'xx'
-
-
-class T11(Enum):
-    af = 'af'
-
-
-class CancelStatus(Enum):
+class CancelStatus(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2
@@ -71,12 +19,12 @@ class CancelStatus(Enum):
 Decimal = str
 
 
-class Dir(Enum):
+class Dir(str, Enum):
     BUY = 'BUY'
     SELL = 'SELL'
 
 
-class FillKind(Enum):
+class FillKind(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2
@@ -87,7 +35,7 @@ class OrderId(Struct):
     seqno: Annotated[int, Meta(ge=0)]
 
 
-class OrderRejectReason(Enum):
+class OrderRejectReason(str, Enum):
     DuplicateOrderId = 'DuplicateOrderId'
     NotAuthorized = 'NotAuthorized'
     NoExecutionVenue = 'NoExecutionVenue'
@@ -98,7 +46,7 @@ class OrderRejectReason(Enum):
     Unknown = 'Unknown'
 
 
-class OrderSource(Enum):
+class OrderSource(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2
@@ -108,7 +56,7 @@ class OrderSource(Enum):
     integer_255 = 255
 
 
-class OrderStatus(Enum):
+class OrderStatus(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2
@@ -118,7 +66,7 @@ class OrderStatus(Enum):
     integer_254 = 254
 
 
-class TimeInForce1(Enum):
+class TimeInForce1(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
@@ -128,11 +76,7 @@ class TimeInForce2(Struct):
     GTD: str
 
 
-class TimeInForce3(Enum):
-    DAY = 'DAY'
-
-
-TimeInForce = Union[TimeInForce1, TimeInForce2, TimeInForce3]
+TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
 
 
 UserId = str
@@ -146,14 +90,14 @@ class Orderflow1(Struct):
     q: Annotated[Decimal, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[OrderSource, Meta(title='source')]
-    t: T
+    t: Literal['w']
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[Decimal, Meta(title='filled_quantity')]
-    k: K
+    k: Literal['LIMIT']
     p: Annotated[Decimal, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
@@ -316,14 +260,14 @@ class Orderflow2(Struct):
     q: Annotated[Decimal, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[OrderSource, Meta(title='source')]
-    t: T
+    t: Literal['w']
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[Decimal, Meta(title='filled_quantity')]
-    k: K1
+    k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[Decimal, Meta(title='limit_price')]
     tp: Annotated[Decimal, Meta(title='trigger_price')]
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
@@ -486,14 +430,14 @@ class Orderflow3(Struct):
     q: Annotated[Decimal, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[OrderSource, Meta(title='source')]
-    t: T
+    t: Literal['w']
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[Decimal, Meta(title='filled_quantity')]
-    k: K2
+    k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[Decimal, Meta(title='limit_price')]
     tp: Annotated[Decimal, Meta(title='trigger_price')]
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
@@ -650,30 +594,30 @@ class Orderflow3(Struct):
 
 class Orderflow4(Struct):
     id: OrderId
-    t: T3
+    t: Literal['a']
 
 
 class Orderflow5(Struct):
     id: OrderId
     r: OrderRejectReason
-    t: T4
+    t: Literal['r']
     rm: Optional[str] = None
 
 
 class Orderflow6(Struct):
     id: OrderId
-    t: T5
+    t: Literal['o']
 
 
 class Orderflow7(Struct):
     id: OrderId
-    t: T6
+    t: Literal['z']
 
 
 class Orderflow8(Struct):
     id: OrderId
     o: CancelStatus
-    t: T7
+    t: Literal['xc']
     tn: Annotated[int, Meta(ge=0)]
     ts: int
     xid: str
@@ -682,20 +626,20 @@ class Orderflow8(Struct):
 
 class Orderflow9(Struct):
     id: OrderId
-    t: T8
+    t: Literal['xr']
     xid: str
     rm: Optional[str] = None
 
 
 class Orderflow10(Struct):
     id: OrderId
-    t: T9
+    t: Literal['xa']
     xid: Optional[str] = None
 
 
 class Orderflow11(Struct):
     id: OrderId
-    t: T10
+    t: Literal['xx']
     xid: Optional[str] = None
 
 
@@ -885,7 +829,7 @@ class Orderflow12(Struct):
 
 class Orderflow13(Struct):
     id: Annotated[str, Meta(title='fill_id')]
-    t: T11
+    t: Literal['af']
     x: Annotated[str, Meta(title='execution_venue')]
     a: Optional[Annotated[Optional[str], Meta(title='account')]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None

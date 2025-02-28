@@ -4,6 +4,7 @@ Features
   - Added get_execution_infos (plural) query
   - Added gRPC client
   - Added docs for each function
+  - OrderDir is now also a string
 
 3.1.11
 Features:

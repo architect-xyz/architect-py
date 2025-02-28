@@ -3,19 +3,9 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import Annotated, List, Union
+from typing import Annotated, List, Literal, Union
 
 from msgspec import Meta, Struct
-
-
-class T(Enum):
-    s = 's'
-
-
-class T1(Enum):
-    d = 'd'
-
 
 Decimal = str
 
@@ -31,7 +21,7 @@ class Snapshot(Struct):
     b: Annotated[List[Bid], Meta(title='bids')]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
-    t: T
+    t: Literal['s']
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
 
@@ -101,7 +91,7 @@ class Diff(Struct):
     ]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
-    t: T1
+    t: Literal['d']
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
 

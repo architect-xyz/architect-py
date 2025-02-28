@@ -9,7 +9,7 @@ from typing import List, Optional
 from msgspec import Struct
 
 
-class SortTickersBy(Enum):
+class SortTickersBy(str, Enum):
     VOLUME_DESC = 'VOLUME_DESC'
     CHANGE_ASC = 'CHANGE_ASC'
     CHANGE_DESC = 'CHANGE_DESC'

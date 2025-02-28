@@ -9,7 +9,7 @@ from typing import Annotated, Optional
 from msgspec import Meta, Struct
 
 
-class CancelStatus(Enum):
+class CancelStatus(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2

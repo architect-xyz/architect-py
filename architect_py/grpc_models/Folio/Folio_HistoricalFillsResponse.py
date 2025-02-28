@@ -11,12 +11,12 @@ from msgspec import Meta, Struct
 Decimal = str
 
 
-class Dir(Enum):
+class Dir(str, Enum):
     BUY = 'BUY'
     SELL = 'SELL'
 
 
-class FillKind(Enum):
+class FillKind(int, Enum):
     integer_0 = 0
     integer_1 = 1
     integer_2 = 2

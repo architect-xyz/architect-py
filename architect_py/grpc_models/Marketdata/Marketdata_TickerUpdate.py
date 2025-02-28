@@ -3,26 +3,16 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import Annotated, Optional, Union
+from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct, field
-
-
-class T(Enum):
-    snapshot = 'snapshot'
-
-
-class T1(Enum):
-    diff = 'diff'
-
 
 Decimal = str
 
 
 class TickerUpdate1(Struct):
     s: Annotated[str, Meta(title='symbol')]
-    t: T
+    t: Literal['snapshot']
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
     ve: Annotated[str, Meta(title='venue')]
@@ -261,7 +251,7 @@ class TickerUpdate1(Struct):
 
 class TickerUpdate2(Struct):
     s: Annotated[str, Meta(title='symbol')]
-    t: T1
+    t: Literal['diff']
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
     ve: Annotated[str, Meta(title='venue')]
