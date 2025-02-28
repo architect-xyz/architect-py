@@ -16,25 +16,25 @@ import websockets.client
 from architect_py.graphql_client.client import GraphQLClient
 
 
-from architect_py.grpc_client.Marketdata.Marketdata_Array_of_L1BookSnapshot import (
+from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import (
     L1BookSnapshot,
 )
-from architect_py.grpc_client.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_client.Marketdata.Marketdata_L2BookSnapshotRequest import (
+from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.L2BookSnapshotRequest import (
     L2BookSnapshotRequest,
 )
-from architect_py.grpc_client.Marketdata.Marketdata_L2BookUpdate import (
+from architect_py.grpc_client.Marketdata.L2BookUpdate import (
     Diff,
     L2BookUpdate,
     Snapshot,
 )
-from architect_py.grpc_client.Marketdata.Marketdata_SubscribeL1BookSnapshotsRequest import (
+from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
     SubscribeL1BookSnapshotsRequest,
 )
-from architect_py.grpc_client.Marketdata.Marketdata_SubscribeL2BookUpdatesRequest import (
+from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
-from architect_py.grpc_client.Marketdata.Marketdata_Trade import Trade
+from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.protocol import (
     ProtocolQueryMessage,
     ProtocolResponseMessage,
@@ -183,7 +183,7 @@ class GRPCClient:
 
 
 def L2_update_from_diff(book: L2BookSnapshot, diff: L2BookUpdate):
-    book.timestamp_s = diff.timestamp_s
+    book.timestamp = diff.timestamp
     book.timestamp_ns = diff.timestamp_ns
     book.sequence_id = diff.sequence_id
     book.sequence_number = diff.sequence_number

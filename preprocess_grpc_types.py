@@ -36,26 +36,49 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
 
             if req_schema:
                 req_schema["route"] = route
-                req_schema["type"] = request_type
+                req_schema["request_type"] = request_type
                 req_schema["service"] = service_name
                 req_schema["response_type"] = resp_schema["title"]
 
                 req_title = req_schema.get("title", "Request").replace(" ", "_")
-                req_filename = f"{service_name}_{req_title}.json"
+                req_filename = f"{req_title}.json"
                 req_path = os.path.join(output_sub_dir, req_filename)
                 with open(req_path, "w") as out_file:
                     json.dump(req_schema, out_file, indent=2)
 
-
             # Process the response type schema.
             if resp_schema:
                 resp_title = resp_schema.get("title", "Response").replace(" ", "_")
-                resp_filename = f"{service_name}_{resp_title}.json"
+                resp_filename = f"{resp_title}.json"
 
                 resp_path = os.path.join(output_sub_dir, resp_filename)
                 with open(resp_path, "w") as out_file:
                     json.dump(resp_schema, out_file, indent=2)
                 print(f"Extracted response schema to: {resp_path}")
+
+
+def remove_format_from_json(file_path: str) -> None:
+    """
+    Remove the errant "format" key from all JSON files in the specified directory.
+
+    uin32
+    uint64
+    int
+    partial-date-time: NaiveTime
+    """
+    for root, _, files in os.walk(file_path):
+        for file in files:
+            if file.endswith(".json"):
+                file_path = os.path.join(root, file)
+                with open(file_path, "r") as f:
+                    data = json.load(f)
+
+                for key in data:
+                    if key == "format":
+                        del data[key]
+
+                with open(file_path, "w") as f:
+                    json.dump(data, f, indent=2)
 
 
 if __name__ == "__main__":
