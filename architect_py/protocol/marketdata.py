@@ -3,9 +3,9 @@ from typing import Union
 import grpc
 import msgspec
 
-from architect_py.grpc_models.Marketdata.Marketdata_L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_models.Marketdata.Marketdata_L2BookUpdate import L2BookUpdate
+from architect_py.grpc_client.Marketdata.Marketdata_L1BookSnapshot import L1BookSnapshot
+from architect_py.grpc_client.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.Marketdata_L2BookUpdate import L2BookUpdate
 
 
 class JsonMarketdataStub:

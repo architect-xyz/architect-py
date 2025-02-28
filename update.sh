@@ -25,20 +25,20 @@ echo "\nGenerating client protocol"
 python generate_sync_client_protocol.py > architect_py/protocol/client_protocol.py
 
 
-GRPC_MODELS_DIR="architect_py/grpc_models"
+GRPC_CLIENT_DIR="architect_py/grpc_client"
 PROCESSED_DIR="processed_schemas"
 
 echo "\nGenerating gRPC models"
 python preprocess_grpc_types.py  --output_dir $PROCESSED_DIR
 
 
-mkdir -p "$GRPC_MODELS_DIR"
-touch "$GRPC_MODELS_DIR/__init__.py"
+mkdir -p "$GRPC_CLIENT_DIR"
+touch "$GRPC_CLIENT_DIR/__init__.py"
 
 find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
     service_dir=$(dirname "$filepath")
     service_name=$(basename "$service_dir")
-    out_dir="${GRPC_MODELS_DIR}/${service_name}"
+    out_dir="${GRPC_CLIENT_DIR}/${service_name}"
     
     mkdir -p "${out_dir}"
     
@@ -56,7 +56,7 @@ find "${PROCESSED_DIR}" -name "*.json" | while read -r filepath; do
 done
 
 echo "\nDone generating gRPC models"
-python postprocess_grpc_types.py  --directory $GRPC_MODELS_DIR
+python postprocess_grpc_types.py  --directory $GRPC_CLIENT_DIR
 
 
 # version check

@@ -16,25 +16,25 @@ import websockets.client
 from architect_py.graphql_client.client import GraphQLClient
 
 
-from architect_py.grpc_models.Marketdata.Marketdata_Array_of_L1BookSnapshot import (
+from architect_py.grpc_client.Marketdata.Marketdata_Array_of_L1BookSnapshot import (
     L1BookSnapshot,
 )
-from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_models.Marketdata.Marketdata_L2BookSnapshotRequest import (
+from architect_py.grpc_client.Marketdata.Marketdata_L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.Marketdata_L2BookSnapshotRequest import (
     L2BookSnapshotRequest,
 )
-from architect_py.grpc_models.Marketdata.Marketdata_L2BookUpdate import (
+from architect_py.grpc_client.Marketdata.Marketdata_L2BookUpdate import (
     Diff,
     L2BookUpdate,
     Snapshot,
 )
-from architect_py.grpc_models.Marketdata.Marketdata_SubscribeL1BookSnapshotsRequest import (
+from architect_py.grpc_client.Marketdata.Marketdata_SubscribeL1BookSnapshotsRequest import (
     SubscribeL1BookSnapshotsRequest,
 )
-from architect_py.grpc_models.Marketdata.Marketdata_SubscribeL2BookUpdatesRequest import (
+from architect_py.grpc_client.Marketdata.Marketdata_SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
-from architect_py.grpc_models.Marketdata.Marketdata_Trade import Trade
+from architect_py.grpc_client.Marketdata.Marketdata_Trade import Trade
 from architect_py.protocol import (
     ProtocolQueryMessage,
     ProtocolResponseMessage,

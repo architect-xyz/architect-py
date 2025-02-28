@@ -15,7 +15,7 @@ def delete_decimal_equals_str(file_path: str) -> None:
 
         # Insert import at the top if not already present
         if not any(line.strip() == "from decimal import Decimal" for line in new_lines):
-            new_lines.insert(0, "from decimal import Decimal\n\n")
+            new_lines.insert(4, "from decimal import Decimal\n\n")
 
         # Rewrite the file
         with open(file_path, "w", encoding="utf-8") as f:
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "--directory",
         type=str,
         nargs="?",
-        default="architect_py/grpc_models",
+        default="architect_py/grpc_client",
         help="Path to the JSON file with the gRPC service definitions",
     )
 
