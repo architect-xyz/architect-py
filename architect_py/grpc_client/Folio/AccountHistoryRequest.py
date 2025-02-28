@@ -17,11 +17,13 @@ class AccountHistoryRequest(Struct):
     account: AccountIdOrName
     from_inclusive: Optional[str] = None
     to_exclusive: Optional[str] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_unary(
-		"/json.architect.Folio/AccountHistory",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=AccountHistoryResponse
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+        return channel.unary_unary(
+            "/json.architect.Folio/AccountHistory",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=AccountHistoryResponse
+            ),
+        )

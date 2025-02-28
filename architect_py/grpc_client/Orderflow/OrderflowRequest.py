@@ -436,11 +436,13 @@ OrderflowRequest = Annotated[
     ],
     Meta(title='OrderflowRequest'),
 ]
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_duplex_stream(
-		"/json.architect.Orderflow/Orderflow",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=Orderflow
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryDuplex_StreamMultiCallable:
+        return channel.unary_duplex_stream(
+            "/json.architect.Orderflow/Orderflow",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=Orderflow
+            ),
+        )

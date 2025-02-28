@@ -21,11 +21,13 @@ class CancelAllOrdersRequest(Struct):
     account: Optional[AccountIdOrName] = None
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_unary(
-		"/json.architect.Oms/CancelAllOrders",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=CancelAllOrdersResponse
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+        return channel.unary_unary(
+            "/json.architect.Oms/CancelAllOrders",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=CancelAllOrdersResponse
+            ),
+        )
