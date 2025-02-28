@@ -23,11 +23,13 @@ class DropcopyRequest(Struct):
     fills: Optional[bool] = True
     orders: Optional[bool] = False
     trader: Optional[TraderIdOrEmail] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_stream(
-		"/json.architect.Orderflow/Dropcopy",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=Dropcopy
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable:
+        return channel.unary_stream(
+            "/json.architect.Orderflow/Dropcopy",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=Dropcopy
+            ),
+        )

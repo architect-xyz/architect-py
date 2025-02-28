@@ -14,11 +14,13 @@ from msgspec import Struct
 class TickerRequest(Struct):
     symbol: str
     venue: Optional[str] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_unary(
-		"/json.architect.Marketdata/Ticker",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=Ticker
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+        return channel.unary_unary(
+            "/json.architect.Marketdata/Ticker",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=Ticker
+            ),
+        )

@@ -391,11 +391,13 @@ PlaceOrderRequest = Annotated[
     Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3],
     Meta(title='PlaceOrderRequest'),
 ]
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_unary(
-		"/json.architect.Oms/PlaceOrder",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=Order
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+        return channel.unary_unary(
+            "/json.architect.Oms/PlaceOrder",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=Order
+            ),
+        )

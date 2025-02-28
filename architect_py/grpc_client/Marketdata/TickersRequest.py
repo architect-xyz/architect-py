@@ -25,11 +25,13 @@ class TickersRequest(Struct):
     n: Optional[int] = None
     symbols: Optional[List[str]] = None
     venue: Optional[str] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_unary(
-		"/json.architect.Marketdata/Tickers",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=TickersResponse
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+        return channel.unary_unary(
+            "/json.architect.Marketdata/Tickers",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=TickersResponse
+            ),
+        )

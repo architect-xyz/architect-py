@@ -13,11 +13,13 @@ from msgspec import Struct
 
 class SubscribeLiquidationsRequest(Struct):
     symbols: Optional[List[str]] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_stream(
-		"/json.architect.Marketdata/SubscribeLiquidations",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=Liquidation
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable:
+        return channel.unary_stream(
+            "/json.architect.Marketdata/SubscribeLiquidations",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=Liquidation
+            ),
+        )

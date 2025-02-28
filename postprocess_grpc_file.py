@@ -34,16 +34,17 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         )
 
         lines.extend(
-            [
-                "def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:\n",
-                f"\tchannel.unary_{request_type}(\n",
-                f'\t\t"{route}",\n',
-                f"\t\trequest_serializer=msgspec.json.encode,\n",
-                f"\t\tresponse_deserializer=lambda buf: msgspec.json.decode(\n",
-                f"\t\t\tbuf, type={response_type}\n",
-                f"\t\t),\n",
-                f"\t)\n",
-            ]
+            f"""
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.Unary{request_type.title()}MultiCallable:
+        return channel.unary_{request_type}(
+            "{route}",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type={response_type}
+            ),
+        )
+"""
         )
 
         with open(file_path, "w") as f:
@@ -54,14 +55,11 @@ def delete_decimal_equals_str(file_path: str) -> None:
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    # Check if the file contains "Decimal = str"
     if any(line.strip() == "Decimal = str" for line in lines):
         print(f"Updating: {file_path}")
 
-        # Remove "Decimal = str" and ensure "from decimal import Decimal" is at the top
         new_lines = [line for line in lines if line.strip() != "Decimal = str"]
 
-        # Insert import at the top if not already present
         if not any(line.strip() == "from decimal import Decimal" for line in new_lines):
             new_lines.insert(4, "from decimal import Decimal\n\n")
 

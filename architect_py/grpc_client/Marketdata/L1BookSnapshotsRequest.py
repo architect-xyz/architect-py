@@ -13,11 +13,13 @@ from msgspec import Struct
 
 class L1BookSnapshotsRequest(Struct):
     symbols: Optional[List[str]] = None
-def create_stub(channel: grpc.Channel | grpc.aio.Channel) -> None:
-	channel.unary_unary(
-		"/json.architect.Marketdata/L1BookSnapshots",
-		request_serializer=msgspec.json.encode,
-		response_deserializer=lambda buf: msgspec.json.decode(
-			buf, type=Array_of_L1BookSnapshot
-		),
-	)
+
+    @staticmethod
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+        return channel.unary_unary(
+            "/json.architect.Marketdata/L1BookSnapshots",
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=Array_of_L1BookSnapshot
+            ),
+        )
