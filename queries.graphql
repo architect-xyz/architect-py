@@ -164,7 +164,7 @@ query GetProductInfoQuery($symbol: String!) {
   }
 }
 
-query GetProductInfosQuery($symbols: [String!]!) {
+query GetProductInfosQuery($symbols: [String!]) {
   symbology {
     productInfos(symbols: $symbols) {
       ...ProductInfoFields
