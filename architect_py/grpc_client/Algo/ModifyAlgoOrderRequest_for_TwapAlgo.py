@@ -44,7 +44,7 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
     params: TwapParams
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["ModifyAlgoOrderRequest_for_TwapAlgo", AlgoOrder_for_TwapAlgo]:
         return channel.unary_unary(
             "/json.architect.Algo/ModifyTwapAlgoOrder",
             request_serializer=msgspec.json.encode,

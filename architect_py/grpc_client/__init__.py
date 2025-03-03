@@ -36,7 +36,6 @@ from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
 from architect_py.grpc_client.Marketdata.Trade import Trade
-from architect_py.protocol.marketdata import JsonMarketdataStub
 
 from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
@@ -48,6 +47,8 @@ Custom Code Generation for the gRPC client
     - might fix duplication of types issue
     - might fix the Decimal = str issue
 Fix the duplication of types issue in the generated code
+
+Save the stubs so you're not recreating them
 """
 
 
@@ -59,9 +60,13 @@ class GRPCClient:
     l2_books: dict[TradableProduct, Snapshot]
     channel: grpc.aio.Channel
 
-    def __init__(self, graphql_client: GraphQLClient):
+    def __init__(
+        self, graphql_client: GraphQLClient, endpoint: str = "app.architect.co"
+    ):
         self.graphql_client = graphql_client
         self.l2_books: dict[TradableProduct, Snapshot] = {}
+
+        self.endpoint = endpoint
 
     async def initialize(self):
         # "binance-futures-usd-m.marketdata.architect.co",
@@ -69,7 +74,7 @@ class GRPCClient:
         # "binance.marketdata.architect.co",
         # "app.architect.co",
         if self.channel is None:
-            self.channel = await self.get_grpc_channel("app.architect.co")
+            self.channel = await self.get_grpc_channel(self.endpoint)
 
         await self.refresh_grpc_credentials()
 
@@ -131,10 +136,14 @@ class GRPCClient:
         return await stub(req, metadata=(("authorization", f"Bearer {self.jwt}"),))
 
     async def subscribe_l1_book_snapshots(
-        self, symbols: list[str] | None = None
+        self, symbols: list[TradableProduct] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
+        await self.initialize()
+
         stub = SubscribeL1BookSnapshotsRequest.create_stub(self.channel)
-        req = SubscribeL1BookSnapshotsRequest(symbols=symbols)
+        req = SubscribeL1BookSnapshotsRequest(
+            symbols=[str(s) for s in symbols] if symbols else None
+        )
         call = stub(req)
         async for snapshot in call:
             yield snapshot
@@ -144,6 +153,8 @@ class GRPCClient:
         symbol: TradableProduct,
         venue: Optional[str],
     ) -> AsyncIterator[L2BookUpdate]:
+        await self.initialize()
+
         stub = SubscribeL2BookUpdatesRequest.create_stub(self.channel)
         req = SubscribeL2BookUpdatesRequest(venue=venue, symbol=symbol)
         jwt = await self.refresh_grpc_credentials()
@@ -153,11 +164,11 @@ class GRPCClient:
 
     async def watch_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
-    ) -> AsyncIterator[tuple[int, int]]:
+    ) -> AsyncIterator[Snapshot]:
         async for up in self.subscribe_l2_book_updates(symbol=symbol, venue=venue):
-            if isinstance(up, Snapshot):  # if up.t.value = "s":
+            if isinstance(up, Snapshot):  # if up.t = "s":
                 self.l2_books[symbol] = up
-            if isinstance(up, Diff):  # elif up.t.value = "d":  # diff
+            if isinstance(up, Diff):  # elif up.t = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(
                         f"received update before snapshot for L2 book {symbol}"
@@ -172,7 +183,7 @@ class GRPCClient:
                     )
                 L2_update_from_diff(book, up)
 
-            yield (up.sequence_id, up.sequence_number)
+            yield self.l2_books[symbol]
 
 
 def update_order_list(
@@ -183,11 +194,8 @@ def update_order_list(
     using binary search to insert, update, or remove the given price level.
     """
     if ascending:
-        # For asks: list is sorted in ascending order by price.
         idx = bisect.bisect_left(order_list, [price, Decimal(0)])
     else:
-        # For bids: list is sorted in descending order.
-        # We perform a custom binary search.
         lo, hi = 0, len(order_list)
         while lo < hi:
             mid = (lo + hi) // 2
@@ -197,31 +205,30 @@ def update_order_list(
                 hi = mid
         idx = lo
 
-    # Check if the price level exists at the found index.
     if idx < len(order_list) and order_list[idx][0] == price:
         if size.is_zero():
-            # Remove the price level.
             order_list.pop(idx)
         else:
             # Update the size.
             order_list[idx][1] = size
     else:
         if not size.is_zero():
-            # Insert new price level.
             order_list.insert(idx, [price, size])
 
 
-def L2_update_from_diff(book: Snapshot, diff: L2BookUpdate) -> None:
-    # Update the metadata fields.
+def L2_update_from_diff(book: Snapshot, diff: Diff) -> None:
+    """
+    we use binary search because the L2 does not have many levels
+    and is simpler to maintain in the context of the codegen
+    """
+
     book.timestamp = diff.timestamp
     book.timestamp_ns = diff.timestamp_ns
     book.sequence_id = diff.sequence_id
     book.sequence_number = diff.sequence_number
 
-    # Update bids (assumed sorted descending).
     for price, size in diff.bids:
         update_order_list(book.bids, price, size, ascending=False)
 
-    # Update asks (assumed sorted ascending).
     for price, size in diff.asks:
         update_order_list(book.asks, price, size, ascending=True)

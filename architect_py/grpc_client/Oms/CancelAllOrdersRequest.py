@@ -23,7 +23,7 @@ class CancelAllOrdersRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["CancelAllOrdersRequest", CancelAllOrdersResponse]:
         return channel.unary_unary(
             "/json.architect.Oms/CancelAllOrders",
             request_serializer=msgspec.json.encode,

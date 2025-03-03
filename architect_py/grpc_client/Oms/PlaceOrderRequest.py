@@ -393,7 +393,7 @@ PlaceOrderRequest = Annotated[
 ]
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["PlaceOrderRequest", Order]:
         return channel.unary_unary(
             "/json.architect.Oms/PlaceOrder",
             request_serializer=msgspec.json.encode,

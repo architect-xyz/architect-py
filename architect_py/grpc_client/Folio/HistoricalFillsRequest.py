@@ -33,7 +33,7 @@ class HistoricalFillsRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["HistoricalFillsRequest", HistoricalFillsResponse]:
         return channel.unary_unary(
             "/json.architect.Folio/HistoricalFills",
             request_serializer=msgspec.json.encode,

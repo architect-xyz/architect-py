@@ -20,7 +20,7 @@ class SubscribeTickersRequest(Struct):
     ] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable["SubscribeTickersRequest", TickerUpdate]:
         return channel.unary_stream(
             "/json.architect.Marketdata/SubscribeTickers",
             request_serializer=msgspec.json.encode,

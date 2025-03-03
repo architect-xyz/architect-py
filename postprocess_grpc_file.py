@@ -36,7 +36,7 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         lines.extend(
             f"""
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.Unary{request_type.title()}MultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.Unary{request_type.title()}MultiCallable["{name}", {response_type}]:
         return channel.unary_{request_type}(
             "{route}",
             request_serializer=msgspec.json.encode,

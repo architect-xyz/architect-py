@@ -16,7 +16,7 @@ class SubscribeL2BookUpdatesRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable["SubscribeL2BookUpdatesRequest", L2BookUpdate]:
         return channel.unary_stream(
             "/json.architect.Marketdata/SubscribeL2BookUpdates",
             request_serializer=msgspec.json.encode,

@@ -1,6 +1,5 @@
 # this script is used to update the generated code in the project
 
-
 # check sdchema
 if ! cmp -s schema.graphql ../architect/gql/schema.graphql; then
     echo "Schema has changed. Updating schema (y/n)?"
@@ -15,18 +14,16 @@ else
     echo "Schema matches backend.\n"
 fi
 
-
-# ariadne codegen
-poetry run ariadne-codegen --config ariadne-codegen.toml
-
-
 # GRPC codegen
 echo "\nGenerating client protocol"
 python generate_sync_client_protocol.py > architect_py/protocol/client_protocol.py
 
-
 GRPC_CLIENT_DIR="architect_py/grpc_client"
 PROCESSED_DIR="processed_schemas"
+
+rm -rf "${PROCESSED_DIR:?}"/*
+
+find "$GRPC_CLIENT_DIR" -mindepth 1 -type d -exec rm -rf {} +
 
 echo "\nGenerating gRPC models"
 python preprocess_grpc_types.py  --output_dir $PROCESSED_DIR
@@ -41,7 +38,7 @@ if [[ ! -d "$PROCESSED_DIR" ]]; then
     exit 1
 fi
 
-for folder in "$PROCESSED_DIR"/*/; do
+for folder in "$PROCESSED_DIR"/*; do
     # Check if it's a directory
     if [[ -d "$folder" ]]; then
         service_name=$(basename "$folder")
@@ -73,6 +70,10 @@ for folder in "$PROCESSED_DIR"/*/; do
         done
     fi
 done
+
+
+# ariadne codegen
+poetry run ariadne-codegen --config ariadne-codegen.toml
 
 
 # version check

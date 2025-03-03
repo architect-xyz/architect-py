@@ -16,7 +16,7 @@ class L2BookSnapshotRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["L2BookSnapshotRequest", L2BookSnapshot]:
         return channel.unary_unary(
             "/json.architect.Marketdata/L2BookSnapshot",
             request_serializer=msgspec.json.encode,

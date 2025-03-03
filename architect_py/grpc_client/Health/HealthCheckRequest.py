@@ -22,7 +22,7 @@ class HealthCheckRequest(Struct):
     ] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["HealthCheckRequest", HealthCheckResponse]:
         return channel.unary_unary(
             "/json.architect.Health/Check",
             request_serializer=msgspec.json.encode,
