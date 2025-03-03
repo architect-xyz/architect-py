@@ -1,3 +1,11 @@
+3.2.0
+Features
+  - Added get_account_history query
+  - Added get_execution_infos (plural) query
+  - Added gRPC client
+  - Added docs for each function
+  - OrderDir is now also a string
+
 3.1.11
 Features:
   - Added the who_am_i function to get userid + email

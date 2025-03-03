@@ -42,6 +42,11 @@ from .fragments import (
     OrderFields,
     ProductInfoFields,
 )
+from .get_account_history_query import (
+    GetAccountHistoryQuery,
+    GetAccountHistoryQueryFolio,
+    GetAccountHistoryQueryFolioAccountHistory,
+)
 from .get_account_query import (
     GetAccountQuery,
     GetAccountQueryUser,
@@ -66,6 +71,11 @@ from .get_execution_info_query import (
     GetExecutionInfoQuery,
     GetExecutionInfoQuerySymbology,
     GetExecutionInfoQuerySymbologyExecutionInfo,
+)
+from .get_execution_infos_query import (
+    GetExecutionInfosQuery,
+    GetExecutionInfosQuerySymbology,
+    GetExecutionInfosQuerySymbologyExecutionInfos,
 )
 from .get_fills_query import (
     GetFillsQuery,
@@ -172,6 +182,9 @@ __all__ = [
     "CreateJwtUser",
     "ExecutionInfoFields",
     "FillKind",
+    "GetAccountHistoryQuery",
+    "GetAccountHistoryQueryFolio",
+    "GetAccountHistoryQueryFolioAccountHistory",
     "GetAccountQuery",
     "GetAccountQueryUser",
     "GetAccountQueryUserAccount",
@@ -187,6 +200,9 @@ __all__ = [
     "GetExecutionInfoQuery",
     "GetExecutionInfoQuerySymbology",
     "GetExecutionInfoQuerySymbologyExecutionInfo",
+    "GetExecutionInfosQuery",
+    "GetExecutionInfosQuerySymbology",
+    "GetExecutionInfosQuerySymbologyExecutionInfos",
     "GetFillsQuery",
     "GetFillsQueryFolio",
     "GetFillsQueryFolioHistoricalFills",
