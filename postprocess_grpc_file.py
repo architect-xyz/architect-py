@@ -4,7 +4,7 @@ import json
 
 
 def main(file_path: str, json_folder: str) -> None:
-    delete_decimal_equals_str(file_path)
+    modify_imports(file_path)
     generate_stub(file_path, json_folder)
 
 
@@ -65,20 +65,21 @@ def generate_stub(file_path: str, json_folder: str) -> None:
             f.writelines(lines)
 
 
-def delete_decimal_equals_str(file_path: str) -> None:
+def modify_imports(file_path: str) -> None:
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     if any(line.strip() == "Decimal = str" for line in lines):
         print(f"Updating: {file_path}")
 
-        new_lines = [line for line in lines if line.strip() != "Decimal = str"]
+        lines = [line for line in lines if line.strip() != "Decimal = str"]
+        lines.insert(4, "from decimal import Decimal\n\n")
 
-        if not any(line.strip() == "from decimal import Decimal" for line in new_lines):
-            new_lines.insert(4, "from decimal import Decimal\n\n")
+    if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
+        lines.insert(4, "from datetime import datetime, timezone\n")
 
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.writelines(new_lines)
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.writelines(lines)
 
 
 if __name__ == "__main__":

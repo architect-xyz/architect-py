@@ -2,6 +2,7 @@
 #   filename:  Array_of_L1BookSnapshot.json
 
 from __future__ import annotations
+from datetime import datetime, timezone
 from decimal import Decimal
 
 
@@ -41,6 +42,14 @@ class L1BookSnapshot(Struct):
     @timestamp.setter
     def timestamp(self, value: int) -> None:
         self.ts = value
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
+
+    @property
+    def datetime_local(self) -> datetime:
+        return datetime.fromtimestamp(self.ts)
 
     @property
     def best_ask(self) -> Optional[List[Decimal]]:

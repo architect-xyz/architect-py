@@ -23,9 +23,7 @@ from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
-from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import (
-    L1BookSnapshot,
-)
+from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookUpdate import Snapshot
 from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
@@ -645,7 +643,10 @@ class AsyncClient:
 
     async def subscribe_l1_book(
         self, symbols: list[TradableProduct] | None = None
-    ) -> AsyncIterator[L1BookSnapshot]:
+    ) -> L1BookSnapshot:
+        """
+        This will return a L1BookSnapshot that is constantly updating in the background
+        """
         async for snap in self.grpc_client.subscribe_l1_book_snapshots(symbols):
             yield snap
 
@@ -654,8 +655,9 @@ class AsyncClient:
         symbol: TradableProduct,
         venue: Optional[str],
     ) -> AsyncIterator[Snapshot]:
-        async for snap in self.grpc_client.watch_l2_book(symbol, venue):
-            yield snap
+        """
+        This will return a L2BookSnapshot that is constantly updating in the background
+        """
 
     async def subscribe_trades(self, symbol: str, venue: str) -> AsyncIterator[Trade]:
         raise NotImplementedError
