@@ -2,6 +2,7 @@
 #   filename:  L2BookUpdate.json
 
 from __future__ import annotations
+from datetime import datetime, timezone
 from decimal import Decimal
 
 
@@ -74,6 +75,14 @@ class Snapshot(Struct):
     def timestamp(self, value: int) -> None:
         self.ts = value
 
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
+
+    @property
+    def datetime_local(self) -> datetime:
+        return datetime.fromtimestamp(self.ts)
+
 
 class Diff(Struct):
     a: Annotated[
@@ -143,6 +152,14 @@ class Diff(Struct):
     @timestamp.setter
     def timestamp(self, value: int) -> None:
         self.ts = value
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
+
+    @property
+    def datetime_local(self) -> datetime:
+        return datetime.fromtimestamp(self.ts)
 
 
 L2BookUpdate = Annotated[

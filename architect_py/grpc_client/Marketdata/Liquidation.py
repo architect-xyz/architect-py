@@ -2,6 +2,7 @@
 #   filename:  Liquidation.json
 
 from __future__ import annotations
+from datetime import datetime, timezone
 from decimal import Decimal
 
 
@@ -11,19 +12,18 @@ from typing import Annotated
 from msgspec import Meta, Struct
 
 
-
 class Dir(str, Enum):
-    BUY = 'BUY'
-    SELL = 'SELL'
+    BUY = "BUY"
+    SELL = "SELL"
 
 
 class Liquidation(Struct):
-    d: Annotated[Dir, Meta(title='direction')]
-    p: Annotated[Decimal, Meta(title='price')]
-    q: Annotated[Decimal, Meta(title='size')]
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
+    d: Annotated[Dir, Meta(title="direction")]
+    p: Annotated[Decimal, Meta(title="price")]
+    q: Annotated[Decimal, Meta(title="size")]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
 
     @property
     def direction(self) -> Dir:
@@ -72,3 +72,11 @@ class Liquidation(Struct):
     @timestamp.setter
     def timestamp(self, value: int) -> None:
         self.ts = value
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
+
+    @property
+    def datetime_local(self) -> datetime:
+        return datetime.fromtimestamp(self.ts).astimezone()
