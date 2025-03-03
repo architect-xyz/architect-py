@@ -40,7 +40,7 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                 req_schema["service"] = service_name
                 req_schema["response_type"] = resp_schema["title"]
 
-                req_title = req_schema.get("title", "Request").replace("_", "")
+                req_title = req_schema.get("title", "Request")
                 req_filename = f"{req_title}.json"
                 req_path = os.path.join(output_sub_dir, req_filename)
                 with open(req_path, "w") as out_file:
@@ -48,7 +48,7 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
 
             # Process the response type schema.
             if resp_schema:
-                resp_title = resp_schema.get("title", "Response").replace("_", "")
+                resp_title = resp_schema.get("title", "Response")
                 resp_filename = f"{resp_title}.json"
 
                 resp_path = os.path.join(output_sub_dir, resp_filename)
