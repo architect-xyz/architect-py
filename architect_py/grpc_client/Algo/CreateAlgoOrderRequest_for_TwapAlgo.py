@@ -2,7 +2,7 @@
 #   filename:  CreateAlgoOrderRequest_for_TwapAlgo.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Algo.AlgoOrderforTwapAlgo import AlgoOrderforTwapAlgo
+from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwapAlgo
 import grpc
 import msgspec
 from decimal import Decimal
@@ -51,11 +51,11 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct):
     trader: Optional[UserId] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["CreateAlgoOrderRequest_for_TwapAlgo", AlgoOrderforTwapAlgo]:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["CreateAlgoOrderRequestForTwapAlgo", AlgoOrderForTwapAlgo]:
         return channel.unary_unary(
             "/json.architect.Algo/CreateTwapAlgoOrder",
             request_serializer=msgspec.json.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=AlgoOrderforTwapAlgo
+                buf, type=AlgoOrderForTwapAlgo
             ),
         )
