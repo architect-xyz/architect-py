@@ -56,6 +56,7 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                     json.dump(resp_schema, out_file, indent=2)
                 print(f"Extracted response schema to: {resp_path}")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a JSON file.")
     parser.add_argument(

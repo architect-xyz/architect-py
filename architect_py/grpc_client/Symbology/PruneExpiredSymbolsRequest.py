@@ -22,7 +22,7 @@ class PruneExpiredSymbolsRequest(Struct):
     ] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["PruneExpiredSymbolsRequest", PruneExpiredSymbolsResponse]:
         return channel.unary_unary(
             "/json.architect.Symbology/PruneExpiredSymbols",
             request_serializer=msgspec.json.encode,

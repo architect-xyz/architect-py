@@ -25,7 +25,7 @@ class DropcopyRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable["DropcopyRequest", Dropcopy]:
         return channel.unary_stream(
             "/json.architect.Orderflow/Dropcopy",
             request_serializer=msgspec.json.encode,

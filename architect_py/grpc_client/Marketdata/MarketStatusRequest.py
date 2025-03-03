@@ -16,7 +16,7 @@ class MarketStatusRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["MarketStatusRequest", MarketStatus]:
         return channel.unary_unary(
             "/json.architect.Marketdata/MarketStatus",
             request_serializer=msgspec.json.encode,

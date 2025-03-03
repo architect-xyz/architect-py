@@ -27,7 +27,7 @@ class TickersRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["TickersRequest", TickersResponse]:
         return channel.unary_unary(
             "/json.architect.Marketdata/Tickers",
             request_serializer=msgspec.json.encode,

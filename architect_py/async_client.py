@@ -26,7 +26,7 @@ from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationO
 from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import (
     L1BookSnapshot,
 )
-from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.L2BookUpdate import Snapshot
 from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
@@ -79,6 +79,7 @@ class AsyncClient:
         api_secret: str,
         host: str = "https://app.architect.co",
         paper_trading: bool = True,
+        grpc_endpoint: str = "app.architect.co",
         _port: Optional[int] = None,
         **kwargs: Any,
     ):
@@ -131,7 +132,7 @@ class AsyncClient:
             api_key=api_key, api_secret=api_secret, host=host, port=_port, **kwargs
         )
 
-        self.grpc_client = GRPCClient(self.graphql_client)
+        self.grpc_client = GRPCClient(self.graphql_client, grpc_endpoint)
 
     async def who_am_i(self) -> tuple[str, str]:
         """
@@ -643,17 +644,18 @@ class AsyncClient:
         return l2_book.l_2_book_snapshot
 
     async def subscribe_l1_book(
-        self, endpoint: str, symbols: list[str] | None = None
+        self, symbols: list[TradableProduct] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
-        raise NotImplementedError
+        async for snap in self.grpc_client.subscribe_l1_book_snapshots(symbols):
+            yield snap
 
     async def subscribe_l2_book(
         self,
-        endpoint: str,
-        symbol: str,
+        symbol: TradableProduct,
         venue: Optional[str],
-    ) -> AsyncIterator[L2BookSnapshot]:
-        raise NotImplementedError
+    ) -> AsyncIterator[Snapshot]:
+        async for snap in self.grpc_client.watch_l2_book(symbol, venue):
+            yield snap
 
     async def subscribe_trades(self, symbol: str, venue: str) -> AsyncIterator[Trade]:
         raise NotImplementedError

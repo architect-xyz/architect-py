@@ -36,7 +36,7 @@ class SubscribeCurrentCandlesRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable["SubscribeCurrentCandlesRequest", Candle]:
         return channel.unary_stream(
             "/json.architect.Marketdata/SubscribeCurrentCandles",
             request_serializer=msgspec.json.encode,

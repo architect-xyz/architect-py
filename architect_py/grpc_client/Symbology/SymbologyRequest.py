@@ -13,7 +13,7 @@ class SymbologyRequest(Struct):
     pass
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["SymbologyRequest", SymbologySnapshot]:
         return channel.unary_unary(
             "/json.architect.Symbology/Symbology",
             request_serializer=msgspec.json.encode,

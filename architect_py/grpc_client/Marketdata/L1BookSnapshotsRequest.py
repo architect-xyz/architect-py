@@ -15,7 +15,7 @@ class L1BookSnapshotsRequest(Struct):
     symbols: Optional[List[str]] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["L1BookSnapshotsRequest", Array_of_L1BookSnapshot]:
         return channel.unary_unary(
             "/json.architect.Marketdata/L1BookSnapshots",
             request_serializer=msgspec.json.encode,

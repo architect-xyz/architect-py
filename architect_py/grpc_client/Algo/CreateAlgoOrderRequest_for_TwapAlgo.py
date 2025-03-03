@@ -51,7 +51,7 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct):
     trader: Optional[UserId] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable:
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["CreateAlgoOrderRequest_for_TwapAlgo", AlgoOrder_for_TwapAlgo]:
         return channel.unary_unary(
             "/json.architect.Algo/CreateTwapAlgoOrder",
             request_serializer=msgspec.json.encode,
