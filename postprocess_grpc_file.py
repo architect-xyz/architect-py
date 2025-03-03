@@ -20,7 +20,8 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         j = json.load(json_file)
 
         service = j["service"]
-        response_type = j["response_type"]
+        response_file_name = j["response_type"]
+        response_type = response_file_name.replace("_", "")
         request_type = j["request_type"]
         route = j["route"]
 
