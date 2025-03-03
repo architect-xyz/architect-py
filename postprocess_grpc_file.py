@@ -8,6 +8,10 @@ def main(file_path: str, json_folder: str) -> None:
     generate_stub(file_path, json_folder)
 
 
+def capitalize_first_letter(word: str) -> str:
+    return word[0].upper() + word[1:]
+
+
 def generate_stub(file_path: str, json_folder: str) -> None:
     base_name = os.path.basename(file_path)
     name, _ = os.path.splitext(base_name)
@@ -20,9 +24,18 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         j = json.load(json_file)
 
         service = j["service"]
-        response_file_name = j["response_type"]
-        response_type = response_file_name.replace("_", "")
-        request_type = j["request_type"]
+
+        unary_type = j["unary_type"]
+
+        response_file_name: str = j["response_type"]
+
+        request_type_name = "".join(
+            capitalize_first_letter(word) for word in name.split("_")
+        )
+        response_type_name = "".join(
+            capitalize_first_letter(word) for word in response_file_name.split("_")
+        )
+
         route = j["route"]
 
         with open(file_path, "r") as f:
@@ -31,18 +44,18 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         lines.insert(4, "import grpc\nimport msgspec\n")
         lines.insert(
             4,
-            f"from architect_py.grpc_client.{service}.{response_type} import {response_type}\n",
+            f"from architect_py.grpc_client.{service}.{response_file_name} import {response_type_name}\n",
         )
 
         lines.extend(
             f"""
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.Unary{request_type.title()}MultiCallable["{name}", {response_type}]:
-        return channel.unary_{request_type}(
+    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.Unary{unary_type.title()}MultiCallable["{request_type_name}", {response_type_name}]:
+        return channel.unary_{unary_type}(
             "{route}",
             request_serializer=msgspec.json.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type={response_type}
+                buf, type={response_type_name}
             ),
         )
 """

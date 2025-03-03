@@ -32,11 +32,11 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
             resp_schema = rpc.get("response_type")
 
             route = rpc.get("route")
-            request_type = rpc.get("type")
+            unary_type = rpc.get("type")
 
             if req_schema:
                 req_schema["route"] = route
-                req_schema["request_type"] = request_type
+                req_schema["unary_type"] = unary_type
                 req_schema["service"] = service_name
                 req_schema["response_type"] = resp_schema["title"]
 
