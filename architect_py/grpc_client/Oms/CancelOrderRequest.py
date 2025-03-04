@@ -2,8 +2,6 @@
 #   filename:  CancelOrderRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Oms.Cancel import Cancel
 from architect_py.grpc_client.request import RequestUnary
 
@@ -46,14 +44,10 @@ class CancelOrderRequest(Struct):
     def cancel_id(self, value: Optional[str]) -> None:
         self.xid = value
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["CancelOrderRequest", Cancel]:
-        return channel.unary_unary(
-            "/json.architect.Oms/CancelOrder",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Cancel
-            ),
-        )
 
-CancelOrderRequestRequestHelper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return CancelOrderRequestHelper
+
+CancelOrderRequestHelper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
+

@@ -2,8 +2,6 @@
 #   filename:  TickersRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.TickersResponse import TickersResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -28,14 +26,10 @@ class TickersRequest(Struct):
     symbols: Optional[List[str]] = None
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["TickersRequest", TickersResponse]:
-        return channel.unary_unary(
-            "/json.architect.Marketdata/Tickers",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=TickersResponse
-            ),
-        )
 
-TickersRequestRequestHelper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return TickersRequestHelper
+
+TickersRequestHelper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")
+

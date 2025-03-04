@@ -2,8 +2,6 @@
 #   filename:  CancelAllOrdersRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -24,14 +22,10 @@ class CancelAllOrdersRequest(Struct):
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["CancelAllOrdersRequest", CancelAllOrdersResponse]:
-        return channel.unary_unary(
-            "/json.architect.Oms/CancelAllOrders",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=CancelAllOrdersResponse
-            ),
-        )
 
-CancelAllOrdersRequestRequestHelper = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return CancelAllOrdersRequestHelper
+
+CancelAllOrdersRequestHelper = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")
+

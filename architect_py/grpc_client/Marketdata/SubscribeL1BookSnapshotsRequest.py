@@ -2,8 +2,6 @@
 #   filename:  SubscribeL1BookSnapshotsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.request import RequestStream
 
@@ -21,14 +19,10 @@ class SubscribeL1BookSnapshotsRequest(Struct):
         ]
     ] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["SubscribeL1BookSnapshotsRequest", L1BookSnapshot]:
-        return channel.unary_stream(
-            "/json.architect.Marketdata/SubscribeL1BookSnapshots",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=L1BookSnapshot
-            ),
-        )
 
-SubscribeL1BookSnapshotsRequestRequestHelper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")
+    @staticmethod
+    def get_helper() -> RequestStream:
+        return SubscribeL1BookSnapshotsRequestHelper
+
+SubscribeL1BookSnapshotsRequestHelper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")
+

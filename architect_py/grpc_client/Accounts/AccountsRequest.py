@@ -2,8 +2,6 @@
 #   filename:  AccountsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Accounts.AccountsResponse import AccountsResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -25,14 +23,10 @@ class AccountsRequest(Struct):
         ]
     ] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountsRequest", AccountsResponse]:
-        return channel.unary_unary(
-            "/json.architect.Accounts/Accounts",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=AccountsResponse
-            ),
-        )
 
-AccountsRequestRequestHelper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return AccountsRequestHelper
+
+AccountsRequestHelper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")
+

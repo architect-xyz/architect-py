@@ -2,8 +2,6 @@
 #   filename:  CreateAlgoOrderRequest_for_TwapAlgo.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwapAlgo
 from architect_py.grpc_client.request import RequestUnary
 
@@ -52,14 +50,10 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct):
     parent_order_id: Optional[OrderId] = None
     trader: Optional[UserId] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["CreateAlgoOrderRequestForTwapAlgo", AlgoOrderForTwapAlgo]:
-        return channel.unary_unary(
-            "/json.architect.Algo/CreateTwapAlgoOrder",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=AlgoOrderForTwapAlgo
-            ),
-        )
 
-CreateAlgoOrderRequestForTwapAlgoRequestHelper = RequestUnary(CreateAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/CreateTwapAlgoOrder")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return CreateAlgoOrderRequestForTwapAlgoHelper
+
+CreateAlgoOrderRequestForTwapAlgoHelper = RequestUnary(CreateAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/CreateTwapAlgoOrder")
+

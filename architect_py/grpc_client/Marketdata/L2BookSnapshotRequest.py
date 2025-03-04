@@ -2,8 +2,6 @@
 #   filename:  L2BookSnapshotRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 from architect_py.grpc_client.request import RequestUnary
 
@@ -17,14 +15,10 @@ class L2BookSnapshotRequest(Struct):
     symbol: str
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["L2BookSnapshotRequest", L2BookSnapshot]:
-        return channel.unary_unary(
-            "/json.architect.Marketdata/L2BookSnapshot",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=L2BookSnapshot
-            ),
-        )
 
-L2BookSnapshotRequestRequestHelper = RequestUnary(L2BookSnapshotRequest, L2BookSnapshot, "/json.architect.Marketdata/L2BookSnapshot")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return L2BookSnapshotRequestHelper
+
+L2BookSnapshotRequestHelper = RequestUnary(L2BookSnapshotRequest, L2BookSnapshot, "/json.architect.Marketdata/L2BookSnapshot")
+

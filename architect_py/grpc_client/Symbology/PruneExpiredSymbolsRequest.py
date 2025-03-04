@@ -2,8 +2,6 @@
 #   filename:  PruneExpiredSymbolsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Symbology.PruneExpiredSymbolsResponse import PruneExpiredSymbolsResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -23,14 +21,10 @@ class PruneExpiredSymbolsRequest(Struct):
         ]
     ] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["PruneExpiredSymbolsRequest", PruneExpiredSymbolsResponse]:
-        return channel.unary_unary(
-            "/json.architect.Symbology/PruneExpiredSymbols",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=PruneExpiredSymbolsResponse
-            ),
-        )
 
-PruneExpiredSymbolsRequestRequestHelper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return PruneExpiredSymbolsRequestHelper
+
+PruneExpiredSymbolsRequestHelper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")
+

@@ -2,8 +2,6 @@
 #   filename:  SubscribeOrderflowRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 from architect_py.grpc_client.request import RequestStream
 
@@ -23,14 +21,10 @@ class SubscribeOrderflowRequest(Struct):
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["SubscribeOrderflowRequest", Orderflow]:
-        return channel.unary_stream(
-            "/json.architect.Orderflow/SubscribeOrderflow",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Orderflow
-            ),
-        )
 
-SubscribeOrderflowRequestRequestHelper = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")
+    @staticmethod
+    def get_helper() -> RequestStream:
+        return SubscribeOrderflowRequestHelper
+
+SubscribeOrderflowRequestHelper = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")
+

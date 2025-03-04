@@ -2,8 +2,6 @@
 #   filename:  OpenOrdersRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Oms.OpenOrdersResponse import OpenOrdersResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -31,14 +29,10 @@ class OpenOrdersRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["OpenOrdersRequest", OpenOrdersResponse]:
-        return channel.unary_unary(
-            "/json.architect.Oms/OpenOrders",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=OpenOrdersResponse
-            ),
-        )
 
-OpenOrdersRequestRequestHelper = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return OpenOrdersRequestHelper
+
+OpenOrdersRequestHelper = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")
+

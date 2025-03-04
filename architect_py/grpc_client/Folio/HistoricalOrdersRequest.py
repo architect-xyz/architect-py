@@ -2,8 +2,6 @@
 #   filename:  HistoricalOrdersRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Folio.HistoricalOrdersResponse import HistoricalOrdersResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -40,14 +38,10 @@ class HistoricalOrdersRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["HistoricalOrdersRequest", HistoricalOrdersResponse]:
-        return channel.unary_unary(
-            "/json.architect.Folio/HistoricalOrders",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=HistoricalOrdersResponse
-            ),
-        )
 
-HistoricalOrdersRequestRequestHelper = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return HistoricalOrdersRequestHelper
+
+HistoricalOrdersRequestHelper = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")
+

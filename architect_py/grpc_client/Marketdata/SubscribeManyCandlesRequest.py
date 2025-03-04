@@ -2,8 +2,6 @@
 #   filename:  SubscribeManyCandlesRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.Candle import Candle
 from architect_py.grpc_client.request import RequestStream
 
@@ -33,14 +31,10 @@ class SubscribeManyCandlesRequest(Struct):
     ] = None
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["SubscribeManyCandlesRequest", Candle]:
-        return channel.unary_stream(
-            "/json.architect.Marketdata/SubscribeManyCandles",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Candle
-            ),
-        )
 
-SubscribeManyCandlesRequestRequestHelper = RequestStream(SubscribeManyCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeManyCandles")
+    @staticmethod
+    def get_helper() -> RequestStream:
+        return SubscribeManyCandlesRequestHelper
+
+SubscribeManyCandlesRequestHelper = RequestStream(SubscribeManyCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeManyCandles")
+

@@ -2,8 +2,6 @@
 #   filename:  SymbologyRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Symbology.SymbologySnapshot import SymbologySnapshot
 from architect_py.grpc_client.request import RequestUnary
 
@@ -14,14 +12,10 @@ from msgspec import Struct
 class SymbologyRequest(Struct):
     pass
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["SymbologyRequest", SymbologySnapshot]:
-        return channel.unary_unary(
-            "/json.architect.Symbology/Symbology",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=SymbologySnapshot
-            ),
-        )
 
-SymbologyRequestRequestHelper = RequestUnary(SymbologyRequest, SymbologySnapshot, "/json.architect.Symbology/Symbology")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return SymbologyRequestHelper
+
+SymbologyRequestHelper = RequestUnary(SymbologyRequest, SymbologySnapshot, "/json.architect.Symbology/Symbology")
+

@@ -2,8 +2,6 @@
 #   filename:  UploadSymbologyRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Symbology.UploadSymbologyResponse import UploadSymbologyResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -814,14 +812,10 @@ class UploadSymbologyRequest(Struct):
     product_aliases: Optional[Dict[str, Dict[str, str]]] = None
     products: Optional[Dict[str, ProductInfo]] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["UploadSymbologyRequest", UploadSymbologyResponse]:
-        return channel.unary_unary(
-            "/json.architect.Symbology/UploadSymbology",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=UploadSymbologyResponse
-            ),
-        )
 
-UploadSymbologyRequestRequestHelper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return UploadSymbologyRequestHelper
+
+UploadSymbologyRequestHelper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")
+

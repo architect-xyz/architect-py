@@ -2,8 +2,6 @@
 #   filename:  L1BookSnapshotsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import ArrayOfL1BookSnapshot
 from architect_py.grpc_client.request import RequestUnary
 
@@ -16,14 +14,10 @@ from msgspec import Struct
 class L1BookSnapshotsRequest(Struct):
     symbols: Optional[List[str]] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["L1BookSnapshotsRequest", ArrayOfL1BookSnapshot]:
-        return channel.unary_unary(
-            "/json.architect.Marketdata/L1BookSnapshots",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=ArrayOfL1BookSnapshot
-            ),
-        )
 
-L1BookSnapshotsRequestRequestHelper = RequestUnary(L1BookSnapshotsRequest, ArrayOfL1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshots")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return L1BookSnapshotsRequestHelper
+
+L1BookSnapshotsRequestHelper = RequestUnary(L1BookSnapshotsRequest, ArrayOfL1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshots")
+
