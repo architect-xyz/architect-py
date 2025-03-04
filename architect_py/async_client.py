@@ -26,6 +26,9 @@ from architect_py.graphql_client.get_fills_query import (
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.SubscribeTradesRequest import (
+    SubscribeTradesRequest,
+)
 from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import TickRoundMethod
@@ -757,9 +760,12 @@ class AsyncClient:
         asyncio.create_task(self.grpc_client.watch_l2_book(symbol, venue))
         return book
 
-    async def subscribe_trades(self, symbol: str, venue: str) -> AsyncIterator[Trade]:
-        raise NotImplementedError
-        trades = self.grpc_client.initialize_watch_trades(symbol, venue)
+    async def subscribe_trades(
+        self, symbol: TradableProduct, venue: Optional[str]
+    ) -> AsyncIterator[Trade]:
+        return self.grpc_client.subscribe(
+            SubscribeTradesRequest.get_helper(), symbol=symbol, venue=venue
+        )
 
     async def send_limit_order(
         self,
