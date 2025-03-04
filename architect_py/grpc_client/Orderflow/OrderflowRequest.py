@@ -449,4 +449,4 @@ OrderflowRequest = Annotated[
             ),
         )
 
-request = RequestUnary(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")
+OrderflowRequestRequestHelper = RequestUnary(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")

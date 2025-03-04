@@ -7,23 +7,12 @@ from typing import (
     Type,
     ParamSpec,
     Annotated,
-    get_origin,
-    get_args,
 )
 
 
 TReq = TypeVar("TReq", bound=msgspec.Struct)
-TRes = TypeVar("TRes")
+TRes = TypeVar("TRes", bound=msgspec.Struct)
 P = ParamSpec("P")
-
-
-def unwrap_annotated(type_hint: Type | Annotated[Any, Any]) -> Type:
-    """Extract the real type from Annotated[T, Meta(...)]"""
-    if get_origin(type_hint) is Annotated:
-        return get_args(type_hint)[
-            0
-        ]  # Extract the actual type (e.g., Union[Snapshot, Diff])
-    return type_hint
 
 
 class RequestStream(msgspec.Struct, Generic[TReq, TRes, P]):

@@ -32,4 +32,4 @@ class SubscribeTradesRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeTradesRequest, Trade, "/json.architect.Marketdata/SubscribeTrades")
+SubscribeTradesRequestRequestHelper = RequestStream(SubscribeTradesRequest, Trade, "/json.architect.Marketdata/SubscribeTrades")

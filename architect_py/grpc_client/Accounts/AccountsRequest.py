@@ -35,4 +35,4 @@ class AccountsRequest(Struct):
             ),
         )
 
-request = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")
+AccountsRequestRequestHelper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")

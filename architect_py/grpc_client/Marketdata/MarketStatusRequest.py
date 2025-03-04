@@ -27,4 +27,4 @@ class MarketStatusRequest(Struct):
             ),
         )
 
-request = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
+MarketStatusRequestRequestHelper = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")

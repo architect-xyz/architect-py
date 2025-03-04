@@ -41,4 +41,4 @@ class OpenOrdersRequest(Struct):
             ),
         )
 
-request = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")
+OpenOrdersRequestRequestHelper = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")

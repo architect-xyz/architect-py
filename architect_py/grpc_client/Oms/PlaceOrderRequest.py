@@ -404,4 +404,4 @@ PlaceOrderRequest = Annotated[
             ),
         )
 
-request = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")
+PlaceOrderRequestRequestHelper = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")

@@ -36,4 +36,4 @@ class DropcopyRequest(Struct):
             ),
         )
 
-request = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")
+DropcopyRequestRequestHelper = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")

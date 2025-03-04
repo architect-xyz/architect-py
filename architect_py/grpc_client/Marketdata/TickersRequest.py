@@ -38,4 +38,4 @@ class TickersRequest(Struct):
             ),
         )
 
-request = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")
+TickersRequestRequestHelper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")

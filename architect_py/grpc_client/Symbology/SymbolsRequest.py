@@ -24,4 +24,4 @@ class SymbolsRequest(Struct):
             ),
         )
 
-request = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")
+SymbolsRequestRequestHelper = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")

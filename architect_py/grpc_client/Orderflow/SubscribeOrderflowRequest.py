@@ -33,4 +33,4 @@ class SubscribeOrderflowRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")
+SubscribeOrderflowRequestRequestHelper = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")

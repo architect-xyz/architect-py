@@ -24,4 +24,4 @@ class L1BookSnapshotRequest(Struct):
             ),
         )
 
-request = RequestUnary(L1BookSnapshotRequest, L1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshot")
+L1BookSnapshotRequestRequestHelper = RequestUnary(L1BookSnapshotRequest, L1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshot")

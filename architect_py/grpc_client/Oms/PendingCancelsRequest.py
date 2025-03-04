@@ -35,4 +35,4 @@ class PendingCancelsRequest(Struct):
             ),
         )
 
-request = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")
+PendingCancelsRequestRequestHelper = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")
