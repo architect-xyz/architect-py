@@ -21,7 +21,7 @@ class SubscribeL1BookSnapshotsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestStream:
+    def get_helper():
         return SubscribeL1BookSnapshotsRequestHelper
 
 SubscribeL1BookSnapshotsRequestHelper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")

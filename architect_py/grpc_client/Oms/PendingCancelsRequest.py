@@ -25,7 +25,7 @@ class PendingCancelsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return PendingCancelsRequestHelper
 
 PendingCancelsRequestHelper = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")

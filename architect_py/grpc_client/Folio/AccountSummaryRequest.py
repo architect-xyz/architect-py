@@ -16,7 +16,7 @@ class AccountSummaryRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return AccountSummaryRequestHelper
 
 AccountSummaryRequestHelper = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")

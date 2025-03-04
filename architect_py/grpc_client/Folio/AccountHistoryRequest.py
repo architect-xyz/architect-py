@@ -20,7 +20,7 @@ class AccountHistoryRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return AccountHistoryRequestHelper
 
 AccountHistoryRequestHelper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")

@@ -17,7 +17,7 @@ class L2BookSnapshotRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return L2BookSnapshotRequestHelper
 
 L2BookSnapshotRequestHelper = RequestUnary(L2BookSnapshotRequest, L2BookSnapshot, "/json.architect.Marketdata/L2BookSnapshot")

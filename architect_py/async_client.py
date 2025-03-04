@@ -726,11 +726,11 @@ class AsyncClient:
             client.grpc_client.l1_books.get(symbol)
 
         If you want direct access to the stream to do on_update type code, you can
-        call client.grpc_client.subscribe_l1_book_snapshots
+        call client.grpc_client.stream_l1_books
         """
-        books = self.grpc_client.initialize_watch_l1_books(symbols)
-
+        books = self.grpc_client.initialize_l1_books(symbols)
         asyncio.create_task(self.grpc_client.watch_l1_books(symbols=symbols))
+        await self.grpc_client.wait_for_l1_books(symbols)
         return books
 
     async def subscribe_l2_book(
@@ -754,13 +754,13 @@ class AsyncClient:
             client.grpc_client.l1_books.get(symbol)
 
         If you want direct access to the stream to do on_update type code, you can
-        call client.grpc_client.subscribe_l1_book_snapshots
+        call client.grpc_client.stream_l2_book
         """
-        book = self.grpc_client.initialize_watch_l2_book(symbol, venue)
+        book = self.grpc_client.initialize_l2_book(symbol, venue)
         asyncio.create_task(self.grpc_client.watch_l2_book(symbol, venue))
         return book
 
-    async def subscribe_trades(
+    def subscribe_trades(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[Trade]:
         return self.grpc_client.subscribe(

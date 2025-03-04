@@ -814,7 +814,7 @@ class UploadSymbologyRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return UploadSymbologyRequestHelper
 
 UploadSymbologyRequestHelper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")

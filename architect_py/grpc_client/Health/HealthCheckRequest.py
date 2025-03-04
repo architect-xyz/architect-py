@@ -23,7 +23,7 @@ class HealthCheckRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return HealthCheckRequestHelper
 
 HealthCheckRequestHelper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")

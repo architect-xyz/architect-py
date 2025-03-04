@@ -14,7 +14,7 @@ class SymbolsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return SymbolsRequestHelper
 
 SymbolsRequestHelper = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")

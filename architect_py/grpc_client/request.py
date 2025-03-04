@@ -25,3 +25,7 @@ class RequestUnary(msgspec.Struct, Generic[TReq, TRes, P]):
     request: Callable[P, TReq]
     response: Type[TRes] | Annotated[TRes, Any]
     route: str
+
+
+class Tag(msgspec.Struct):
+    t: str

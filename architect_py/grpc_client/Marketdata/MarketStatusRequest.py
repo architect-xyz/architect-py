@@ -17,7 +17,7 @@ class MarketStatusRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return MarketStatusRequestHelper
 
 MarketStatusRequestHelper = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
