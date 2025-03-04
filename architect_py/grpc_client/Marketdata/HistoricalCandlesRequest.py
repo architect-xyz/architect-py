@@ -2,8 +2,6 @@
 #   filename:  HistoricalCandlesRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import HistoricalCandlesResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -28,14 +26,10 @@ class HistoricalCandlesRequest(Struct):
     start_date: str
     symbol: str
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["HistoricalCandlesRequest", HistoricalCandlesResponse]:
-        return channel.unary_unary(
-            "/json.architect.Marketdata/HistoricalCandles",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=HistoricalCandlesResponse
-            ),
-        )
 
-HistoricalCandlesRequestRequestHelper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return HistoricalCandlesRequestHelper
+
+HistoricalCandlesRequestHelper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")
+

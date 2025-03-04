@@ -2,8 +2,6 @@
 #   filename:  AccountHistoryRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Folio.AccountHistoryResponse import AccountHistoryResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -20,14 +18,10 @@ class AccountHistoryRequest(Struct):
     from_inclusive: Optional[str] = None
     to_exclusive: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountHistoryRequest", AccountHistoryResponse]:
-        return channel.unary_unary(
-            "/json.architect.Folio/AccountHistory",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=AccountHistoryResponse
-            ),
-        )
 
-AccountHistoryRequestRequestHelper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return AccountHistoryRequestHelper
+
+AccountHistoryRequestHelper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")
+

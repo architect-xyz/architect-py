@@ -2,8 +2,6 @@
 #   filename:  MarketStatusRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.MarketStatus import MarketStatus
 from architect_py.grpc_client.request import RequestUnary
 
@@ -17,14 +15,10 @@ class MarketStatusRequest(Struct):
     symbol: str
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["MarketStatusRequest", MarketStatus]:
-        return channel.unary_unary(
-            "/json.architect.Marketdata/MarketStatus",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=MarketStatus
-            ),
-        )
 
-MarketStatusRequestRequestHelper = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return MarketStatusRequestHelper
+
+MarketStatusRequestHelper = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
+

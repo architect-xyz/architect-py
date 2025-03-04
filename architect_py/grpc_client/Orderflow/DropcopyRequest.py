@@ -2,8 +2,6 @@
 #   filename:  DropcopyRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Orderflow.Dropcopy import Dropcopy
 from architect_py.grpc_client.request import RequestStream
 
@@ -26,14 +24,10 @@ class DropcopyRequest(Struct):
     orders: Optional[bool] = False
     trader: Optional[TraderIdOrEmail] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["DropcopyRequest", Dropcopy]:
-        return channel.unary_stream(
-            "/json.architect.Orderflow/Dropcopy",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Dropcopy
-            ),
-        )
 
-DropcopyRequestRequestHelper = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")
+    @staticmethod
+    def get_helper() -> RequestStream:
+        return DropcopyRequestHelper
+
+DropcopyRequestHelper = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")
+

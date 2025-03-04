@@ -2,8 +2,6 @@
 #   filename:  SubscribeLiquidationsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Marketdata.Liquidation import Liquidation
 from architect_py.grpc_client.request import RequestStream
 
@@ -16,14 +14,10 @@ from msgspec import Struct
 class SubscribeLiquidationsRequest(Struct):
     symbols: Optional[List[str]] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["SubscribeLiquidationsRequest", Liquidation]:
-        return channel.unary_stream(
-            "/json.architect.Marketdata/SubscribeLiquidations",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Liquidation
-            ),
-        )
 
-SubscribeLiquidationsRequestRequestHelper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
+    @staticmethod
+    def get_helper() -> RequestStream:
+        return SubscribeLiquidationsRequestHelper
+
+SubscribeLiquidationsRequestHelper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
+

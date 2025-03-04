@@ -2,8 +2,6 @@
 #   filename:  SymbolsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Symbology.SymbolsResponse import SymbolsResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -14,14 +12,10 @@ from msgspec import Struct
 class SymbolsRequest(Struct):
     pass
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["SymbolsRequest", SymbolsResponse]:
-        return channel.unary_unary(
-            "/json.architect.Symbology/Symbols",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=SymbolsResponse
-            ),
-        )
 
-SymbolsRequestRequestHelper = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return SymbolsRequestHelper
+
+SymbolsRequestHelper = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")
+

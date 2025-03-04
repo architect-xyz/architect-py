@@ -2,8 +2,6 @@
 #   filename:  AccountSummaryRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Folio.AccountSummary import AccountSummary
 from architect_py.grpc_client.request import RequestUnary
 
@@ -16,14 +14,10 @@ AccountIdOrName = str
 class AccountSummaryRequest(Struct):
     account: AccountIdOrName
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountSummaryRequest", AccountSummary]:
-        return channel.unary_unary(
-            "/json.architect.Folio/AccountSummary",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=AccountSummary
-            ),
-        )
 
-AccountSummaryRequestRequestHelper = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return AccountSummaryRequestHelper
+
+AccountSummaryRequestHelper = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")
+

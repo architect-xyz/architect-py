@@ -43,35 +43,24 @@ def generate_stub(file_path: str, json_folder: str) -> None:
             request_import = (
                 "from architect_py.grpc_client.request import RequestStream\n"
             )
-            request_str = f'{request_type_name}RequestHelper = RequestStream({request_type_name}, {response_type_name}, "{route}")'
         else:
             request_import = (
                 "from architect_py.grpc_client.request import RequestUnary\n"
             )
-            request_str = f'{request_type_name}RequestHelper = RequestUnary({request_type_name}, {response_type_name}, "{route}")'
+        request_str = f"""
+    @staticmethod
+    def get_helper() -> Request{unary_type.title()}:
+        return {request_type_name}Helper
+
+{request_type_name}Helper = Request{unary_type.title()}({request_type_name}, {response_type_name}, "{route}")
+"""
 
         lines.insert(
             4,
             (
-                "import grpc\n"
-                "import msgspec\n"
                 f"from architect_py.grpc_client.{service}.{response_file_name} import {response_type_name}\n"
                 f"{request_import}\n"
             ),
-        )
-
-        lines.append(
-            f"""
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.Unary{unary_type.title()}MultiCallable["{request_type_name}", {response_type_name}]:
-        return channel.unary_{unary_type}(
-            "{route}",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type={response_type_name}
-            ),
-        )
-"""
         )
         lines.append(f"\n{request_str}\n")
 

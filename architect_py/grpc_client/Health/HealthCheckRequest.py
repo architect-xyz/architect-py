@@ -2,8 +2,6 @@
 #   filename:  HealthCheckRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Health.HealthCheckResponse import HealthCheckResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -23,14 +21,10 @@ class HealthCheckRequest(Struct):
         ]
     ] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["HealthCheckRequest", HealthCheckResponse]:
-        return channel.unary_unary(
-            "/json.architect.Health/Check",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=HealthCheckResponse
-            ),
-        )
 
-HealthCheckRequestRequestHelper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return HealthCheckRequestHelper
+
+HealthCheckRequestHelper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
+

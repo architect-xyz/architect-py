@@ -2,8 +2,6 @@
 #   filename:  PlaceOrderRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Oms.Order import Order
 from architect_py.grpc_client.request import RequestUnary
 
@@ -394,14 +392,10 @@ PlaceOrderRequest = Annotated[
     Meta(title='PlaceOrderRequest'),
 ]
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["PlaceOrderRequest", Order]:
-        return channel.unary_unary(
-            "/json.architect.Oms/PlaceOrder",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Order
-            ),
-        )
 
-PlaceOrderRequestRequestHelper = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return PlaceOrderRequestHelper
+
+PlaceOrderRequestHelper = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")
+

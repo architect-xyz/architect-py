@@ -2,8 +2,6 @@
 #   filename:  HistoricalFillsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Folio.HistoricalFillsResponse import HistoricalFillsResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -34,14 +32,10 @@ class HistoricalFillsRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["HistoricalFillsRequest", HistoricalFillsResponse]:
-        return channel.unary_unary(
-            "/json.architect.Folio/HistoricalFills",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=HistoricalFillsResponse
-            ),
-        )
 
-HistoricalFillsRequestRequestHelper = RequestUnary(HistoricalFillsRequest, HistoricalFillsResponse, "/json.architect.Folio/HistoricalFills")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return HistoricalFillsRequestHelper
+
+HistoricalFillsRequestHelper = RequestUnary(HistoricalFillsRequest, HistoricalFillsResponse, "/json.architect.Folio/HistoricalFills")
+

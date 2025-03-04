@@ -2,8 +2,6 @@
 #   filename:  OrderflowRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 from architect_py.grpc_client.request import RequestUnary
 
@@ -439,14 +437,10 @@ OrderflowRequest = Annotated[
     Meta(title='OrderflowRequest'),
 ]
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryDuplex_StreamMultiCallable["OrderflowRequest", Orderflow]:
-        return channel.unary_duplex_stream(
-            "/json.architect.Orderflow/Orderflow",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=Orderflow
-            ),
-        )
 
-OrderflowRequestRequestHelper = RequestUnary(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")
+    @staticmethod
+    def get_helper() -> RequestDuplex_Stream:
+        return OrderflowRequestHelper
+
+OrderflowRequestHelper = RequestDuplex_Stream(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")
+

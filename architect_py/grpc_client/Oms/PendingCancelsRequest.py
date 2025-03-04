@@ -2,8 +2,6 @@
 #   filename:  PendingCancelsRequest.json
 
 from __future__ import annotations
-import grpc
-import msgspec
 from architect_py.grpc_client.Oms.PendingCancelsResponse import PendingCancelsResponse
 from architect_py.grpc_client.request import RequestUnary
 
@@ -25,14 +23,10 @@ class PendingCancelsRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-    @staticmethod
-    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["PendingCancelsRequest", PendingCancelsResponse]:
-        return channel.unary_unary(
-            "/json.architect.Oms/PendingCancels",
-            request_serializer=encoder.encode,
-            response_deserializer=lambda buf: msgspec.json.decode(
-                buf, type=PendingCancelsResponse
-            ),
-        )
 
-PendingCancelsRequestRequestHelper = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")
+    @staticmethod
+    def get_helper() -> RequestUnary:
+        return PendingCancelsRequestHelper
+
+PendingCancelsRequestHelper = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")
+
