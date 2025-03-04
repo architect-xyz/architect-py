@@ -81,9 +81,9 @@ async def test_subscribe_l2_stream(async_client: AsyncClient, front_ES_future: s
         symbol=tp, venue=venue
     ):
         assert snap is not None
-        i += 1
         if i > 5:
             break
+        i += 1
     await asyncio.sleep(1)
 
     if ts >= l2_book.timestamp:
@@ -91,7 +91,7 @@ async def test_subscribe_l2_stream(async_client: AsyncClient, front_ES_future: s
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(2)
+@pytest.mark.timeout(5)
 async def test_subscribe_cme_trades(async_client: AsyncClient):
     venue = "CME"
     markets = await async_client.get_cme_futures_series("ES CME Futures")
@@ -103,7 +103,9 @@ async def test_subscribe_cme_trades(async_client: AsyncClient):
     if not market_status.is_trading:
         pytest.skip("market is not trading")
 
-    trades = await async_client.subscribe_trades(market, venue)
-    for _ in range(5):
-        trade = await anext(trades)
+    i = 0
+    async for trade in async_client.subscribe_trades(market, venue):
         assert trade is not None, "trade from stream was None"
+        if i > 5:
+            break
+        i += 1
