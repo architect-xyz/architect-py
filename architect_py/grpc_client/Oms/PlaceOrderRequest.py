@@ -394,7 +394,7 @@ PlaceOrderRequest = Annotated[
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return PlaceOrderRequestHelper
 
 PlaceOrderRequestHelper = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")

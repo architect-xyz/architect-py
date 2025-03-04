@@ -28,7 +28,7 @@ class HistoricalCandlesRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return HistoricalCandlesRequestHelper
 
 HistoricalCandlesRequestHelper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")

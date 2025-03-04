@@ -49,7 +49,7 @@ def generate_stub(file_path: str, json_folder: str) -> None:
             )
         request_str = f"""
     @staticmethod
-    def get_helper() -> Request{unary_type.title()}:
+    def get_helper():
         return {request_type_name}Helper
 
 {request_type_name}Helper = Request{unary_type.title()}({request_type_name}, {response_type_name}, "{route}")

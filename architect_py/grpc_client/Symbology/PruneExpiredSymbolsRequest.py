@@ -23,7 +23,7 @@ class PruneExpiredSymbolsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return PruneExpiredSymbolsRequestHelper
 
 PruneExpiredSymbolsRequestHelper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")

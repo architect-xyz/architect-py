@@ -34,7 +34,7 @@ class HistoricalFillsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return HistoricalFillsRequestHelper
 
 HistoricalFillsRequestHelper = RequestUnary(HistoricalFillsRequest, HistoricalFillsResponse, "/json.architect.Folio/HistoricalFills")

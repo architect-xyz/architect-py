@@ -439,7 +439,7 @@ OrderflowRequest = Annotated[
 
 
     @staticmethod
-    def get_helper() -> RequestDuplex_Stream:
+    def get_helper():
         return OrderflowRequestHelper
 
 OrderflowRequestHelper = RequestDuplex_Stream(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")

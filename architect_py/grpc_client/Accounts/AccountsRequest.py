@@ -25,7 +25,7 @@ class AccountsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return AccountsRequestHelper
 
 AccountsRequestHelper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")

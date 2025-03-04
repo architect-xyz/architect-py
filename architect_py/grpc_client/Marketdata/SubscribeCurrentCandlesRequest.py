@@ -37,7 +37,7 @@ class SubscribeCurrentCandlesRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestStream:
+    def get_helper():
         return SubscribeCurrentCandlesRequestHelper
 
 SubscribeCurrentCandlesRequestHelper = RequestStream(SubscribeCurrentCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeCurrentCandles")

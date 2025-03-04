@@ -31,7 +31,7 @@ class OpenOrdersRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return OpenOrdersRequestHelper
 
 OpenOrdersRequestHelper = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")

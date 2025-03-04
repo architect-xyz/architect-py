@@ -1,5 +1,7 @@
+import asyncio
 from asyncio.log import logger
-from typing import Any, AsyncIterator, Callable, Optional, cast
+from typing import Any, AsyncIterator, Optional, cast
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
@@ -25,6 +27,7 @@ from architect_py.grpc_client.Marketdata.L2BookSnapshotRequest import (
 )
 from architect_py.grpc_client.Marketdata.L2BookUpdate import (
     Diff,
+    L2BookUpdate,
     Snapshot,
 )
 from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
@@ -39,6 +42,7 @@ from architect_py.grpc_client.request import (
     RequestUnary,
     TReq,
     TRes,
+    Tag,
 )
 from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
@@ -84,6 +88,23 @@ class GRPCClient:
     ):
         """
         Please ensure to call the initialize method before using the gRPC client.
+
+        grpc_client = GRPCClient(graphql_client, endpoint)
+        await grpc_client.initialize()
+
+
+        Brave users may create their own requests using the RequestUnary and RequestStream classes
+        with the subscribe and request methods.
+        The types are correct so if a typechecker such as PyLance is throwing errors,
+        it's likely a bug in user code.
+
+        async for snap in self.subscribe(
+            RequestType.get_helper(), # add args/kwargs here
+        ):
+
+        snap = await self.request(
+            RequestType.get_helper(), # add args/kwargs here
+        )
         """
         self.graphql_client = graphql_client
 
@@ -160,10 +181,14 @@ class GRPCClient:
             L2BookSnapshotRequest.get_helper(), venue=venue, symbol=symbol
         )
 
-    def initialize_watch_l1_books(
+    def initialize_l1_books(
         self, symbols: list[TradableProduct]
     ) -> list[L1BookSnapshot]:
         if symbols is not None:
+            if len(self.l1_books) + len(symbols) > 100:
+                raise ValueError(
+                    "Not suggestible to watch more than 100 L1 symbols at once, as it may cause performance issues."
+                )
             symbols = [symbol for symbol in symbols if symbol not in self.l1_books]
 
             for symbol in symbols:
@@ -175,6 +200,19 @@ class GRPCClient:
 
         return [self.l1_books[symbol] for symbol in symbols]
 
+    async def wait_for_l1_books(self, symbols: list[TradableProduct]) -> None:
+        """
+        Wait for the L1 books to be initialized.
+        """
+        condition = asyncio.Condition()
+
+        async with condition:
+            await condition.wait_for(
+                lambda: all(
+                    getattr(self.l1_books.get(symbol), "t", 0) > 0 for symbol in symbols
+                )
+            )
+
     async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
         async for snap in self.subscribe(
             SubscribeL1BookSnapshotsRequest.get_helper(), symbols=symbols
@@ -182,23 +220,58 @@ class GRPCClient:
             book = self.l1_books[TradableProduct(snap.symbol)]
             update_struct(book, snap)
 
-    def initialize_watch_l2_book(
+    def initialize_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> L2BookSnapshot:
         if symbol not in self.l2_books:
+            if len(self.l2_books) > 20:
+                raise ValueError(
+                    "Not suggestible to watch more than 20 L2 symbols at once, as it may cause performance issues."
+                )
             self.l2_books[symbol] = L2BookSnapshot([], [], 0, 0, 0, 0)
         return self.l2_books[symbol]
+
+    async def wait_for_L2_books(self, symbol: TradableProduct) -> None:
+        """
+        Wait for the L2 books to be initialized.
+        """
+        condition = asyncio.Condition()
+
+        async with condition:
+            await condition.wait_for(
+                lambda: all(
+                    getattr(self.l1_books.get(symbol), "t", 0) > 0 for symbol in symbols
+                )
+            )
+
+    def stream_l1_books(
+        self, symbols: list[TradableProduct]
+    ) -> AsyncIterator[L1BookSnapshot]:
+        return self.subscribe(
+            SubscribeL1BookSnapshotsRequest.get_helper(),
+            symbols=symbols,
+        )
+
+    def stream_l2_book(
+        self, symbol: TradableProduct, venue: Optional[str]
+    ) -> AsyncIterator[L2BookUpdate]:
+        return self.subscribe(
+            SubscribeL2BookUpdatesRequest.get_helper(),
+            self.l2_update_decoder,
+            symbol=symbol,
+            venue=venue,
+        )
 
     async def watch_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> None:
         async for up in self.subscribe(
-            SubscribeL2BookUpdatesRequest.get_helper(), symbol=symbol, venue=venue
+            SubscribeL2BookUpdatesRequest.get_helper(),
+            self.l2_update_decoder,
+            symbol=symbol,
+            venue=venue,
         ):
-            if isinstance(up, Snapshot):  # if up.t = "s":
-                book = self.l2_books[symbol]
-                update_struct(book, up)
-            elif isinstance(up, Diff):  # elif up.t = "d":  # diff
+            if isinstance(up, Diff):  # elif up.t = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(
                         f"received update before snapshot for L2 book {symbol}"
@@ -212,11 +285,24 @@ class GRPCClient:
                         f"received update out of order for L2 book {symbol}"
                     )
                 L2_update_from_diff(book, up)
+            else:  # isinstance(up, Snapshot):  # if up.t = "s":
+                book = self.l2_books[symbol]
+                update_struct(book, up)
+
+    @staticmethod
+    def l2_update_decoder(data: bytes) -> L2BookUpdate:
+        tag = msgspec.json.decode(data, type=Tag)
+        if tag.t == "d":
+            return msgspec.json.decode(data, type=Diff)
+        else:  # tag.t == "s"
+            return msgspec.json.decode(data, type=Snapshot)
 
     async def subscribe(
         self,
         rr: RequestStream[TReq, TRes, P],
-        decode_function: Callable = lambda x: msgspec.json.decode(x, type=TRes),
+        decode_function: Callable[[bytes], TRes] = lambda x: msgspec.json.decode(
+            x, type=TRes
+        ),
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> AsyncIterator[TRes]:
@@ -234,7 +320,9 @@ class GRPCClient:
     async def request(
         self,
         rr: RequestUnary[TReq, TRes, P],
-        decode_function: Callable = lambda x: msgspec.json.decode(x, type=TRes),
+        decode_function: Callable[[bytes], TRes] = lambda x: msgspec.json.decode(
+            x, type=TRes
+        ),
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> TRes:

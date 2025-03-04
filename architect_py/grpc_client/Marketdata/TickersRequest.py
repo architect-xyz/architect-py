@@ -28,7 +28,7 @@ class TickersRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return TickersRequestHelper
 
 TickersRequestHelper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")

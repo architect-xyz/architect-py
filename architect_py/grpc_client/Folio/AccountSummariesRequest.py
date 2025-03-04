@@ -29,7 +29,7 @@ class AccountSummariesRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return AccountSummariesRequestHelper
 
 AccountSummariesRequestHelper = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")

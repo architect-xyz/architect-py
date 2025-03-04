@@ -45,7 +45,7 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return ModifyAlgoOrderRequestForTwapAlgoHelper
 
 ModifyAlgoOrderRequestForTwapAlgoHelper = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")

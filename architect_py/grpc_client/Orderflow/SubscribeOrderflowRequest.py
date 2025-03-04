@@ -23,7 +23,7 @@ class SubscribeOrderflowRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestStream:
+    def get_helper():
         return SubscribeOrderflowRequestHelper
 
 SubscribeOrderflowRequestHelper = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")

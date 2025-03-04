@@ -26,7 +26,7 @@ class DropcopyRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestStream:
+    def get_helper():
         return DropcopyRequestHelper
 
 DropcopyRequestHelper = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")

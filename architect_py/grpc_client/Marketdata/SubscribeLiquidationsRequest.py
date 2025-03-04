@@ -16,7 +16,7 @@ class SubscribeLiquidationsRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestStream:
+    def get_helper():
         return SubscribeLiquidationsRequestHelper
 
 SubscribeLiquidationsRequestHelper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")

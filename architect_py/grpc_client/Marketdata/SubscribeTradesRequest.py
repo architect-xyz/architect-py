@@ -22,7 +22,7 @@ class SubscribeTradesRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestStream:
+    def get_helper():
         return SubscribeTradesRequestHelper
 
 SubscribeTradesRequestHelper = RequestStream(SubscribeTradesRequest, Trade, "/json.architect.Marketdata/SubscribeTrades")

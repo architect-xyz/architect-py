@@ -46,7 +46,7 @@ class CancelOrderRequest(Struct):
 
 
     @staticmethod
-    def get_helper() -> RequestUnary:
+    def get_helper():
         return CancelOrderRequestHelper
 
 CancelOrderRequestHelper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
