@@ -28,7 +28,7 @@ from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
-from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
+from architect_py.utils.nearest_tick import TickRoundMethod
 from templates.exceptions import GraphQLClientGraphQLMultiError
 
 from .graphql_client import GraphQLClient
@@ -746,8 +746,8 @@ class AsyncClient:
         return book
 
     async def subscribe_trades(self, symbol: str, venue: str) -> AsyncIterator[Trade]:
-        trades = self.grpc_client.initialize_watch_trades(symbol, venue)
         raise NotImplementedError
+        trades = self.grpc_client.initialize_watch_trades(symbol, venue)
 
     async def send_limit_order(
         self,
@@ -817,9 +817,7 @@ class AsyncClient:
                 )
             if (tick_size := execution_info.tick_size) is not None:
                 if tick_size:
-                    limit_price = nearest_tick(
-                        limit_price, method=price_round_method, tick_size=tick_size
-                    )
+                    limit_price = price_round_method(limit_price, tick_size)
             else:
                 raise ValueError(f"Could not find market information for {symbol}")
 
@@ -920,11 +918,7 @@ class AsyncClient:
             execution_info is not None
             and (tick_size := execution_info.tick_size) is not None
         ):
-            limit_price = nearest_tick(
-                Decimal(limit_price),
-                tick_round_method,
-                tick_size=tick_size,
-            )
+            limit_price = tick_round_method(limit_price, tick_size)
 
         return await self.send_limit_order(
             symbol=symbol,
