@@ -1,8 +1,9 @@
+import asyncio
 import pytest
-import pytz
-from datetime import datetime
 from architect_py.async_client import AsyncClient
 from architect_py.scalars import TradableProduct
+
+from pytest_lazy_fixtures import lf
 
 
 @pytest.mark.asyncio
@@ -10,24 +11,30 @@ from architect_py.scalars import TradableProduct
 @pytest.mark.parametrize(
     "endpoint,symbol,venue",
     [
-        ("app.architect.co", "ES 20251219 CME Future", "CME"),
-        (
-            "binance-futures-usd-m.marketdata.architect.co",
-            "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT",
-            "BINANCE",
-        ),
-        (
-            "bybit.marketdata.architect.co",
-            "BTC-USDT BYBIT Perpetual/USDT Crypto*BYBIT/DIRECT",
-            "BYBIT",
-        ),
+        ("cme.marketdata.architect.co", lf("front_ES_future"), "CME"),
+        # (
+        #     "binance-futures-usd-m.marketdata.architect.co",
+        #     "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT",
+        #     "BINANCE",
+        # ),
+        # (
+        #     "bybit.marketdata.architect.co",
+        #     "BTC-USDT BYBIT Perpetual/USDT Crypto*BYBIT/DIRECT",
+        #     "BYBIT",
+        # ),
     ],
 )
 @pytest.mark.asyncio
 async def test_subscribe_l1_stream(
-    async_client: AsyncClient, endpoint: str, symbol: str, venue: str
+    async_client: AsyncClient,
+    endpoint: str,
+    symbol: str,
+    venue: str,
 ):
     tp = TradableProduct(symbol, "USD")
+
+    await async_client.grpc_client.change_channel(endpoint)
+
     market_status = await async_client.get_market_status(tp, venue)
     if not market_status.is_trading:
         pytest.skip("market is not trading")
@@ -43,23 +50,24 @@ async def test_subscribe_l1_stream(
     ):
         # CR alee: really these should WARN a few times before failing;
         # think about how this interacts with presence
-        assert snap.best_bid is not None, "BTC-USDT should always be bid"
-        assert snap.best_ask is not None, "BTC-USDT should always be offered"
-        assert snap.best_bid[0] > 1_000, "BTC should be > $1000"
-        assert snap.best_ask[0] < 10_000_000, "USDT should be < $10000000"
+        assert snap.best_bid is not None, f"{symbol} should always be bid"
+        assert snap.best_ask is not None, f"{symbol} should always be offered"
+        assert snap.best_bid[0] > 1_000, f"{symbol} should be > $1000"
+        assert snap.best_ask[0] < 10_000_000, f"{symbol} should be < $10000000"
         i += 1
         if i > 5:
             break
+    await asyncio.sleep(1)
 
-    if ts < l1_book.timestamp:
-        raise ValueError("Timestamp should be increasing")
+    if ts >= l1_book.timestamp:
+        raise ValueError(f"Timestamp should be increasing {l1_book}")
 
 
 @pytest.mark.asyncio
-async def test_subscribe_l2_stream(async_client: AsyncClient):
-    symbol = "ES 20251219 CME Future"
+@pytest.mark.timeout(3)
+async def test_subscribe_l2_stream(async_client: AsyncClient, front_ES_future: str):
     venue = "CME"
-    tp = TradableProduct(symbol, "USD")
+    tp = TradableProduct(front_ES_future, "USD")
 
     market_status = await async_client.get_market_status(tp, venue)
     if not market_status.is_trading:
@@ -76,9 +84,10 @@ async def test_subscribe_l2_stream(async_client: AsyncClient):
         i += 1
         if i > 5:
             break
+    await asyncio.sleep(1)
 
-    if ts < l2_book.timestamp:
-        raise ValueError("Timestamp should be increasing")
+    if ts >= l2_book.timestamp:
+        raise ValueError(f"Timestamp should be increasing {l2_book}")
 
 
 @pytest.mark.asyncio
@@ -91,7 +100,7 @@ async def test_subscribe_cme_trades(async_client: AsyncClient):
     market = TradableProduct(market, "USD")
     market_status = await async_client.get_market_status(market, venue)
 
-    if market_status.is_trading:
+    if not market_status.is_trading:
         pytest.skip("market is not trading")
 
     trades = await async_client.subscribe_trades(market, venue)

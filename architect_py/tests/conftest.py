@@ -33,7 +33,11 @@ async def async_client() -> AsyncClient:
 
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
-    paper_trading = bool(os.getenv("ARCHITECT_PAPER_TRADING"))
+    paper_trading = os.getenv("ARCHITECT_PAPER_TRADING")
+    if paper_trading is None:
+        paper_trading = True
+    else:
+        paper_trading = is_truthy(paper_trading)
 
     dangerous_allow_app_architect_co = os.getenv("DANGEROUS_ALLOW_APP_ARCHITECT_CO")
 
@@ -66,7 +70,11 @@ def sync_client():
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
 
-    paper_trading = bool(os.getenv("ARCHITECT_PAPER_TRADING"))
+    paper_trading = os.getenv("ARCHITECT_PAPER_TRADING")
+    if paper_trading is None:
+        paper_trading = True
+    else:
+        paper_trading = is_truthy(paper_trading)
 
     dangerous_allow_app_architect_co = os.getenv("DANGEROUS_ALLOW_APP_ARCHITECT_CO")
 
@@ -85,3 +93,10 @@ def sync_client():
         _port=port,
         paper_trading=paper_trading,
     )
+
+
+@pytest_asyncio.fixture
+async def front_ES_future(async_client: AsyncClient) -> str:
+    series = await async_client.get_cme_futures_series("ES CME Futures")
+
+    return series[0][1]
