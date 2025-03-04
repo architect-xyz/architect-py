@@ -104,7 +104,7 @@ async def test_subscribe_cme_trades(async_client: AsyncClient):
         pytest.skip("market is not trading")
 
     i = 0
-    async for trade in async_client.subscribe_trades(market, venue):
+    async for trade in await async_client.subscribe_trades(market, venue):
         assert trade is not None, "trade from stream was None"
         if i > 5:
             break
