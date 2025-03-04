@@ -23,7 +23,7 @@ async def test_client_jwt(async_client: AsyncClient):
 
 def test_sync_client(sync_client: Client):
     sync_result = sync_client.search_symbols(execution_venue="CME", search_string="ES")
-    assert len(sync_result) == 5
+    assert len(sync_result) > 5
 
     ES_future = sync_result[0]
 

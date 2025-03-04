@@ -9,19 +9,32 @@ from dotenv import load_dotenv
 from architect_py.async_client import AsyncClient
 
 
+"""
+if you have a file named ".env" in your working directory with:
+
+ARCHITECT_API_KEY=your_key
+ARCHITECT_API_SECRET=your_secret
+PAPER_TRADING=False
+"""
+
+
 def is_truthy(value: str | None) -> bool:
     return value is not None and value.lower() in ("1", "true", "yes")
 
 
 @pytest_asyncio.fixture
-async def async_client():
+async def async_client() -> AsyncClient:
     load_dotenv()
 
     host = os.getenv("ARCHITECT_HOST") or "localhost"
-    port = int(os.getenv("ARCHITECT_PORT") or 4567)
+    port = os.getenv(key="ARCHITECT_PORT")
+    if port is not None:
+        port = int(port)
+
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
-    # test_account = os.getenv("ARCHITECT_TEST_ACCOUNT")
+    paper_trading = bool(os.getenv("ARCHITECT_PAPER_TRADING"))
+
     dangerous_allow_app_architect_co = os.getenv("DANGEROUS_ALLOW_APP_ARCHITECT_CO")
 
     if host == "app.architect.co" and not is_truthy(dangerous_allow_app_architect_co):
@@ -33,16 +46,27 @@ async def async_client():
             "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
         )
 
-    return AsyncClient(host=host, port=port, api_key=api_key, api_secret=api_secret)
+    return await AsyncClient.create(
+        host=host,
+        _port=port,
+        api_key=api_key,
+        api_secret=api_secret,
+        paper_trading=paper_trading,
+    )
 
 
 @pytest.fixture
 def sync_client():
     load_dotenv()
     host = os.getenv("ARCHITECT_HOST") or "localhost"
-    port = int(os.getenv("ARCHITECT_PORT") or 4567)
+    port = os.getenv(key="ARCHITECT_PORT")
+    if port is not None:
+        port = int(port)
+
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
+
+    paper_trading = bool(os.getenv("ARCHITECT_PAPER_TRADING"))
 
     dangerous_allow_app_architect_co = os.getenv("DANGEROUS_ALLOW_APP_ARCHITECT_CO")
 
@@ -54,4 +78,10 @@ def sync_client():
         raise ValueError(
             "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
         )
-    return Client(host=host, api_key=api_key, api_secret=api_secret, port=port)
+    return Client(
+        host=host,
+        api_key=api_key,
+        api_secret=api_secret,
+        _port=port,
+        paper_trading=paper_trading,
+    )
