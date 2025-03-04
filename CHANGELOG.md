@@ -1,11 +1,15 @@
 3.2.0
+Breaking:
+  - Changed the way AsyncClient is instantiated, from normal __init__ to create
+    - Can just change AsyncClient(args) -> AsyncClient.create(args)
+    - the port argument was removed, please remove it as an arg
+
 Features
   - Added get_account_history query
   - Added get_execution_infos (plural) query
   - Added gRPC client + subscription functions to AsynClient
   - Added docs for each function
   - OrderDir is now also a string
-  - Changed the way AsyncClient is instantiated
 
 3.1.11
 Features:
