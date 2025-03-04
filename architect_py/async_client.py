@@ -14,6 +14,7 @@ send_limit_order -> get_order
 The individual graphql types are subject to change, so it is not recommended to use them directly.
 """
 
+import asyncio
 import logging
 from datetime import date, datetime
 from decimal import Decimal
@@ -24,7 +25,7 @@ from architect_py.graphql_client.get_fills_query import (
 )
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_client.Marketdata.L2BookUpdate import Snapshot
+from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import nearest_tick, TickRoundMethod
@@ -71,16 +72,17 @@ class AsyncClient:
     graphql_client: GraphQLClient
     grpc_client: GRPCClient
 
-    def __init__(
-        self,
+    @staticmethod
+    async def create(
+        *,
         api_key: str,
         api_secret: str,
         host: str = "https://app.architect.co",
         paper_trading: bool = True,
-        grpc_endpoint: str = "app.architect.co",
+        grpc_endpoint: str = "cme.marketdata.architect.co",
         _port: Optional[int] = None,
         **kwargs: Any,
-    ):
+    ) -> "AsyncClient":
         """
         Args:
             api_key: API key for the user
@@ -101,7 +103,48 @@ class AsyncClient:
         API key and secret are incorrect. Please double check your credentials.
 
         If you get a "GraphQLClientHttpError: HTTP status code: 400", please contact support so we can fix the function.
+
+        If you get an AttributeError on the grpc_client, it means that the GRPC client has not been initialized
+        likely due to the client not being instantiated with the create method
         """
+        async_client = AsyncClient(
+            api_key=api_key,
+            api_secret=api_secret,
+            host=host,
+            paper_trading=paper_trading,
+            _port=_port,
+            _i_know_what_i_am_doing=True,
+            **kwargs,
+        )
+
+        async_client.grpc_client = GRPCClient(
+            async_client.graphql_client, grpc_endpoint
+        )
+        await async_client.grpc_client.initialize()
+        return async_client
+
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        api_secret: str,
+        host: str = "https://app.architect.co",
+        paper_trading: bool = True,
+        _port: Optional[int] = None,
+        _i_know_what_i_am_doing: bool = False,
+        **kwargs: Any,
+    ):
+        """
+        Users should not be using this constructor directly, unless they do not want to use any subscription methods
+        Use the create method instead.
+
+        See create for arg explanations
+        """
+
+        if not _i_know_what_i_am_doing:
+            raise ValueError(
+                "Please use the create method to create an AsyncClient object."
+            )
 
         if not api_key.isalnum():
             raise ValueError(
@@ -129,8 +172,6 @@ class AsyncClient:
         self.graphql_client = GraphQLClient(
             api_key=api_key, api_secret=api_secret, host=host, port=_port, **kwargs
         )
-
-        self.grpc_client = GRPCClient(self.graphql_client, grpc_endpoint)
 
     async def who_am_i(self) -> tuple[str, str]:
         """
@@ -636,30 +677,80 @@ class AsyncClient:
         return snapshot.tickers
 
     async def get_l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
+        """
+        Args:
+            symbol: the symbol to get the l2 book snapshot for
+            venue: the venue that the symbol is traded at
+        Returns:
+            L2BookFields for the symbol
+
+            Note: this does NOT update, it is a snapshot at a given time
+            For an object that updates, use subscribe_l2_book
+        """
         l2_book = await self.graphql_client.get_l_2_book_snapshot_query(
             symbol=symbol, venue=venue
         )
         return l2_book.l_2_book_snapshot
 
     async def subscribe_l1_book(
-        self, symbols: list[TradableProduct] | None = None
-    ) -> L1BookSnapshot:
+        self, symbols: list[TradableProduct]
+    ) -> list[L1BookSnapshot]:
         """
-        This will return a L1BookSnapshot that is constantly updating in the background
+        Args:
+            symbols: the symbols to subscribe to
+        Return:
+            a list of L1BookSnapshot objects that are constantly updating in the background
+            For the duration of the program, the client will be subscribed to the stream
+            and be updating the L1BookSnapshot.
+
+            IMPORTANT: The L1BookSnapshot will be initialized with
+            a timestamp (field tn and ts) of 0
+            along with None for bid and ask
+
+            The reference to the object should be kept, but can also be referenced via
+            client.grpc_client.l1_books.get(symbol)
+
+        If you want direct access to the stream to do on_update type code, you can
+        call client.grpc_client.subscribe_l1_book_snapshots
         """
-        async for snap in self.grpc_client.subscribe_l1_book_snapshots(symbols):
-            yield snap
+        books = self.grpc_client.initialize_watch_l1_books(symbols)
+        raise AttributeError(
+            "The GRPC client has not been initialized. "
+            "Please instantiate the AsyncClient by the create method."
+        )
+
+        asyncio.create_task(self.grpc_client.watch_l1_books(symbols=symbols))
+        return books
 
     async def subscribe_l2_book(
         self,
         symbol: TradableProduct,
         venue: Optional[str],
-    ) -> AsyncIterator[Snapshot]:
+    ) -> L2BookSnapshot:
         """
-        This will return a L2BookSnapshot that is constantly updating in the background
+        Args:
+            symbols: the symbols to subscribe to
+        Return:
+            a list of L2BookSnapshot object that is constantly updating in the background
+            For the duration of the program, the client will be subscribed to the stream
+            and be updating the L2BookSnapshot.
+
+            IMPORTANT: The LBBookSnapshot will be initialized with
+            a timestamp (field tn and ts) of 0
+            along with None for bid and ask
+
+            The reference to the object should be kept, but can also be referenced via
+            client.grpc_client.l1_books.get(symbol)
+
+        If you want direct access to the stream to do on_update type code, you can
+        call client.grpc_client.subscribe_l1_book_snapshots
         """
+        book = self.grpc_client.initialize_watch_l2_book(symbol, venue)
+        asyncio.create_task(self.grpc_client.watch_l2_book(symbol, venue))
+        return book
 
     async def subscribe_trades(self, symbol: str, venue: str) -> AsyncIterator[Trade]:
+        trades = self.grpc_client.initialize_watch_trades(symbol, venue)
         raise NotImplementedError
 
     async def send_limit_order(

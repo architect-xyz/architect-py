@@ -38,8 +38,28 @@ class Client(AsyncClientProtocol):
     client: AsyncClient
     _loop: AbstractEventLoop
 
-    def __init__(self, loop: Optional[AbstractEventLoop] = None, *args, **kwargs):
-        super().__setattr__("client", AsyncClient(*args, **kwargs))
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        api_secret: str,
+        host: str = "https://app.architect.co",
+        paper_trading: bool = True,
+        loop: Optional[AbstractEventLoop] = None,
+        **kwargs,
+    ):
+        super().__setattr__(
+            "client",
+            AsyncClient(
+                api_key=api_key,
+                api_secret=api_secret,
+                host=host,
+                paper_trading=paper_trading,
+                async_mode=True,
+                _i_know_what_i_am_doing=True,
+                **kwargs,
+            ),
+        )
 
         if loop is None:
             try:
