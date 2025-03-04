@@ -133,6 +133,9 @@ def autogenerate_protocol(cls) -> str:
         if "subscribe" in name:
             continue
 
+        if name == "create":
+            continue
+
         # for decorators like @staticmethod and @classmethod
         if name in method_decorators:
             for deco in method_decorators[name]:
