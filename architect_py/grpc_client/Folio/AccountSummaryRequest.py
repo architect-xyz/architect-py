@@ -15,10 +15,10 @@ class AccountSummaryRequest(Struct):
     account: AccountIdOrName
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["AccountSummaryRequest", AccountSummary]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountSummaryRequest", AccountSummary]:
         return channel.unary_unary(
             "/json.architect.Folio/AccountSummary",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=AccountSummary
             ),

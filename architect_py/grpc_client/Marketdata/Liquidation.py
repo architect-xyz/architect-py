@@ -12,18 +12,19 @@ from typing import Annotated
 from msgspec import Meta, Struct
 
 
+
 class Dir(str, Enum):
-    BUY = "BUY"
-    SELL = "SELL"
+    BUY = 'BUY'
+    SELL = 'SELL'
 
 
 class Liquidation(Struct):
-    d: Annotated[Dir, Meta(title="direction")]
-    p: Annotated[Decimal, Meta(title="price")]
-    q: Annotated[Decimal, Meta(title="size")]
-    s: Annotated[str, Meta(title="symbol")]
-    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
+    d: Annotated[Dir, Meta(title='direction')]
+    p: Annotated[Decimal, Meta(title='price')]
+    q: Annotated[Decimal, Meta(title='size')]
+    s: Annotated[str, Meta(title='symbol')]
+    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
+    ts: Annotated[int, Meta(title='timestamp')]
 
     @property
     def direction(self) -> Dir:
@@ -79,4 +80,4 @@ class Liquidation(Struct):
 
     @property
     def datetime_local(self) -> datetime:
-        return datetime.fromtimestamp(self.ts).astimezone()
+        return datetime.fromtimestamp(self.ts)

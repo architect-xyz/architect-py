@@ -13,10 +13,10 @@ class SymbolsRequest(Struct):
     pass
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["SymbolsRequest", SymbolsResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["SymbolsRequest", SymbolsResponse]:
         return channel.unary_unary(
             "/json.architect.Symbology/Symbols",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=SymbolsResponse
             ),

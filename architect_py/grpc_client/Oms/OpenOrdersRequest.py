@@ -30,10 +30,10 @@ class OpenOrdersRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["OpenOrdersRequest", OpenOrdersResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["OpenOrdersRequest", OpenOrdersResponse]:
         return channel.unary_unary(
             "/json.architect.Oms/OpenOrders",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=OpenOrdersResponse
             ),

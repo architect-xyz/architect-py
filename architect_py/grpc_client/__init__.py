@@ -1,8 +1,9 @@
 from asyncio.log import logger
-from typing import Any, AsyncIterator, Optional, cast
+from typing import AsyncIterator, Optional, cast, TypeVar
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
+import msgspec
 
 import dns.asyncresolver
 import dns.resolver
@@ -17,9 +18,7 @@ from typing import List
 from architect_py.graphql_client.client import GraphQLClient
 
 
-from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import (
-    L1BookSnapshot,
-)
+from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshotRequest import (
     L2BookSnapshotRequest,
@@ -35,6 +34,9 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
+from architect_py.grpc_client.Marketdata.SubscribeTradesRequest import (
+    SubscribeTradesRequest,
+)
 from architect_py.grpc_client.Marketdata.Trade import Trade
 
 from architect_py.scalars import TradableProduct
@@ -49,7 +51,16 @@ Custom Code Generation for the gRPC client
 Fix the duplication of types issue in the generated code
 
 Save the stubs so you're not recreating them
+
+The decoder should be reused
+but it needs to be instantiated per response type
+
+
+overall improve the performance of this libary
 """
+
+encoder = msgspec.json.Encoder()
+T = TypeVar("T")
 
 
 class GRPCClient:
@@ -57,26 +68,34 @@ class GRPCClient:
     jwt_expiration: datetime
 
     graphql_client: GraphQLClient
-    l2_books: dict[TradableProduct, Snapshot]
+    l1_books: dict[TradableProduct, L1BookSnapshot]
+    l2_books: dict[TradableProduct, L2BookSnapshot]
     channel: grpc.aio.Channel
 
     def __init__(
-        self, graphql_client: GraphQLClient, endpoint: str = "app.architect.co"
+        self,
+        graphql_client: GraphQLClient,
+        endpoint: str = "cme.marketdata.architect.co",
     ):
+        """
+        Please ensure to call the initialize method before using the gRPC client.
+        """
         self.graphql_client = graphql_client
-        self.l2_books: dict[TradableProduct, Snapshot] = {}
 
+        self.l1_books: dict[TradableProduct, L1BookSnapshot] = {}
+        self.l2_books: dict[TradableProduct, L2BookSnapshot] = {}
         self.endpoint = endpoint
 
-    async def initialize(self):
+    async def initialize(self) -> Optional[str]:
+        """
+        Initialize the gRPC channel with the given endpoint.
+        Must call this method before using the gRPC client.
+        """
         # "binance-futures-usd-m.marketdata.architect.co",
         # "bybit.marketdata.architect.co",
         # "binance.marketdata.architect.co",
-        # "app.architect.co",
-        if self.channel is None:
-            self.channel = await self.get_grpc_channel(self.endpoint)
-
-        await self.refresh_grpc_credentials()
+        # "cme.marketdata.architect.co",
+        self.channel = await self.get_grpc_channel(self.endpoint)
 
     async def get_grpc_channel(
         self,
@@ -129,18 +148,14 @@ class GRPCClient:
     async def l2_book_snapshot(
         self, venue: Optional[str], symbol: str
     ) -> L2BookSnapshot:
-        await self.initialize()
-
-        stub = L2BookSnapshotRequest.create_stub(self.channel)
+        stub = L2BookSnapshotRequest.create_stub(self.channel, encoder)
         req = L2BookSnapshotRequest(venue=venue, symbol=symbol)
         return await stub(req, metadata=(("authorization", f"Bearer {self.jwt}"),))
 
     async def subscribe_l1_book_snapshots(
         self, symbols: list[TradableProduct] | None = None
     ) -> AsyncIterator[L1BookSnapshot]:
-        await self.initialize()
-
-        stub = SubscribeL1BookSnapshotsRequest.create_stub(self.channel)
+        stub = SubscribeL1BookSnapshotsRequest.create_stub(self.channel, encoder)
         req = SubscribeL1BookSnapshotsRequest(
             symbols=[str(s) for s in symbols] if symbols else None
         )
@@ -148,27 +163,54 @@ class GRPCClient:
         async for snapshot in call:
             yield snapshot
 
+    def initialize_watch_l1_books(
+        self, symbols: list[TradableProduct]
+    ) -> list[L1BookSnapshot]:
+        if symbols is not None:
+            symbols = [symbol for symbol in symbols if symbol not in self.l1_books]
+
+            for symbol in symbols:
+                self.l1_books[symbol] = L1BookSnapshot(symbol, 0, 0)
+        else:
+            raise ValueError("symbols must be a list of TradableProduct")
+            # could technically be None, but we don't want to allow that
+            # as users should be explicit about what they want to watch
+
+        return [self.l1_books[symbol] for symbol in symbols]
+
+    async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
+        async for snap in self.subscribe_l1_book_snapshots(symbols=symbols):
+            book = self.l1_books[TradableProduct(snap.symbol)]
+            update_struct(book, snap)
+
     async def subscribe_l2_book_updates(
         self,
         symbol: TradableProduct,
         venue: Optional[str],
     ) -> AsyncIterator[L2BookUpdate]:
-        await self.initialize()
 
-        stub = SubscribeL2BookUpdatesRequest.create_stub(self.channel)
+        stub = SubscribeL2BookUpdatesRequest.create_stub(self.channel, encoder)
         req = SubscribeL2BookUpdatesRequest(venue=venue, symbol=symbol)
         jwt = await self.refresh_grpc_credentials()
         call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
         async for snapshot in call:
             yield snapshot
 
+    def initialize_watch_l2_book(
+        self, symbol: TradableProduct, venue: Optional[str]
+    ) -> L2BookSnapshot:
+        if symbol not in self.l2_books:
+            self.l2_books[symbol] = L2BookSnapshot([], [], 0, 0, 0, 0)
+        return self.l2_books[symbol]
+
     async def watch_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
-    ) -> AsyncIterator[Snapshot]:
+    ) -> None:
         async for up in self.subscribe_l2_book_updates(symbol=symbol, venue=venue):
             if isinstance(up, Snapshot):  # if up.t = "s":
-                self.l2_books[symbol] = up
-            if isinstance(up, Diff):  # elif up.t = "d":  # diff
+                book = self.l2_books[symbol]
+                update_struct(book, up)
+            elif isinstance(up, Diff):  # elif up.t = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(
                         f"received update before snapshot for L2 book {symbol}"
@@ -183,7 +225,21 @@ class GRPCClient:
                     )
                 L2_update_from_diff(book, up)
 
-            yield self.l2_books[symbol]
+    async def subscribe_trades(self, symbol: TradableProduct) -> AsyncIterator[Trade]:
+        stub = SubscribeTradesRequest.create_stub(self.channel, encoder)
+        req = SubscribeTradesRequest(symbol=symbol)
+        jwt = await self.refresh_grpc_credentials()
+        call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
+        async for trade in call:
+            yield trade
+
+    async def subscribe(self, t: Any, **kwargs) -> AsyncIterator[T]:
+        stub = t.create_stub(self.channel, encoder)
+        req = t(**kwargs)
+        jwt = await self.refresh_grpc_credentials()
+        call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
+        async for update in call:
+            yield update
 
 
 def update_order_list(
@@ -216,7 +272,7 @@ def update_order_list(
             order_list.insert(idx, [price, size])
 
 
-def L2_update_from_diff(book: Snapshot, diff: Diff) -> None:
+def L2_update_from_diff(book: L2BookSnapshot, diff: Diff) -> None:
     """
     we use binary search because the L2 does not have many levels
     and is simpler to maintain in the context of the codegen
@@ -232,3 +288,8 @@ def L2_update_from_diff(book: Snapshot, diff: Diff) -> None:
 
     for price, size in diff.asks:
         update_order_list(book.asks, price, size, ascending=True)
+
+
+def update_struct(A: msgspec.Struct, B: msgspec.Struct) -> None:
+    for field in B.__struct_fields__:
+        setattr(A, field, getattr(B, field))

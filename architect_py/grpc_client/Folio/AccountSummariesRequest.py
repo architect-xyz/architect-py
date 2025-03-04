@@ -28,10 +28,10 @@ class AccountSummariesRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["AccountSummariesRequest", AccountSummariesResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountSummariesRequest", AccountSummariesResponse]:
         return channel.unary_unary(
             "/json.architect.Folio/AccountSummaries",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=AccountSummariesResponse
             ),

@@ -24,10 +24,10 @@ class AccountsRequest(Struct):
     ] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["AccountsRequest", AccountsResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountsRequest", AccountsResponse]:
         return channel.unary_unary(
             "/json.architect.Accounts/Accounts",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=AccountsResponse
             ),
