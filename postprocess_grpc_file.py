@@ -43,12 +43,12 @@ def generate_stub(file_path: str, json_folder: str) -> None:
             request_import = (
                 "from architect_py.grpc_client.request import RequestStream\n"
             )
-            request_str = f'request = RequestStream({request_type_name}, {response_type_name}, "{route}")'
+            request_str = f'{request_type_name}RequestHelper = RequestStream({request_type_name}, {response_type_name}, "{route}")'
         else:
             request_import = (
                 "from architect_py.grpc_client.request import RequestUnary\n"
             )
-            request_str = f'request = RequestUnary({request_type_name}, {response_type_name}, "{route}")'
+            request_str = f'{request_type_name}RequestHelper = RequestUnary({request_type_name}, {response_type_name}, "{route}")'
 
         lines.insert(
             4,
