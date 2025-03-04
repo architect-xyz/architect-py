@@ -2,9 +2,10 @@
 Features
   - Added get_account_history query
   - Added get_execution_infos (plural) query
-  - Added gRPC client
+  - Added gRPC client + subscription functions to AsynClient
   - Added docs for each function
   - OrderDir is now also a string
+  - Changed the way AsyncClient is instantiated
 
 3.1.11
 Features:
