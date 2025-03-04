@@ -55,4 +55,4 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
             ),
         )
 
-request = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")
+ModifyAlgoOrderRequestForTwapAlgoRequestHelper = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")

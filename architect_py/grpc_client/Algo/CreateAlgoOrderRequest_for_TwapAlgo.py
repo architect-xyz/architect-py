@@ -62,4 +62,4 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct):
             ),
         )
 
-request = RequestUnary(CreateAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/CreateTwapAlgoOrder")
+CreateAlgoOrderRequestForTwapAlgoRequestHelper = RequestUnary(CreateAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/CreateTwapAlgoOrder")

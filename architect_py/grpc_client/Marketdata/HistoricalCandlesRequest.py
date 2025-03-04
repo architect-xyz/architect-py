@@ -38,4 +38,4 @@ class HistoricalCandlesRequest(Struct):
             ),
         )
 
-request = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")
+HistoricalCandlesRequestRequestHelper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")

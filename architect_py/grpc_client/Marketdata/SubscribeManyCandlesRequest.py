@@ -43,4 +43,4 @@ class SubscribeManyCandlesRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeManyCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeManyCandles")
+SubscribeManyCandlesRequestRequestHelper = RequestStream(SubscribeManyCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeManyCandles")

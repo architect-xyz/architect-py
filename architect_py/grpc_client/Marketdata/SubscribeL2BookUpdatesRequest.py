@@ -27,4 +27,4 @@ class SubscribeL2BookUpdatesRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeL2BookUpdatesRequest, L2BookUpdate, "/json.architect.Marketdata/SubscribeL2BookUpdates")
+SubscribeL2BookUpdatesRequestRequestHelper = RequestStream(SubscribeL2BookUpdatesRequest, L2BookUpdate, "/json.architect.Marketdata/SubscribeL2BookUpdates")

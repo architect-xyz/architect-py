@@ -27,4 +27,4 @@ class TickerRequest(Struct):
             ),
         )
 
-request = RequestUnary(TickerRequest, Ticker, "/json.architect.Marketdata/Ticker")
+TickerRequestRequestHelper = RequestUnary(TickerRequest, Ticker, "/json.architect.Marketdata/Ticker")

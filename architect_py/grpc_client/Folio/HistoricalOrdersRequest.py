@@ -50,4 +50,4 @@ class HistoricalOrdersRequest(Struct):
             ),
         )
 
-request = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")
+HistoricalOrdersRequestRequestHelper = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")

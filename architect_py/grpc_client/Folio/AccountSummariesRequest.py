@@ -39,4 +39,4 @@ class AccountSummariesRequest(Struct):
             ),
         )
 
-request = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")
+AccountSummariesRequestRequestHelper = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")

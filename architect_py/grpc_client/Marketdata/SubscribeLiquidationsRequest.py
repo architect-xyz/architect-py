@@ -26,4 +26,4 @@ class SubscribeLiquidationsRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
+SubscribeLiquidationsRequestRequestHelper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")

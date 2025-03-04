@@ -56,4 +56,4 @@ class CancelOrderRequest(Struct):
             ),
         )
 
-request = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
+CancelOrderRequestRequestHelper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")

@@ -31,4 +31,4 @@ class SubscribeL1BookSnapshotsRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")
+SubscribeL1BookSnapshotsRequestRequestHelper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")

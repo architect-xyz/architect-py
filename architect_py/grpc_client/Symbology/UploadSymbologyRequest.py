@@ -824,4 +824,4 @@ class UploadSymbologyRequest(Struct):
             ),
         )
 
-request = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")
+UploadSymbologyRequestRequestHelper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")

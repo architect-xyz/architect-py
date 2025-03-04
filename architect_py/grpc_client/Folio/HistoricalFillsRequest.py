@@ -44,4 +44,4 @@ class HistoricalFillsRequest(Struct):
             ),
         )
 
-request = RequestUnary(HistoricalFillsRequest, HistoricalFillsResponse, "/json.architect.Folio/HistoricalFills")
+HistoricalFillsRequestRequestHelper = RequestUnary(HistoricalFillsRequest, HistoricalFillsResponse, "/json.architect.Folio/HistoricalFills")

@@ -31,4 +31,4 @@ class SubscribeTickersRequest(Struct):
             ),
         )
 
-request = RequestStream(SubscribeTickersRequest, TickerUpdate, "/json.architect.Marketdata/SubscribeTickers")
+SubscribeTickersRequestRequestHelper = RequestStream(SubscribeTickersRequest, TickerUpdate, "/json.architect.Marketdata/SubscribeTickers")

@@ -30,4 +30,4 @@ class AccountHistoryRequest(Struct):
             ),
         )
 
-request = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")
+AccountHistoryRequestRequestHelper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")

@@ -26,4 +26,4 @@ class AccountSummaryRequest(Struct):
             ),
         )
 
-request = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")
+AccountSummaryRequestRequestHelper = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")

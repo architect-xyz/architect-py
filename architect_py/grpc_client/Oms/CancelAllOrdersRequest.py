@@ -34,4 +34,4 @@ class CancelAllOrdersRequest(Struct):
             ),
         )
 
-request = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")
+CancelAllOrdersRequestRequestHelper = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")

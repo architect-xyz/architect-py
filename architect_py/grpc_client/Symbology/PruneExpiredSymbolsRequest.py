@@ -33,4 +33,4 @@ class PruneExpiredSymbolsRequest(Struct):
             ),
         )
 
-request = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")
+PruneExpiredSymbolsRequestRequestHelper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")

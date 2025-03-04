@@ -33,4 +33,4 @@ class HealthCheckRequest(Struct):
             ),
         )
 
-request = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
+HealthCheckRequestRequestHelper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
