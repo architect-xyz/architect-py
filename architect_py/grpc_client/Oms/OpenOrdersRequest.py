@@ -2,9 +2,11 @@
 #   filename:  OpenOrdersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.OpenOrdersResponse import OpenOrdersResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Oms.OpenOrdersResponse import OpenOrdersResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Annotated, List, Optional
 
@@ -38,3 +40,5 @@ class OpenOrdersRequest(Struct):
                 buf, type=OpenOrdersResponse
             ),
         )
+
+request = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")

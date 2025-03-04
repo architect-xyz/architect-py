@@ -2,9 +2,11 @@
 #   filename:  PlaceOrderRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.Order import Order
 import grpc
 import msgspec
+from architect_py.grpc_client.Oms.Order import Order
+from architect_py.grpc_client.request import RequestUnary
+
 from decimal import Decimal
 
 
@@ -401,3 +403,5 @@ PlaceOrderRequest = Annotated[
                 buf, type=Order
             ),
         )
+
+request = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")

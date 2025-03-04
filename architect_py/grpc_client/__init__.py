@@ -1,5 +1,5 @@
 from asyncio.log import logger
-from typing import AsyncIterator, Optional, cast, TypeVar
+from typing import AsyncIterator, Optional, cast
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
@@ -39,6 +39,13 @@ from architect_py.grpc_client.Marketdata.SubscribeTradesRequest import (
 )
 from architect_py.grpc_client.Marketdata.Trade import Trade
 
+from architect_py.grpc_client.request import (
+    P,
+    RequestStream,
+    RequestUnary,
+    TReq,
+    TRes,
+)
 from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
@@ -60,7 +67,6 @@ overall improve the performance of this libary
 """
 
 encoder = msgspec.json.Encoder()
-T = TypeVar("T")
 
 
 class GRPCClient:
@@ -159,6 +165,8 @@ class GRPCClient:
         req = SubscribeL1BookSnapshotsRequest(
             symbols=[str(s) for s in symbols] if symbols else None
         )
+        # jwt = await self.refresh_grpc_credentials()
+        # call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
         call = stub(req)
         async for snapshot in call:
             yield snapshot
@@ -226,6 +234,7 @@ class GRPCClient:
                 L2_update_from_diff(book, up)
 
     async def subscribe_trades(self, symbol: TradableProduct) -> AsyncIterator[Trade]:
+        raise NotImplementedError
         stub = SubscribeTradesRequest.create_stub(self.channel, encoder)
         req = SubscribeTradesRequest(symbol=symbol)
         jwt = await self.refresh_grpc_credentials()
@@ -233,13 +242,36 @@ class GRPCClient:
         async for trade in call:
             yield trade
 
-    async def subscribe(self, t: Any, **kwargs) -> AsyncIterator[T]:
-        stub = t.create_stub(self.channel, encoder)
-        req = t(**kwargs)
+    async def subscribe(
+        self, rr: RequestStream[TReq, TRes, P], *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncIterator[TRes]:
+        # ensure that the request is an actual stream request
+        stub = self.channel.unary_stream(
+            rr.route,
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=rr.response
+            ),
+        )
+        req = rr.request(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()
         call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
         async for update in call:
             yield update
+
+    async def request(
+        self, rr: RequestUnary[TReq, TRes, P], *args: P.args, **kwargs: P.kwargs
+    ) -> TRes:
+        stub = self.channel.unary_unary(
+            rr.route,
+            request_serializer=msgspec.json.encode,
+            response_deserializer=lambda buf: msgspec.json.decode(
+                buf, type=rr.response
+            ),
+        )
+        req = rr.request(*args, **kwargs)
+        jwt = await self.refresh_grpc_credentials()
+        return await stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
 
 
 def update_order_list(

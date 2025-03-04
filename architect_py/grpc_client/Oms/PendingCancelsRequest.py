@@ -2,9 +2,11 @@
 #   filename:  PendingCancelsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.PendingCancelsResponse import PendingCancelsResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Oms.PendingCancelsResponse import PendingCancelsResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import List, Optional
 
@@ -32,3 +34,5 @@ class PendingCancelsRequest(Struct):
                 buf, type=PendingCancelsResponse
             ),
         )
+
+request = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")

@@ -2,9 +2,11 @@
 #   filename:  L1BookSnapshotsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import ArrayOfL1BookSnapshot
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import ArrayOfL1BookSnapshot
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import List, Optional
 
@@ -23,3 +25,5 @@ class L1BookSnapshotsRequest(Struct):
                 buf, type=ArrayOfL1BookSnapshot
             ),
         )
+
+request = RequestUnary(L1BookSnapshotsRequest, ArrayOfL1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshots")

@@ -2,9 +2,11 @@
 #   filename:  DropcopyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Dropcopy import Dropcopy
 import grpc
 import msgspec
+from architect_py.grpc_client.Orderflow.Dropcopy import Dropcopy
+from architect_py.grpc_client.request import RequestStream
+
 
 from typing import Optional
 
@@ -33,3 +35,5 @@ class DropcopyRequest(Struct):
                 buf, type=Dropcopy
             ),
         )
+
+request = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")

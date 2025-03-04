@@ -2,9 +2,11 @@
 #   filename:  PruneExpiredSymbolsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Symbology.PruneExpiredSymbolsResponse import PruneExpiredSymbolsResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Symbology.PruneExpiredSymbolsResponse import PruneExpiredSymbolsResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Annotated, Optional
 
@@ -30,3 +32,5 @@ class PruneExpiredSymbolsRequest(Struct):
                 buf, type=PruneExpiredSymbolsResponse
             ),
         )
+
+request = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")

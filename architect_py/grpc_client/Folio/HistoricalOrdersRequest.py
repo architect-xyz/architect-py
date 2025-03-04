@@ -2,9 +2,11 @@
 #   filename:  HistoricalOrdersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Folio.HistoricalOrdersResponse import HistoricalOrdersResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Folio.HistoricalOrdersResponse import HistoricalOrdersResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Annotated, List, Optional
 
@@ -47,3 +49,5 @@ class HistoricalOrdersRequest(Struct):
                 buf, type=HistoricalOrdersResponse
             ),
         )
+
+request = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")

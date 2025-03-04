@@ -2,9 +2,11 @@
 #   filename:  TickersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.TickersResponse import TickersResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.TickersResponse import TickersResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from enum import Enum
 from typing import List, Optional
@@ -35,3 +37,5 @@ class TickersRequest(Struct):
                 buf, type=TickersResponse
             ),
         )
+
+request = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")

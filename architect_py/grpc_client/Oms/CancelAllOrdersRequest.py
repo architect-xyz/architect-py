@@ -2,9 +2,11 @@
 #   filename:  CancelAllOrdersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Optional
 
@@ -31,3 +33,5 @@ class CancelAllOrdersRequest(Struct):
                 buf, type=CancelAllOrdersResponse
             ),
         )
+
+request = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")

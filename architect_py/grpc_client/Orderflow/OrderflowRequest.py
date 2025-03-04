@@ -2,9 +2,11 @@
 #   filename:  OrderflowRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 import grpc
 import msgspec
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.request import RequestUnary
+
 from decimal import Decimal
 
 
@@ -446,3 +448,5 @@ OrderflowRequest = Annotated[
                 buf, type=Orderflow
             ),
         )
+
+request = RequestUnary(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")

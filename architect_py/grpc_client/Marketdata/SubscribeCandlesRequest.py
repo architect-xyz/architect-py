@@ -2,9 +2,11 @@
 #   filename:  SubscribeCandlesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Candle import Candle
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.Candle import Candle
+from architect_py.grpc_client.request import RequestStream
+
 
 from enum import Enum
 from typing import Annotated, List, Optional
@@ -40,3 +42,5 @@ class SubscribeCandlesRequest(Struct):
                 buf, type=Candle
             ),
         )
+
+request = RequestStream(SubscribeCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeCandles")

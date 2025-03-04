@@ -2,9 +2,11 @@
 #   filename:  AccountHistoryRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Folio.AccountHistoryResponse import AccountHistoryResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Folio.AccountHistoryResponse import AccountHistoryResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Optional
 
@@ -27,3 +29,5 @@ class AccountHistoryRequest(Struct):
                 buf, type=AccountHistoryResponse
             ),
         )
+
+request = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")

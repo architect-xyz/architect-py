@@ -24,9 +24,7 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         j = json.load(json_file)
 
         service = j["service"]
-
         unary_type = j["unary_type"]
-
         response_file_name: str = j["response_type"]
 
         request_type_name = "".join(
@@ -41,13 +39,28 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         with open(file_path, "r") as f:
             lines = f.readlines()
 
-        lines.insert(4, "import grpc\nimport msgspec\n")
+        if unary_type == "stream":
+            request_import = (
+                "from architect_py.grpc_client.request import RequestStream\n"
+            )
+            request_str = f'request = RequestStream({request_type_name}, {response_type_name}, "{route}")'
+        else:
+            request_import = (
+                "from architect_py.grpc_client.request import RequestUnary\n"
+            )
+            request_str = f'request = RequestUnary({request_type_name}, {response_type_name}, "{route}")'
+
         lines.insert(
             4,
-            f"from architect_py.grpc_client.{service}.{response_file_name} import {response_type_name}\n",
+            (
+                "import grpc\n"
+                "import msgspec\n"
+                f"from architect_py.grpc_client.{service}.{response_file_name} import {response_type_name}\n"
+                f"{request_import}\n"
+            ),
         )
 
-        lines.extend(
+        lines.append(
             f"""
     @staticmethod
     def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.Unary{unary_type.title()}MultiCallable["{request_type_name}", {response_type_name}]:
@@ -60,6 +73,7 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         )
 """
         )
+        lines.append(f"\n{request_str}\n")
 
         with open(file_path, "w") as f:
             f.writelines(lines)

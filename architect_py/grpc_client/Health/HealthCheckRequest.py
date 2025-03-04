@@ -2,9 +2,11 @@
 #   filename:  HealthCheckRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Health.HealthCheckResponse import HealthCheckResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Health.HealthCheckResponse import HealthCheckResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Annotated, Optional
 
@@ -30,3 +32,5 @@ class HealthCheckRequest(Struct):
                 buf, type=HealthCheckResponse
             ),
         )
+
+request = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")

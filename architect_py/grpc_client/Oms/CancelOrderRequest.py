@@ -2,9 +2,11 @@
 #   filename:  CancelOrderRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.Cancel import Cancel
 import grpc
 import msgspec
+from architect_py.grpc_client.Oms.Cancel import Cancel
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Annotated, Optional
 
@@ -53,3 +55,5 @@ class CancelOrderRequest(Struct):
                 buf, type=Cancel
             ),
         )
+
+request = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")

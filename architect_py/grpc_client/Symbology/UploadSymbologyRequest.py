@@ -2,9 +2,11 @@
 #   filename:  UploadSymbologyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Symbology.UploadSymbologyResponse import UploadSymbologyResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Symbology.UploadSymbologyResponse import UploadSymbologyResponse
+from architect_py.grpc_client.request import RequestUnary
+
 from decimal import Decimal
 
 
@@ -821,3 +823,5 @@ class UploadSymbologyRequest(Struct):
                 buf, type=UploadSymbologyResponse
             ),
         )
+
+request = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")

@@ -2,9 +2,11 @@
 #   filename:  HistoricalCandlesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import HistoricalCandlesResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import HistoricalCandlesResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from enum import Enum
 
@@ -35,3 +37,5 @@ class HistoricalCandlesRequest(Struct):
                 buf, type=HistoricalCandlesResponse
             ),
         )
+
+request = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")

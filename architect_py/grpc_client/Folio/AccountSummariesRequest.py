@@ -2,9 +2,11 @@
 #   filename:  AccountSummariesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Folio.AccountSummariesResponse import AccountSummariesResponse
 import grpc
 import msgspec
+from architect_py.grpc_client.Folio.AccountSummariesResponse import AccountSummariesResponse
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Annotated, List, Optional
 
@@ -36,3 +38,5 @@ class AccountSummariesRequest(Struct):
                 buf, type=AccountSummariesResponse
             ),
         )
+
+request = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")

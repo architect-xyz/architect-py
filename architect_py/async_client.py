@@ -714,10 +714,6 @@ class AsyncClient:
         call client.grpc_client.subscribe_l1_book_snapshots
         """
         books = self.grpc_client.initialize_watch_l1_books(symbols)
-        raise AttributeError(
-            "The GRPC client has not been initialized. "
-            "Please instantiate the AsyncClient by the create method."
-        )
 
         asyncio.create_task(self.grpc_client.watch_l1_books(symbols=symbols))
         return books

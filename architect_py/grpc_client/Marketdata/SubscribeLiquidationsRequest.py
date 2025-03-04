@@ -2,9 +2,11 @@
 #   filename:  SubscribeLiquidationsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Liquidation import Liquidation
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.Liquidation import Liquidation
+from architect_py.grpc_client.request import RequestStream
+
 
 from typing import List, Optional
 
@@ -23,3 +25,5 @@ class SubscribeLiquidationsRequest(Struct):
                 buf, type=Liquidation
             ),
         )
+
+request = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
