@@ -2,9 +2,11 @@
 #   filename:  ModifyAlgoOrderRequest_for_TwapAlgo.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwapAlgo
 import grpc
 import msgspec
+from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwapAlgo
+from architect_py.grpc_client.request import RequestUnary
+
 from decimal import Decimal
 
 
@@ -52,3 +54,5 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
                 buf, type=AlgoOrderForTwapAlgo
             ),
         )
+
+request = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")

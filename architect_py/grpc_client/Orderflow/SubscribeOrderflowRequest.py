@@ -2,9 +2,11 @@
 #   filename:  SubscribeOrderflowRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 import grpc
 import msgspec
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.request import RequestStream
+
 
 from typing import Optional
 
@@ -30,3 +32,5 @@ class SubscribeOrderflowRequest(Struct):
                 buf, type=Orderflow
             ),
         )
+
+request = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")

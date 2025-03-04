@@ -2,9 +2,11 @@
 #   filename:  SymbologyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Symbology.SymbologySnapshot import SymbologySnapshot
 import grpc
 import msgspec
+from architect_py.grpc_client.Symbology.SymbologySnapshot import SymbologySnapshot
+from architect_py.grpc_client.request import RequestUnary
+
 
 from msgspec import Struct
 
@@ -21,3 +23,5 @@ class SymbologyRequest(Struct):
                 buf, type=SymbologySnapshot
             ),
         )
+
+request = RequestUnary(SymbologyRequest, SymbologySnapshot, "/json.architect.Symbology/Symbology")

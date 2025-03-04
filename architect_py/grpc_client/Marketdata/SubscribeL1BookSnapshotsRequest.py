@@ -2,9 +2,11 @@
 #   filename:  SubscribeL1BookSnapshotsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
+from architect_py.grpc_client.request import RequestStream
+
 
 from typing import Annotated, List, Optional
 
@@ -28,3 +30,5 @@ class SubscribeL1BookSnapshotsRequest(Struct):
                 buf, type=L1BookSnapshot
             ),
         )
+
+request = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")

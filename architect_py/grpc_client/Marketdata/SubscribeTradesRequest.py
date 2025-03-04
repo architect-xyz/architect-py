@@ -2,9 +2,11 @@
 #   filename:  SubscribeTradesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Trade import Trade
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.Trade import Trade
+from architect_py.grpc_client.request import RequestStream
+
 
 from typing import Annotated, Optional
 
@@ -29,3 +31,5 @@ class SubscribeTradesRequest(Struct):
                 buf, type=Trade
             ),
         )
+
+request = RequestStream(SubscribeTradesRequest, Trade, "/json.architect.Marketdata/SubscribeTrades")

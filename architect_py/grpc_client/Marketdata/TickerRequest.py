@@ -2,9 +2,11 @@
 #   filename:  TickerRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Ticker import Ticker
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.Ticker import Ticker
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Optional
 
@@ -24,3 +26,5 @@ class TickerRequest(Struct):
                 buf, type=Ticker
             ),
         )
+
+request = RequestUnary(TickerRequest, Ticker, "/json.architect.Marketdata/Ticker")

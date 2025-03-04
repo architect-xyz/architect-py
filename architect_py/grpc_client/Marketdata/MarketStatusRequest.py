@@ -2,9 +2,11 @@
 #   filename:  MarketStatusRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.MarketStatus import MarketStatus
 import grpc
 import msgspec
+from architect_py.grpc_client.Marketdata.MarketStatus import MarketStatus
+from architect_py.grpc_client.request import RequestUnary
+
 
 from typing import Optional
 
@@ -24,3 +26,5 @@ class MarketStatusRequest(Struct):
                 buf, type=MarketStatus
             ),
         )
+
+request = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
