@@ -1,6 +1,12 @@
 import asyncio
 import pytest
 from architect_py.async_client import AsyncClient
+from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
+    SubscribeL1BookSnapshotsRequest,
+)
+from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
+    SubscribeL2BookUpdatesRequest,
+)
 from architect_py.scalars import TradableProduct
 
 from pytest_lazy_fixtures import lf
@@ -45,8 +51,8 @@ async def test_subscribe_l1_stream(
     ts = l1_book.timestamp
 
     i = 0
-    async for snap in async_client.grpc_client.subscribe_l1_book_snapshots(
-        symbols=symbols
+    async for snap in async_client.grpc_client.subscribe(
+        SubscribeL1BookSnapshotsRequest.get_helper(), symbols=[symbol]
     ):
         # CR alee: really these should WARN a few times before failing;
         # think about how this interacts with presence
@@ -77,8 +83,8 @@ async def test_subscribe_l2_stream(async_client: AsyncClient, front_ES_future: s
     ts = l2_book.timestamp
 
     i = 0
-    async for snap in async_client.grpc_client.subscribe_l2_book_updates(
-        symbol=tp, venue=venue
+    async for snap in async_client.grpc_client.subscribe(
+        SubscribeL2BookUpdatesRequest.get_helper(), symbol=tp, venue=venue
     ):
         assert snap is not None
         if i > 5:
