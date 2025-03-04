@@ -1,36 +1,24 @@
-import asyncio
-import os
+import pytest
 
-from architect_py.grpc_client import GRPCClient
-from architect_py.graphql_client.client import GraphQLClient
-from architect_py.scalars import TradableProduct
+from architect_py.async_client import AsyncClient
 
 
-async def main():
-    host = os.getenv("ARCHITECT_HOST") or "app.architect.co"
-    port = int(os.getenv("ARCHITECT_PORT") or 4567)
-    api_key = os.getenv("ARCHITECT_API_KEY")
-    api_secret = os.getenv("ARCHITECT_API_SECRET")
+@pytest.mark.asyncio
+async def test(async_client: AsyncClient):
 
-    if api_key is None or api_secret is None:
-        raise ValueError(
-            "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
-        )
-
-    graphql_client = GraphQLClient(
-        host=host, port=port, api_key=api_key, api_secret=api_secret
-    )
-
-    endpoint = "app.architect.co"
     endpoint = "binance.marketdata.architect.co"
     endpoint = "bybit.marketdata.architect.co"
     endpoint = "binance-futures-usd-m.marketdata.architect.co"
+    endpoint = "cme.marketdata.architect.co"
 
-    grpc_client = GRPCClient(graphql_client)
+    symbol = "84a19858-4f2a-516f-a3d4-b5f3f25026a4"
+    snapshot = await async_client.grpc_client.l2_book_snapshot("BINANCE", symbol)
+    assert snapshot is not None
 
-    async for update in grpc_client.subscribe_l1_book_snapshots(endpoint):
-        print(update)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    i = 0
+    async for update in async_client.grpc_client.subscribe_l1_book_snapshots():
+        assert update is not None
+        if i == 100:
+            break
+        i += 1
+    return True
