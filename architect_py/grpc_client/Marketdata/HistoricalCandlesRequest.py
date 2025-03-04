@@ -27,10 +27,10 @@ class HistoricalCandlesRequest(Struct):
     symbol: str
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["HistoricalCandlesRequest", HistoricalCandlesResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["HistoricalCandlesRequest", HistoricalCandlesResponse]:
         return channel.unary_unary(
             "/json.architect.Marketdata/HistoricalCandles",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=HistoricalCandlesResponse
             ),

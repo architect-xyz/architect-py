@@ -21,10 +21,10 @@ class SubscribeTradesRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable["SubscribeTradesRequest", Trade]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["SubscribeTradesRequest", Trade]:
         return channel.unary_stream(
             "/json.architect.Marketdata/SubscribeTrades",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=Trade
             ),

@@ -19,10 +19,10 @@ class AccountHistoryRequest(Struct):
     to_exclusive: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["AccountHistoryRequest", AccountHistoryResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["AccountHistoryRequest", AccountHistoryResponse]:
         return channel.unary_unary(
             "/json.architect.Folio/AccountHistory",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=AccountHistoryResponse
             ),

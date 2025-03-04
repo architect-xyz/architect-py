@@ -20,10 +20,10 @@ class SubscribeL1BookSnapshotsRequest(Struct):
     ] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryStreamMultiCallable["SubscribeL1BookSnapshotsRequest", L1BookSnapshot]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryStreamMultiCallable["SubscribeL1BookSnapshotsRequest", L1BookSnapshot]:
         return channel.unary_stream(
             "/json.architect.Marketdata/SubscribeL1BookSnapshots",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=L1BookSnapshot
             ),

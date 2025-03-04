@@ -24,10 +24,10 @@ class PendingCancelsRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["PendingCancelsRequest", PendingCancelsResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["PendingCancelsRequest", PendingCancelsResponse]:
         return channel.unary_unary(
             "/json.architect.Oms/PendingCancels",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=PendingCancelsResponse
             ),

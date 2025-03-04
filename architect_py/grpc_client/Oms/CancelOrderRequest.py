@@ -45,10 +45,10 @@ class CancelOrderRequest(Struct):
         self.xid = value
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["CancelOrderRequest", Cancel]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["CancelOrderRequest", Cancel]:
         return channel.unary_unary(
             "/json.architect.Oms/CancelOrder",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=Cancel
             ),

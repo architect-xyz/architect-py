@@ -813,10 +813,10 @@ class UploadSymbologyRequest(Struct):
     products: Optional[Dict[str, ProductInfo]] = None
 
     @staticmethod
-    def create_stub(channel: grpc.aio.Channel) -> grpc.aio.UnaryUnaryMultiCallable["UploadSymbologyRequest", UploadSymbologyResponse]:
+    def create_stub(channel: grpc.aio.Channel, encoder: msgspec.json.Encoder) -> grpc.aio.UnaryUnaryMultiCallable["UploadSymbologyRequest", UploadSymbologyResponse]:
         return channel.unary_unary(
             "/json.architect.Symbology/UploadSymbology",
-            request_serializer=msgspec.json.encode,
+            request_serializer=encoder.encode,
             response_deserializer=lambda buf: msgspec.json.decode(
                 buf, type=UploadSymbologyResponse
             ),
