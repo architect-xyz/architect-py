@@ -77,7 +77,7 @@ class AsyncClient:
         *,
         api_key: str,
         api_secret: str,
-        host: str = "https://app.architect.co",
+        host: str = "app.architect.co",
         paper_trading: bool = True,
         grpc_endpoint: str = "cme.marketdata.architect.co",
         _port: Optional[int] = None,
@@ -87,7 +87,7 @@ class AsyncClient:
         Args:
             api_key: API key for the user
             api_secret: API secret for the user
-            host: Host for the GraphQL server, defaults to "https://app.architect.co"
+            host: Host for the GraphQL server, defaults to "app.architect.co"
             paper_trading: Whether to use the paper trading environment, defaults to True
             _port: Port for the GraphQL server, more for debugging purposes, do not set this unless you are sure of the port
 
@@ -128,7 +128,7 @@ class AsyncClient:
         *,
         api_key: str,
         api_secret: str,
-        host: str = "https://app.architect.co",
+        host: str = "app.architect.co",
         paper_trading: bool = True,
         _port: Optional[int] = None,
         _i_know_what_i_am_doing: bool = False,
@@ -295,6 +295,10 @@ class AsyncClient:
         Returns:
             a list of symbols in the series
         """
+        assert (
+            " " in series_symbol
+        ), 'series_symbol must have the venue in it, e.g. "ES CME Futures" or "GC CME Futures"'
+
         futures_series = await self.graphql_client.get_future_series_query(
             series_symbol
         )
@@ -353,6 +357,7 @@ class AsyncClient:
                 f"{root} {year}{month:02d}",
                 execution_venue="CME",
             )
+            if market.startswith(f"{root} {year}{month:02d}")
         ]
 
         return market
@@ -752,7 +757,7 @@ class AsyncClient:
     async def send_limit_order(
         self,
         *,
-        symbol: str,
+        symbol: TradableProduct,
         execution_venue: Optional[str],
         odir: OrderDir,
         quantity: Decimal,

@@ -1,5 +1,5 @@
 from asyncio.log import logger
-from typing import AsyncIterator, Optional, cast
+from typing import Any, AsyncIterator, Optional, cast
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
@@ -66,7 +66,16 @@ but it needs to be instantiated per response type
 overall improve the performance of this libary
 """
 
-encoder = msgspec.json.Encoder()
+
+def enc_hook(obj: Any) -> Any:
+    # TODO: use match statement when we lock above py3.10
+    if isinstance(obj, Decimal):
+        return str(obj)
+    elif isinstance(obj, TradableProduct):
+        return str(obj)
+
+
+encoder = msgspec.json.Encoder(enc_hook=enc_hook)
 
 
 class GRPCClient:
@@ -87,6 +96,8 @@ class GRPCClient:
         Please ensure to call the initialize method before using the gRPC client.
         """
         self.graphql_client = graphql_client
+
+        self.jwt_expiration = datetime(1995, 11, 10)
 
         self.l1_books: dict[TradableProduct, L1BookSnapshot] = {}
         self.l2_books: dict[TradableProduct, L2BookSnapshot] = {}
@@ -132,31 +143,26 @@ class GRPCClient:
         else:
             return grpc.aio.insecure_channel(connect_str)
 
-    async def refresh_grpc_credentials(self, force: bool = False) -> Optional[str]:
+    async def refresh_grpc_credentials(self, force: bool = False) -> str:
         """
         Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
         If force is True, refresh the JWT unconditionally.
         """
-        if (
-            force
-            or self.jwt is None
-            or (
-                self.jwt_expiration is not None
-                and datetime.now() > self.jwt_expiration - timedelta(minutes=1)
-            )
-        ):
+        if force or datetime.now() > self.jwt_expiration - timedelta(minutes=1):
             try:
                 self.jwt = (await self.graphql_client.create_jwt()).create_jwt
                 self.jwt_expiration = datetime.now() + timedelta(hours=23)
             except Exception as e:
                 logger.error("Failed to refresh gRPC credentials: %s", e)
+        return self.jwt
 
     async def l2_book_snapshot(
         self, venue: Optional[str], symbol: str
     ) -> L2BookSnapshot:
         stub = L2BookSnapshotRequest.create_stub(self.channel, encoder)
         req = L2BookSnapshotRequest(venue=venue, symbol=symbol)
-        return await stub(req, metadata=(("authorization", f"Bearer {self.jwt}"),))
+        jwt = await self.refresh_grpc_credentials()
+        return await stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
 
     async def subscribe_l1_book_snapshots(
         self, symbols: list[TradableProduct] | None = None
