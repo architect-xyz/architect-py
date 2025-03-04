@@ -5,15 +5,14 @@ from architect_py.scalars import TradableProduct
 
 
 @pytest.mark.asyncio
-async def test_grpc(async_client: AsyncClient):
+async def test_grpc(async_client: AsyncClient, front_ES_future: str):
 
     endpoint = "binance.marketdata.architect.co"
     endpoint = "bybit.marketdata.architect.co"
     endpoint = "binance-futures-usd-m.marketdata.architect.co"
     endpoint = "cme.marketdata.architect.co"
 
-    symbol = "ES 20250321 CME Future"
-    tp = TradableProduct(f"{symbol}/USD")
+    tp = TradableProduct(front_ES_future, "USD")
     snapshot = await async_client.grpc_client.l2_book_snapshot("CME", tp)
     assert snapshot is not None
 

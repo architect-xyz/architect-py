@@ -324,6 +324,13 @@ class AsyncClient:
         Returns:
             a list of tuples of the expiration date and
             the symbol for each future in the series
+
+            e.g.
+            [(datetime.date(2025, 3, 21), 'ES 20250321 CME Future'),
+             (datetime.date(2025, 6, 20), 'ES 20250620 CME Future'),
+             (datetime.date(2025, 9, 19), 'ES 20250919 CME Future'),
+             ...
+            ]
         """
         markets = await self.get_future_series(
             series,

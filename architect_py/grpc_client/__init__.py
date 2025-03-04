@@ -69,9 +69,7 @@ overall improve the performance of this libary
 
 def enc_hook(obj: Any) -> Any:
     # TODO: use match statement when we lock above py3.10
-    if isinstance(obj, Decimal):
-        return str(obj)
-    elif isinstance(obj, TradableProduct):
+    if isinstance(obj,  TradableProduct):
         return str(obj)
 
 
@@ -113,6 +111,9 @@ class GRPCClient:
         # "binance.marketdata.architect.co",
         # "cme.marketdata.architect.co",
         self.channel = await self.get_grpc_channel(self.endpoint)
+    
+    async def change_channel(self, endpoint: str) -> None:
+        self.channel = await self.get_grpc_channel(endpoint)
 
     async def get_grpc_channel(
         self,
