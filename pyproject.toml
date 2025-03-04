@@ -16,12 +16,10 @@ version = { attr = "architect_py._version.__version__" }
 
 [tool.poetry.dependencies]
 asyncio = "^3"
-dnspython = "2"
 gql = { extras = ["all"], version = "^3.5.0" }
 grpcio = ">=1.66.1"
 httpx = "^0.28.0"
 msgspec = "^0.19"
-orjson = "^3"
 pydantic = "^2.10"
 python = ">=3.10,<4"
 websockets = ">=11"
