@@ -11,6 +11,18 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
+class SellVolume(Struct):
+    pass
+
+
+class BuyVolume(Struct):
+    pass
+
+
+class Volume(Struct):
+    pass
+
+
 class CandleWidth(int, Enum):
     integer_1 = 1
     integer_2 = 2
@@ -20,15 +32,16 @@ class CandleWidth(int, Enum):
     integer_32 = 32
 
 
+DecimalModel = Decimal
 
 
 class Candle(Struct):
-    av: Annotated[Decimal, Meta(title='sell_volume')]
-    bv: Annotated[Decimal, Meta(title='buy_volume')]
+    av: Annotated[SellVolume, Meta(title='sell_volume')]
+    bv: Annotated[BuyVolume, Meta(title='buy_volume')]
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
-    v: Annotated[Decimal, Meta(title='volume')]
+    v: Annotated[Volume, Meta(title='volume')]
     w: Annotated[CandleWidth, Meta(title='width')]
     ac: Optional[Annotated[Optional[Decimal], Meta(title='ask_close')]] = None
     ah: Optional[Annotated[Optional[Decimal], Meta(title='ask_high')]] = None
@@ -48,19 +61,19 @@ class Candle(Struct):
     o: Optional[Annotated[Optional[Decimal], Meta(title='open')]] = None
 
     @property
-    def sell_volume(self) -> Decimal:
+    def sell_volume(self) -> SellVolume:
         return self.av
 
     @sell_volume.setter
-    def sell_volume(self, value: Decimal) -> None:
+    def sell_volume(self, value: SellVolume) -> None:
         self.av = value
 
     @property
-    def buy_volume(self) -> Decimal:
+    def buy_volume(self) -> BuyVolume:
         return self.bv
 
     @buy_volume.setter
-    def buy_volume(self, value: Decimal) -> None:
+    def buy_volume(self, value: BuyVolume) -> None:
         self.bv = value
 
     @property
@@ -96,11 +109,11 @@ class Candle(Struct):
         return datetime.fromtimestamp(self.ts)
 
     @property
-    def volume(self) -> Decimal:
+    def volume(self) -> Volume:
         return self.v
 
     @volume.setter
-    def volume(self, value: Decimal) -> None:
+    def volume(self, value: Volume) -> None:
         self.v = value
 
     @property

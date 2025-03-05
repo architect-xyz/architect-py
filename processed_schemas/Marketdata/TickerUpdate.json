@@ -16,7 +16,8 @@
           "title": "ask_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -27,7 +28,8 @@
           "title": "ask_size",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -38,7 +40,8 @@
           "title": "bid_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -49,7 +52,8 @@
           "title": "bid_size",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -59,7 +63,8 @@
         "dividend": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -69,7 +74,8 @@
         "dividend_yield": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -79,7 +85,8 @@
         "eps_adj": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -90,7 +97,8 @@
           "title": "funding_rate",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -109,7 +117,8 @@
           "title": "high_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -120,7 +129,8 @@
           "title": "index_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -131,7 +141,8 @@
           "title": "low_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -141,7 +152,8 @@
         "market_cap": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -152,7 +164,8 @@
           "title": "mark_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -163,7 +176,8 @@
           "title": "open_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -174,7 +188,8 @@
           "title": "open_interest",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -185,7 +200,8 @@
           "title": "last_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -195,7 +211,8 @@
         "price_to_earnings": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -206,7 +223,8 @@
           "title": "last_size",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -220,7 +238,8 @@
         "shares_outstanding_weighted_adj": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -231,7 +250,8 @@
           "title": "last_settlement_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -247,7 +267,7 @@
         "tn": {
           "title": "timestamp_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -259,7 +279,8 @@
           "title": "volume_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -274,7 +295,8 @@
           "title": "volume_30d",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -285,7 +307,8 @@
           "title": "session_high",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -296,7 +319,8 @@
           "title": "session_low",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -307,7 +331,8 @@
           "title": "session_open",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -318,7 +343,8 @@
           "title": "session_volume",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -341,7 +367,8 @@
           "title": "ask_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -352,7 +379,8 @@
           "title": "ask_size",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -363,7 +391,8 @@
           "title": "bid_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -374,7 +403,8 @@
           "title": "bid_size",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -384,7 +414,8 @@
         "dividend": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -394,7 +425,8 @@
         "dividend_yield": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -404,7 +436,8 @@
         "eps_adj": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -415,7 +448,8 @@
           "title": "funding_rate",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -434,7 +468,8 @@
           "title": "high_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -445,7 +480,8 @@
           "title": "index_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -456,7 +492,8 @@
           "title": "low_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -466,7 +503,8 @@
         "market_cap": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -477,7 +515,8 @@
           "title": "mark_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -488,7 +527,8 @@
           "title": "open_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -499,7 +539,8 @@
           "title": "open_interest",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -510,7 +551,8 @@
           "title": "last_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -520,7 +562,8 @@
         "price_to_earnings": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -531,7 +574,8 @@
           "title": "last_size",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -545,7 +589,8 @@
         "shares_outstanding_weighted_adj": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -556,7 +601,8 @@
           "title": "last_settlement_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -572,7 +618,7 @@
         "tn": {
           "title": "timestamp_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -584,7 +630,8 @@
           "title": "volume_24h",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -599,7 +646,8 @@
           "title": "volume_30d",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -610,7 +658,8 @@
           "title": "session_high",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -621,7 +670,8 @@
           "title": "session_low",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -632,7 +682,8 @@
           "title": "session_open",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -643,7 +694,8 @@
           "title": "session_volume",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"

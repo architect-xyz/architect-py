@@ -10,7 +10,8 @@ from typing import (
 )
 
 
-TReq = TypeVar("TReq", bound=msgspec.Struct)
+# TReq = TypeVar("TReq", bound=msgspec.Struct)
+TReq = TypeVar("TReq")
 TRes = TypeVar("TRes")  # cannot be bound to msgspec.Struct because of Union types
 P = ParamSpec("P")
 

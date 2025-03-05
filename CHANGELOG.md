@@ -3,6 +3,15 @@ Breaking:
   - Changed the way AsyncClient is instantiated, from normal __init__ to create
     - Can just change AsyncClient(args) -> AsyncClient.create(args)
     - the port argument was removed, please remove it as an arg
+  - changed the values of OrderDir to match Rust type
+    class OrderDir(str, Enum):
+      BUY = "buy"
+      SELL = "sell"
+
+    class OrderDir(str, Enum):
+      BUY = "BUY"
+      SELL = "SELL"
+
 
 Features
   - Added get_account_history query

@@ -10,7 +10,6 @@ from typing import Annotated, Optional
 from msgspec import Meta, Struct, field
 
 
-
 class Ticker(Struct):
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
@@ -38,9 +37,9 @@ class Ticker(Struct):
     price_to_earnings: Optional[Decimal] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title='last_size')]] = None
     shares_outstanding_weighted_adj: Optional[Decimal] = None
-    sp: Optional[
-        Annotated[Optional[Decimal], Meta(title='last_settlement_price')]
-    ] = None
+    sp: Optional[Annotated[Optional[Decimal], Meta(title='last_settlement_price')]] = (
+        None
+    )
     v: Optional[Annotated[Optional[Decimal], Meta(title='volume_24h')]] = None
     vm: Optional[Annotated[Optional[Decimal], Meta(title='volume_30d')]] = None
     xh: Optional[Annotated[Optional[Decimal], Meta(title='session_high')]] = None
@@ -255,3 +254,6 @@ class Ticker(Struct):
     @session_volume.setter
     def session_volume(self, value: Optional[Decimal]) -> None:
         self.xv = value
+
+
+DecimalModel = Decimal

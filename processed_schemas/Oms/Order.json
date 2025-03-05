@@ -21,7 +21,8 @@
           "title": "limit_price",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -49,7 +50,8 @@
           "title": "limit_price",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -57,7 +59,8 @@
           "title": "trigger_price",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         }
@@ -81,7 +84,8 @@
           "title": "limit_price",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -89,7 +93,8 @@
           "title": "trigger_price",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         }
@@ -151,7 +156,8 @@
       "title": "quantity",
       "allOf": [
         {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         }
       ]
     },
@@ -196,7 +202,7 @@
     "tn": {
       "title": "recv_time_ns",
       "type": "integer",
-      "format": "uint32",
+      "format": "default",
       "minimum": 0.0
     },
     "ts": {
@@ -220,7 +226,8 @@
       "title": "average_fill_price",
       "anyOf": [
         {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -231,7 +238,8 @@
       "title": "filled_quantity",
       "allOf": [
         {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         }
       ]
     }
@@ -263,7 +271,7 @@
         },
         "seqno": {
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         }
       }

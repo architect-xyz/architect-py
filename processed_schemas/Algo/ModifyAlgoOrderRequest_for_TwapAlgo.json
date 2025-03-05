@@ -44,7 +44,7 @@
         },
         "seqno": {
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         }
       }
@@ -75,7 +75,8 @@
           "$ref": "#/definitions/HumanDuration"
         },
         "quantity": {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         },
         "reject_lockout": {
           "$ref": "#/definitions/HumanDuration"
@@ -86,7 +87,8 @@
         "take_through_frac": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"

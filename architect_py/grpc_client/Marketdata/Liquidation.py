@@ -11,6 +11,16 @@ from typing import Annotated
 from msgspec import Meta, Struct
 
 
+class Price(Struct):
+    pass
+
+
+class Size(Struct):
+    pass
+
+
+DecimalModel = Decimal
+
 
 class Dir(str, Enum):
     """
@@ -23,8 +33,8 @@ class Dir(str, Enum):
 
 class Liquidation(Struct):
     d: Annotated[Dir, Meta(title='direction')]
-    p: Annotated[Decimal, Meta(title='price')]
-    q: Annotated[Decimal, Meta(title='size')]
+    p: Annotated[Price, Meta(title='price')]
+    q: Annotated[Size, Meta(title='size')]
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
@@ -38,19 +48,19 @@ class Liquidation(Struct):
         self.d = value
 
     @property
-    def price(self) -> Decimal:
+    def price(self) -> Price:
         return self.p
 
     @price.setter
-    def price(self, value: Decimal) -> None:
+    def price(self, value: Price) -> None:
         self.p = value
 
     @property
-    def size(self) -> Decimal:
+    def size(self) -> Size:
         return self.q
 
     @size.setter
-    def size(self, value: Decimal) -> None:
+    def size(self, value: Size) -> None:
         self.q = value
 
     @property

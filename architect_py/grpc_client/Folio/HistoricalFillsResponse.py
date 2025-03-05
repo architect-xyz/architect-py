@@ -9,6 +9,7 @@ from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
+DecimalModel = Decimal
 
 
 class Dir(str, Enum):
@@ -18,6 +19,14 @@ class Dir(str, Enum):
 
     BUY = 'BUY'
     SELL = 'SELL'
+
+
+class Price(Struct):
+    pass
+
+
+class Quantity(Struct):
+    pass
 
 
 class FillKind(int, Enum):
@@ -202,8 +211,8 @@ class Fill(Struct):
     d: Annotated[Dir, Meta(title='direction')]
     id: Annotated[str, Meta(title='fill_id')]
     k: Annotated[FillKind, Meta(title='fill_kind')]
-    p: Annotated[Decimal, Meta(title='price')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    p: Annotated[Price, Meta(title='price')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='trade_time_ns')]
     ts: Annotated[
@@ -271,19 +280,19 @@ class Fill(Struct):
         self.k = value
 
     @property
-    def price(self) -> Decimal:
+    def price(self) -> Price:
         return self.p
 
     @price.setter
-    def price(self, value: Decimal) -> None:
+    def price(self, value: Price) -> None:
         self.p = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property

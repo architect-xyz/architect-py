@@ -9,8 +9,6 @@ from typing import Annotated, List
 
 from msgspec import Meta, Struct
 
-
-
 Ask = List[Decimal]
 
 
@@ -84,3 +82,6 @@ class L2BookSnapshot(Struct):
     @property
     def datetime_local(self) -> datetime:
         return datetime.fromtimestamp(self.ts)
+
+
+DecimalModel = Decimal

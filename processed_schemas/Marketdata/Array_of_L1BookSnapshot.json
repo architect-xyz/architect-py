@@ -26,10 +26,12 @@
           ],
           "items": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ],
           "maxItems": 2,
@@ -43,10 +45,12 @@
           ],
           "items": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ],
           "maxItems": 2,
@@ -59,7 +63,7 @@
         "tn": {
           "title": "timestamp_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {

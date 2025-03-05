@@ -2,20 +2,15 @@ import argparse
 import json
 import os
 
+import re
 
-def process_definitions(schema: dict):
+
+def process_schema(schema: dict):
     if "definitions" not in schema:
         return
 
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
-
-    for definition, description in schema["definitions"].items():
-        if "format" not in description:
-            continue
-        if description["format"] in ["uint32", "uint64"]:
-            description["format"] = "default"
-            description["minimum"] = 0
 
 
 def preprocess_json(input_file: str, output_dir: str) -> None:
@@ -26,13 +21,23 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
     :param input_file: Path to the input JSON file containing an array of service definitions.
     :param output_dir: Directory where extracted schema files will be saved.
     """
+    os.makedirs(output_dir, exist_ok=True)
+    schema_file_name = f"{output_dir}/schema.json"
+
     with open(input_file, "r") as f:
+        lines = f.read()
+
+    lines = file_fixes(lines)
+
+    with open(schema_file_name, "w") as f:
+        f.writelines(lines)
+
+    with open(schema_file_name, mode="r") as f:
         services = json.load(f)
 
-    # Create the output directory if it doesn't exist.
-    os.makedirs(output_dir, exist_ok=True)
-
     # Iterate through each service in the input array.
+
+    definitions = {}
     for service in services:
         service_name = service["name"].replace(" ", "_")
 
@@ -46,8 +51,8 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
             req_schema = rpc.get("request_type")
             resp_schema = rpc.get("response_type")
 
-            process_definitions(req_schema)
-            process_definitions(resp_schema)
+            process_schema(req_schema)
+            process_schema(resp_schema)
 
             route = rpc.get("route")
             unary_type = rpc.get("type")
@@ -73,6 +78,22 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                 with open(resp_path, "w") as out_file:
                     json.dump(resp_schema, out_file, indent=2)
                 print(f"Extracted response schema to: {resp_path}")
+
+
+def replace_and_indent(m):
+    indent = m.group(1)
+    return f'{indent}"type": "string",\n{indent}"format": "decimal"'
+
+
+def file_fixes(lines: str) -> str:
+    lines = lines.replace("uint32", "default")
+    lines = lines.replace("uint64", "default")
+    lines = lines.replace('"format": "int"', '"format": "default"')
+
+    pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
+    lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
+
+    return lines
 
 
 if __name__ == "__main__":

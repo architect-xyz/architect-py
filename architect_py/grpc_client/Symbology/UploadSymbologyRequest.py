@@ -12,6 +12,7 @@ from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
+DecimalModel = Decimal
 
 
 DerivativeKind = Union[Literal['Linear'], Literal['Inverse'], Literal['Quanto']]
@@ -96,10 +97,16 @@ class PutOrCall(str, Enum):
     C = 'C'
 
 
+class Quantity(Struct):
+    """
+    Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1
+    """
+
+
 class SpreadLeg(Struct):
     product: str
     quantity: Annotated[
-        Decimal,
+        Quantity,
         Meta(
             description='Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1'
         ),

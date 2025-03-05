@@ -9,6 +9,7 @@ from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
+DecimalModel = Decimal
 
 
 class L1BookSnapshot(Struct):

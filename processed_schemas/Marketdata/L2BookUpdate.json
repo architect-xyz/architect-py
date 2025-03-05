@@ -24,10 +24,12 @@
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               },
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               }
             ],
             "maxItems": 2,
@@ -41,10 +43,12 @@
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               },
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               }
             ],
             "maxItems": 2,
@@ -54,13 +58,13 @@
         "sid": {
           "title": "sequence_id",
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         },
         "sn": {
           "title": "sequence_number",
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         },
         "t": {
@@ -72,7 +76,7 @@
         "tn": {
           "title": "timestamp_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -104,10 +108,12 @@
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               },
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               }
             ],
             "maxItems": 2,
@@ -122,10 +128,12 @@
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               },
               {
-                "$ref": "#/definitions/Decimal"
+                "type": "string",
+                "format": "decimal"
               }
             ],
             "maxItems": 2,
@@ -135,13 +143,13 @@
         "sid": {
           "title": "sequence_id",
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         },
         "sn": {
           "title": "sequence_number",
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         },
         "t": {
@@ -153,7 +161,7 @@
         "tn": {
           "title": "timestamp_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {

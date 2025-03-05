@@ -9,7 +9,6 @@ from typing import Annotated, Dict, List, Optional
 from msgspec import Meta, Struct
 
 
-
 class AccountPosition(Struct):
     quantity: Decimal
     break_even_price: Optional[Decimal] = None
@@ -32,9 +31,7 @@ class AccountSummary(Struct):
     positions: Dict[str, List[AccountPosition]]
     timestamp: str
     cash_excess: Optional[
-        Annotated[
-            Optional[Decimal], Meta(description='Cash available to withdraw.')
-        ]
+        Annotated[Optional[Decimal], Meta(description='Cash available to withdraw.')]
     ] = None
     """
     Cash available to withdraw.
@@ -64,6 +61,9 @@ class AccountSummary(Struct):
     """
     unrealized_pnl: Optional[Decimal] = None
     yesterday_equity: Optional[Decimal] = None
+
+
+DecimalModel = Decimal
 
 
 class AccountSummariesResponse(Struct):

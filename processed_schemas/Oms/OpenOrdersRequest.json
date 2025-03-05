@@ -73,7 +73,7 @@
         },
         "seqno": {
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         }
       }

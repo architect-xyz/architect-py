@@ -30,7 +30,8 @@
           "title": "ask_close",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -41,7 +42,8 @@
           "title": "ask_high",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -52,7 +54,8 @@
           "title": "ask_low",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -63,7 +66,8 @@
           "title": "ask_open",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -74,7 +78,8 @@
           "title": "sell_volume",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -82,7 +87,8 @@
           "title": "bid_close",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -93,7 +99,8 @@
           "title": "bid_high",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -104,7 +111,8 @@
           "title": "bid_low",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -115,7 +123,8 @@
           "title": "bid_open",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -126,7 +135,8 @@
           "title": "buy_volume",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -134,7 +144,8 @@
           "title": "close",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -145,7 +156,8 @@
           "title": "high",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -156,7 +168,8 @@
           "title": "low",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -167,7 +180,8 @@
           "title": "mid_close",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -178,7 +192,8 @@
           "title": "mid_high",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -189,7 +204,8 @@
           "title": "mid_low",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -200,7 +216,8 @@
           "title": "mid_open",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -211,7 +228,8 @@
           "title": "open",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -225,7 +243,7 @@
         "tn": {
           "title": "timestamp_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -237,7 +255,8 @@
           "title": "volume",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },

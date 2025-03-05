@@ -23,7 +23,8 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             },
@@ -51,7 +52,8 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             },
@@ -59,7 +61,8 @@
               "title": "trigger_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             }
@@ -83,7 +86,8 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             },
@@ -91,7 +95,8 @@
               "title": "trigger_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             }
@@ -154,7 +159,8 @@
           "title": "quantity",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -205,7 +211,7 @@
         "tn": {
           "title": "recv_time_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -229,7 +235,8 @@
           "title": "average_fill_price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -240,7 +247,8 @@
           "title": "filled_quantity",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         }
@@ -275,7 +283,7 @@
             "integer",
             "null"
           ],
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ats": {
@@ -299,7 +307,8 @@
           "title": "fee",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -342,7 +351,8 @@
           "title": "price",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -350,7 +360,8 @@
           "title": "quantity",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -362,12 +373,12 @@
           "title": "is_taker",
           "default": null,
           "type": "integer",
-          "format": "int"
+          "format": "default"
         },
         "tn": {
           "title": "trade_time_ns",
           "type": "integer",
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -423,7 +434,7 @@
             "integer",
             "null"
           ],
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ats": {
@@ -449,7 +460,8 @@
           "title": "fee",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -494,7 +506,8 @@
           "title": "price",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -505,7 +518,8 @@
           "title": "quantity",
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -531,7 +545,7 @@
             "integer",
             "null"
           ],
-          "format": "uint32",
+          "format": "default",
           "minimum": 0.0
         },
         "ts": {
@@ -607,7 +621,7 @@
         },
         "seqno": {
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         }
       }

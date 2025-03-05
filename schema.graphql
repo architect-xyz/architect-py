@@ -441,6 +441,7 @@ type ProductInfo {
   firstNoticeDate: Date
   primaryVenue: String
   priceDisplayFormat: String
+  spreadLegs: [SpreadLeg!]
 }
 
 type QueryRoot {
@@ -452,6 +453,15 @@ type QueryRoot {
   marketdata: MarketdataQueryRoot!
   oms: OmsQueryRoot!
   folio: FolioQueryRoot!
+}
+
+type SpreadLeg {
+  product: Product!
+  """
+    Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C;
+    We would represent that with quantities in the legs: 1, -2, 1
+  """
+  quantity: Decimal!
 }
 
 type SubscriptionRoot {

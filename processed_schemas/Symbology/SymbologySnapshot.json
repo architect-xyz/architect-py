@@ -45,13 +45,13 @@
     "sid": {
       "title": "sequence_id",
       "type": "integer",
-      "format": "uint64",
+      "format": "default",
       "minimum": 0.0
     },
     "sn": {
       "title": "sequence_number",
       "type": "integer",
-      "format": "uint64",
+      "format": "default",
       "minimum": 0.0
     }
   },
@@ -127,7 +127,8 @@
                   "format": "date-time"
                 },
                 "strike": {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               }
             }
@@ -154,7 +155,8 @@
         "initial_margin": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -167,7 +169,8 @@
         "maintenance_margin": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -175,13 +178,15 @@
           ]
         },
         "min_order_quantity": {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         },
         "min_order_quantity_unit": {
           "$ref": "#/definitions/MinOrderQuantityUnit"
         },
         "step_size": {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         },
         "tick_size": {
           "$ref": "#/definitions/TickSize"
@@ -260,7 +265,8 @@
           "type": "boolean"
         },
         "multiplier": {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         },
         "options_series": {
           "type": "string"
@@ -273,7 +279,8 @@
           "additionalProperties": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             "uniqueItems": true
           }
@@ -306,7 +313,8 @@
           "$ref": "#/definitions/PutOrCall"
         },
         "strike": {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         }
       }
     },
@@ -448,7 +456,8 @@
               "format": "date"
             },
             "multiplier": {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             "product_type": {
               "type": "string",
@@ -503,7 +512,8 @@
               "$ref": "#/definitions/DerivativeKind"
             },
             "multiplier": {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             },
             "product_type": {
               "type": "string",
@@ -600,7 +610,8 @@
           "description": "Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         }
@@ -615,7 +626,8 @@
           ],
           "properties": {
             "simple": {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           },
           "additionalProperties": false
@@ -639,10 +651,12 @@
                     "type": "array",
                     "items": [
                       {
-                        "$ref": "#/definitions/Decimal"
+                        "type": "string",
+                        "format": "decimal"
                       },
                       {
-                        "$ref": "#/definitions/Decimal"
+                        "type": "string",
+                        "format": "decimal"
                       }
                     ],
                     "maxItems": 2,
