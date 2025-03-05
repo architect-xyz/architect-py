@@ -160,6 +160,11 @@ class OrderFields(BaseModel):
     execution_venue: str = Field(alias="executionVenue")
 
 
+class SpreadLegFields(BaseModel):
+    product: str
+    quantity: Decimal
+
+
 class ProductInfoFields(BaseModel):
     typename__: str = Field(alias="__typename")
     symbol: str
@@ -170,6 +175,13 @@ class ProductInfoFields(BaseModel):
     first_notice_date: Optional[date] = Field(alias="firstNoticeDate")
     primary_venue: Optional[str] = Field(alias="primaryVenue")
     price_display_format: Optional[str] = Field(alias="priceDisplayFormat")
+    spread_legs: Optional[List["ProductInfoFieldsSpreadLegs"]] = Field(
+        alias="spreadLegs"
+    )
+
+
+class ProductInfoFieldsSpreadLegs(SpreadLegFields):
+    pass
 
 
 AccountSummaryFields.model_rebuild()
@@ -182,4 +194,5 @@ L2BookFields.model_rebuild()
 MarketStatusFields.model_rebuild()
 MarketTickerFields.model_rebuild()
 OrderFields.model_rebuild()
+SpreadLegFields.model_rebuild()
 ProductInfoFields.model_rebuild()

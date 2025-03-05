@@ -46,8 +46,8 @@ process_file() {
     output_file="${out_dir}/${filename}.py"
     printf "Processing folder: ${service_name}, file: ${filepath}"
     datamodel-codegen \
-        --input "$filepath" \
-        --output "$output_file" \
+        --input "$folder" \
+        --output "$out_dir" \
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
         --use-title-as-name \

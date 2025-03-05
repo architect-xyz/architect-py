@@ -41,6 +41,8 @@ from .fragments import (
     MarketTickerFields,
     OrderFields,
     ProductInfoFields,
+    ProductInfoFieldsSpreadLegs,
+    SpreadLegFields,
 )
 from .get_account_history_query import (
     GetAccountHistoryQuery,
@@ -257,9 +259,11 @@ __all__ = [
     "PlaceOrderMutationOms",
     "PlaceOrderMutationOmsPlaceOrder",
     "ProductInfoFields",
+    "ProductInfoFieldsSpreadLegs",
     "SearchSymbolsQuery",
     "SearchSymbolsQuerySymbology",
     "SortTickersBy",
+    "SpreadLegFields",
     "SubscribeCandles",
     "SubscribeCandlesCandles",
     "SubscribeOrderflow",

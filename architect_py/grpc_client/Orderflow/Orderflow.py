@@ -37,7 +37,7 @@ class CancelStatus(int, Enum):
     integer_127 = 127
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Dir(str, Enum):
@@ -95,17 +95,17 @@ class OrderStatus(int, Enum):
     integer_254 = 254
 
 
-class TimeInForce1(str, Enum):
+class TimeInForce3(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
 
 
-class TimeInForce2(Struct):
+class TimeInForce4(Struct):
     GTD: str
 
 
-TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
+TimeInForce = Union[TimeInForce3, TimeInForce4, Literal['DAY']]
 
 
 UserId = str

@@ -31,5 +31,5 @@ class SubscribeTickersRequest(Struct):
         return request_helper
 
 
-request_helper = RequestStream(SubscribeTickersRequest, typing.Union[TickerUpdate.TickerUpdate1, TickerUpdate.TickerUpdate2], "/json.architect.Marketdata/SubscribeTickers")
+request_helper = RequestStream(SubscribeTickersRequest, TickerUpdate, "/json.architect.Marketdata/SubscribeTickers")
 

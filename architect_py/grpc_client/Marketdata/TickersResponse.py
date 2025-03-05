@@ -9,7 +9,7 @@ from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct, field
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Ticker(Struct):

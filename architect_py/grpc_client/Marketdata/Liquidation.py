@@ -19,7 +19,7 @@ class Size(Struct):
     pass
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Dir(str, Enum):

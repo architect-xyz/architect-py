@@ -84,4 +84,4 @@ class L2BookSnapshot(Struct):
         return datetime.fromtimestamp(self.ts)
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal

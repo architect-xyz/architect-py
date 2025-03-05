@@ -94,7 +94,7 @@ def generate_stub(file_path: str, json_folder: str) -> None:
                 "from architect_py.grpc_client.request import RequestUnary\n"
             )
         request_str = f"""
-request_helper = Request{unary_type.title()}({request_type_name}, {response_base_type_str}, "{route}")
+request_helper = Request{unary_type.title()}({request_type_name}, {response_type_name}, "{route}")
 """
 
         lines.insert(

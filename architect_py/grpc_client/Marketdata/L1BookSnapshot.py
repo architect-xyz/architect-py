@@ -66,4 +66,4 @@ class L1BookSnapshot(Struct):
         self.b = value
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal

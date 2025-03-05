@@ -12,7 +12,7 @@ from msgspec import Meta, Struct
 AliasKind = Literal['CME_GLOBEX']
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 DerivativeKind = Union[Literal['Linear'], Literal['Inverse'], Literal['Quanto']]
@@ -23,19 +23,19 @@ class OptionLike(Struct):
     expiration: Optional[str] = None
 
 
-class EventContractSeriesInstance2(Struct):
+class EventContractSeriesInstance(Struct):
     OptionLike: OptionLike
 
 
-class MinOrderQuantityUnit1(Struct):
+class MinOrderQuantityUnit3(Struct):
     unit: Literal['base']
 
 
-class MinOrderQuantityUnit2(Struct):
+class MinOrderQuantityUnit4(Struct):
     unit: Literal['quote']
 
 
-MinOrderQuantityUnit = Union[MinOrderQuantityUnit1, MinOrderQuantityUnit2]
+MinOrderQuantityUnit = Union[MinOrderQuantityUnit3, MinOrderQuantityUnit4]
 
 
 class OptionsExerciseType(str, Enum):
@@ -51,27 +51,27 @@ class Outcome(Struct):
 PriceDisplayFormat = str
 
 
-class ProductType1(Struct):
+class ProductType12(Struct):
     product_type: Literal['Fiat']
 
 
-class ProductType2(Struct):
+class ProductType13(Struct):
     product_type: Literal['Commodity']
 
 
-class ProductType3(Struct):
+class ProductType14(Struct):
     product_type: Literal['Crypto']
 
 
-class ProductType4(Struct):
+class ProductType15(Struct):
     product_type: Literal['Equity']
 
 
-class ProductType5(Struct):
+class ProductType16(Struct):
     product_type: Literal['Index']
 
 
-class ProductType6(Struct):
+class ProductType17(Struct):
     derivative_kind: DerivativeKind
     expiration: str
     multiplier: Decimal
@@ -81,14 +81,14 @@ class ProductType6(Struct):
     underlying: Optional[str] = None
 
 
-class ProductType8(Struct):
+class ProductType19(Struct):
     derivative_kind: DerivativeKind
     multiplier: Decimal
     product_type: Literal['Perpetual']
     underlying: Optional[str] = None
 
 
-class ProductType11(Struct):
+class ProductType22(Struct):
     product_type: Literal['Unknown']
 
 
@@ -132,7 +132,7 @@ class SpreadLeg(Struct):
     """
 
 
-class TickSize1(Struct):
+class TickSize3(Struct):
     simple: Decimal
 
 
@@ -143,7 +143,7 @@ class Varying(Struct):
     thresholds: List[Threshold]
 
 
-class TickSize2(Struct):
+class TickSize4(Struct):
     """
     List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.
     """
@@ -151,7 +151,7 @@ class TickSize2(Struct):
     varying: Varying
 
 
-TickSize = Union[TickSize1, TickSize2]
+TickSize = Union[TickSize3, TickSize4]
 
 
 class TimeZone(str, Enum):
@@ -757,12 +757,12 @@ class Enumerated(Struct):
     outcome: Outcome
 
 
-class EventContractSeriesInstance1(Struct):
+class EventContractSeriesInstance4(Struct):
     Enumerated: Enumerated
 
 
-EventContractSeriesInstance = Union[
-    EventContractSeriesInstance1, EventContractSeriesInstance2
+EventContractSeriesInstance3 = Union[
+    EventContractSeriesInstance4, EventContractSeriesInstance
 ]
 
 
@@ -805,35 +805,35 @@ class OptionsSeriesInstance(Struct):
     strike: Decimal
 
 
-class ProductType7(Struct):
+class ProductType18(Struct):
     legs: List[SpreadLeg]
     product_type: Literal['FutureSpread']
 
 
-class ProductType9(Struct):
+class ProductType20(Struct):
     instance: OptionsSeriesInstance
     product_type: Literal['Option']
     series: str
 
 
-class ProductType10(Struct):
-    instance: EventContractSeriesInstance
+class ProductType21(Struct):
+    instance: EventContractSeriesInstance3
     product_type: Literal['EventContract']
     series: str
 
 
 ProductType = Union[
-    ProductType1,
-    ProductType2,
-    ProductType3,
-    ProductType4,
-    ProductType5,
-    ProductType6,
-    ProductType7,
-    ProductType8,
-    ProductType9,
-    ProductType10,
-    ProductType11,
+    ProductType12,
+    ProductType13,
+    ProductType14,
+    ProductType15,
+    ProductType16,
+    ProductType17,
+    ProductType18,
+    ProductType19,
+    ProductType20,
+    ProductType21,
+    ProductType22,
 ]
 
 
