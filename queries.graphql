@@ -8,7 +8,14 @@ fragment ProductInfoFields on ProductInfo {
   firstNoticeDate
   primaryVenue
   priceDisplayFormat
-  spreadLegs
+  spreadLegs {
+    ...SpreadLegFields
+  }
+}
+
+fragment SpreadLegFields on SpreadLeg {
+  product
+  quantity
 }
 
 fragment ExecutionInfoFields on ExecutionInfo {
