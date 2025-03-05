@@ -23,7 +23,8 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             },
@@ -51,7 +52,8 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             },
@@ -59,7 +61,8 @@
               "title": "trigger_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             }
@@ -83,7 +86,8 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             },
@@ -91,7 +95,8 @@
               "title": "trigger_price",
               "allOf": [
                 {
-                  "$ref": "#/definitions/Decimal"
+                  "type": "string",
+                  "format": "decimal"
                 }
               ]
             }
@@ -152,7 +157,8 @@
           "title": "quantity",
           "allOf": [
             {
-              "$ref": "#/definitions/Decimal"
+              "type": "string",
+              "format": "decimal"
             }
           ]
         },
@@ -317,7 +323,7 @@
         },
         "seqno": {
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         }
       }

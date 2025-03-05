@@ -20,7 +20,7 @@
         "integer",
         "null"
       ],
-      "format": "uint32",
+      "format": "default",
       "minimum": 0.0
     },
     "venue": {

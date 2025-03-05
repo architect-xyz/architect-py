@@ -10,7 +10,6 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
-
 class L1BookSnapshot(Struct):
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
@@ -65,3 +64,6 @@ class L1BookSnapshot(Struct):
     @best_bid.setter
     def best_bid(self, value: Optional[List[Decimal]]) -> None:
         self.b = value
+
+
+DecimalModel = Decimal

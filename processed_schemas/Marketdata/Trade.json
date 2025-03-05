@@ -25,7 +25,8 @@
       "title": "price",
       "allOf": [
         {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         }
       ]
     },
@@ -33,7 +34,8 @@
       "title": "size",
       "allOf": [
         {
-          "$ref": "#/definitions/Decimal"
+          "type": "string",
+          "format": "decimal"
         }
       ]
     },
@@ -44,7 +46,7 @@
     "tn": {
       "title": "timestamp_ns",
       "type": "integer",
-      "format": "uint32",
+      "format": "default",
       "minimum": 0.0
     },
     "ts": {

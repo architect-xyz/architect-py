@@ -10,7 +10,6 @@ from typing import Annotated, Literal, Optional, Union
 from msgspec import Meta, Struct, field
 
 
-
 class TickerUpdate1(Struct):
     s: Annotated[str, Meta(title='symbol')]
     t: Literal['snapshot']
@@ -39,9 +38,9 @@ class TickerUpdate1(Struct):
     price_to_earnings: Optional[Decimal] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title='last_size')]] = None
     shares_outstanding_weighted_adj: Optional[Decimal] = None
-    sp: Optional[
-        Annotated[Optional[Decimal], Meta(title='last_settlement_price')]
-    ] = None
+    sp: Optional[Annotated[Optional[Decimal], Meta(title='last_settlement_price')]] = (
+        None
+    )
     v: Optional[Annotated[Optional[Decimal], Meta(title='volume_24h')]] = None
     vm: Optional[Annotated[Optional[Decimal], Meta(title='volume_30d')]] = None
     xh: Optional[Annotated[Optional[Decimal], Meta(title='session_high')]] = None
@@ -286,9 +285,9 @@ class TickerUpdate2(Struct):
     price_to_earnings: Optional[Decimal] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title='last_size')]] = None
     shares_outstanding_weighted_adj: Optional[Decimal] = None
-    sp: Optional[
-        Annotated[Optional[Decimal], Meta(title='last_settlement_price')]
-    ] = None
+    sp: Optional[Annotated[Optional[Decimal], Meta(title='last_settlement_price')]] = (
+        None
+    )
     v: Optional[Annotated[Optional[Decimal], Meta(title='volume_24h')]] = None
     vm: Optional[Annotated[Optional[Decimal], Meta(title='volume_30d')]] = None
     xh: Optional[Annotated[Optional[Decimal], Meta(title='session_high')]] = None
@@ -508,3 +507,6 @@ class TickerUpdate2(Struct):
 TickerUpdate = Annotated[
     Union[TickerUpdate1, TickerUpdate2], Meta(title='TickerUpdate')
 ]
+
+
+DecimalModel = Decimal

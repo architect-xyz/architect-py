@@ -26,7 +26,7 @@
         "integer",
         "null"
       ],
-      "format": "uint32",
+      "format": "default",
       "minimum": 0.0
     },
     "order_id": {
@@ -81,7 +81,7 @@
         },
         "seqno": {
           "type": "integer",
-          "format": "uint64",
+          "format": "default",
           "minimum": 0.0
         }
       }

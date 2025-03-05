@@ -12,9 +12,23 @@ from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
+
+class Quantity(Struct):
+    pass
+
+
+class LimitPrice(Struct):
+    pass
+
+
+class TriggerPrice(Struct):
+    pass
+
+
 AccountIdOrName = str
 
 
+DecimalModel = Decimal
 
 
 class Dir(str, Enum):
@@ -63,11 +77,11 @@ TraderIdOrEmail = str
 
 class PlaceOrderRequest1(Struct):
     d: Annotated[Dir, Meta(title='dir')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
     k: Literal['LIMIT']
-    p: Annotated[Decimal, Meta(title='limit_price')]
+    p: Annotated[LimitPrice, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
     a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
     id: Optional[
@@ -95,11 +109,11 @@ class PlaceOrderRequest1(Struct):
         self.d = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property
@@ -119,11 +133,11 @@ class PlaceOrderRequest1(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def limit_price(self) -> LimitPrice:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: LimitPrice) -> None:
         self.p = value
 
     @property
@@ -181,12 +195,12 @@ class PlaceOrderRequest1(Struct):
 
 class PlaceOrderRequest2(Struct):
     d: Annotated[Dir, Meta(title='dir')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
     k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[Decimal, Meta(title='limit_price')]
-    tp: Annotated[Decimal, Meta(title='trigger_price')]
+    p: Annotated[LimitPrice, Meta(title='limit_price')]
+    tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
     a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
     id: Optional[
         Annotated[
@@ -213,11 +227,11 @@ class PlaceOrderRequest2(Struct):
         self.d = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property
@@ -237,19 +251,19 @@ class PlaceOrderRequest2(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def limit_price(self) -> LimitPrice:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: LimitPrice) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> Decimal:
+    def trigger_price(self) -> TriggerPrice:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
+    def trigger_price(self, value: TriggerPrice) -> None:
         self.tp = value
 
     @property
@@ -299,12 +313,12 @@ class PlaceOrderRequest2(Struct):
 
 class PlaceOrderRequest3(Struct):
     d: Annotated[Dir, Meta(title='dir')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     tif: Annotated[TimeInForce, Meta(title='time_in_force')]
     k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[Decimal, Meta(title='limit_price')]
-    tp: Annotated[Decimal, Meta(title='trigger_price')]
+    p: Annotated[LimitPrice, Meta(title='limit_price')]
+    tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
     a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
     id: Optional[
         Annotated[
@@ -331,11 +345,11 @@ class PlaceOrderRequest3(Struct):
         self.d = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property
@@ -355,19 +369,19 @@ class PlaceOrderRequest3(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def limit_price(self) -> LimitPrice:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: LimitPrice) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> Decimal:
+    def trigger_price(self) -> TriggerPrice:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
+    def trigger_price(self, value: TriggerPrice) -> None:
         self.tp = value
 
     @property

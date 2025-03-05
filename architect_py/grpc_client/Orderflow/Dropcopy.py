@@ -10,6 +10,28 @@ from typing import Annotated, Literal, Optional, Union
 from msgspec import Meta, Struct
 
 
+class Quantity(Struct):
+    pass
+
+
+class FilledQuantity(Struct):
+    pass
+
+
+class LimitPrice(Struct):
+    pass
+
+
+class TriggerPrice(Struct):
+    pass
+
+
+class Price(Struct):
+    pass
+
+
+DecimalModel = Decimal
+
 
 class Dir(str, Enum):
     """
@@ -87,7 +109,7 @@ class Dropcopy1(Struct):
     d: Annotated[Dir, Meta(title='dir')]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title='status')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[OrderSource, Meta(title='source')]
     t: Literal['o']
@@ -96,18 +118,16 @@ class Dropcopy1(Struct):
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[Decimal, Meta(title='filled_quantity')]
+    xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['LIMIT']
-    p: Annotated[Decimal, Meta(title='limit_price')]
+    p: Annotated[LimitPrice, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[
-        Annotated[Optional[Decimal], Meta(title='average_fill_price')]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
     @property
     def account(self) -> str:
@@ -134,11 +154,11 @@ class Dropcopy1(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property
@@ -198,19 +218,19 @@ class Dropcopy1(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> Decimal:
+    def filled_quantity(self) -> FilledQuantity:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: Decimal) -> None:
+    def filled_quantity(self, value: FilledQuantity) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def limit_price(self) -> LimitPrice:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: LimitPrice) -> None:
         self.p = value
 
     @property
@@ -259,7 +279,7 @@ class Dropcopy2(Struct):
     d: Annotated[Dir, Meta(title='dir')]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title='status')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[OrderSource, Meta(title='source')]
     t: Literal['o']
@@ -268,18 +288,16 @@ class Dropcopy2(Struct):
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[Decimal, Meta(title='filled_quantity')]
+    xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[Decimal, Meta(title='limit_price')]
-    tp: Annotated[Decimal, Meta(title='trigger_price')]
+    p: Annotated[LimitPrice, Meta(title='limit_price')]
+    tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[
-        Annotated[Optional[Decimal], Meta(title='average_fill_price')]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
     @property
     def account(self) -> str:
@@ -306,11 +324,11 @@ class Dropcopy2(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property
@@ -370,27 +388,27 @@ class Dropcopy2(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> Decimal:
+    def filled_quantity(self) -> FilledQuantity:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: Decimal) -> None:
+    def filled_quantity(self, value: FilledQuantity) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def limit_price(self) -> LimitPrice:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: LimitPrice) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> Decimal:
+    def trigger_price(self) -> TriggerPrice:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
+    def trigger_price(self, value: TriggerPrice) -> None:
         self.tp = value
 
     @property
@@ -431,7 +449,7 @@ class Dropcopy3(Struct):
     d: Annotated[Dir, Meta(title='dir')]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title='status')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[OrderSource, Meta(title='source')]
     t: Literal['o']
@@ -440,18 +458,16 @@ class Dropcopy3(Struct):
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[Decimal, Meta(title='filled_quantity')]
+    xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[Decimal, Meta(title='limit_price')]
-    tp: Annotated[Decimal, Meta(title='trigger_price')]
+    p: Annotated[LimitPrice, Meta(title='limit_price')]
+    tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[
-        Annotated[Optional[Decimal], Meta(title='average_fill_price')]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
     @property
     def account(self) -> str:
@@ -478,11 +494,11 @@ class Dropcopy3(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property
@@ -542,27 +558,27 @@ class Dropcopy3(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> Decimal:
+    def filled_quantity(self) -> FilledQuantity:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: Decimal) -> None:
+    def filled_quantity(self, value: FilledQuantity) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def limit_price(self) -> LimitPrice:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: LimitPrice) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> Decimal:
+    def trigger_price(self) -> TriggerPrice:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
+    def trigger_price(self, value: TriggerPrice) -> None:
         self.tp = value
 
     @property
@@ -602,8 +618,8 @@ class Dropcopy4(Struct):
     d: Annotated[Dir, Meta(title='direction')]
     id: Annotated[str, Meta(title='fill_id')]
     k: Annotated[FillKind, Meta(title='fill_kind')]
-    p: Annotated[Decimal, Meta(title='price')]
-    q: Annotated[Decimal, Meta(title='quantity')]
+    p: Annotated[Price, Meta(title='price')]
+    q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     t: Annotated[int, Meta(title='is_taker')]
     tn: Annotated[int, Meta(ge=0, title='trade_time_ns')]
@@ -671,19 +687,19 @@ class Dropcopy4(Struct):
         self.k = value
 
     @property
-    def price(self) -> Decimal:
+    def price(self) -> Price:
         return self.p
 
     @price.setter
-    def price(self, value: Decimal) -> None:
+    def price(self, value: Price) -> None:
         self.p = value
 
     @property
-    def quantity(self) -> Decimal:
+    def quantity(self) -> Quantity:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Decimal) -> None:
+    def quantity(self, value: Quantity) -> None:
         self.q = value
 
     @property

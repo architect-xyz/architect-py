@@ -9,8 +9,6 @@ from typing import Annotated, List, Literal, Union
 
 from msgspec import Meta, Struct
 
-
-
 Ask = List[Decimal]
 
 
@@ -182,3 +180,6 @@ L2BookUpdate = Annotated[
         title='L2BookUpdate',
     ),
 ]
+
+
+DecimalModel = Decimal

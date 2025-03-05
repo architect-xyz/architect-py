@@ -16,6 +16,7 @@ class AlgoState(str, Enum):
     Stopped = 'Stopped'
 
 
+DecimalModel = Decimal
 
 
 class Dir(str, Enum):

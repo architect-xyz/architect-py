@@ -76,8 +76,8 @@ def parse_tradable_product(value: str) -> TradableProduct:
 
 
 class OrderDir(str, Enum):
-    BUY = "buy"
-    SELL = "sell"
+    BUY = "BUY"
+    SELL = "SELL"
 
     def __int__(self):
         if self == OrderDir.BUY:

@@ -119,9 +119,7 @@ def fix_lines(file_path: str) -> None:
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    lines = [
-        fix_line(line) for line in lines if line.strip() != "DecimalModel = Decimal"
-    ]
+    # lines = [fix_line(line) for line in lines]
 
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")

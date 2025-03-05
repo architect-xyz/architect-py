@@ -9,6 +9,7 @@ from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct, field
 
+DecimalModel = Decimal
 
 
 class Ticker(Struct):
@@ -38,9 +39,9 @@ class Ticker(Struct):
     price_to_earnings: Optional[Decimal] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title='last_size')]] = None
     shares_outstanding_weighted_adj: Optional[Decimal] = None
-    sp: Optional[
-        Annotated[Optional[Decimal], Meta(title='last_settlement_price')]
-    ] = None
+    sp: Optional[Annotated[Optional[Decimal], Meta(title='last_settlement_price')]] = (
+        None
+    )
     v: Optional[Annotated[Optional[Decimal], Meta(title='volume_24h')]] = None
     vm: Optional[Annotated[Optional[Decimal], Meta(title='volume_30d')]] = None
     xh: Optional[Annotated[Optional[Decimal], Meta(title='session_high')]] = None
