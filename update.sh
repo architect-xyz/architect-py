@@ -34,29 +34,6 @@ if [[ ! -d "$PROCESSED_DIR" ]]; then
     exit 1
 fi
 
-process_folder() {
-    local folder="$1"
-    local service_name filename out_dir
-
-    service_name=$(basename "$folder")
-    out_dir="${GRPC_CLIENT_DIR}/${service_name}"
-    mkdir -p "${out_dir}"
-
-    printf "Processing folder: ${service_name}"
-    datamodel-codegen \
-        --input "$folder" \
-        --output "$out_dir" \
-        --input-file-type jsonschema \
-        --output-model-type msgspec.Struct \
-        --use-title-as-name \
-        --enum-field-as-literal one \
-        --use-subclass-enum \
-        --use-field-description \
-        --use-schema-description \
-        --custom-template-dir templates \
-        --disable-timestamp
-}
-
 post_process_file() {
     local filepath="$1"
     local folder service_name filename out_dir output_file
@@ -70,16 +47,9 @@ post_process_file() {
     python postprocess_grpc_file.py --file_path "$output_file" --json_folder "$folder"
 }
 
-export -f process_folder
 export -f post_process_file
 export GRPC_CLIENT_DIR
 
-if command -v nproc >/dev/null 2>&1; then
-    NUM_JOBS=$(nproc)
-else
-    NUM_JOBS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
-fi
-NUM_JOBS=$(( NUM_JOBS < 6 ? NUM_JOBS : 6 ))  # Limit to 4 jobs
 
 # Capture list of JSON files to process
 json_files=()
@@ -87,35 +57,27 @@ while IFS= read -r file; do
     json_files+=("$file")
 done < <(find "$PROCESSED_DIR" -mindepth 2 -name '*.json')
 
-folders=()
-while IFS= read -r folder; do
-    folders+=("$folder")
-done < <(find "$PROCESSED_DIR" -mindepth 1 -maxdepth 1 -type d)
+datamodel-codegen \
+    --input "$PROCESSED_DIR" \
+    --output "$GRPC_CLIENT_DIR" \
+    --input-file-type jsonschema \
+    --output-model-type msgspec.Struct \
+    --custom-template-dir templates \
+    --use-title-as-name \
+    --enum-field-as-literal one \
+    --use-subclass-enum \
+    --use-field-description \
+    --use-schema-description \
+    --disable-timestamp
 
-printf "%s\n" "${folders[@]}"
+printf "\nPost processing files\n"
+for file in "${json_files[@]}"; do
+    post_process_file "$file"
+done
 
-# Process JSON files either using GNU parallel or a normal for loop.
-if command -v parallel >/dev/null 2>&1; then
-    printf "\n\e[31mGNU parallel found, processing files in parallel.\e[0m\n\n"
-
-    printf "%s\n" "${folders[@]}" | parallel --bar -j "$NUM_JOBS" --tag process_folder {}
-
-    printf "\nPost processing files\n"
-    printf "%s\n" "${json_files[@]}" | parallel --bar -j "$NUM_JOBS" post_process_file {}
-else
-    printf "\n\e[31mGNU parallel not found, processing files sequentially.\e[0m\n\n\n"
-    for file in "${folders[@]}"; do
-        process_file "$file"
-    done
-    printf "\nPost processing files\n"
-    for file in "${json_files[@]}"; do
-        post_process_file "$file"
-    done
-fi
-
-printf "\n\nGenerating GraphQL code\n"
 
 # ariadne codegen
+printf "\n\nGenerating GraphQL code\n"
 poetry run ariadne-codegen --config ariadne-codegen.toml
 
 printf "\nGenerating client protocol"
@@ -125,7 +87,7 @@ python generate_sync_client_protocol.py > architect_py/protocol/client_protocol.
 VERSION_FILE="version"
 
 if [ -f "$VERSION_FILE" ]; then
-    printf "\nCurrent version:"
+    printf "\nCurrent version: "
     cat "$VERSION_FILE"
 else
     printf "Version file not found: $VERSION_FILE"

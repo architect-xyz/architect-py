@@ -14,10 +14,6 @@ def file_fixes(lines: str) -> str:
     lines = lines.replace("uint32", "default")
     lines = lines.replace("uint64", "default")
     lines = lines.replace('"format": "int"', '"format": "default"')
-    # lines = lines.replace(
-    #     '"$ref": "#/definitions',
-    #     '"$ref": "../definitions.json#/',
-    # )
 
     pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
     lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
@@ -31,11 +27,8 @@ def generate_cleaned_schema(processed_schema_file: str) -> dict:
 
     lines = file_fixes(lines)
 
-    with open(processed_schema_file, "w") as f:
-        f.writelines(lines)
+    services = json.loads("".join(lines))
 
-    with open(processed_schema_file, mode="r") as f:
-        services = json.load(f)
     return services
 
 
