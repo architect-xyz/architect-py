@@ -32,7 +32,6 @@ class CandleWidth(int, Enum):
     integer_32 = 32
 
 
-Decimal1 = Decimal
 
 
 class Candle(Struct):

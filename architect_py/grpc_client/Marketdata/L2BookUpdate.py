@@ -182,4 +182,3 @@ L2BookUpdate = Annotated[
 ]
 
 
-Decimal1 = Decimal

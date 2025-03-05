@@ -12,7 +12,6 @@ from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
-Decimal1 = Decimal
 
 
 class Dir(str, Enum):

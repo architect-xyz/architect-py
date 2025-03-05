@@ -509,4 +509,3 @@ TickerUpdate = Annotated[
 ]
 
 
-Decimal1 = Decimal

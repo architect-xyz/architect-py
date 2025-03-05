@@ -28,7 +28,6 @@ class TriggerPrice(Struct):
 AccountIdOrName = str
 
 
-Decimal1 = Decimal
 
 
 class Dir(str, Enum):
