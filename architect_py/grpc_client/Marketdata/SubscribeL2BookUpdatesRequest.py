@@ -20,5 +20,5 @@ class SubscribeL2BookUpdatesRequest(Struct):
         return request_helper
 
 
-request_helper = RequestStream(SubscribeL2BookUpdatesRequest, typing.Union[L2BookUpdate.Snapshot, L2BookUpdate.Diff], "/json.architect.Marketdata/SubscribeL2BookUpdates")
+request_helper = RequestStream(SubscribeL2BookUpdatesRequest, L2BookUpdate, "/json.architect.Marketdata/SubscribeL2BookUpdates")
 

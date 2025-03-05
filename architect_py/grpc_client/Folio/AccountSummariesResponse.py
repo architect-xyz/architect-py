@@ -63,7 +63,7 @@ class AccountSummary(Struct):
     yesterday_equity: Optional[Decimal] = None
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class AccountSummariesResponse(Struct):

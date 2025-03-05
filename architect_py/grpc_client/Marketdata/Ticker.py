@@ -256,4 +256,4 @@ class Ticker(Struct):
         self.xv = value
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal

@@ -28,7 +28,7 @@ class TriggerPrice(Struct):
 AccountIdOrName = str
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Dir(str, Enum):
@@ -59,17 +59,17 @@ class OrderSource(int, Enum):
     integer_255 = 255
 
 
-class TimeInForce1(str, Enum):
+class TimeInForce5(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
 
 
-class TimeInForce2(Struct):
+class TimeInForce6(Struct):
     GTD: str
 
 
-TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
+TimeInForce = Union[TimeInForce5, TimeInForce6, Literal['DAY']]
 
 
 TraderIdOrEmail = str
@@ -435,5 +435,5 @@ PlaceOrderRequest = Annotated[
 ]
 
 
-request_helper = RequestUnary(PlaceOrderRequest, typing.Union[Order.Order1, Order.Order2, Order.Order3], "/json.architect.Oms/PlaceOrder")
+request_helper = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")
 

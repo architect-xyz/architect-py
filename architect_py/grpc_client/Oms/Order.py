@@ -26,7 +26,7 @@ class TriggerPrice(Struct):
     pass
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Dir(str, Enum):
@@ -78,23 +78,23 @@ class OrderStatus(int, Enum):
     integer_254 = 254
 
 
-class TimeInForce1(str, Enum):
+class TimeInForce3(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
 
 
-class TimeInForce2(Struct):
+class TimeInForce4(Struct):
     GTD: str
 
 
-TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
+TimeInForce = Union[TimeInForce3, TimeInForce4, Literal['DAY']]
 
 
 UserId = str
 
 
-class Order1(Struct):
+class Order4(Struct):
     a: Annotated[str, Meta(title='account')]
     d: Annotated[Dir, Meta(title='dir')]
     id: OrderId
@@ -263,7 +263,7 @@ class Order1(Struct):
         self.xp = value
 
 
-class Order2(Struct):
+class Order5(Struct):
     a: Annotated[str, Meta(title='account')]
     d: Annotated[Dir, Meta(title='dir')]
     id: OrderId
@@ -432,7 +432,7 @@ class Order2(Struct):
         self.xp = value
 
 
-class Order3(Struct):
+class Order6(Struct):
     a: Annotated[str, Meta(title='account')]
     d: Annotated[Dir, Meta(title='dir')]
     id: OrderId
@@ -601,4 +601,4 @@ class Order3(Struct):
         self.xp = value
 
 
-Order = Annotated[Union[Order1, Order2, Order3], Meta(title='Order')]
+Order = Annotated[Union[Order4, Order5, Order6], Meta(title='Order')]

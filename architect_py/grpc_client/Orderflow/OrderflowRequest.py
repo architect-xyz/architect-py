@@ -28,7 +28,7 @@ class TriggerPrice(Struct):
 AccountIdOrName = str
 
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Dir(str, Enum):
@@ -59,17 +59,17 @@ class OrderSource(int, Enum):
     integer_255 = 255
 
 
-class TimeInForce1(str, Enum):
+class TimeInForce5(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
 
 
-class TimeInForce2(Struct):
+class TimeInForce6(Struct):
     GTD: str
 
 
-TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
+TimeInForce = Union[TimeInForce5, TimeInForce6, Literal['DAY']]
 
 
 TraderIdOrEmail = str
@@ -491,5 +491,5 @@ OrderflowRequest = Annotated[
 ]
 
 
-request_helper = RequestDuplex_Stream(OrderflowRequest, typing.Union[Orderflow.Orderflow1, Orderflow.Orderflow2, Orderflow.Orderflow3, Orderflow.Orderflow4, Orderflow.Orderflow5, Orderflow.Orderflow6, Orderflow.Orderflow7, Orderflow.Orderflow8, Orderflow.Orderflow9, Orderflow.Orderflow10, Orderflow.Orderflow11, Orderflow.Orderflow12, Orderflow.Orderflow13], "/json.architect.Orderflow/Orderflow")
+request_helper = RequestDuplex_Stream(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")
 

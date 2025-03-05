@@ -9,7 +9,7 @@ from typing import Annotated, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
-DecimalModel = Decimal
+Decimal1 = Decimal
 
 
 class Dir(str, Enum):

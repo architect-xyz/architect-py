@@ -29,5 +29,5 @@ class DropcopyRequest(Struct):
         return request_helper
 
 
-request_helper = RequestStream(DropcopyRequest, typing.Union[Dropcopy.Dropcopy1, Dropcopy.Dropcopy2, Dropcopy.Dropcopy3, Dropcopy.Dropcopy4, Dropcopy.Dropcopy5], "/json.architect.Orderflow/Dropcopy")
+request_helper = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")
 

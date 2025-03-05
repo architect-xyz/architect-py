@@ -164,6 +164,14 @@ class GraphQLClient(JuniperBaseClient):
               firstNoticeDate
               primaryVenue
               priceDisplayFormat
+              spreadLegs {
+                ...SpreadLegFields
+              }
+            }
+
+            fragment SpreadLegFields on SpreadLeg {
+              product
+              quantity
             }
             """
         )
@@ -202,6 +210,14 @@ class GraphQLClient(JuniperBaseClient):
               firstNoticeDate
               primaryVenue
               priceDisplayFormat
+              spreadLegs {
+                ...SpreadLegFields
+              }
+            }
+
+            fragment SpreadLegFields on SpreadLeg {
+              product
+              quantity
             }
             """
         )
