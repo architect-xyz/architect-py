@@ -6,21 +6,21 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 
-from typing import Annotated, List, Literal, Union
+from typing import Annotated, Literal, Sequence, Union
 
 from msgspec import Meta, Struct
 
 
 
-Ask = List[Decimal]
+Ask = Sequence[Decimal]
 
 
-Bid = List[Decimal]
+Bid = Sequence[Decimal]
 
 
 class Snapshot(Struct):
-    a: Annotated[List[Ask], Meta(title='asks')]
-    b: Annotated[List[Bid], Meta(title='bids')]
+    a: Annotated[Sequence[Ask], Meta(title='asks')]
+    b: Annotated[Sequence[Bid], Meta(title='bids')]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     t: Literal['s']
@@ -28,19 +28,19 @@ class Snapshot(Struct):
     ts: Annotated[int, Meta(title='timestamp')]
 
     @property
-    def asks(self) -> List[Ask]:
+    def asks(self) -> Sequence[Ask]:
         return self.a
 
     @asks.setter
-    def asks(self, value: List[Ask]) -> None:
+    def asks(self, value: Sequence[Ask]) -> None:
         self.a = value
 
     @property
-    def bids(self) -> List[Bid]:
+    def bids(self) -> Sequence[Bid]:
         return self.b
 
     @bids.setter
-    def bids(self, value: List[Bid]) -> None:
+    def bids(self, value: Sequence[Bid]) -> None:
         self.b = value
 
     @property
@@ -86,14 +86,14 @@ class Snapshot(Struct):
 
 class Diff(Struct):
     a: Annotated[
-        List[Ask],
+        Sequence[Ask],
         Meta(
             description='Set of (price, level) updates. If zero, the price level has been removed from the book.',
             title='asks',
         ),
     ]
     b: Annotated[
-        List[Bid],
+        Sequence[Bid],
         Meta(
             description='Set of (price, level) updates. If zero, the price level has been removed from the book.',
             title='bids',
@@ -106,19 +106,19 @@ class Diff(Struct):
     ts: Annotated[int, Meta(title='timestamp')]
 
     @property
-    def asks(self) -> List[Ask]:
+    def asks(self) -> Sequence[Ask]:
         return self.a
 
     @asks.setter
-    def asks(self, value: List[Ask]) -> None:
+    def asks(self, value: Sequence[Ask]) -> None:
         self.a = value
 
     @property
-    def bids(self) -> List[Bid]:
+    def bids(self) -> Sequence[Bid]:
         return self.b
 
     @bids.setter
-    def bids(self, value: List[Bid]) -> None:
+    def bids(self, value: Sequence[Bid]) -> None:
         self.b = value
 
     @property

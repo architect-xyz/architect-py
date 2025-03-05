@@ -6,7 +6,7 @@ from architect_py.grpc_client.Oms.OpenOrdersResponse import OpenOrdersResponse
 from architect_py.grpc_client.request import RequestUnary
 
 
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional, Sequence
 
 from msgspec import Meta, Struct
 
@@ -23,7 +23,7 @@ TraderIdOrEmail = str
 
 class OpenOrdersRequest(Struct):
     account: Optional[AccountIdOrName] = None
-    order_ids: Optional[List[OrderId]] = None
+    order_ids: Optional[Sequence[OrderId]] = None
     parent_order_id: Optional[OrderId] = None
     symbol: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None

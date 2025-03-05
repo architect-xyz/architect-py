@@ -6,7 +6,7 @@ from architect_py.grpc_client.Marketdata.TickerUpdate import TickerUpdate
 from architect_py.grpc_client.request import RequestStream
 
 
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional, Sequence
 
 from msgspec import Meta, Struct
 
@@ -14,7 +14,7 @@ from msgspec import Meta, Struct
 class SubscribeTickersRequest(Struct):
     symbols: Optional[
         Annotated[
-            List[str],
+            Sequence[str],
             Meta(description='If None, subscribe from all symbols on the feed'),
         ]
     ] = None

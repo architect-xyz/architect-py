@@ -6,7 +6,7 @@ from architect_py.grpc_client.Folio.AccountSummariesResponse import AccountSumma
 from architect_py.grpc_client.request import RequestUnary
 
 
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional, Sequence
 
 from msgspec import Meta, Struct
 
@@ -19,7 +19,7 @@ TraderIdOrEmail = str
 class AccountSummariesRequest(Struct):
     accounts: Optional[
         Annotated[
-            List[AccountIdOrName],
+            Sequence[AccountIdOrName],
             Meta(
                 description='If trader and accounts are both None, return all accounts for the user'
             ),

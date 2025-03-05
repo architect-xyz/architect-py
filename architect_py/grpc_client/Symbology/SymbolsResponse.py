@@ -3,10 +3,10 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import Sequence
 
 from msgspec import Struct
 
 
 class SymbolsResponse(Struct):
-    symbols: List[str]
+    symbols: Sequence[str]

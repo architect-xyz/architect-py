@@ -6,40 +6,40 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 
-from typing import Annotated, List
+from typing import Annotated, Sequence
 
 from msgspec import Meta, Struct
 
 
 
-Ask = List[Decimal]
+Ask = Sequence[Decimal]
 
 
-Bid = List[Decimal]
+Bid = Sequence[Decimal]
 
 
 class L2BookSnapshot(Struct):
-    a: Annotated[List[Ask], Meta(title='asks')]
-    b: Annotated[List[Bid], Meta(title='bids')]
+    a: Annotated[Sequence[Ask], Meta(title='asks')]
+    b: Annotated[Sequence[Bid], Meta(title='bids')]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
 
     @property
-    def asks(self) -> List[Ask]:
+    def asks(self) -> Sequence[Ask]:
         return self.a
 
     @asks.setter
-    def asks(self, value: List[Ask]) -> None:
+    def asks(self, value: Sequence[Ask]) -> None:
         self.a = value
 
     @property
-    def bids(self) -> List[Bid]:
+    def bids(self) -> Sequence[Bid]:
         return self.b
 
     @bids.setter
-    def bids(self, value: List[Bid]) -> None:
+    def bids(self, value: Sequence[Bid]) -> None:
         self.b = value
 
     @property
