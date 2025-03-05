@@ -17,8 +17,8 @@ else
     printf "Schema matches backend.\n"
 fi
 
-# GRPC codegen
 
+# GRPC codegen
 GRPC_CLIENT_DIR="architect_py/grpc_client"
 PROCESSED_DIR="processed_schemas"
 
@@ -36,7 +36,8 @@ if [[ ! -d "$PROCESSED_DIR" ]]; then
 fi
 
 process_file() {
-    filepath="$1"
+    local filepath="$1"
+    local folder service_name filename out_dir output_file
     folder=$(dirname "$filepath")
     service_name=$(basename "$folder")
     filename=$(basename "$filepath" .json)
@@ -53,13 +54,27 @@ process_file() {
         --use-title-as-name \
         --enum-field-as-literal one \
         --use-subclass-enum \
-          --use-field-description \
+        --use-field-description \
+        --use-schema-description \
         --custom-template-dir templates \
         --disable-timestamp
+}
+
+post_process_file() {
+    local filepath="$1"
+    local folder service_name filename out_dir output_file
+
+    folder=$(dirname "$filepath")
+    service_name=$(basename "$folder")
+    filename=$(basename "$filepath" .json)
+    out_dir="${GRPC_CLIENT_DIR}/${service_name}"
+    output_file="${out_dir}/${filename}.py"
+
     python postprocess_grpc_file.py --file_path "$output_file" --json_folder "$folder"
 }
 
 export -f process_file
+export -f post_process_file
 export GRPC_CLIENT_DIR
 
 if command -v nproc >/dev/null 2>&1; then
@@ -68,15 +83,27 @@ else
     NUM_JOBS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
 fi
 
+# Capture list of JSON files to process
+json_files=()
+while IFS= read -r file; do
+    json_files+=("$file")
+done < <(find "$PROCESSED_DIR" -mindepth 2 -name '*.json')
+
+
 # Process JSON files either using GNU parallel or a normal for loop.
 if command -v parallel >/dev/null 2>&1; then
     printf "\n\e[31mGNU parallel found, processing files in parallel.\e[0m\n\n"
-    find "$PROCESSED_DIR" -mindepth 2 -name '*.json' | parallel --bar -j "$NUM_JOBS" process_file {}
+
+    printf "%s\n" "${json_files[@]}" | parallel --bar -j "$NUM_JOBS" process_file {}
+    printf "%s\n" "${json_files[@]}" | parallel --bar -j "$NUM_JOBS" post_process_file {}
 else
     printf "\n\e[31mGNU parallel not found, processing files sequentially.\e[0m\n\n\n"
-    while IFS= read -r filepath; do
-        process_file "$filepath"
-    done < <(find "$PROCESSED_DIR" -mindepth 2 -name '*.json')
+    for file in "${json_files[@]}"; do
+        process_file "$file"
+    done
+    for file in "${json_files[@]}"; do
+        post_process_file "$file"
+    done
 fi
 
 printf "\n\nGenerating GraphQL code\n"

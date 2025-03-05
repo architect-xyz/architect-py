@@ -17,6 +17,10 @@ class CancelStatus(int, Enum):
 
 
 class OrderId(Struct):
+    """
+    System-unique, persistent order identifiers
+    """
+
     seqid: str
     seqno: Annotated[int, Meta(ge=0)]
 

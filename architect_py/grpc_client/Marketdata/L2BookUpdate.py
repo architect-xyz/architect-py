@@ -19,6 +19,10 @@ Bid = List[Decimal]
 
 
 class Snapshot(Struct):
+    """
+    Unique sequence id and number.
+    """
+
     a: Annotated[List[Ask], Meta(title='asks')]
     b: Annotated[List[Bid], Meta(title='bids')]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
@@ -85,6 +89,10 @@ class Snapshot(Struct):
 
 
 class Diff(Struct):
+    """
+    Unique sequence id and number.
+    """
+
     a: Annotated[
         List[Ask],
         Meta(

@@ -17,6 +17,10 @@ TraderIdOrEmail = str
 
 
 class SubscribeOrderflowRequest(Struct):
+    """
+    Subscribe/listen to orderflow events.
+    """
+
     account: Optional[AccountIdOrName] = None
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None

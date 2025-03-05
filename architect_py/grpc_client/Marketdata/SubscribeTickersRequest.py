@@ -12,6 +12,10 @@ from msgspec import Meta, Struct
 
 
 class SubscribeTickersRequest(Struct):
+    """
+    Ticker updates are not strongly ordered because the data is considered more casual.  You may receive diffs or snapshots slightly out of order.
+    """
+
     symbols: Optional[
         Annotated[
             List[str],

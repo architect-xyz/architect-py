@@ -13,6 +13,10 @@ from msgspec import Meta, Struct
 
 
 class Dir(str, Enum):
+    """
+    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
+    """
+
     BUY = 'BUY'
     SELL = 'SELL'
 
@@ -24,6 +28,10 @@ class FillKind(int, Enum):
 
 
 class OrderId(Struct):
+    """
+    System-unique, persistent order identifiers
+    """
+
     seqid: str
     seqno: Annotated[int, Meta(ge=0)]
 
@@ -779,6 +787,10 @@ class Dropcopy4(Struct):
 
 
 class Dropcopy5(Struct):
+    """
+    Fills which we received but couldn't parse fully, return details best effort
+    """
+
     id: Annotated[str, Meta(title='fill_id')]
     t: Literal['af']
     x: Annotated[str, Meta(title='execution_venue')]

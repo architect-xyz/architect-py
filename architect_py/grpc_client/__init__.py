@@ -52,13 +52,11 @@ TODO:
 Custom Code Generation for the gRPC client
     - might fix duplication of types issue
     - might fix the Decimal = str issue
+    - Dir
 Fix the duplication of types issue in the generated code
 
 The decoder should be reused
 but it needs to be instantiated per response type
-
-
-overall improve the performance of this libary
 """
 
 
