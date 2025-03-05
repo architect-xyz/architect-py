@@ -73,6 +73,9 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
             req_schema = rpc.get("request_type")
             resp_schema = rpc.get("response_type")
 
+            process_schema_definitions(req_schema)
+            process_schema_definitions(resp_schema)
+
             route = rpc.get("route")
             unary_type = rpc.get("type")
 

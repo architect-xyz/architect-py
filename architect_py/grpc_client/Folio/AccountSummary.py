@@ -25,7 +25,6 @@ class AccountPosition(Struct):
     """
 
 
-Decimal1 = Decimal
 
 
 class AccountSummary(Struct):

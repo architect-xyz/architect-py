@@ -12,7 +12,6 @@ from msgspec import Meta, Struct
 AliasKind = Literal['CME_GLOBEX']
 
 
-Decimal1 = Decimal
 
 
 DerivativeKind = Union[Literal['Linear'], Literal['Inverse'], Literal['Quanto']]

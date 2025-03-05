@@ -12,7 +12,6 @@ from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
-Decimal1 = Decimal
 
 
 DerivativeKind = Union[Literal['Linear'], Literal['Inverse'], Literal['Quanto']]

@@ -37,7 +37,6 @@ class CancelStatus(int, Enum):
     integer_127 = 127
 
 
-Decimal1 = Decimal
 
 
 class Dir(str, Enum):

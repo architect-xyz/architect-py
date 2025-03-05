@@ -79,6 +79,7 @@ if command -v nproc >/dev/null 2>&1; then
 else
     NUM_JOBS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
 fi
+NUM_JOBS=$(( NUM_JOBS < 6 ? NUM_JOBS : 6 ))  # Limit to 4 jobs
 
 # Capture list of JSON files to process
 json_files=()

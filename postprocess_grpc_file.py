@@ -110,16 +110,11 @@ request_helper = Request{unary_type.title()}({request_type_name}, {response_type
             f.writelines(lines)
 
 
-def fix_line(line: str) -> str:
-    line = line.replace("DecimalModel", "Decimal")
-    return line
-
-
 def fix_lines(file_path: str) -> None:
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    # lines = [fix_line(line) for line in lines]
+    lines = [line for line in lines if line != "Decimal1 = Decimal\n"]
 
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")

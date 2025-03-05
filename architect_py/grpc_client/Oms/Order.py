@@ -26,7 +26,6 @@ class TriggerPrice(Struct):
     pass
 
 
-Decimal1 = Decimal
 
 
 class Dir(str, Enum):
