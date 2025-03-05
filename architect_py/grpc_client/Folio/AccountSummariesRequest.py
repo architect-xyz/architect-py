@@ -25,6 +25,9 @@ class AccountSummariesRequest(Struct):
             ),
         ]
     ] = None
+    """
+    If trader and accounts are both None, return all accounts for the user
+    """
     trader: Optional[TraderIdOrEmail] = None
 
 

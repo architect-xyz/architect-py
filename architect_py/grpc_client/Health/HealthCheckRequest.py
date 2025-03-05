@@ -20,6 +20,11 @@ class HealthCheckRequest(Struct):
             ),
         ]
     ] = None
+    """
+    The service to check status for; if not provided, status of the queried server overall is returned.
+
+    Generally, this will only be set when querying the API gateway.  It's not recommended to rely on internal subservice names being stable.
+    """
 
 
     @staticmethod

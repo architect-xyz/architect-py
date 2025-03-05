@@ -18,6 +18,9 @@ class SubscribeTickersRequest(Struct):
             Meta(description='If None, subscribe from all symbols on the feed'),
         ]
     ] = None
+    """
+    If None, subscribe from all symbols on the feed
+    """
 
 
     @staticmethod
