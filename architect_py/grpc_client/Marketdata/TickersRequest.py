@@ -7,7 +7,7 @@ from architect_py.grpc_client.request import RequestUnary
 
 
 from enum import Enum
-from typing import Optional, Sequence
+from typing import List, Optional
 
 from msgspec import Struct
 
@@ -23,7 +23,7 @@ class TickersRequest(Struct):
     i: Optional[int] = None
     k: Optional[SortTickersBy] = None
     n: Optional[int] = None
-    symbols: Optional[Sequence[str]] = None
+    symbols: Optional[List[str]] = None
     venue: Optional[str] = None
 
 

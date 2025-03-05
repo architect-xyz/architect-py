@@ -6,13 +6,13 @@ from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import ArrayOfL
 from architect_py.grpc_client.request import RequestUnary
 
 
-from typing import Optional, Sequence
+from typing import List, Optional
 
 from msgspec import Struct
 
 
 class L1BookSnapshotsRequest(Struct):
-    symbols: Optional[Sequence[str]] = None
+    symbols: Optional[List[str]] = None
 
 
     @staticmethod

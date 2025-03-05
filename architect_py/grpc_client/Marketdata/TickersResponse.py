@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 
-from typing import Annotated, Optional, Sequence
+from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct, field
 
@@ -259,4 +259,4 @@ class Ticker(Struct):
 
 
 class TickersResponse(Struct):
-    tickers: Sequence[Ticker]
+    tickers: List[Ticker]

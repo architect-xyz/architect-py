@@ -5,7 +5,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 
-from typing import Annotated, Mapping, Optional, Sequence
+from typing import Annotated, Dict, List, Optional
 
 from msgspec import Meta, Struct
 
@@ -26,8 +26,8 @@ class AccountPosition(Struct):
 
 class AccountSummary(Struct):
     account: str
-    balances: Mapping[str, Decimal]
-    positions: Mapping[str, Sequence[AccountPosition]]
+    balances: Dict[str, Decimal]
+    positions: Dict[str, List[AccountPosition]]
     timestamp: str
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description='Cash available to withdraw.')]
@@ -54,4 +54,4 @@ class AccountSummary(Struct):
 
 
 class AccountSummariesResponse(Struct):
-    account_summaries: Sequence[AccountSummary]
+    account_summaries: List[AccountSummary]

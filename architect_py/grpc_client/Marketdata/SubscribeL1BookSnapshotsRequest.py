@@ -6,7 +6,7 @@ from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.request import RequestStream
 
 
-from typing import Annotated, Optional, Sequence
+from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
@@ -14,7 +14,7 @@ from msgspec import Meta, Struct
 class SubscribeL1BookSnapshotsRequest(Struct):
     symbols: Optional[
         Annotated[
-            Sequence[str],
+            List[str],
             Meta(description='If None, subscribe from all symbols on the feed'),
         ]
     ] = None

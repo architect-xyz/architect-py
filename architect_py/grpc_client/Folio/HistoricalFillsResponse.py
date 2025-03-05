@@ -6,7 +6,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, Optional, Sequence
+from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
@@ -372,5 +372,5 @@ class Fill(Struct):
 
 
 class HistoricalFillsResponse(Struct):
-    aberrant_fills: Sequence[AberrantFill]
-    fills: Sequence[Fill]
+    aberrant_fills: List[AberrantFill]
+    fills: List[Fill]

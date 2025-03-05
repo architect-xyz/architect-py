@@ -6,7 +6,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, Literal, Mapping, Optional, Sequence, Union
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
@@ -98,14 +98,14 @@ class PutOrCall(str, Enum):
 
 
 class SnapshotOrUpdateForStringAndString1(Struct):
-    snapshot: Mapping[str, str]
+    snapshot: Dict[str, str]
 
 
-Update5 = Sequence[Union[str, Optional[str]]]
+Update5 = List[Union[str, Optional[str]]]
 
 
 class SnapshotOrUpdateForStringAndString2(Struct):
-    updates: Sequence[Update5]
+    updates: List[Update5]
 
 
 SnapshotOrUpdateForStringAndString = Union[
@@ -127,11 +127,11 @@ class TickSize1(Struct):
     simple: Decimal
 
 
-Threshold = Sequence[Decimal]
+Threshold = List[Decimal]
 
 
 class Varying(Struct):
-    thresholds: Sequence[Threshold]
+    thresholds: List[Threshold]
 
 
 class TickSize2(Struct):
@@ -773,7 +773,7 @@ class OptionsSeriesInfo(Struct):
     multiplier: Decimal
     options_series: str
     quote_symbol: str
-    strikes_by_expiration: Mapping[str, Sequence[Decimal]]
+    strikes_by_expiration: Dict[str, List[Decimal]]
     underlying: str
     venue_discriminant: Optional[str] = None
 
@@ -785,7 +785,7 @@ class OptionsSeriesInstance(Struct):
 
 
 class ProductType7(Struct):
-    legs: Sequence[SpreadLeg]
+    legs: List[SpreadLeg]
     product_type: Literal['FutureSpread']
 
 
@@ -817,14 +817,14 @@ ProductType = Union[
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(Struct):
-    snapshot: Mapping[str, SnapshotOrUpdateForStringAndString]
+    snapshot: Dict[str, SnapshotOrUpdateForStringAndString]
 
 
-Update = Sequence[Union[AliasKind, Optional[SnapshotOrUpdateForStringAndString]]]
+Update = List[Union[AliasKind, Optional[SnapshotOrUpdateForStringAndString]]]
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(Struct):
-    updates: Sequence[Update]
+    updates: List[Update]
 
 
 SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString = Union[
@@ -834,14 +834,14 @@ SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString = Union[
 
 
 class SnapshotOrUpdateForStringAndExecutionInfo1(Struct):
-    snapshot: Mapping[str, ExecutionInfo]
+    snapshot: Dict[str, ExecutionInfo]
 
 
-Update1 = Sequence[Union[str, Optional[ExecutionInfo]]]
+Update1 = List[Union[str, Optional[ExecutionInfo]]]
 
 
 class SnapshotOrUpdateForStringAndExecutionInfo2(Struct):
-    updates: Sequence[Update1]
+    updates: List[Update1]
 
 
 SnapshotOrUpdateForStringAndExecutionInfo = Union[
@@ -851,14 +851,14 @@ SnapshotOrUpdateForStringAndExecutionInfo = Union[
 
 
 class SnapshotOrUpdateForStringAndOptionsSeriesInfo1(Struct):
-    snapshot: Mapping[str, OptionsSeriesInfo]
+    snapshot: Dict[str, OptionsSeriesInfo]
 
 
-Update2 = Sequence[Union[str, Optional[OptionsSeriesInfo]]]
+Update2 = List[Union[str, Optional[OptionsSeriesInfo]]]
 
 
 class SnapshotOrUpdateForStringAndOptionsSeriesInfo2(Struct):
-    updates: Sequence[Update2]
+    updates: List[Update2]
 
 
 SnapshotOrUpdateForStringAndOptionsSeriesInfo = Union[
@@ -868,14 +868,14 @@ SnapshotOrUpdateForStringAndOptionsSeriesInfo = Union[
 
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(Struct):
-    snapshot: Mapping[str, SnapshotOrUpdateForStringAndExecutionInfo]
+    snapshot: Dict[str, SnapshotOrUpdateForStringAndExecutionInfo]
 
 
-Update4 = Sequence[Union[str, Optional[SnapshotOrUpdateForStringAndExecutionInfo]]]
+Update4 = List[Union[str, Optional[SnapshotOrUpdateForStringAndExecutionInfo]]]
 
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(Struct):
-    updates: Sequence[Update4]
+    updates: List[Update4]
 
 
 SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo = Union[
@@ -891,14 +891,14 @@ class ProductInfo(Struct):
 
 
 class SnapshotOrUpdateForStringAndProductInfo1(Struct):
-    snapshot: Mapping[str, ProductInfo]
+    snapshot: Dict[str, ProductInfo]
 
 
-Update3 = Sequence[Union[str, Optional[ProductInfo]]]
+Update3 = List[Union[str, Optional[ProductInfo]]]
 
 
 class SnapshotOrUpdateForStringAndProductInfo2(Struct):
-    updates: Sequence[Update3]
+    updates: List[Update3]
 
 
 SnapshotOrUpdateForStringAndProductInfo = Union[
