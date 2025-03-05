@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Trade",
+  "type": "object",
+  "required": [
+    "p",
+    "q",
+    "s",
+    "tn",
+    "ts"
+  ],
+  "properties": {
+    "d": {
+      "title": "direction",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Dir"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "p": {
+      "title": "price",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Decimal"
+        }
+      ]
+    },
+    "q": {
+      "title": "size",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Decimal"
+        }
+      ]
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    },
+    "tn": {
+      "title": "timestamp_ns",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
+    },
+    "ts": {
+      "title": "timestamp",
+      "type": "integer",
+      "format": "int64"
+    }
+  },
+  "definitions": {
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "Dir": {
+      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SELL"
+      ]
+    }
+  }
+}

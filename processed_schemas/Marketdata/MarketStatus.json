@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MarketStatus",
+  "type": "object",
+  "required": [
+    "s"
+  ],
+  "properties": {
+    "is_quoting": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "is_trading": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    }
+  }
+}

@@ -2,9 +2,8 @@
 #   filename:  SymbologyUpdate.json
 
 from __future__ import annotations
+
 from decimal import Decimal
-
-
 from enum import Enum
 from typing import Annotated, Dict, List, Literal, Optional, Union
 

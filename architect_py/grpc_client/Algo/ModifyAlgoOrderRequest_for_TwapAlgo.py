@@ -5,9 +5,8 @@ from __future__ import annotations
 from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwapAlgo
 from architect_py.grpc_client.request import RequestUnary
 
+
 from decimal import Decimal
-
-
 from enum import Enum
 from typing import Annotated, Optional
 

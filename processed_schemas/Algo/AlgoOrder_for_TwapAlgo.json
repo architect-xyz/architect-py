@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlgoOrder_for_TwapAlgo",
+  "type": "object",
+  "required": [
+    "account",
+    "algo_name",
+    "algo_order_id",
+    "create_time",
+    "params",
+    "state",
+    "status",
+    "trader"
+  ],
+  "properties": {
+    "account": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "algo_name": {
+      "type": "string"
+    },
+    "algo_order_id": {
+      "$ref": "#/definitions/OrderId"
+    },
+    "create_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "display_symbols": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "last_error": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "last_error_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "params": {
+      "$ref": "#/definitions/TwapParams"
+    },
+    "parent_order_id": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "$ref": "#/definitions/AlgoState"
+    },
+    "status": {
+      "$ref": "#/definitions/TwapStatus"
+    },
+    "trader": {
+      "$ref": "#/definitions/UserId"
+    }
+  },
+  "definitions": {
+    "AlgoState": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Running",
+        "Stopped"
+      ]
+    },
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "Dir": {
+      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SELL"
+      ]
+    },
+    "HumanDuration": {
+      "type": "string"
+    },
+    "OrderId": {
+      "description": "System-unique, persistent order identifiers",
+      "type": "object",
+      "required": [
+        "seqid",
+        "seqno"
+      ],
+      "properties": {
+        "seqid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seqno": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "TwapParams": {
+      "type": "object",
+      "required": [
+        "dir",
+        "end_time",
+        "execution_venue",
+        "interval",
+        "quantity",
+        "reject_lockout",
+        "symbol"
+      ],
+      "properties": {
+        "dir": {
+          "$ref": "#/definitions/Dir"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "execution_venue": {
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/definitions/HumanDuration"
+        },
+        "quantity": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "reject_lockout": {
+          "$ref": "#/definitions/HumanDuration"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "take_through_frac": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "TwapStatus": {
+      "type": "object",
+      "required": [
+        "quantity_filled"
+      ],
+      "properties": {
+        "quantity_filled": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "realized_twap": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "UserId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  }
+}

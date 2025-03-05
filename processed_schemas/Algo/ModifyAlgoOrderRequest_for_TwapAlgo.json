@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModifyAlgoOrderRequest_for_TwapAlgo",
+  "type": "object",
+  "required": [
+    "algo_order_id",
+    "params"
+  ],
+  "properties": {
+    "algo_order_id": {
+      "$ref": "#/definitions/OrderId"
+    },
+    "params": {
+      "$ref": "#/definitions/TwapParams"
+    }
+  },
+  "definitions": {
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "Dir": {
+      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SELL"
+      ]
+    },
+    "HumanDuration": {
+      "type": "string"
+    },
+    "OrderId": {
+      "description": "System-unique, persistent order identifiers",
+      "type": "object",
+      "required": [
+        "seqid",
+        "seqno"
+      ],
+      "properties": {
+        "seqid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seqno": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "TwapParams": {
+      "type": "object",
+      "required": [
+        "dir",
+        "end_time",
+        "execution_venue",
+        "interval",
+        "quantity",
+        "reject_lockout",
+        "symbol"
+      ],
+      "properties": {
+        "dir": {
+          "$ref": "#/definitions/Dir"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "execution_venue": {
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/definitions/HumanDuration"
+        },
+        "quantity": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "reject_lockout": {
+          "$ref": "#/definitions/HumanDuration"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "take_through_frac": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "route": "/json.architect.Algo/ModifyTwapAlgoOrder",
+  "unary_type": "unary",
+  "service": "Algo",
+  "response_type": "AlgoOrder_for_TwapAlgo"
+}

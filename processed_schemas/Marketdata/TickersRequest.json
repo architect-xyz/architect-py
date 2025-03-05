@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TickersRequest",
+  "type": "object",
+  "properties": {
+    "i": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32"
+    },
+    "k": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/SortTickersBy"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "n": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32"
+    },
+    "symbols": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "definitions": {
+    "SortTickersBy": {
+      "type": "string",
+      "enum": [
+        "VOLUME_DESC",
+        "CHANGE_ASC",
+        "CHANGE_DESC",
+        "ABS_CHANGE_DESC"
+      ]
+    }
+  },
+  "route": "/json.architect.Marketdata/Tickers",
+  "unary_type": "unary",
+  "service": "Marketdata",
+  "response_type": "TickersResponse"
+}

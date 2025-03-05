@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalFillsRequest",
+  "type": "object",
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "from_inclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "limit": {
+      "description": "Default maximum is 1000.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "uint32",
+      "minimum": 0.0
+    },
+    "order_id": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "to_exclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "definitions": {
+    "AccountIdOrName": {
+      "type": "string"
+    },
+    "OrderId": {
+      "description": "System-unique, persistent order identifiers",
+      "type": "object",
+      "required": [
+        "seqid",
+        "seqno"
+      ],
+      "properties": {
+        "seqid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seqno": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "TraderIdOrEmail": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Folio/HistoricalFills",
+  "unary_type": "unary",
+  "service": "Folio",
+  "response_type": "HistoricalFillsResponse"
+}

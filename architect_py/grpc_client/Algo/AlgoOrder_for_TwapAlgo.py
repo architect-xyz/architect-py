@@ -2,9 +2,8 @@
 #   filename:  AlgoOrder_for_TwapAlgo.json
 
 from __future__ import annotations
+
 from decimal import Decimal
-
-
 from enum import Enum
 from typing import Annotated, List, Optional
 
