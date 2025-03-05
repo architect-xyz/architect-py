@@ -827,10 +827,10 @@ class UploadSymbologyRequest(Struct):
     product_aliases: Optional[Dict[str, Dict[str, str]]] = None
     products: Optional[Dict[str, ProductInfo]] = None
 
-
     @staticmethod
-    def get_helper():
-        return UploadSymbologyRequestHelper
+    def get_request_helper():
+        return request_helper
 
-UploadSymbologyRequestHelper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")
+
+request_helper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")
 

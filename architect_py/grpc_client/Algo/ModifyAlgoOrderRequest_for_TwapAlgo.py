@@ -51,10 +51,10 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
     algo_order_id: OrderId
     params: TwapParams
 
-
     @staticmethod
-    def get_helper():
-        return ModifyAlgoOrderRequestForTwapAlgoHelper
+    def get_request_helper():
+        return request_helper
 
-ModifyAlgoOrderRequestForTwapAlgoHelper = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")
+
+request_helper = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")
 

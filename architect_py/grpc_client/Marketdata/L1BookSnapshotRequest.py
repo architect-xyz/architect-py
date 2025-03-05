@@ -12,10 +12,10 @@ from msgspec import Struct
 class L1BookSnapshotRequest(Struct):
     symbol: str
 
-
     @staticmethod
-    def get_helper():
-        return L1BookSnapshotRequestHelper
+    def get_request_helper():
+        return request_helper
 
-L1BookSnapshotRequestHelper = RequestUnary(L1BookSnapshotRequest, L1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshot")
+
+request_helper = RequestUnary(L1BookSnapshotRequest, L1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshot")
 

@@ -15,10 +15,10 @@ class SubscribeL2BookUpdatesRequest(Struct):
     symbol: str
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeL2BookUpdatesRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeL2BookUpdatesRequestHelper = RequestStream(SubscribeL2BookUpdatesRequest, L2BookUpdate, "/json.architect.Marketdata/SubscribeL2BookUpdates")
+
+request_helper = RequestStream(SubscribeL2BookUpdatesRequest, typing.Union[L2BookUpdate.Snapshot, L2BookUpdate.Diff], "/json.architect.Marketdata/SubscribeL2BookUpdates")
 

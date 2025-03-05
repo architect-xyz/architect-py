@@ -22,10 +22,10 @@ class CancelAllOrdersRequest(Struct):
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
 
-
     @staticmethod
-    def get_helper():
-        return CancelAllOrdersRequestHelper
+    def get_request_helper():
+        return request_helper
 
-CancelAllOrdersRequestHelper = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")
+
+request_helper = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")
 

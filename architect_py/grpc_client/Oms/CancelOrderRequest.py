@@ -51,10 +51,10 @@ class CancelOrderRequest(Struct):
     def cancel_id(self, value: Optional[str]) -> None:
         self.xid = value
 
-
     @staticmethod
-    def get_helper():
-        return CancelOrderRequestHelper
+    def get_request_helper():
+        return request_helper
 
-CancelOrderRequestHelper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
+
+request_helper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
 

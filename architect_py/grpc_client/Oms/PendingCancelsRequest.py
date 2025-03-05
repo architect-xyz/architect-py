@@ -23,10 +23,10 @@ class PendingCancelsRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return PendingCancelsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-PendingCancelsRequestHelper = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")
+
+request_helper = RequestUnary(PendingCancelsRequest, PendingCancelsResponse, "/json.architect.Oms/PendingCancels")
 

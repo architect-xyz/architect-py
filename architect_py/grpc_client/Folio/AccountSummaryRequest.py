@@ -14,10 +14,10 @@ AccountIdOrName = str
 class AccountSummaryRequest(Struct):
     account: AccountIdOrName
 
-
     @staticmethod
-    def get_helper():
-        return AccountSummaryRequestHelper
+    def get_request_helper():
+        return request_helper
 
-AccountSummaryRequestHelper = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")
+
+request_helper = RequestUnary(AccountSummaryRequest, AccountSummary, "/json.architect.Folio/AccountSummary")
 

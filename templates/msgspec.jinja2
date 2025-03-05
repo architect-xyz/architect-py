@@ -58,3 +58,9 @@ class {{ class_name }}:
         return datetime.fromtimestamp(self.{{ field.name }})
     {%- endif %}
 {%- endfor %}
+
+{%- if "Request" in class_name %}
+    @staticmethod
+    def get_request_helper():
+        return request_helper
+{%- endif %}

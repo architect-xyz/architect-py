@@ -26,10 +26,10 @@ class AccountsRequest(Struct):
     Request accounts from the perspective of this trader; if not specified, defaults to the caller user.
     """
 
-
     @staticmethod
-    def get_helper():
-        return AccountsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-AccountsRequestHelper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")
+
+request_helper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")
 

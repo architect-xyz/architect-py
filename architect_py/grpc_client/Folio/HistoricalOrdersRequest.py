@@ -48,10 +48,10 @@ class HistoricalOrdersRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return HistoricalOrdersRequestHelper
+    def get_request_helper():
+        return request_helper
 
-HistoricalOrdersRequestHelper = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")
+
+request_helper = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")
 

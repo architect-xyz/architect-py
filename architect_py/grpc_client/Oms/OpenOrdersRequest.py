@@ -33,10 +33,10 @@ class OpenOrdersRequest(Struct):
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return OpenOrdersRequestHelper
+    def get_request_helper():
+        return request_helper
 
-OpenOrdersRequestHelper = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")
+
+request_helper = RequestUnary(OpenOrdersRequest, OpenOrdersResponse, "/json.architect.Oms/OpenOrders")
 

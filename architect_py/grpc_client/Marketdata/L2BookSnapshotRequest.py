@@ -15,10 +15,10 @@ class L2BookSnapshotRequest(Struct):
     symbol: str
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return L2BookSnapshotRequestHelper
+    def get_request_helper():
+        return request_helper
 
-L2BookSnapshotRequestHelper = RequestUnary(L2BookSnapshotRequest, L2BookSnapshot, "/json.architect.Marketdata/L2BookSnapshot")
+
+request_helper = RequestUnary(L2BookSnapshotRequest, L2BookSnapshot, "/json.architect.Marketdata/L2BookSnapshot")
 

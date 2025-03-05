@@ -26,10 +26,10 @@ class HistoricalCandlesRequest(Struct):
     start_date: str
     symbol: str
 
-
     @staticmethod
-    def get_helper():
-        return HistoricalCandlesRequestHelper
+    def get_request_helper():
+        return request_helper
 
-HistoricalCandlesRequestHelper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")
+
+request_helper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")
 

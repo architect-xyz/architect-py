@@ -18,10 +18,10 @@ class AccountHistoryRequest(Struct):
     from_inclusive: Optional[str] = None
     to_exclusive: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return AccountHistoryRequestHelper
+    def get_request_helper():
+        return request_helper
 
-AccountHistoryRequestHelper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")
+
+request_helper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")
 

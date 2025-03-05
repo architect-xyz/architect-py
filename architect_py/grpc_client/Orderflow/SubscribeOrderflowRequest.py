@@ -25,10 +25,10 @@ class SubscribeOrderflowRequest(Struct):
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeOrderflowRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeOrderflowRequestHelper = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")
+
+request_helper = RequestStream(SubscribeOrderflowRequest, typing.Union[Orderflow.Orderflow1, Orderflow.Orderflow2, Orderflow.Orderflow3, Orderflow.Orderflow4, Orderflow.Orderflow5, Orderflow.Orderflow6, Orderflow.Orderflow7, Orderflow.Orderflow8, Orderflow.Orderflow9, Orderflow.Orderflow10, Orderflow.Orderflow11, Orderflow.Orderflow12, Orderflow.Orderflow13], "/json.architect.Orderflow/SubscribeOrderflow")
 

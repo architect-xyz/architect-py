@@ -24,10 +24,10 @@ class DropcopyRequest(Struct):
     orders: Optional[bool] = False
     trader: Optional[TraderIdOrEmail] = None
 
-
     @staticmethod
-    def get_helper():
-        return DropcopyRequestHelper
+    def get_request_helper():
+        return request_helper
 
-DropcopyRequestHelper = RequestStream(DropcopyRequest, Dropcopy, "/json.architect.Orderflow/Dropcopy")
+
+request_helper = RequestStream(DropcopyRequest, typing.Union[Dropcopy.Dropcopy1, Dropcopy.Dropcopy2, Dropcopy.Dropcopy3, Dropcopy.Dropcopy4, Dropcopy.Dropcopy5], "/json.architect.Orderflow/Dropcopy")
 

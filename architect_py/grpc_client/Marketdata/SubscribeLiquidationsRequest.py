@@ -14,10 +14,10 @@ from msgspec import Struct
 class SubscribeLiquidationsRequest(Struct):
     symbols: Optional[List[str]] = None
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeLiquidationsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeLiquidationsRequestHelper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
+
+request_helper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
 

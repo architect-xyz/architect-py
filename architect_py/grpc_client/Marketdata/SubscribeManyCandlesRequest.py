@@ -34,10 +34,10 @@ class SubscribeManyCandlesRequest(Struct):
     """
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeManyCandlesRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeManyCandlesRequestHelper = RequestStream(SubscribeManyCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeManyCandles")
+
+request_helper = RequestStream(SubscribeManyCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeManyCandles")
 

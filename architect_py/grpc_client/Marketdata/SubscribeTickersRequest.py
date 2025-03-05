@@ -26,10 +26,10 @@ class SubscribeTickersRequest(Struct):
     If None, subscribe from all symbols on the feed
     """
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeTickersRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeTickersRequestHelper = RequestStream(SubscribeTickersRequest, TickerUpdate, "/json.architect.Marketdata/SubscribeTickers")
+
+request_helper = RequestStream(SubscribeTickersRequest, typing.Union[TickerUpdate.TickerUpdate1, TickerUpdate.TickerUpdate2], "/json.architect.Marketdata/SubscribeTickers")
 

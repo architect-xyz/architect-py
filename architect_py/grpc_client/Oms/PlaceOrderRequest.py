@@ -175,6 +175,10 @@ class PlaceOrderRequest1(Struct):
     def execution_venue(self, value: Optional[str]) -> None:
         self.x = value
 
+    @staticmethod
+    def get_request_helper():
+        return request_helper
+
 
 class PlaceOrderRequest2(Struct):
     d: Annotated[Dir, Meta(title='dir')]
@@ -288,6 +292,10 @@ class PlaceOrderRequest2(Struct):
     @execution_venue.setter
     def execution_venue(self, value: Optional[str]) -> None:
         self.x = value
+
+    @staticmethod
+    def get_request_helper():
+        return request_helper
 
 
 class PlaceOrderRequest3(Struct):
@@ -403,6 +411,10 @@ class PlaceOrderRequest3(Struct):
     def execution_venue(self, value: Optional[str]) -> None:
         self.x = value
 
+    @staticmethod
+    def get_request_helper():
+        return request_helper
+
 
 PlaceOrderRequest = Annotated[
     Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3],
@@ -410,9 +422,5 @@ PlaceOrderRequest = Annotated[
 ]
 
 
-    @staticmethod
-    def get_helper():
-        return PlaceOrderRequestHelper
-
-PlaceOrderRequestHelper = RequestUnary(PlaceOrderRequest, Order, "/json.architect.Oms/PlaceOrder")
+request_helper = RequestUnary(PlaceOrderRequest, typing.Union[Order.Order1, Order.Order2, Order.Order3], "/json.architect.Oms/PlaceOrder")
 
