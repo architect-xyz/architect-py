@@ -105,6 +105,9 @@ class SpreadLeg(Struct):
             description='Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1'
         ),
     ]
+    """
+    Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1
+    """
 
 
 class TickSize1(Struct):

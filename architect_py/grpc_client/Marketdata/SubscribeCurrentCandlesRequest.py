@@ -33,6 +33,9 @@ class SubscribeCurrentCandlesRequest(Struct):
             ),
         ]
     ] = None
+    """
+    If None, send the current candle on every trade or candle tick. Otherwise, send a candle every `tick_period_ms`.
+    """
     venue: Optional[str] = None
 
 

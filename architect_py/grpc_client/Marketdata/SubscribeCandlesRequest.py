@@ -29,6 +29,9 @@ class SubscribeCandlesRequest(Struct):
             Meta(description='If None, subscribe from all candle widths on the feed'),
         ]
     ] = None
+    """
+    If None, subscribe from all candle widths on the feed
+    """
     venue: Optional[str] = None
 
 
