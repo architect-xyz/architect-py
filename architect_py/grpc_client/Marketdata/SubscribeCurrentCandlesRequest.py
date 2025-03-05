@@ -22,6 +22,10 @@ class CandleWidth(int, Enum):
 
 
 class SubscribeCurrentCandlesRequest(Struct):
+    """
+    Subscribe to the current candle.  This allows you to display the most recent/building candle live in a UI, for example.
+    """
+
     candle_width: CandleWidth
     symbol: str
     tick_period_ms: Optional[

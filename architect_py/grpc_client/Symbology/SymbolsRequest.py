@@ -10,7 +10,9 @@ from msgspec import Struct
 
 
 class SymbolsRequest(Struct):
-    pass
+    """
+    List all symbols
+    """
 
 
     @staticmethod

@@ -13,11 +13,19 @@ from msgspec import Meta, Struct
 
 
 class Dir(str, Enum):
+    """
+    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
+    """
+
     BUY = 'BUY'
     SELL = 'SELL'
 
 
 class OrderId(Struct):
+    """
+    System-unique, persistent order identifiers
+    """
+
     seqid: str
     seqno: Annotated[int, Meta(ge=0)]
 

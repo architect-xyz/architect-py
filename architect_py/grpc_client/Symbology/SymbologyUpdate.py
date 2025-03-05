@@ -138,6 +138,10 @@ class Varying(Struct):
 
 
 class TickSize2(Struct):
+    """
+    List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.
+    """
+
     varying: Varying
 
 
@@ -757,6 +761,10 @@ EventContractSeriesInstance = Union[
 
 
 class ExecutionInfo(Struct):
+    """
+    Information about a symbol related to its execution route.
+    """
+
     execution_venue: str
     is_delisted: bool
     min_order_quantity: Decimal
@@ -782,6 +790,10 @@ class OptionsSeriesInfo(Struct):
 
 
 class OptionsSeriesInstance(Struct):
+    """
+    A specific option from a series.
+    """
+
     expiration: str
     put_or_call: PutOrCall
     strike: Decimal
@@ -910,6 +922,10 @@ SnapshotOrUpdateForStringAndProductInfo = Union[
 
 
 class SymbologyUpdate(Struct):
+    """
+    Unique sequence id and number.
+    """
+
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     execution_info: Optional[

@@ -4,9 +4,6 @@ from architect_py.async_client import AsyncClient
 from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
     SubscribeL1BookSnapshotsRequest,
 )
-from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
-    SubscribeL2BookUpdatesRequest,
-)
 from architect_py.scalars import TradableProduct
 
 from pytest_lazy_fixtures import lf

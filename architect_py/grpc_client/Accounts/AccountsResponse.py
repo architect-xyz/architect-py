@@ -11,6 +11,10 @@ AccountName = str
 
 
 class AccountPermissions(Struct):
+    """
+    Set of flags for account permissions
+    """
+
     list: bool
     reduce_or_close: bool
     set_limits: bool
