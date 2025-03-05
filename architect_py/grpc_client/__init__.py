@@ -1,6 +1,6 @@
 import asyncio
 from asyncio.log import logger
-from typing import Any, AsyncIterator, Optional, cast
+from typing import Annotated, Any, AsyncIterator, Optional, cast
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
@@ -290,7 +290,9 @@ class GRPCClient:
                 update_struct(book, up)
 
     @staticmethod
-    def l2_update_decoder(data: bytes) -> L2BookUpdate:
+    def l2_update_decoder(
+        data: bytes,
+    ) -> Annotated[L2BookUpdate, Any]:
         tag = msgspec.json.decode(data, type=Tag)
         if tag.t == "d":
             return msgspec.json.decode(data, type=Diff)

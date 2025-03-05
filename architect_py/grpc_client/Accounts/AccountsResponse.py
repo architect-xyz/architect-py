@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import Sequence
 
 from msgspec import Struct
 
@@ -33,4 +33,4 @@ class AccountWithPermissions(Struct):
 
 
 class AccountsResponse(Struct):
-    accounts: List[AccountWithPermissions]
+    accounts: Sequence[AccountWithPermissions]

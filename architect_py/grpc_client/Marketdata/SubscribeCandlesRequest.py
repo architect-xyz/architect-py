@@ -7,7 +7,7 @@ from architect_py.grpc_client.request import RequestStream
 
 
 from enum import Enum
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional, Sequence
 
 from msgspec import Meta, Struct
 
@@ -25,7 +25,7 @@ class SubscribeCandlesRequest(Struct):
     symbol: str
     candle_widths: Optional[
         Annotated[
-            List[CandleWidth],
+            Sequence[CandleWidth],
             Meta(description='If None, subscribe from all candle widths on the feed'),
         ]
     ] = None

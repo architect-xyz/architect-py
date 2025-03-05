@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional, Sequence
 
 from msgspec import Meta, Struct
 
@@ -31,4 +31,4 @@ class Cancel(Struct):
 
 
 class PendingCancelsResponse(Struct):
-    pending_cancels: List[Cancel]
+    pending_cancels: Sequence[Cancel]

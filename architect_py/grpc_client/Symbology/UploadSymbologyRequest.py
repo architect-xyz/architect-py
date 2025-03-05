@@ -9,7 +9,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, Dict, List, Literal, Optional, Union
+from typing import Annotated, Literal, Mapping, Optional, Sequence, Union
 
 from msgspec import Meta, Struct
 
@@ -111,11 +111,11 @@ class TickSize1(Struct):
     simple: Decimal
 
 
-Threshold = List[Decimal]
+Threshold = Sequence[Decimal]
 
 
 class Varying(Struct):
-    thresholds: List[Threshold]
+    thresholds: Sequence[Threshold]
 
 
 class TickSize2(Struct):
@@ -757,7 +757,7 @@ class OptionsSeriesInfo(Struct):
     multiplier: Decimal
     options_series: str
     quote_symbol: str
-    strikes_by_expiration: Dict[str, List[Decimal]]
+    strikes_by_expiration: Mapping[str, Sequence[Decimal]]
     underlying: str
     venue_discriminant: Optional[str] = None
 
@@ -769,7 +769,7 @@ class OptionsSeriesInstance(Struct):
 
 
 class ProductType7(Struct):
-    legs: List[SpreadLeg]
+    legs: Sequence[SpreadLeg]
     product_type: Literal['FutureSpread']
 
 
@@ -807,10 +807,10 @@ class ProductInfo(Struct):
 
 
 class UploadSymbologyRequest(Struct):
-    execution_info: Optional[Dict[str, Dict[str, ExecutionInfo]]] = None
-    options_series: Optional[Dict[str, OptionsSeriesInfo]] = None
-    product_aliases: Optional[Dict[str, Dict[str, str]]] = None
-    products: Optional[Dict[str, ProductInfo]] = None
+    execution_info: Optional[Mapping[str, Mapping[str, ExecutionInfo]]] = None
+    options_series: Optional[Mapping[str, OptionsSeriesInfo]] = None
+    product_aliases: Optional[Mapping[str, Mapping[str, str]]] = None
+    products: Optional[Mapping[str, ProductInfo]] = None
 
 
     @staticmethod

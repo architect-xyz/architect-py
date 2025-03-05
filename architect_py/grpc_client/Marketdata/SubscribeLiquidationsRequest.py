@@ -6,13 +6,13 @@ from architect_py.grpc_client.Marketdata.Liquidation import Liquidation
 from architect_py.grpc_client.request import RequestStream
 
 
-from typing import List, Optional
+from typing import Optional, Sequence
 
 from msgspec import Struct
 
 
 class SubscribeLiquidationsRequest(Struct):
-    symbols: Optional[List[str]] = None
+    symbols: Optional[Sequence[str]] = None
 
 
     @staticmethod

@@ -51,9 +51,9 @@ process_file() {
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
         --use-title-as-name \
+        --use-generic-container-types \
         --enum-field-as-literal one \
         --use-subclass-enum \
-        --field-include-all-keys \
         --custom-template-dir templates \
         --disable-timestamp
     python postprocess_grpc_file.py --file_path "$output_file" --json_folder "$folder"

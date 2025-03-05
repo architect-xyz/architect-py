@@ -7,7 +7,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional, Sequence
 
 from msgspec import Meta, Struct
 
@@ -242,4 +242,4 @@ class Candle(Struct):
 
 
 class HistoricalCandlesResponse(Struct):
-    candles: List[Candle]
+    candles: Sequence[Candle]
