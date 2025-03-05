@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PendingCancelsRequest",
+  "type": "object",
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cancel_ids": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "symbol": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "definitions": {
+    "AccountIdOrName": {
+      "type": "string"
+    },
+    "TraderIdOrEmail": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Oms/PendingCancels",
+  "unary_type": "unary",
+  "service": "Oms",
+  "response_type": "PendingCancelsResponse"
+}

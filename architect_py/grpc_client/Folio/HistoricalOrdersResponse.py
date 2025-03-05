@@ -2,9 +2,8 @@
 #   filename:  HistoricalOrdersResponse.json
 
 from __future__ import annotations
+
 from decimal import Decimal
-
-
 from enum import Enum
 from typing import Annotated, List, Literal, Optional, Union
 
@@ -99,7 +98,9 @@ class Order1(Struct):
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    xp: Optional[
+        Annotated[Optional[Decimal], Meta(title='average_fill_price')]
+    ] = None
 
     @property
     def account(self) -> str:
@@ -268,7 +269,9 @@ class Order2(Struct):
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    xp: Optional[
+        Annotated[Optional[Decimal], Meta(title='average_fill_price')]
+    ] = None
 
     @property
     def account(self) -> str:
@@ -437,7 +440,9 @@ class Order3(Struct):
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    xp: Optional[
+        Annotated[Optional[Decimal], Meta(title='average_fill_price')]
+    ] = None
 
     @property
     def account(self) -> str:

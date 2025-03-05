@@ -1,0 +1,297 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlaceOrderRequest",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "k",
+        "p",
+        "po"
+      ],
+      "properties": {
+        "k": {
+          "type": "string",
+          "enum": [
+            "LIMIT"
+          ]
+        },
+        "p": {
+          "title": "limit_price",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "po": {
+          "title": "post_only",
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "k",
+        "p",
+        "tp"
+      ],
+      "properties": {
+        "k": {
+          "type": "string",
+          "enum": [
+            "STOP_LOSS_LIMIT"
+          ]
+        },
+        "p": {
+          "title": "limit_price",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "tp": {
+          "title": "trigger_price",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "k",
+        "p",
+        "tp"
+      ],
+      "properties": {
+        "k": {
+          "type": "string",
+          "enum": [
+            "TAKE_PROFIT_LIMIT"
+          ]
+        },
+        "p": {
+          "title": "limit_price",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "tp": {
+          "title": "trigger_price",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "d",
+    "q",
+    "s",
+    "tif"
+  ],
+  "properties": {
+    "a": {
+      "title": "account",
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "d": {
+      "title": "dir",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Dir"
+        }
+      ]
+    },
+    "id": {
+      "description": "If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pid": {
+      "title": "parent_id",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "q": {
+      "title": "quantity",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Decimal"
+        }
+      ]
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    },
+    "src": {
+      "title": "source",
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OrderSource"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "tif": {
+      "title": "time_in_force",
+      "allOf": [
+        {
+          "$ref": "#/definitions/TimeInForce"
+        }
+      ]
+    },
+    "u": {
+      "title": "trader",
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "x": {
+      "title": "execution_venue",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "definitions": {
+    "AccountIdOrName": {
+      "type": "string"
+    },
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "Dir": {
+      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SELL"
+      ]
+    },
+    "OrderId": {
+      "description": "System-unique, persistent order identifiers",
+      "type": "object",
+      "required": [
+        "seqid",
+        "seqno"
+      ],
+      "properties": {
+        "seqid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seqno": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "OrderSource": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        255
+      ],
+      "x-enumNames": [
+        "API",
+        "GUI",
+        "Algo",
+        "Reconciled",
+        "CLI",
+        "Telegram",
+        "Other"
+      ]
+    },
+    "TimeInForce": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "GTC",
+            "IOC",
+            "FOK"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "GTD"
+          ],
+          "properties": {
+            "GTD": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Day order--the specific time which this expires will be dependent on the venue",
+          "type": "string",
+          "enum": [
+            "DAY"
+          ]
+        }
+      ]
+    },
+    "TraderIdOrEmail": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Oms/PlaceOrder",
+  "unary_type": "unary",
+  "service": "Oms",
+  "response_type": "Order"
+}

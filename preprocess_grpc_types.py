@@ -3,6 +3,21 @@ import json
 import os
 
 
+def process_definitions(schema: dict):
+    if "definitions" not in schema:
+        return
+
+    if "Decimal" in schema["definitions"]:
+        schema["definitions"]["Decimal"]["format"] = "decimal"
+
+    for definition, description in schema["definitions"].items():
+        if "format" not in description:
+            continue
+        if description["format"] in ["uint32", "uint64"]:
+            description["format"] = "default"
+            description["minimum"] = 0
+
+
 def preprocess_json(input_file: str, output_dir: str) -> None:
     """
     Preprocess the gRPC JSON file by extracting each RPC's request and response schemas
@@ -30,6 +45,9 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
             # Process the request type schema.
             req_schema = rpc.get("request_type")
             resp_schema = rpc.get("response_type")
+
+            process_definitions(req_schema)
+            process_definitions(resp_schema)
 
             route = rpc.get("route")
             unary_type = rpc.get("type")

@@ -1,0 +1,278 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalCandlesResponse",
+  "type": "object",
+  "required": [
+    "candles"
+  ],
+  "properties": {
+    "candles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Candle"
+      }
+    }
+  },
+  "definitions": {
+    "Candle": {
+      "type": "object",
+      "required": [
+        "av",
+        "bv",
+        "s",
+        "tn",
+        "ts",
+        "v",
+        "w"
+      ],
+      "properties": {
+        "ac": {
+          "title": "ask_close",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ah": {
+          "title": "ask_high",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "al": {
+          "title": "ask_low",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ao": {
+          "title": "ask_open",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "av": {
+          "title": "sell_volume",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "bc": {
+          "title": "bid_close",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bh": {
+          "title": "bid_high",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bl": {
+          "title": "bid_low",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bo": {
+          "title": "bid_open",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bv": {
+          "title": "buy_volume",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "c": {
+          "title": "close",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "h": {
+          "title": "high",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "l": {
+          "title": "low",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mc": {
+          "title": "mid_close",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mh": {
+          "title": "mid_high",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ml": {
+          "title": "mid_low",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mo": {
+          "title": "mid_open",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "o": {
+          "title": "open",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "s": {
+          "title": "symbol",
+          "type": "string"
+        },
+        "tn": {
+          "title": "timestamp_ns",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "ts": {
+          "title": "timestamp",
+          "type": "integer",
+          "format": "int64"
+        },
+        "v": {
+          "title": "volume",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "w": {
+          "title": "width",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CandleWidth"
+            }
+          ]
+        }
+      }
+    },
+    "CandleWidth": {
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "x-enumNames": [
+        "OneSecond",
+        "FiveSecond",
+        "OneMinute",
+        "FifteenMinute",
+        "OneHour",
+        "OneDay"
+      ]
+    },
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    }
+  }
+}

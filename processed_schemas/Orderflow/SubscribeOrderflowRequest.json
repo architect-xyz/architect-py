@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SubscribeOrderflowRequest",
+  "description": "Subscribe/listen to orderflow events.",
+  "type": "object",
+  "properties": {
+    "account": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "execution_venue": {
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "trader": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "AccountIdOrName": {
+      "type": "string"
+    },
+    "TraderIdOrEmail": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Orderflow/SubscribeOrderflow",
+  "unary_type": "stream",
+  "service": "Orderflow",
+  "response_type": "Orderflow"
+}

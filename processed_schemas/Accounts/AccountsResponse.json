@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AccountsResponse",
+  "type": "object",
+  "required": [
+    "accounts"
+  ],
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AccountWithPermissions"
+      }
+    }
+  },
+  "definitions": {
+    "Account": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "$ref": "#/definitions/AccountName"
+        }
+      }
+    },
+    "AccountName": {
+      "type": "string"
+    },
+    "AccountPermissions": {
+      "description": "Set of flags for account permissions",
+      "type": "object",
+      "required": [
+        "list",
+        "reduce_or_close",
+        "set_limits",
+        "trade",
+        "view"
+      ],
+      "properties": {
+        "list": {
+          "type": "boolean"
+        },
+        "reduce_or_close": {
+          "type": "boolean"
+        },
+        "set_limits": {
+          "type": "boolean"
+        },
+        "trade": {
+          "type": "boolean"
+        },
+        "view": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AccountWithPermissions": {
+      "type": "object",
+      "required": [
+        "account",
+        "permissions",
+        "trader"
+      ],
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Account"
+        },
+        "permissions": {
+          "$ref": "#/definitions/AccountPermissions"
+        },
+        "trader": {
+          "$ref": "#/definitions/UserId"
+        }
+      }
+    },
+    "UserId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  }
+}

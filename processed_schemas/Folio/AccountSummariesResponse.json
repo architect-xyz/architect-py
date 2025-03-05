@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AccountSummariesResponse",
+  "type": "object",
+  "required": [
+    "account_summaries"
+  ],
+  "properties": {
+    "account_summaries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AccountSummary"
+      }
+    }
+  },
+  "definitions": {
+    "AccountPosition": {
+      "type": "object",
+      "required": [
+        "quantity"
+      ],
+      "properties": {
+        "break_even_price": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cost_basis": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "liquidation_price": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quantity": {
+          "$ref": "#/definitions/Decimal"
+        },
+        "trade_time": {
+          "description": "The meaning of this field varies by reporting venue.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "AccountSummary": {
+      "type": "object",
+      "required": [
+        "account",
+        "balances",
+        "positions",
+        "timestamp"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "balances": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Decimal"
+          }
+        },
+        "cash_excess": {
+          "description": "Cash available to withdraw.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "equity": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "position_margin": {
+          "description": "Margin requirement based on current positions only.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "positions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/AccountPosition"
+            }
+          }
+        },
+        "purchasing_power": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "realized_pnl": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "total_margin": {
+          "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unrealized_pnl": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "yesterday_equity": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    }
+  }
+}

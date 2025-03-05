@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HealthCheckRequest",
+  "type": "object",
+  "properties": {
+    "service": {
+      "description": "The service to check status for; if not provided, status of the queried server overall is returned.\n\nGenerally, this will only be set when querying the API gateway.  It's not recommended to rely on internal subservice names being stable.",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "route": "/json.architect.Health/Check",
+  "unary_type": "unary",
+  "service": "Health",
+  "response_type": "HealthCheckResponse"
+}

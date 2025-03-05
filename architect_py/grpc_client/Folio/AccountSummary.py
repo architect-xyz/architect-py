@@ -2,9 +2,8 @@
 #   filename:  AccountSummary.json
 
 from __future__ import annotations
+
 from decimal import Decimal
-
-
 from typing import Annotated, Dict, List, Optional
 
 from msgspec import Meta, Struct
@@ -33,7 +32,9 @@ class AccountSummary(Struct):
     positions: Dict[str, List[AccountPosition]]
     timestamp: str
     cash_excess: Optional[
-        Annotated[Optional[Decimal], Meta(description='Cash available to withdraw.')]
+        Annotated[
+            Optional[Decimal], Meta(description='Cash available to withdraw.')
+        ]
     ] = None
     """
     Cash available to withdraw.

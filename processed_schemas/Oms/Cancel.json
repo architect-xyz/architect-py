@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cancel",
+  "type": "object",
+  "required": [
+    "id",
+    "o",
+    "tn",
+    "ts",
+    "xid"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/OrderId"
+    },
+    "o": {
+      "$ref": "#/definitions/CancelStatus"
+    },
+    "r": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tn": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
+    },
+    "ts": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "xid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "definitions": {
+    "CancelStatus": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2,
+        127
+      ],
+      "x-enumNames": [
+        "Pending",
+        "Acked",
+        "Rejected",
+        "Out"
+      ]
+    },
+    "OrderId": {
+      "description": "System-unique, persistent order identifiers",
+      "type": "object",
+      "required": [
+        "seqid",
+        "seqno"
+      ],
+      "properties": {
+        "seqid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seqno": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    }
+  }
+}

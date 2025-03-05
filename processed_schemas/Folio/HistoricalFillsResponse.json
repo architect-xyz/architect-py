@@ -1,0 +1,385 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalFillsResponse",
+  "type": "object",
+  "required": [
+    "aberrant_fills",
+    "fills"
+  ],
+  "properties": {
+    "aberrant_fills": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AberrantFill"
+      }
+    },
+    "fills": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Fill"
+      }
+    }
+  },
+  "definitions": {
+    "AberrantFill": {
+      "description": "Fills which we received but couldn't parse fully, return details best effort",
+      "type": "object",
+      "required": [
+        "id",
+        "x"
+      ],
+      "properties": {
+        "a": {
+          "title": "account",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "atn": {
+          "title": "recv_time_ns",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "ats": {
+          "title": "recv_time",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "d": {
+          "title": "direction",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Dir"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "f": {
+          "title": "fee",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fu": {
+          "title": "fee_currency",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "title": "fill_id",
+          "type": "string",
+          "format": "uuid"
+        },
+        "k": {
+          "title": "fill_kind",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/FillKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "oid": {
+          "title": "order_id",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/OrderId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p": {
+          "title": "price",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "q": {
+          "title": "quantity",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "s": {
+          "title": "symbol",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tn": {
+          "title": "trade_time_ns",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "ts": {
+          "title": "trade_time",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "u": {
+          "title": "trader",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UserId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "x": {
+          "title": "execution_venue",
+          "type": "string"
+        },
+        "xid": {
+          "title": "exchange_fill_id",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "Decimal": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "Dir": {
+      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
+      "type": "string",
+      "enum": [
+        "BUY",
+        "SELL"
+      ]
+    },
+    "Fill": {
+      "type": "object",
+      "required": [
+        "d",
+        "id",
+        "k",
+        "p",
+        "q",
+        "s",
+        "tn",
+        "ts",
+        "x"
+      ],
+      "properties": {
+        "a": {
+          "title": "account",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "atn": {
+          "title": "recv_time_ns",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "ats": {
+          "title": "recv_time",
+          "description": "When Architect received the fill, if realtime",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "d": {
+          "title": "direction",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Dir"
+            }
+          ]
+        },
+        "f": {
+          "title": "fee",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fu": {
+          "title": "fee_currency",
+          "description": "Fee currency, if different from the price currency",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "title": "fill_id",
+          "type": "string",
+          "format": "uuid"
+        },
+        "k": {
+          "title": "fill_kind",
+          "allOf": [
+            {
+              "$ref": "#/definitions/FillKind"
+            }
+          ]
+        },
+        "oid": {
+          "title": "order_id",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/OrderId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p": {
+          "title": "price",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "q": {
+          "title": "quantity",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Decimal"
+            }
+          ]
+        },
+        "s": {
+          "title": "symbol",
+          "type": "string"
+        },
+        "t": {
+          "title": "is_taker",
+          "default": null,
+          "type": "integer",
+          "format": "int"
+        },
+        "tn": {
+          "title": "trade_time_ns",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "ts": {
+          "title": "trade_time",
+          "description": "When the cpty claims the trade happened",
+          "type": "integer",
+          "format": "int64"
+        },
+        "u": {
+          "title": "trader",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UserId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "x": {
+          "title": "execution_venue",
+          "type": "string"
+        },
+        "xid": {
+          "title": "exchange_fill_id",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "FillKind": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "x-enumNames": [
+        "Normal",
+        "Reversal",
+        "Correction"
+      ]
+    },
+    "OrderId": {
+      "description": "System-unique, persistent order identifiers",
+      "type": "object",
+      "required": [
+        "seqid",
+        "seqno"
+      ],
+      "properties": {
+        "seqid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seqno": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "UserId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  }
+}

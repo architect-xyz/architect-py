@@ -7,7 +7,7 @@ from typing import Annotated, get_args, get_origin
 
 
 def main(file_path: str, json_folder: str) -> None:
-    modify_imports(file_path)
+    fix_lines(file_path)
     generate_stub(file_path, json_folder)
 
 
@@ -110,15 +110,18 @@ request_helper = Request{unary_type.title()}({request_type_name}, {response_base
             f.writelines(lines)
 
 
-def modify_imports(file_path: str) -> None:
+def fix_line(line: str) -> str:
+    line = line.replace("DecimalModel", "Decimal")
+    return line
+
+
+def fix_lines(file_path: str) -> None:
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    if any(line.strip() == "Decimal = str" for line in lines):
-        print(f"Updating: {file_path}")
-
-        lines = [line for line in lines if line.strip() != "Decimal = str"]
-        lines.insert(4, "from decimal import Decimal\n\n")
+    lines = [
+        fix_line(line) for line in lines if line.strip() != "DecimalModel = Decimal"
+    ]
 
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")

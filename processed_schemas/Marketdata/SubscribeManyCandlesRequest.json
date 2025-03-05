@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SubscribeManyCandlesRequest",
+  "type": "object",
+  "required": [
+    "candle_width"
+  ],
+  "properties": {
+    "candle_width": {
+      "$ref": "#/definitions/CandleWidth"
+    },
+    "symbols": {
+      "description": "If None, subscribe from all symbols on the feed",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "definitions": {
+    "CandleWidth": {
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "x-enumNames": [
+        "OneSecond",
+        "FiveSecond",
+        "OneMinute",
+        "FifteenMinute",
+        "OneHour",
+        "OneDay"
+      ]
+    }
+  },
+  "route": "/json.architect.Marketdata/SubscribeManyCandles",
+  "unary_type": "stream",
+  "service": "Marketdata",
+  "response_type": "Candle"
+}
