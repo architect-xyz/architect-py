@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SubscribeTickersRequest",
+  "description": "Ticker updates are not strongly ordered because the data is considered more casual.  You may receive diffs or snapshots slightly out of order.",
+  "type": "object",
+  "properties": {
+    "symbols": {
+      "description": "If None, subscribe from all symbols on the feed",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "route": "/json.architect.Marketdata/SubscribeTickers",
+  "unary_type": "stream",
+  "service": "Marketdata",
+  "response_type": "TickerUpdate"
+}
