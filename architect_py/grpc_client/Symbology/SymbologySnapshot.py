@@ -6,7 +6,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, Literal, Mapping, Optional, Sequence, Union
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
@@ -108,11 +108,11 @@ class TickSize1(Struct):
     simple: Decimal
 
 
-Threshold = Sequence[Decimal]
+Threshold = List[Decimal]
 
 
 class Varying(Struct):
-    thresholds: Sequence[Threshold]
+    thresholds: List[Threshold]
 
 
 class TickSize2(Struct):
@@ -754,7 +754,7 @@ class OptionsSeriesInfo(Struct):
     multiplier: Decimal
     options_series: str
     quote_symbol: str
-    strikes_by_expiration: Mapping[str, Sequence[Decimal]]
+    strikes_by_expiration: Dict[str, List[Decimal]]
     underlying: str
     venue_discriminant: Optional[str] = None
 
@@ -766,7 +766,7 @@ class OptionsSeriesInstance(Struct):
 
 
 class ProductType7(Struct):
-    legs: Sequence[SpreadLeg]
+    legs: List[SpreadLeg]
     product_type: Literal['FutureSpread']
 
 
@@ -804,12 +804,12 @@ class ProductInfo(Struct):
 
 
 class SymbologySnapshot(Struct):
-    execution_info: Mapping[str, Mapping[str, ExecutionInfo]]
-    options_series: Mapping[str, OptionsSeriesInfo]
-    products: Mapping[str, ProductInfo]
+    execution_info: Dict[str, Dict[str, ExecutionInfo]]
+    options_series: Dict[str, OptionsSeriesInfo]
+    products: Dict[str, ProductInfo]
     sid: Annotated[int, Meta(ge=0, title='sequence_id')]
     sn: Annotated[int, Meta(ge=0, title='sequence_number')]
-    product_aliases: Optional[Mapping[str, Mapping[str, str]]] = {}
+    product_aliases: Optional[Dict[str, Dict[str, str]]] = {}
 
     @property
     def sequence_id(self) -> int:

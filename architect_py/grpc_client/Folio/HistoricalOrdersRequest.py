@@ -6,7 +6,7 @@ from architect_py.grpc_client.Folio.HistoricalOrdersResponse import HistoricalOr
 from architect_py.grpc_client.request import RequestUnary
 
 
-from typing import Annotated, Optional, Sequence
+from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
@@ -29,7 +29,7 @@ class HistoricalOrdersRequest(Struct):
     ] = None
     order_ids: Optional[
         Annotated[
-            Sequence[OrderId],
+            List[OrderId],
             Meta(description='if order_ids is not empty, the limit field is ignored'),
         ]
     ] = None

@@ -6,7 +6,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, Optional, Sequence
+from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
@@ -60,7 +60,7 @@ class AlgoOrderForTwapAlgo(Struct):
     state: AlgoState
     status: TwapStatus
     trader: UserId
-    display_symbols: Optional[Sequence[str]] = None
+    display_symbols: Optional[List[str]] = None
     last_error: Optional[str] = None
     last_error_time: Optional[str] = None
     parent_order_id: Optional[OrderId] = None

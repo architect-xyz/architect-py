@@ -50,8 +50,8 @@ process_file() {
         --output "$output_file" \
         --input-file-type jsonschema \
         --output-model-type msgspec.Struct \
+        --use-annotated \
         --use-title-as-name \
-        --use-generic-container-types \
         --enum-field-as-literal one \
         --use-subclass-enum \
         --custom-template-dir templates \

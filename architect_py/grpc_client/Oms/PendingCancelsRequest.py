@@ -6,7 +6,7 @@ from architect_py.grpc_client.Oms.PendingCancelsResponse import PendingCancelsRe
 from architect_py.grpc_client.request import RequestUnary
 
 
-from typing import Optional, Sequence
+from typing import List, Optional
 
 from msgspec import Struct
 
@@ -18,7 +18,7 @@ TraderIdOrEmail = str
 
 class PendingCancelsRequest(Struct):
     account: Optional[AccountIdOrName] = None
-    cancel_ids: Optional[Sequence[str]] = None
+    cancel_ids: Optional[List[str]] = None
     symbol: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
     venue: Optional[str] = None

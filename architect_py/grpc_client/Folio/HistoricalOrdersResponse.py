@@ -6,7 +6,7 @@ from decimal import Decimal
 
 
 from enum import Enum
-from typing import Annotated, Literal, Optional, Sequence, Union
+from typing import Annotated, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
@@ -580,4 +580,4 @@ Order = Union[Order1, Order2, Order3]
 
 
 class HistoricalOrdersResponse(Struct):
-    orders: Sequence[Order]
+    orders: List[Order]

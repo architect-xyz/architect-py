@@ -15,7 +15,6 @@ import grpc
 
 import bisect
 from decimal import Decimal
-from typing import List
 
 from architect_py.graphql_client.client import GraphQLClient
 
@@ -208,16 +207,15 @@ class GRPCClient:
 
         async with condition:
             await condition.wait_for(
-                lambda: all(
-                    getattr(self.l1_books.get(symbol), "t", 0) > 0 for symbol in symbols
-                )
+                lambda: all(self.l1_books[symbol].ts > 0 for symbol in symbols)
             )
 
     async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
+        symbols_cast = cast(list[str], symbols)
         async for snap in self.subscribe(
-            SubscribeL1BookSnapshotsRequest.get_helper(), symbols=symbols
+            SubscribeL1BookSnapshotsRequest.get_helper(), symbols=symbols_cast
         ):
-            book = self.l1_books[TradableProduct(snap.symbol)]
+            book = self.l1_books[cast(TradableProduct, snap.symbol)]
             update_struct(book, snap)
 
     def initialize_l2_book(
@@ -238,15 +236,9 @@ class GRPCClient:
         condition = asyncio.Condition()
 
         async with condition:
-            await condition.wait_for(
-                lambda: all(
-                    getattr(self.l1_books.get(symbol), "t", 0) > 0 for symbol in symbols
-                )
-            )
+            await condition.wait_for(lambda: self.l2_books[symbol].ts > 0)
 
-    def stream_l1_books(
-        self, symbols: list[TradableProduct]
-    ) -> AsyncIterator[L1BookSnapshot]:
+    def stream_l1_books(self, symbols: list[str]) -> AsyncIterator[L1BookSnapshot]:
         return self.subscribe(
             SubscribeL1BookSnapshotsRequest.get_helper(),
             symbols=symbols,
@@ -292,7 +284,7 @@ class GRPCClient:
     @staticmethod
     def l2_update_decoder(
         data: bytes,
-    ) -> Annotated[L2BookUpdate, Any]:
+    ) -> L2BookUpdate:
         tag = msgspec.json.decode(data, type=Tag)
         if tag.t == "d":
             return msgspec.json.decode(data, type=Diff)
@@ -339,7 +331,10 @@ class GRPCClient:
 
 
 def update_order_list(
-    order_list: List[List[Decimal]], price: Decimal, size: Decimal, ascending: bool
+    order_list: list[list[Decimal]],
+    price: Decimal,
+    size: Decimal,
+    ascending: bool,
 ) -> None:
     """
     Updates a sorted order list (either ascending for asks or descending for bids)
