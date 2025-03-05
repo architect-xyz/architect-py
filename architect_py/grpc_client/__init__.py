@@ -96,11 +96,11 @@ class GRPCClient:
         it's likely a bug in user code.
 
         async for snap in self.subscribe(
-            RequestType.get_helper(), # add args/kwargs here
+            RequestType.get_request_helper(), # add args/kwargs here
         ):
 
         snap = await self.request(
-            RequestType.get_helper(), # add args/kwargs here
+            RequestType.get_request_helper(), # add args/kwargs here
         )
         """
         self.graphql_client = graphql_client
@@ -175,7 +175,7 @@ class GRPCClient:
         # jwt = await self.refresh_grpc_credentials()
         # return await stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
         return await self.request(
-            L2BookSnapshotRequest.get_helper(), venue=venue, symbol=symbol
+            L2BookSnapshotRequest.get_request_helper(), venue=venue, symbol=symbol
         )
 
     def initialize_l1_books(
@@ -211,7 +211,7 @@ class GRPCClient:
     async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
         symbols_cast = cast(list[str], symbols)
         async for snap in self.subscribe(
-            SubscribeL1BookSnapshotsRequest.get_helper(), symbols=symbols_cast
+            SubscribeL1BookSnapshotsRequest.get_request_helper(), symbols=symbols_cast
         ):
             book = self.l1_books[cast(TradableProduct, snap.symbol)]
             update_struct(book, snap)
@@ -238,7 +238,7 @@ class GRPCClient:
 
     def stream_l1_books(self, symbols: list[str]) -> AsyncIterator[L1BookSnapshot]:
         return self.subscribe(
-            SubscribeL1BookSnapshotsRequest.get_helper(),
+            SubscribeL1BookSnapshotsRequest.get_request_helper(),
             symbols=symbols,
         )
 
@@ -246,7 +246,7 @@ class GRPCClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
         return self.subscribe(
-            SubscribeL2BookUpdatesRequest.get_helper(),
+            SubscribeL2BookUpdatesRequest.get_request_helper(),
             self.l2_update_decoder,
             symbol=symbol,
             venue=venue,
@@ -256,7 +256,7 @@ class GRPCClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> None:
         async for up in self.subscribe(
-            SubscribeL2BookUpdatesRequest.get_helper(),
+            SubscribeL2BookUpdatesRequest.get_request_helper(),
             self.l2_update_decoder,
             symbol=symbol,
             venue=venue,

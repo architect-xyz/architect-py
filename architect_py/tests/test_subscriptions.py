@@ -49,7 +49,7 @@ async def test_subscribe_l1_stream(
 
     i = 0
     async for snap in async_client.grpc_client.subscribe(
-        SubscribeL1BookSnapshotsRequest.get_helper(), symbols=[symbol]
+        SubscribeL1BookSnapshotsRequest.get_request_helper(), symbols=[symbol]
     ):
         assert snap.best_bid is not None, f"{symbol} should always be bid"
         assert snap.best_ask is not None, f"{symbol} should always be offered"
