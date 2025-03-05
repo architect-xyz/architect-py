@@ -30,10 +30,10 @@ class AccountSummariesRequest(Struct):
     """
     trader: Optional[TraderIdOrEmail] = None
 
-
     @staticmethod
-    def get_helper():
-        return AccountSummariesRequestHelper
+    def get_request_helper():
+        return request_helper
 
-AccountSummariesRequestHelper = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")
+
+request_helper = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")
 

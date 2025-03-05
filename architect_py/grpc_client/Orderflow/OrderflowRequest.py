@@ -176,6 +176,10 @@ class OrderflowRequest1(Struct):
     def execution_venue(self, value: Optional[str]) -> None:
         self.x = value
 
+    @staticmethod
+    def get_request_helper():
+        return request_helper
+
 
 class OrderflowRequest2(Struct):
     d: Annotated[Dir, Meta(title='dir')]
@@ -290,6 +294,10 @@ class OrderflowRequest2(Struct):
     @execution_venue.setter
     def execution_venue(self, value: Optional[str]) -> None:
         self.x = value
+
+    @staticmethod
+    def get_request_helper():
+        return request_helper
 
 
 class OrderflowRequest3(Struct):
@@ -406,6 +414,10 @@ class OrderflowRequest3(Struct):
     def execution_venue(self, value: Optional[str]) -> None:
         self.x = value
 
+    @staticmethod
+    def get_request_helper():
+        return request_helper
+
 
 class OrderflowRequest4(Struct):
     id: Annotated[OrderId, Meta(title='order_id')]
@@ -439,6 +451,10 @@ class OrderflowRequest4(Struct):
     def cancel_id(self, value: Optional[str]) -> None:
         self.xid = value
 
+    @staticmethod
+    def get_request_helper():
+        return request_helper
+
 
 class OrderflowRequest5(Struct):
     id: str
@@ -446,6 +462,10 @@ class OrderflowRequest5(Struct):
     account: Optional[AccountIdOrName] = None
     execution_venue: Optional[str] = None
     trader: Optional[TraderIdOrEmail] = None
+
+    @staticmethod
+    def get_request_helper():
+        return request_helper
 
 
 OrderflowRequest = Annotated[
@@ -458,9 +478,5 @@ OrderflowRequest = Annotated[
 ]
 
 
-    @staticmethod
-    def get_helper():
-        return OrderflowRequestHelper
-
-OrderflowRequestHelper = RequestDuplex_Stream(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")
+request_helper = RequestDuplex_Stream(OrderflowRequest, typing.Union[Orderflow.Orderflow1, Orderflow.Orderflow2, Orderflow.Orderflow3, Orderflow.Orderflow4, Orderflow.Orderflow5, Orderflow.Orderflow6, Orderflow.Orderflow7, Orderflow.Orderflow8, Orderflow.Orderflow9, Orderflow.Orderflow10, Orderflow.Orderflow11, Orderflow.Orderflow12, Orderflow.Orderflow13], "/json.architect.Orderflow/Orderflow")
 

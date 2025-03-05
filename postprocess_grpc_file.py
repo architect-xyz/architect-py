@@ -1,6 +1,9 @@
 import argparse
 import os
 import json
+import importlib.util
+import os
+from typing import Annotated, get_args, get_origin
 
 
 def main(file_path: str, json_folder: str) -> None:
@@ -10,6 +13,31 @@ def main(file_path: str, json_folder: str) -> None:
 
 def capitalize_first_letter(word: str) -> str:
     return word[0].upper() + word[1:]
+
+
+def import_class_from_filename(filename: str, class_name: str):
+    module_name = os.path.splitext(os.path.basename(filename))[0]
+
+    # Load the module dynamically
+    spec = importlib.util.spec_from_file_location(module_name, filename)
+    if spec is None or spec.loader is None:
+        raise FileNotFoundError(f"File '{filename}' not found")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    cls = getattr(module, class_name, None)
+
+    if cls is None:
+        raise AttributeError(f"Class '{class_name}' not found in {filename}")
+
+    return cls
+
+
+def extract_base_type(annotated_type) -> str:
+    if get_origin(annotated_type) is Annotated:
+        return get_args(annotated_type)[0]  # The first argument is the actual type
+    else:
+        return annotated_type.__name__  # If not Annotated, return as is
 
 
 def generate_stub(file_path: str, json_folder: str) -> None:
@@ -25,16 +53,34 @@ def generate_stub(file_path: str, json_folder: str) -> None:
 
         service = j["service"]
         unary_type = j["unary_type"]
-        response_file_name: str = j["response_type"]
+        response_file_root_name: str = j["response_type"]  # no extension
+        route = j["route"]
 
+        # the split("_") is for files like Array_of_L1BookSnapshot.json
         request_type_name = "".join(
             capitalize_first_letter(word) for word in name.split("_")
         )
         response_type_name = "".join(
-            capitalize_first_letter(word) for word in response_file_name.split("_")
+            capitalize_first_letter(word) for word in response_file_root_name.split("_")
         )
 
-        route = j["route"]
+        """
+        This is for the case where the response type is an annotated union type such as
+        L2BookUpdate = Annotated[
+            Union[Snapshot, Diff],
+            Meta(
+                title='L2BookUpdate',
+            ),
+        ]
+        This creates errors with the GRPCClient.subscribe types
+        because it thinks the type is Annotated
+        so we want to remove the Annotated part for the Helper class
+        """
+        response_file_path = (
+            f"{file_path.replace(base_name, response_file_root_name)}.py"
+        )
+        c = import_class_from_filename(response_file_path, response_type_name)
+        response_base_type_str = extract_base_type(c)
 
         with open(file_path, "r") as f:
             lines = f.readlines()
@@ -48,17 +94,13 @@ def generate_stub(file_path: str, json_folder: str) -> None:
                 "from architect_py.grpc_client.request import RequestUnary\n"
             )
         request_str = f"""
-    @staticmethod
-    def get_helper():
-        return {request_type_name}Helper
-
-{request_type_name}Helper = Request{unary_type.title()}({request_type_name}, {response_type_name}, "{route}")
+request_helper = Request{unary_type.title()}({request_type_name}, {response_base_type_str}, "{route}")
 """
 
         lines.insert(
             4,
             (
-                f"from architect_py.grpc_client.{service}.{response_file_name} import {response_type_name}\n"
+                f"from architect_py.grpc_client.{service}.{response_file_root_name} import {response_type_name}\n"
                 f"{request_import}\n"
             ),
         )

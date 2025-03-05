@@ -24,10 +24,10 @@ class PruneExpiredSymbolsRequest(Struct):
     If None then it will just use server current time; otherwise, specify a unix timestamp in seconds
     """
 
-
     @staticmethod
-    def get_helper():
-        return PruneExpiredSymbolsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-PruneExpiredSymbolsRequestHelper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")
+
+request_helper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")
 

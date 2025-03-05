@@ -22,10 +22,10 @@ class SubscribeL1BookSnapshotsRequest(Struct):
     If None, subscribe from all symbols on the feed
     """
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeL1BookSnapshotsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeL1BookSnapshotsRequestHelper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")
+
+request_helper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")
 

@@ -58,10 +58,10 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct):
     parent_order_id: Optional[OrderId] = None
     trader: Optional[UserId] = None
 
-
     @staticmethod
-    def get_helper():
-        return CreateAlgoOrderRequestForTwapAlgoHelper
+    def get_request_helper():
+        return request_helper
 
-CreateAlgoOrderRequestForTwapAlgoHelper = RequestUnary(CreateAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/CreateTwapAlgoOrder")
+
+request_helper = RequestUnary(CreateAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/CreateTwapAlgoOrder")
 

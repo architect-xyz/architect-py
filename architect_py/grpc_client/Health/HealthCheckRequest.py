@@ -26,10 +26,10 @@ class HealthCheckRequest(Struct):
     Generally, this will only be set when querying the API gateway.  It's not recommended to rely on internal subservice names being stable.
     """
 
-
     @staticmethod
-    def get_helper():
-        return HealthCheckRequestHelper
+    def get_request_helper():
+        return request_helper
 
-HealthCheckRequestHelper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
+
+request_helper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
 

@@ -15,10 +15,10 @@ class TickerRequest(Struct):
     symbol: str
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return TickerRequestHelper
+    def get_request_helper():
+        return request_helper
 
-TickerRequestHelper = RequestUnary(TickerRequest, Ticker, "/json.architect.Marketdata/Ticker")
+
+request_helper = RequestUnary(TickerRequest, Ticker, "/json.architect.Marketdata/Ticker")
 

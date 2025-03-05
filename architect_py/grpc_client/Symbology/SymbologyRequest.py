@@ -12,10 +12,10 @@ from msgspec import Struct
 class SymbologyRequest(Struct):
     pass
 
-
     @staticmethod
-    def get_helper():
-        return SymbologyRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SymbologyRequestHelper = RequestUnary(SymbologyRequest, SymbologySnapshot, "/json.architect.Symbology/Symbology")
+
+request_helper = RequestUnary(SymbologyRequest, SymbologySnapshot, "/json.architect.Symbology/Symbology")
 

@@ -23,10 +23,10 @@ class SubscribeTradesRequest(Struct):
     """
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return SubscribeTradesRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SubscribeTradesRequestHelper = RequestStream(SubscribeTradesRequest, Trade, "/json.architect.Marketdata/SubscribeTrades")
+
+request_helper = RequestStream(SubscribeTradesRequest, Trade, "/json.architect.Marketdata/SubscribeTrades")
 

@@ -14,10 +14,10 @@ class SymbolsRequest(Struct):
     List all symbols
     """
 
-
     @staticmethod
-    def get_helper():
-        return SymbolsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-SymbolsRequestHelper = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")
+
+request_helper = RequestUnary(SymbolsRequest, SymbolsResponse, "/json.architect.Symbology/Symbols")
 

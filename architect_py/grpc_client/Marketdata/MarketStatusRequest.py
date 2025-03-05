@@ -15,10 +15,10 @@ class MarketStatusRequest(Struct):
     symbol: str
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return MarketStatusRequestHelper
+    def get_request_helper():
+        return request_helper
 
-MarketStatusRequestHelper = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
+
+request_helper = RequestUnary(MarketStatusRequest, MarketStatus, "/json.architect.Marketdata/MarketStatus")
 

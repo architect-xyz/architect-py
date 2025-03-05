@@ -26,10 +26,10 @@ class TickersRequest(Struct):
     symbols: Optional[List[str]] = None
     venue: Optional[str] = None
 
-
     @staticmethod
-    def get_helper():
-        return TickersRequestHelper
+    def get_request_helper():
+        return request_helper
 
-TickersRequestHelper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")
+
+request_helper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")
 

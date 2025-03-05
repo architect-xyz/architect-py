@@ -14,10 +14,10 @@ from msgspec import Struct
 class L1BookSnapshotsRequest(Struct):
     symbols: Optional[List[str]] = None
 
-
     @staticmethod
-    def get_helper():
-        return L1BookSnapshotsRequestHelper
+    def get_request_helper():
+        return request_helper
 
-L1BookSnapshotsRequestHelper = RequestUnary(L1BookSnapshotsRequest, ArrayOfL1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshots")
+
+request_helper = RequestUnary(L1BookSnapshotsRequest, typing.List[Array_of_L1BookSnapshot.L1BookSnapshot], "/json.architect.Marketdata/L1BookSnapshots")
 
