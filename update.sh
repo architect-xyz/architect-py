@@ -34,17 +34,15 @@ if [[ ! -d "$PROCESSED_DIR" ]]; then
     exit 1
 fi
 
-process_file() {
-    local filepath="$1"
-    local folder service_name filename out_dir output_file
-    folder=$(dirname "$filepath")
+process_folder() {
+    local folder="$1"
+    local service_name filename out_dir
+
     service_name=$(basename "$folder")
-    filename=$(basename "$filepath" .json)
     out_dir="${GRPC_CLIENT_DIR}/${service_name}"
     mkdir -p "${out_dir}"
 
-    output_file="${out_dir}/${filename}.py"
-    printf "Processing folder: ${service_name}, file: ${filepath}"
+    printf "Processing folder: ${service_name}"
     datamodel-codegen \
         --input "$folder" \
         --output "$out_dir" \
@@ -72,7 +70,7 @@ post_process_file() {
     python postprocess_grpc_file.py --file_path "$output_file" --json_folder "$folder"
 }
 
-export -f process_file
+export -f process_folder
 export -f post_process_file
 export GRPC_CLIENT_DIR
 
@@ -88,18 +86,27 @@ while IFS= read -r file; do
     json_files+=("$file")
 done < <(find "$PROCESSED_DIR" -mindepth 2 -name '*.json')
 
+folders=()
+while IFS= read -r folder; do
+    folders+=("$folder")
+done < <(find "$PROCESSED_DIR" -mindepth 1 -maxdepth 1 -type d)
+
+printf "%s\n" "${folders[@]}"
 
 # Process JSON files either using GNU parallel or a normal for loop.
 if command -v parallel >/dev/null 2>&1; then
     printf "\n\e[31mGNU parallel found, processing files in parallel.\e[0m\n\n"
 
-    printf "%s\n" "${json_files[@]}" | parallel --bar -j "$NUM_JOBS" process_file {}
+    printf "%s\n" "${folders[@]}" | parallel --bar -j "$NUM_JOBS" --tag process_folder {}
+
+    printf "\nPost processing files\n"
     printf "%s\n" "${json_files[@]}" | parallel --bar -j "$NUM_JOBS" post_process_file {}
 else
     printf "\n\e[31mGNU parallel not found, processing files sequentially.\e[0m\n\n\n"
-    for file in "${json_files[@]}"; do
+    for file in "${folders[@]}"; do
         process_file "$file"
     done
+    printf "\nPost processing files\n"
     for file in "${json_files[@]}"; do
         post_process_file "$file"
     done
