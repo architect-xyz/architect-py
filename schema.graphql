@@ -48,7 +48,9 @@ enum OrderStatus {
   OUT
   CANCELING
   CANCELED
+  RECONCILED_OUT
   STALE
+  UNKNOWN
 }
 
 enum OrderType {
@@ -70,6 +72,8 @@ enum TimeInForce {
   DAY
   IOC
   FOK
+  ATO
+  ATC
 }
 
 scalar AccountName
@@ -411,6 +415,7 @@ type Order {
 
 type OrderAck {
   orderId: OrderId!
+  exchangeOrderId: String
 }
 
 type OrderCanceled {

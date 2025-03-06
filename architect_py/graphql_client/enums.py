@@ -48,7 +48,9 @@ class OrderStatus(str, Enum):
     OUT = "OUT"
     CANCELING = "CANCELING"
     CANCELED = "CANCELED"
+    RECONCILED_OUT = "RECONCILED_OUT"
     STALE = "STALE"
+    UNKNOWN = "UNKNOWN"
 
 
 class OrderType(str, Enum):
@@ -70,3 +72,5 @@ class TimeInForce(str, Enum):
     DAY = "DAY"
     IOC = "IOC"
     FOK = "FOK"
+    ATO = "ATO"
+    ATC = "ATC"

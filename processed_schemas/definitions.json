@@ -173,6 +173,13 @@
       "tick_size"
     ],
     "properties": {
+      "exchange_symbol": {
+        "description": "If the execution venue has stable symbology, this may be populated",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
       "execution_venue": {
         "type": "string"
       },
@@ -2278,7 +2285,9 @@
         "enum": [
           "GTC",
           "IOC",
-          "FOK"
+          "FOK",
+          "ATO",
+          "ATC"
         ]
       },
       {
@@ -2353,7 +2362,9 @@
       127,
       128,
       129,
-      254
+      130,
+      254,
+      255
     ],
     "x-enumNames": [
       "Pending",
@@ -2362,7 +2373,9 @@
       "Out",
       "Canceling",
       "Canceled",
-      "Stale"
+      "ReconciledOut",
+      "Stale",
+      "Unknown"
     ]
   },
   "Order": {
@@ -2488,6 +2501,13 @@
           {
             "$ref": "#/Dir"
           }
+        ]
+      },
+      "eid": {
+        "title": "exchange_order_id",
+        "type": [
+          "string",
+          "null"
         ]
       },
       "id": {
@@ -2656,6 +2676,7 @@
         ]
       },
       "cost_basis": {
+        "description": "Cost basis of the position, if known.",
         "anyOf": [
           {
             "$ref": "#/Decimal"
@@ -2679,12 +2700,23 @@
         "$ref": "#/Decimal"
       },
       "trade_time": {
-        "description": "The meaning of this field varies by reporting venue.",
+        "description": "NB: the meaning of this field varies by reporting venue",
         "type": [
           "string",
           "null"
         ],
         "format": "date-time"
+      },
+      "unrealized_pnl": {
+        "description": "Unrealized PNL of the position, if known.",
+        "anyOf": [
+          {
+            "$ref": "#/Decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     }
   },

@@ -28,6 +28,7 @@ class Dropcopy1(Struct):
     k: Literal['LIMIT']
     p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -152,6 +153,14 @@ class Dropcopy1(Struct):
         self.po = value
 
     @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
+
+    @property
     def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
@@ -202,6 +211,7 @@ class Dropcopy2(Struct):
     k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -324,6 +334,14 @@ class Dropcopy2(Struct):
     @trigger_price.setter
     def trigger_price(self, value: definitions.DecimalModel) -> None:
         self.tp = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
 
     @property
     def parent_id(self) -> Optional[definitions.OrderId]:
@@ -376,6 +394,7 @@ class Dropcopy3(Struct):
     k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -498,6 +517,14 @@ class Dropcopy3(Struct):
     @trigger_price.setter
     def trigger_price(self, value: definitions.DecimalModel) -> None:
         self.tp = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
 
     @property
     def parent_id(self) -> Optional[definitions.OrderId]:

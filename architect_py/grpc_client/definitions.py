@@ -156,7 +156,9 @@ class OrderStatus(int, Enum):
     integer_127 = 127
     integer_128 = 128
     integer_129 = 129
+    integer_130 = 130
     integer_254 = 254
+    integer_255 = 255
 
 
 class SortTickersBy(str, Enum):
@@ -416,6 +418,8 @@ class TimeInForce1(str, Enum):
     GTC = 'GTC'
     IOC = 'IOC'
     FOK = 'FOK'
+    ATO = 'ATO'
+    ATC = 'ATC'
 
 
 class TimeInForce2(Struct):
@@ -1352,16 +1356,33 @@ class AberrantFill(Struct):
 class AccountPosition(Struct):
     quantity: DecimalModel
     break_even_price: Optional[DecimalModel] = None
-    cost_basis: Optional[DecimalModel] = None
+    cost_basis: Optional[
+        Annotated[
+            Optional[DecimalModel],
+            Meta(description='Cost basis of the position, if known.'),
+        ]
+    ] = None
+    """
+    Cost basis of the position, if known.
+    """
     liquidation_price: Optional[DecimalModel] = None
     trade_time: Optional[
         Annotated[
             Optional[str],
-            Meta(description='The meaning of this field varies by reporting venue.'),
+            Meta(description='NB: the meaning of this field varies by reporting venue'),
         ]
     ] = None
     """
-    The meaning of this field varies by reporting venue.
+    NB: the meaning of this field varies by reporting venue
+    """
+    unrealized_pnl: Optional[
+        Annotated[
+            Optional[DecimalModel],
+            Meta(description='Unrealized PNL of the position, if known.'),
+        ]
+    ] = None
+    """
+    Unrealized PNL of the position, if known.
     """
 
 
@@ -1643,6 +1664,17 @@ class ExecutionInfo(Struct):
     min_order_quantity_unit: MinOrderQuantityUnit
     step_size: DecimalModel
     tick_size: TickSize
+    exchange_symbol: Optional[
+        Annotated[
+            Optional[str],
+            Meta(
+                description='If the execution venue has stable symbology, this may be populated'
+            ),
+        ]
+    ] = None
+    """
+    If the execution venue has stable symbology, this may be populated
+    """
     initial_margin: Optional[DecimalModel] = None
     maintenance_margin: Optional[DecimalModel] = None
 
@@ -1871,6 +1903,7 @@ class Order4(Struct):
     k: Literal['LIMIT']
     p: Annotated[DecimalModel, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
         None
@@ -1993,6 +2026,14 @@ class Order4(Struct):
         self.po = value
 
     @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
+
+    @property
     def parent_id(self) -> Optional[OrderId]:
         return self.pid
 
@@ -2042,6 +2083,7 @@ class Order5(Struct):
     k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[DecimalModel, Meta(title='limit_price')]
     tp: Annotated[DecimalModel, Meta(title='trigger_price')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
         None
@@ -2162,6 +2204,14 @@ class Order5(Struct):
     @trigger_price.setter
     def trigger_price(self, value: DecimalModel) -> None:
         self.tp = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
 
     @property
     def parent_id(self) -> Optional[OrderId]:
@@ -2213,6 +2263,7 @@ class Order6(Struct):
     k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[DecimalModel, Meta(title='limit_price')]
     tp: Annotated[DecimalModel, Meta(title='trigger_price')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
         None
@@ -2333,6 +2384,14 @@ class Order6(Struct):
     @trigger_price.setter
     def trigger_price(self, value: DecimalModel) -> None:
         self.tp = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
 
     @property
     def parent_id(self) -> Optional[OrderId]:

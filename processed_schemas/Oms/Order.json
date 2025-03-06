@@ -125,6 +125,13 @@
         }
       ]
     },
+    "eid": {
+      "title": "exchange_order_id",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "id": {
       "$ref": "../definitions.json#/OrderId"
     },

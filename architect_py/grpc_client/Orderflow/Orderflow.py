@@ -28,6 +28,7 @@ class Orderflow1(Struct):
     k: Literal['LIMIT']
     p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -152,6 +153,14 @@ class Orderflow1(Struct):
         self.po = value
 
     @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
+
+    @property
     def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
@@ -202,6 +211,7 @@ class Orderflow2(Struct):
     k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -324,6 +334,14 @@ class Orderflow2(Struct):
     @trigger_price.setter
     def trigger_price(self, value: definitions.DecimalModel) -> None:
         self.tp = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
 
     @property
     def parent_id(self) -> Optional[definitions.OrderId]:
@@ -376,6 +394,7 @@ class Orderflow3(Struct):
     k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -500,6 +519,14 @@ class Orderflow3(Struct):
         self.tp = value
 
     @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
+
+    @property
     def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
@@ -533,8 +560,25 @@ class Orderflow3(Struct):
 
 
 class Orderflow4(Struct):
-    id: definitions.OrderId
+    id: Annotated[definitions.OrderId, Meta(title='order_id')]
     t: Literal['a']
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
+
+    @property
+    def order_id(self) -> definitions.OrderId:
+        return self.id
+
+    @order_id.setter
+    def order_id(self, value: definitions.OrderId) -> None:
+        self.id = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
 
 
 class Orderflow5(Struct):
@@ -551,10 +595,15 @@ class Orderflow6(Struct):
 
 class Orderflow7(Struct):
     id: definitions.OrderId
-    t: Literal['z']
+    t: Literal['ox']
 
 
 class Orderflow8(Struct):
+    id: definitions.OrderId
+    t: Literal['z']
+
+
+class Orderflow9(Struct):
     id: definitions.OrderId
     o: definitions.CancelStatus
     t: Literal['xc']
@@ -564,26 +613,26 @@ class Orderflow8(Struct):
     r: Optional[str] = None
 
 
-class Orderflow9(Struct):
+class Orderflow10(Struct):
     id: definitions.OrderId
     t: Literal['xr']
     xid: str
     rm: Optional[str] = None
 
 
-class Orderflow10(Struct):
+class Orderflow11(Struct):
     id: definitions.OrderId
     t: Literal['xa']
     xid: Optional[str] = None
 
 
-class Orderflow11(Struct):
+class Orderflow12(Struct):
     id: definitions.OrderId
     t: Literal['xx']
     xid: Optional[str] = None
 
 
-class Orderflow12(Struct):
+class Orderflow13(Struct):
     d: Annotated[definitions.Dir, Meta(title='direction')]
     id: Annotated[str, Meta(title='fill_id')]
     k: Annotated[definitions.FillKind, Meta(title='fill_kind')]
@@ -778,7 +827,7 @@ class Orderflow12(Struct):
         self.xid = value
 
 
-class Orderflow13(Struct):
+class Orderflow14(Struct):
     """
     Fills which we received but couldn't parse fully, return details best effort
     """
@@ -960,6 +1009,7 @@ Orderflow = Annotated[
         Orderflow11,
         Orderflow12,
         Orderflow13,
+        Orderflow14,
     ],
     Meta(title='Orderflow'),
 ]
