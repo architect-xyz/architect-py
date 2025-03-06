@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from architect_py.async_client import AsyncClient
 from architect_py.graphql_client.enums import OrderType, TimeInForce
-from architect_py.scalars import OrderDir
+from architect_py.scalars import OrderDir, TradableProduct
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ if api_key is None or api_secret is None or HOST is None or ACCOUNT is None:
 client = AsyncClient(host=HOST, api_key=api_key, api_secret=api_secret)
 
 
-async def search_symbol() -> tuple[str, str]:
+async def search_symbol() -> tuple[str, TradableProduct]:
     venue = "CME"
     markets = await client.search_symbols(
         search_string="ES",
@@ -38,7 +38,7 @@ async def search_symbol() -> tuple[str, str]:
 async def test_send_order():
     venue, symbol = await search_symbol()
 
-    snapshot = await client.market_snapshot(venue, symbol)
+    snapshot = await client.get_market_snapshot(symbol=symbol, venue=venue)
     if snapshot is None:
         return ValueError(f"Market snapshot for {symbol} is None")
 

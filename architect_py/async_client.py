@@ -10,6 +10,9 @@ The functions to send orders will return the order ID string
 After sending the order, this string can be used to retrieve the order status
 
 send_limit_order -> get_order
+
+The individual graphql types are subject to change, so it is not recommended to use them directly.
+
 """
 
 import logging
@@ -96,10 +99,9 @@ class AsyncClient:
         host: str = "https://app.architect.co",
         paper_trading: bool = True,
         port: Optional[int] = None,
+        **kwargs: Any,
     ):
-        """
-        Please see the GraphQLClient class for the full list of arguments.
-        """
+        """ """
 
         if not api_key.isalnum():
             raise ValueError(
@@ -125,7 +127,7 @@ class AsyncClient:
                 port = 4567
 
         self.graphql_client = GraphQLClient(
-            api_key=api_key, api_secret=api_secret, host=host, port=port
+            api_key=api_key, api_secret=api_secret, host=host, port=port, **kwargs
         )
 
         self.grpc_jwt: Optional[str] = None
@@ -133,6 +135,16 @@ class AsyncClient:
         self.grpc_root_certificates = grpc_root_certificates
         self.marketdata: Dict[str, JsonWsClient] = {}  # cpty => JsonWsClient
         self.l2_books: dict[str, L2Book] = {}
+
+    async def who_am_i(self) -> tuple[str, str]:
+        """
+        Returns
+        (userId, user_email)
+        """
+        user_id = await self.graphql_client.user_id_query()
+        email = await self.graphql_client.user_email_query()
+
+        return user_id.user_id, email.user_email
 
     async def grpc_channel(self, endpoint: str):
         if "://" not in endpoint:
@@ -185,9 +197,12 @@ class AsyncClient:
         search_string: Optional[str] = None,
         execution_venue: Optional[str] = None,
     ) -> List[TradableProduct]:
+        """
+        returns a list of TradableProduct objects
+        """
         markets = (
             await self.graphql_client.search_symbols_query(
-                search_string, execution_venue
+                search_string=search_string, execution_venue=execution_venue
             )
         ).search_symbols
 
@@ -258,22 +273,17 @@ class AsyncClient:
         accounts = await self.graphql_client.list_accounts_query()
         return accounts.accounts
 
-    async def get_account_summary(
-        self, account: str, venue: Optional[str] = None
-    ) -> AccountSummaryFields:
-        summary = await self.graphql_client.get_account_summary_query(
-            account=account, venue=venue
-        )
+    async def get_account_summary(self, account: str) -> AccountSummaryFields:
+        summary = await self.graphql_client.get_account_summary_query(account=account)
         return summary.account_summary
 
     async def get_account_summaries(
         self,
         accounts: Optional[list[str]] = None,
-        venue: Optional[str] = None,
         trader: Optional[str] = None,
     ) -> Sequence[AccountSummaryFields]:
         summaries = await self.graphql_client.get_account_summaries_query(
-            venue=venue, trader=trader, accounts=accounts
+            trader=trader, accounts=accounts
         )
         return summaries.account_summaries
 
@@ -377,17 +387,17 @@ class AsyncClient:
         market_status = await self.graphql_client.get_market_status_query(symbol, venue)
         return market_status.market_status
 
-    async def market_snapshot(self, symbol: str, venue: str) -> MarketTickerFields:
+    async def get_market_snapshot(self, symbol: str, venue: str) -> MarketTickerFields:
         """this is an alias for l1_book_snapshot"""
         return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
-    async def market_snapshots(
+    async def get_market_snapshots(
         self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
         """this is an alias for l1_book_snapshots"""
         return await self.get_l1_book_snapshots(venue=venue, symbols=symbols)
 
-    async def get_historical_candles_snapshot(
+    async def get_candles_snapshot(
         self,
         symbol: str,
         venue: str,
@@ -408,7 +418,7 @@ class AsyncClient:
         symbol: str,
         venue: str,
     ) -> MarketTickerFields:
-        snapshot = await self.graphql_client.get_market_snapshot_query(
+        snapshot = await self.graphql_client.get_l_1_book_snapshot_query(
             symbol=symbol, venue=venue
         )
         return snapshot.ticker
@@ -416,7 +426,7 @@ class AsyncClient:
     async def get_l1_book_snapshots(
         self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
-        snapshot = await self.graphql_client.get_market_snapshots_query(
+        snapshot = await self.graphql_client.get_l_1_book_snapshots_query(
             venue=venue, symbols=symbols
         )
         return snapshot.tickers
@@ -595,7 +605,9 @@ class AsyncClient:
     ) -> OrderFields:
 
         # Check for GQL failures
-        bbo_snapshot = await self.market_snapshot(execution_venue, symbol)
+        bbo_snapshot = await self.get_market_snapshot(
+            symbol=symbol, venue=execution_venue
+        )
         if bbo_snapshot is None:
             raise ValueError(
                 f"Failed to send market order with reason: no market snapshot for {symbol}"

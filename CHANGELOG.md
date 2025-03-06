@@ -1,3 +1,22 @@
+3.1.11
+Features:
+  - Added the who_am_i function to get userid + email
+
+Fixes:
+  - Fixed account summaries for paper trading (there is a corresponding backend PR)
+  - Improved documentation
+
+
+3.1.10
+Fixes:
+  - Fix part 2 for send_market_pro_order, prematurely updated the schema
+
+3.1.9
+Fixes:
+  - Fix for send_market_pro_order
+  - Minor internal renaming of functions
+  - updated dependencies + poetry lock
+
 3.1.8
 Fixes:
   - Minor function fixes

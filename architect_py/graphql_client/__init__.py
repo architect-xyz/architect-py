@@ -85,20 +85,20 @@ from .get_historical_orders_query import (
     GetHistoricalOrdersQueryFolio,
     GetHistoricalOrdersQueryFolioHistoricalOrders,
 )
+from .get_l_1_book_snapshot_query import (
+    GetL1BookSnapshotQuery,
+    GetL1BookSnapshotQueryMarketdata,
+    GetL1BookSnapshotQueryMarketdataTicker,
+)
+from .get_l_1_book_snapshots_query import (
+    GetL1BookSnapshotsQuery,
+    GetL1BookSnapshotsQueryMarketdata,
+    GetL1BookSnapshotsQueryMarketdataTickers,
+)
 from .get_l_2_book_snapshot_query import (
     GetL2BookSnapshotQuery,
     GetL2BookSnapshotQueryMarketdata,
     GetL2BookSnapshotQueryMarketdataL2BookSnapshot,
-)
-from .get_market_snapshot_query import (
-    GetMarketSnapshotQuery,
-    GetMarketSnapshotQueryMarketdata,
-    GetMarketSnapshotQueryMarketdataTicker,
-)
-from .get_market_snapshots_query import (
-    GetMarketSnapshotsQuery,
-    GetMarketSnapshotsQueryMarketdata,
-    GetMarketSnapshotsQueryMarketdataTickers,
 )
 from .get_market_status_query import (
     GetMarketStatusQuery,
@@ -148,6 +148,8 @@ from .subscribe_orderflow import (
     SubscribeOrderflowOrderflowOrderStale,
 )
 from .subscribe_trades import SubscribeTrades, SubscribeTradesTrades
+from .user_email_query import UserEmailQuery, UserEmailQueryUser
+from .user_id_query import UserIdQuery, UserIdQueryUser
 
 __all__ = [
     "AccountSummaryFields",
@@ -198,15 +200,15 @@ __all__ = [
     "GetHistoricalOrdersQuery",
     "GetHistoricalOrdersQueryFolio",
     "GetHistoricalOrdersQueryFolioHistoricalOrders",
+    "GetL1BookSnapshotQuery",
+    "GetL1BookSnapshotQueryMarketdata",
+    "GetL1BookSnapshotQueryMarketdataTicker",
+    "GetL1BookSnapshotsQuery",
+    "GetL1BookSnapshotsQueryMarketdata",
+    "GetL1BookSnapshotsQueryMarketdataTickers",
     "GetL2BookSnapshotQuery",
     "GetL2BookSnapshotQueryMarketdata",
     "GetL2BookSnapshotQueryMarketdataL2BookSnapshot",
-    "GetMarketSnapshotQuery",
-    "GetMarketSnapshotQueryMarketdata",
-    "GetMarketSnapshotQueryMarketdataTicker",
-    "GetMarketSnapshotsQuery",
-    "GetMarketSnapshotsQueryMarketdata",
-    "GetMarketSnapshotsQueryMarketdataTickers",
     "GetMarketStatusQuery",
     "GetMarketStatusQueryMarketdata",
     "GetMarketStatusQueryMarketdataMarketStatus",
@@ -260,4 +262,8 @@ __all__ = [
     "SubscribeTradesTrades",
     "TimeInForce",
     "Upload",
+    "UserEmailQuery",
+    "UserEmailQueryUser",
+    "UserIdQuery",
+    "UserIdQueryUser",
 ]

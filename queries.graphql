@@ -137,6 +137,19 @@ fragment L2BookFields on L2Book {
   }
 }
 
+query UserIdQuery {
+  user {
+    userId
+  }
+}
+
+query UserEmailQuery {
+  user {
+    userEmail
+  }
+}
+
+
 query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $offset: Int, $limit: Int) {
   symbology {
     searchSymbols(searchString: $searchString, executionVenue: $executionVenue, offset: $offset, limit: $limit)
@@ -199,7 +212,7 @@ query GetL2BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   }
 }
 
-query GetMarketSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
+query GetL1BookSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   marketdata {
     ticker(venue: $venue, symbol: $symbol) {
       ...MarketTickerFields
@@ -207,7 +220,7 @@ query GetMarketSnapshotQuery($venue: MarketdataVenue, $symbol: String!) {
   }
 }
 
-query GetMarketSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
+query GetL1BookSnapshotsQuery($venue: MarketdataVenue!, $symbols: [String!]) {
   marketdata{
     tickers(venue: $venue, symbols: $symbols) {
       ...MarketTickerFields
@@ -240,17 +253,17 @@ query ListAccountsQuery {
 }
 
 
-query GetAccountSummaryQuery($venue: ExecutionVenue, $account: String!) {
+query GetAccountSummaryQuery($account: String!) {
   folio {
-    accountSummary(venue: $venue, account: $account) {
+    accountSummary(account: $account) {
       ...AccountSummaryFields
-    }
+     }
   }
 }
 
-query GetAccountSummariesQuery($venue: ExecutionVenue, $trader: String, $accounts: [String!]) {
+query GetAccountSummariesQuery($trader: String, $accounts: [String!]) {
   folio {
-    accountSummaries(venue: $venue, trader: $trader, accounts: $accounts) {
+    accountSummaries(trader: $trader, accounts: $accounts) {
       ...AccountSummaryFields
     }
   }
