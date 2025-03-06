@@ -7,12 +7,7 @@
   ],
   "properties": {
     "account": {
-      "$ref": "#/definitions/AccountIdOrName"
-    }
-  },
-  "definitions": {
-    "AccountIdOrName": {
-      "type": "string"
+      "$ref": "../definitions.json#/AccountIdOrName"
     }
   },
   "route": "/json.architect.Folio/AccountSummary",

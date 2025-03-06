@@ -10,23 +10,11 @@ from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
-AccountIdOrName = str
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class HistoricalOrdersRequest(Struct):
-    account: Optional[AccountIdOrName] = None
+    account: Optional[definitions.AccountIdOrName] = None
     from_inclusive: Optional[str] = None
     limit: Optional[
         Annotated[Optional[int], Meta(description='Default maximum is 1000.', ge=0)]
@@ -36,16 +24,16 @@ class HistoricalOrdersRequest(Struct):
     """
     order_ids: Optional[
         Annotated[
-            List[OrderId],
+            List[definitions.OrderId],
             Meta(description='if order_ids is not empty, the limit field is ignored'),
         ]
     ] = None
     """
     if order_ids is not empty, the limit field is ignored
     """
-    parent_order_id: Optional[OrderId] = None
+    parent_order_id: Optional[definitions.OrderId] = None
     to_exclusive: Optional[str] = None
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
     @staticmethod

@@ -171,11 +171,5 @@
         }
       }
     }
-  ],
-  "definitions": {
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
-    }
-  }
+  ]
 }

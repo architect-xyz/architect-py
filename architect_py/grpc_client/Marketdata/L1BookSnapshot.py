@@ -64,5 +64,3 @@ class L1BookSnapshot(Struct):
     @best_bid.setter
     def best_bid(self, value: Optional[List[Decimal]]) -> None:
         self.b = value
-
-

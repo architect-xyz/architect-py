@@ -7,17 +7,12 @@
       "description": "Request accounts from the perspective of this trader; if not specified, defaults to the caller user.",
       "anyOf": [
         {
-          "$ref": "#/definitions/TraderIdOrEmail"
+          "$ref": "../definitions.json#/TraderIdOrEmail"
         },
         {
           "type": "null"
         }
       ]
-    }
-  },
-  "definitions": {
-    "TraderIdOrEmail": {
-      "type": "string"
     }
   },
   "route": "/json.architect.Accounts/Accounts",

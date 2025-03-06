@@ -3,17 +3,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
-
 from msgspec import Struct
 
-
-class HealthStatus(str, Enum):
-    UNKNOWN = 'UNKNOWN'
-    SERVING = 'SERVING'
-    NOT_SERVING = 'NOT_SERVING'
-    SERVICE_UNKNOWN = 'SERVICE_UNKNOWN'
+from .. import definitions
 
 
 class HealthCheckResponse(Struct):
-    status: HealthStatus
+    status: definitions.HealthStatus

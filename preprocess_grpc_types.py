@@ -9,7 +9,7 @@ def replace_and_indent(m):
     return f'{indent}"type": "string",\n{indent}"format": "decimal"'
 
 
-def file_fixes(lines: str) -> str:
+def fix_line(lines: str, remap_defs: bool) -> str:
     lines = lines.replace("uint32", "default")
     lines = lines.replace("uint64", "default")
     lines = lines.replace('"format": "int"', '"format": "default"')
@@ -17,26 +17,28 @@ def file_fixes(lines: str) -> str:
     pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
     lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
 
+    if remap_defs:
+        lines = lines.replace("#/definitions", "../definitions.json#")
+    else:
+        lines = lines.replace("#/definitions", "#")
+
     return lines
 
 
-def generate_cleaned_schema(processed_schema_file: str) -> dict:
-    with open(input_file, "r") as f:
-        lines = f.read()
-
-    lines = file_fixes(lines)
-
-    services = json.loads("".join(lines))
-
-    return services
+def fix_dict(d: dict, remap_def: bool) -> dict:
+    lines = json.dumps(d, indent=2)
+    lines = fix_line(lines, remap_def)
+    return json.loads(lines)
 
 
-def process_schema_definitions(schema: dict):
+def process_schema_definitions(schema: dict) -> dict:
     if "definitions" not in schema:
-        return
+        return {}
 
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
+
+    return schema.pop("definitions")
 
 
 def preprocess_json(input_file: str, output_dir: str) -> None:
@@ -49,9 +51,11 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    processed_schema_file = os.path.join(output_dir, "schema.json")
-    services = generate_cleaned_schema(processed_schema_file)
+    with open(input_file, "r") as f:
+        lines = f.read()
+    services = json.loads("".join(lines))
 
+    definitions = {}
     for service in services:
         service_name = service["name"].replace(" ", "_")
 
@@ -62,11 +66,14 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
         for rpc in rpcs:
 
             # Process the request type schema.
-            req_schema = rpc.get("request_type")
-            resp_schema = rpc.get("response_type")
+            req_schema: dict = rpc.get("request_type")
+            resp_schema: dict = rpc.get("response_type")
 
-            process_schema_definitions(req_schema)
-            process_schema_definitions(resp_schema)
+            definitions.update(process_schema_definitions(req_schema))
+            definitions.update(process_schema_definitions(resp_schema))
+
+            req_schema = fix_dict(req_schema, True)
+            resp_schema = fix_dict(resp_schema, True)
 
             route = rpc.get("route")
             unary_type = rpc.get("type")
@@ -92,6 +99,10 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                 with open(resp_path, "w") as out_file:
                     json.dump(resp_schema, out_file, indent=2)
                 print(f"Extracted response schema to: {resp_path}")
+
+    with open(os.path.join(output_dir, "definitions.json"), "w") as out_file:
+        definitions = fix_dict(definitions, False)
+        json.dump(definitions, out_file, indent=2)
 
 
 if __name__ == "__main__":

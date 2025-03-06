@@ -6,7 +6,7 @@
     "account": {
       "anyOf": [
         {
-          "$ref": "#/definitions/AccountIdOrName"
+          "$ref": "../definitions.json#/AccountIdOrName"
         },
         {
           "type": "null"
@@ -36,13 +36,13 @@
         "null"
       ],
       "items": {
-        "$ref": "#/definitions/OrderId"
+        "$ref": "../definitions.json#/OrderId"
       }
     },
     "parent_order_id": {
       "anyOf": [
         {
-          "$ref": "#/definitions/OrderId"
+          "$ref": "../definitions.json#/OrderId"
         },
         {
           "type": "null"
@@ -59,7 +59,7 @@
     "trader": {
       "anyOf": [
         {
-          "$ref": "#/definitions/TraderIdOrEmail"
+          "$ref": "../definitions.json#/TraderIdOrEmail"
         },
         {
           "type": "null"
@@ -71,33 +71,6 @@
         "string",
         "null"
       ]
-    }
-  },
-  "definitions": {
-    "AccountIdOrName": {
-      "type": "string"
-    },
-    "OrderId": {
-      "description": "System-unique, persistent order identifiers",
-      "type": "object",
-      "required": [
-        "seqid",
-        "seqno"
-      ],
-      "properties": {
-        "seqid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "seqno": {
-          "type": "integer",
-          "format": "default",
-          "minimum": 0.0
-        }
-      }
-    },
-    "TraderIdOrEmail": {
-      "type": "string"
     }
   },
   "route": "/json.architect.Folio/HistoricalOrders",

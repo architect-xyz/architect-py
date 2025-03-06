@@ -10,17 +10,14 @@ from typing import Optional
 
 from msgspec import Struct
 
-AccountIdOrName = str
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class CancelAllOrdersRequest(Struct):
     id: str
-    account: Optional[AccountIdOrName] = None
+    account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
     def get_request_helper():

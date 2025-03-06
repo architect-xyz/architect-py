@@ -60,7 +60,7 @@
       "additionalProperties": {
         "type": "array",
         "items": {
-          "$ref": "#/definitions/AccountPosition"
+          "$ref": "../definitions.json#/AccountPosition"
         }
       }
     },
@@ -123,65 +123,6 @@
           "type": "null"
         }
       ]
-    }
-  },
-  "definitions": {
-    "AccountPosition": {
-      "type": "object",
-      "required": [
-        "quantity"
-      ],
-      "properties": {
-        "break_even_price": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "decimal"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "cost_basis": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "decimal"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "liquidation_price": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "decimal"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "quantity": {
-          "type": "string",
-          "format": "decimal"
-        },
-        "trade_time": {
-          "description": "The meaning of this field varies by reporting venue.",
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        }
-      }
-    },
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
     }
   }
 }

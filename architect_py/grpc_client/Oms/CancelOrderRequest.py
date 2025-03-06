@@ -10,18 +10,11 @@ from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
+from .. import definitions
 
 
 class CancelOrderRequest(Struct):
-    id: Annotated[OrderId, Meta(title='order_id')]
+    id: Annotated[definitions.OrderId, Meta(title='order_id')]
     xid: Optional[
         Annotated[
             Optional[str],
@@ -36,11 +29,11 @@ class CancelOrderRequest(Struct):
     """
 
     @property
-    def order_id(self) -> OrderId:
+    def order_id(self) -> definitions.OrderId:
         return self.id
 
     @order_id.setter
-    def order_id(self, value: OrderId) -> None:
+    def order_id(self, value: definitions.OrderId) -> None:
         self.id = value
 
     @property

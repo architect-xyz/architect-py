@@ -6,23 +6,15 @@ from architect_py.grpc_client.Marketdata.Candle import Candle
 from architect_py.grpc_client.request import RequestStream
 
 
-from enum import Enum
 from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
-
-class CandleWidth(int, Enum):
-    integer_1 = 1
-    integer_2 = 2
-    integer_4 = 4
-    integer_8 = 8
-    integer_16 = 16
-    integer_32 = 32
+from .. import definitions
 
 
 class SubscribeManyCandlesRequest(Struct):
-    candle_width: CandleWidth
+    candle_width: definitions.CandleWidth
     symbols: Optional[
         Annotated[
             List[str],

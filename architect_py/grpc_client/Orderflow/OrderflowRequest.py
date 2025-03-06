@@ -6,11 +6,11 @@ from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 from architect_py.grpc_client.request import RequestUnary
 
 
-from decimal import Decimal
-from enum import Enum
 from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class Quantity(Struct):
@@ -25,68 +25,21 @@ class TriggerPrice(Struct):
     pass
 
 
-AccountIdOrName = str
-
-
-
-
-class Dir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = 'BUY'
-    SELL = 'SELL'
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-class OrderSource(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_3 = 3
-    integer_4 = 4
-    integer_5 = 5
-    integer_255 = 255
-
-
-class TimeInForce11(str, Enum):
-    GTC = 'GTC'
-    IOC = 'IOC'
-    FOK = 'FOK'
-
-
-class TimeInForce12(Struct):
-    GTD: str
-
-
-TimeInForce = Union[TimeInForce11, TimeInForce12, Literal['DAY']]
-
-
-TraderIdOrEmail = str
-
-
 class OrderflowRequest1(Struct):
-    d: Annotated[Dir, Meta(title='dir')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     t: Literal['p']
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     k: Literal['LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
-    a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
+    a: Optional[
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+    ] = None
     id: Optional[
         Annotated[
-            Optional[OrderId],
+            Optional[definitions.OrderId],
             Meta(
                 description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through."
             ),
@@ -95,17 +48,23 @@ class OrderflowRequest1(Struct):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    src: Optional[Annotated[Optional[OrderSource], Meta(title='source')]] = None
-    u: Optional[Annotated[Optional[TraderIdOrEmail], Meta(title='trader')]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+        None
+    )
+    src: Optional[
+        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+    ] = None
+    u: Optional[
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+    ] = None
     x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
@@ -125,11 +84,11 @@ class OrderflowRequest1(Struct):
         self.s = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -149,35 +108,35 @@ class OrderflowRequest1(Struct):
         self.po = value
 
     @property
-    def account(self) -> Optional[AccountIdOrName]:
+    def account(self) -> Optional[definitions.AccountIdOrName]:
         return self.a
 
     @account.setter
-    def account(self, value: Optional[AccountIdOrName]) -> None:
+    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
         self.a = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def source(self) -> Optional[OrderSource]:
+    def source(self) -> Optional[definitions.OrderSource]:
         return self.src
 
     @source.setter
-    def source(self, value: Optional[OrderSource]) -> None:
+    def source(self, value: Optional[definitions.OrderSource]) -> None:
         self.src = value
 
     @property
-    def trader(self) -> Optional[TraderIdOrEmail]:
+    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
         return self.u
 
     @trader.setter
-    def trader(self, value: Optional[TraderIdOrEmail]) -> None:
+    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
         self.u = value
 
     @property
@@ -194,18 +153,20 @@ class OrderflowRequest1(Struct):
 
 
 class OrderflowRequest2(Struct):
-    d: Annotated[Dir, Meta(title='dir')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     t: Literal['p']
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
-    a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
+    a: Optional[
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+    ] = None
     id: Optional[
         Annotated[
-            Optional[OrderId],
+            Optional[definitions.OrderId],
             Meta(
                 description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through."
             ),
@@ -214,17 +175,23 @@ class OrderflowRequest2(Struct):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    src: Optional[Annotated[Optional[OrderSource], Meta(title='source')]] = None
-    u: Optional[Annotated[Optional[TraderIdOrEmail], Meta(title='trader')]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+        None
+    )
+    src: Optional[
+        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+    ] = None
+    u: Optional[
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+    ] = None
     x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
@@ -244,11 +211,11 @@ class OrderflowRequest2(Struct):
         self.s = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -268,35 +235,35 @@ class OrderflowRequest2(Struct):
         self.tp = value
 
     @property
-    def account(self) -> Optional[AccountIdOrName]:
+    def account(self) -> Optional[definitions.AccountIdOrName]:
         return self.a
 
     @account.setter
-    def account(self, value: Optional[AccountIdOrName]) -> None:
+    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
         self.a = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def source(self) -> Optional[OrderSource]:
+    def source(self) -> Optional[definitions.OrderSource]:
         return self.src
 
     @source.setter
-    def source(self, value: Optional[OrderSource]) -> None:
+    def source(self, value: Optional[definitions.OrderSource]) -> None:
         self.src = value
 
     @property
-    def trader(self) -> Optional[TraderIdOrEmail]:
+    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
         return self.u
 
     @trader.setter
-    def trader(self, value: Optional[TraderIdOrEmail]) -> None:
+    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
         self.u = value
 
     @property
@@ -313,18 +280,20 @@ class OrderflowRequest2(Struct):
 
 
 class OrderflowRequest3(Struct):
-    d: Annotated[Dir, Meta(title='dir')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     t: Literal['p']
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
-    a: Optional[Annotated[Optional[AccountIdOrName], Meta(title='account')]] = None
+    a: Optional[
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+    ] = None
     id: Optional[
         Annotated[
-            Optional[OrderId],
+            Optional[definitions.OrderId],
             Meta(
                 description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through."
             ),
@@ -333,17 +302,23 @@ class OrderflowRequest3(Struct):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    src: Optional[Annotated[Optional[OrderSource], Meta(title='source')]] = None
-    u: Optional[Annotated[Optional[TraderIdOrEmail], Meta(title='trader')]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+        None
+    )
+    src: Optional[
+        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+    ] = None
+    u: Optional[
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+    ] = None
     x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
@@ -363,11 +338,11 @@ class OrderflowRequest3(Struct):
         self.s = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -387,35 +362,35 @@ class OrderflowRequest3(Struct):
         self.tp = value
 
     @property
-    def account(self) -> Optional[AccountIdOrName]:
+    def account(self) -> Optional[definitions.AccountIdOrName]:
         return self.a
 
     @account.setter
-    def account(self, value: Optional[AccountIdOrName]) -> None:
+    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
         self.a = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def source(self) -> Optional[OrderSource]:
+    def source(self) -> Optional[definitions.OrderSource]:
         return self.src
 
     @source.setter
-    def source(self, value: Optional[OrderSource]) -> None:
+    def source(self, value: Optional[definitions.OrderSource]) -> None:
         self.src = value
 
     @property
-    def trader(self) -> Optional[TraderIdOrEmail]:
+    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
         return self.u
 
     @trader.setter
-    def trader(self, value: Optional[TraderIdOrEmail]) -> None:
+    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
         self.u = value
 
     @property
@@ -432,7 +407,7 @@ class OrderflowRequest3(Struct):
 
 
 class OrderflowRequest4(Struct):
-    id: Annotated[OrderId, Meta(title='order_id')]
+    id: Annotated[definitions.OrderId, Meta(title='order_id')]
     t: Literal['x']
     xid: Optional[
         Annotated[
@@ -448,11 +423,11 @@ class OrderflowRequest4(Struct):
     """
 
     @property
-    def order_id(self) -> OrderId:
+    def order_id(self) -> definitions.OrderId:
         return self.id
 
     @order_id.setter
-    def order_id(self, value: OrderId) -> None:
+    def order_id(self, value: definitions.OrderId) -> None:
         self.id = value
 
     @property
@@ -471,9 +446,9 @@ class OrderflowRequest4(Struct):
 class OrderflowRequest5(Struct):
     id: str
     t: Literal['xo']
-    account: Optional[AccountIdOrName] = None
+    account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
     def get_request_helper():

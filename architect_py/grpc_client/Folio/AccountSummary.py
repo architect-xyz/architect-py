@@ -8,29 +8,13 @@ from typing import Annotated, Dict, List, Optional
 
 from msgspec import Meta, Struct
 
-
-class AccountPosition(Struct):
-    quantity: Decimal
-    break_even_price: Optional[Decimal] = None
-    cost_basis: Optional[Decimal] = None
-    liquidation_price: Optional[Decimal] = None
-    trade_time: Optional[
-        Annotated[
-            Optional[str],
-            Meta(description='The meaning of this field varies by reporting venue.'),
-        ]
-    ] = None
-    """
-    The meaning of this field varies by reporting venue.
-    """
-
-
+from .. import definitions
 
 
 class AccountSummary(Struct):
     account: str
     balances: Dict[str, Decimal]
-    positions: Dict[str, List[AccountPosition]]
+    positions: Dict[str, List[definitions.AccountPosition]]
     timestamp: str
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description='Cash available to withdraw.')]

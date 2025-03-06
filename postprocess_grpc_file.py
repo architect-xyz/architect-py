@@ -79,8 +79,8 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         response_file_path = (
             f"{file_path.replace(base_name, response_file_root_name)}.py"
         )
-        c = import_class_from_filename(response_file_path, response_type_name)
-        response_base_type_str = extract_base_type(c)
+        # c = import_class_from_filename(response_file_path, response_type_name)
+        # response_base_type_str = extract_base_type(c)
 
         with open(file_path, "r") as f:
             lines = f.readlines()

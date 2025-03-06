@@ -7,18 +7,7 @@
   ],
   "properties": {
     "status": {
-      "$ref": "#/definitions/HealthStatus"
-    }
-  },
-  "definitions": {
-    "HealthStatus": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "SERVING",
-        "NOT_SERVING",
-        "SERVICE_UNKNOWN"
-      ]
+      "$ref": "../definitions.json#/HealthStatus"
     }
   }
 }

@@ -116,7 +116,7 @@
           "default": null,
           "anyOf": [
             {
-              "$ref": "#/definitions/AccountIdOrName"
+              "$ref": "../definitions.json#/AccountIdOrName"
             },
             {
               "type": "null"
@@ -127,7 +127,7 @@
           "title": "dir",
           "allOf": [
             {
-              "$ref": "#/definitions/Dir"
+              "$ref": "../definitions.json#/Dir"
             }
           ]
         },
@@ -135,7 +135,7 @@
           "description": "If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderId"
+              "$ref": "../definitions.json#/OrderId"
             },
             {
               "type": "null"
@@ -146,7 +146,7 @@
           "title": "parent_id",
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderId"
+              "$ref": "../definitions.json#/OrderId"
             },
             {
               "type": "null"
@@ -171,7 +171,7 @@
           "default": null,
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderSource"
+              "$ref": "../definitions.json#/OrderSource"
             },
             {
               "type": "null"
@@ -188,7 +188,7 @@
           "title": "time_in_force",
           "allOf": [
             {
-              "$ref": "#/definitions/TimeInForce"
+              "$ref": "../definitions.json#/TimeInForce"
             }
           ]
         },
@@ -197,7 +197,7 @@
           "default": null,
           "anyOf": [
             {
-              "$ref": "#/definitions/TraderIdOrEmail"
+              "$ref": "../definitions.json#/TraderIdOrEmail"
             },
             {
               "type": "null"
@@ -225,7 +225,7 @@
           "title": "order_id",
           "allOf": [
             {
-              "$ref": "#/definitions/OrderId"
+              "$ref": "../definitions.json#/OrderId"
             }
           ]
         },
@@ -257,7 +257,7 @@
         "account": {
           "anyOf": [
             {
-              "$ref": "#/definitions/AccountIdOrName"
+              "$ref": "../definitions.json#/AccountIdOrName"
             },
             {
               "type": "null"
@@ -283,7 +283,7 @@
         "trader": {
           "anyOf": [
             {
-              "$ref": "#/definitions/TraderIdOrEmail"
+              "$ref": "../definitions.json#/TraderIdOrEmail"
             },
             {
               "type": "null"
@@ -293,98 +293,6 @@
       }
     }
   ],
-  "definitions": {
-    "AccountIdOrName": {
-      "type": "string"
-    },
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
-    },
-    "Dir": {
-      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
-      "type": "string",
-      "enum": [
-        "BUY",
-        "SELL"
-      ]
-    },
-    "OrderId": {
-      "description": "System-unique, persistent order identifiers",
-      "type": "object",
-      "required": [
-        "seqid",
-        "seqno"
-      ],
-      "properties": {
-        "seqid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "seqno": {
-          "type": "integer",
-          "format": "default",
-          "minimum": 0.0
-        }
-      }
-    },
-    "OrderSource": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        255
-      ],
-      "x-enumNames": [
-        "API",
-        "GUI",
-        "Algo",
-        "Reconciled",
-        "CLI",
-        "Telegram",
-        "Other"
-      ]
-    },
-    "TimeInForce": {
-      "oneOf": [
-        {
-          "type": "string",
-          "enum": [
-            "GTC",
-            "IOC",
-            "FOK"
-          ]
-        },
-        {
-          "type": "object",
-          "required": [
-            "GTD"
-          ],
-          "properties": {
-            "GTD": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "description": "Day order--the specific time which this expires will be dependent on the venue",
-          "type": "string",
-          "enum": [
-            "DAY"
-          ]
-        }
-      ]
-    },
-    "TraderIdOrEmail": {
-      "type": "string"
-    }
-  },
   "route": "/json.architect.Orderflow/Orderflow",
   "unary_type": "duplex_stream",
   "service": "Orderflow",

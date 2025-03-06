@@ -10,7 +10,7 @@
   ],
   "properties": {
     "candle_width": {
-      "$ref": "#/definitions/CandleWidth"
+      "$ref": "../definitions.json#/CandleWidth"
     },
     "end_date": {
       "type": "string",
@@ -22,27 +22,6 @@
     },
     "symbol": {
       "type": "string"
-    }
-  },
-  "definitions": {
-    "CandleWidth": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        4,
-        8,
-        16,
-        32
-      ],
-      "x-enumNames": [
-        "OneSecond",
-        "FiveSecond",
-        "OneMinute",
-        "FifteenMinute",
-        "OneHour",
-        "OneDay"
-      ]
     }
   },
   "route": "/json.architect.Marketdata/HistoricalCandles",

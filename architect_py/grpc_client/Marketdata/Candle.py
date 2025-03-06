@@ -5,10 +5,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from decimal import Decimal
-from enum import Enum
 from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class SellVolume(Struct):
@@ -23,17 +24,6 @@ class Volume(Struct):
     pass
 
 
-class CandleWidth(int, Enum):
-    integer_1 = 1
-    integer_2 = 2
-    integer_4 = 4
-    integer_8 = 8
-    integer_16 = 16
-    integer_32 = 32
-
-
-
-
 class Candle(Struct):
     av: Annotated[SellVolume, Meta(title='sell_volume')]
     bv: Annotated[BuyVolume, Meta(title='buy_volume')]
@@ -41,7 +31,7 @@ class Candle(Struct):
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
     v: Annotated[Volume, Meta(title='volume')]
-    w: Annotated[CandleWidth, Meta(title='width')]
+    w: Annotated[definitions.CandleWidth, Meta(title='width')]
     ac: Optional[Annotated[Optional[Decimal], Meta(title='ask_close')]] = None
     ah: Optional[Annotated[Optional[Decimal], Meta(title='ask_high')]] = None
     al: Optional[Annotated[Optional[Decimal], Meta(title='ask_low')]] = None
@@ -116,11 +106,11 @@ class Candle(Struct):
         self.v = value
 
     @property
-    def width(self) -> CandleWidth:
+    def width(self) -> definitions.CandleWidth:
         return self.w
 
     @width.setter
-    def width(self, value: CandleWidth) -> None:
+    def width(self, value: definitions.CandleWidth) -> None:
         self.w = value
 
     @property

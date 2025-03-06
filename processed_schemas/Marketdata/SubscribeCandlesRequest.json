@@ -13,7 +13,7 @@
         "null"
       ],
       "items": {
-        "$ref": "#/definitions/CandleWidth"
+        "$ref": "../definitions.json#/CandleWidth"
       }
     },
     "symbol": {
@@ -23,27 +23,6 @@
       "type": [
         "string",
         "null"
-      ]
-    }
-  },
-  "definitions": {
-    "CandleWidth": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        4,
-        8,
-        16,
-        32
-      ],
-      "x-enumNames": [
-        "OneSecond",
-        "FiveSecond",
-        "OneMinute",
-        "FifteenMinute",
-        "OneHour",
-        "OneDay"
       ]
     }
   },

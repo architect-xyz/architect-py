@@ -254,5 +254,3 @@ class Ticker(Struct):
     @session_volume.setter
     def session_volume(self, value: Optional[Decimal]) -> None:
         self.xv = value
-
-

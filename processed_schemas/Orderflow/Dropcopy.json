@@ -129,18 +129,18 @@
           "title": "dir",
           "allOf": [
             {
-              "$ref": "#/definitions/Dir"
+              "$ref": "../definitions.json#/Dir"
             }
           ]
         },
         "id": {
-          "$ref": "#/definitions/OrderId"
+          "$ref": "../definitions.json#/OrderId"
         },
         "o": {
           "title": "status",
           "allOf": [
             {
-              "$ref": "#/definitions/OrderStatus"
+              "$ref": "../definitions.json#/OrderStatus"
             }
           ]
         },
@@ -148,7 +148,7 @@
           "title": "parent_id",
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderId"
+              "$ref": "../definitions.json#/OrderId"
             },
             {
               "type": "null"
@@ -168,7 +168,7 @@
           "title": "reject_reason",
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderRejectReason"
+              "$ref": "../definitions.json#/OrderRejectReason"
             },
             {
               "type": "null"
@@ -190,7 +190,7 @@
           "title": "source",
           "allOf": [
             {
-              "$ref": "#/definitions/OrderSource"
+              "$ref": "../definitions.json#/OrderSource"
             }
           ]
         },
@@ -204,7 +204,7 @@
           "title": "time_in_force",
           "allOf": [
             {
-              "$ref": "#/definitions/TimeInForce"
+              "$ref": "../definitions.json#/TimeInForce"
             }
           ]
         },
@@ -223,7 +223,7 @@
           "title": "trader",
           "allOf": [
             {
-              "$ref": "#/definitions/UserId"
+              "$ref": "../definitions.json#/UserId"
             }
           ]
         },
@@ -299,7 +299,7 @@
           "title": "direction",
           "allOf": [
             {
-              "$ref": "#/definitions/Dir"
+              "$ref": "../definitions.json#/Dir"
             }
           ]
         },
@@ -332,7 +332,7 @@
           "title": "fill_kind",
           "allOf": [
             {
-              "$ref": "#/definitions/FillKind"
+              "$ref": "../definitions.json#/FillKind"
             }
           ]
         },
@@ -340,7 +340,7 @@
           "title": "order_id",
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderId"
+              "$ref": "../definitions.json#/OrderId"
             },
             {
               "type": "null"
@@ -391,7 +391,7 @@
           "title": "trader",
           "anyOf": [
             {
-              "$ref": "#/definitions/UserId"
+              "$ref": "../definitions.json#/UserId"
             },
             {
               "type": "null"
@@ -449,7 +449,7 @@
           "title": "direction",
           "anyOf": [
             {
-              "$ref": "#/definitions/Dir"
+              "$ref": "../definitions.json#/Dir"
             },
             {
               "type": "null"
@@ -484,7 +484,7 @@
           "title": "fill_kind",
           "anyOf": [
             {
-              "$ref": "#/definitions/FillKind"
+              "$ref": "../definitions.json#/FillKind"
             },
             {
               "type": "null"
@@ -495,7 +495,7 @@
           "title": "order_id",
           "anyOf": [
             {
-              "$ref": "#/definitions/OrderId"
+              "$ref": "../definitions.json#/OrderId"
             },
             {
               "type": "null"
@@ -560,7 +560,7 @@
           "title": "trader",
           "anyOf": [
             {
-              "$ref": "#/definitions/UserId"
+              "$ref": "../definitions.json#/UserId"
             },
             {
               "type": "null"
@@ -580,142 +580,5 @@
         }
       }
     }
-  ],
-  "definitions": {
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
-    },
-    "Dir": {
-      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
-      "type": "string",
-      "enum": [
-        "BUY",
-        "SELL"
-      ]
-    },
-    "FillKind": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2
-      ],
-      "x-enumNames": [
-        "Normal",
-        "Reversal",
-        "Correction"
-      ]
-    },
-    "OrderId": {
-      "description": "System-unique, persistent order identifiers",
-      "type": "object",
-      "required": [
-        "seqid",
-        "seqno"
-      ],
-      "properties": {
-        "seqid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "seqno": {
-          "type": "integer",
-          "format": "default",
-          "minimum": 0.0
-        }
-      }
-    },
-    "OrderRejectReason": {
-      "type": "string",
-      "enum": [
-        "DuplicateOrderId",
-        "NotAuthorized",
-        "NoExecutionVenue",
-        "NoAccount",
-        "NoCpty",
-        "UnsupportedOrderType",
-        "UnsupportedExecutionVenue",
-        "Unknown"
-      ]
-    },
-    "OrderSource": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        255
-      ],
-      "x-enumNames": [
-        "API",
-        "GUI",
-        "Algo",
-        "Reconciled",
-        "CLI",
-        "Telegram",
-        "Other"
-      ]
-    },
-    "OrderStatus": {
-      "type": "integer",
-      "enum": [
-        0,
-        1,
-        2,
-        127,
-        128,
-        129,
-        254
-      ],
-      "x-enumNames": [
-        "Pending",
-        "Open",
-        "Rejected",
-        "Out",
-        "Canceling",
-        "Canceled",
-        "Stale"
-      ]
-    },
-    "TimeInForce": {
-      "oneOf": [
-        {
-          "type": "string",
-          "enum": [
-            "GTC",
-            "IOC",
-            "FOK"
-          ]
-        },
-        {
-          "type": "object",
-          "required": [
-            "GTD"
-          ],
-          "properties": {
-            "GTD": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          "additionalProperties": false
-        },
-        {
-          "description": "Day order--the specific time which this expires will be dependent on the venue",
-          "type": "string",
-          "enum": [
-            "DAY"
-          ]
-        }
-      ]
-    },
-    "UserId": {
-      "type": "string",
-      "format": "uuid"
-    }
-  }
+  ]
 }

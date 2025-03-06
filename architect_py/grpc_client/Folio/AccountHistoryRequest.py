@@ -10,11 +10,11 @@ from typing import Optional
 
 from msgspec import Struct
 
-AccountIdOrName = str
+from .. import definitions
 
 
 class AccountHistoryRequest(Struct):
-    account: AccountIdOrName
+    account: definitions.AccountIdOrName
     from_inclusive: Optional[str] = None
     to_exclusive: Optional[str] = None
 

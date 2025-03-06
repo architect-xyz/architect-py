@@ -250,34 +250,9 @@
       "title": "width",
       "allOf": [
         {
-          "$ref": "#/definitions/CandleWidth"
+          "$ref": "../definitions.json#/CandleWidth"
         }
       ]
-    }
-  },
-  "definitions": {
-    "CandleWidth": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        4,
-        8,
-        16,
-        32
-      ],
-      "x-enumNames": [
-        "OneSecond",
-        "FiveSecond",
-        "OneMinute",
-        "FifteenMinute",
-        "OneHour",
-        "OneDay"
-      ]
-    },
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
     }
   }
 }

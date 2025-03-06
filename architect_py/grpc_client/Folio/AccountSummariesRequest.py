@@ -10,16 +10,13 @@ from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
 
-AccountIdOrName = str
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class AccountSummariesRequest(Struct):
     accounts: Optional[
         Annotated[
-            List[AccountIdOrName],
+            List[definitions.AccountIdOrName],
             Meta(
                 description='If trader and accounts are both None, return all accounts for the user'
             ),
@@ -28,7 +25,7 @@ class AccountSummariesRequest(Struct):
     """
     If trader and accounts are both None, return all accounts for the user
     """
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
     def get_request_helper():

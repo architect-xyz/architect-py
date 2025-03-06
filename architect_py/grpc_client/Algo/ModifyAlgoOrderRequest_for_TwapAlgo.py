@@ -6,49 +6,14 @@ from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwa
 from architect_py.grpc_client.request import RequestUnary
 
 
-from decimal import Decimal
-from enum import Enum
-from typing import Annotated, Optional
+from msgspec import Struct
 
-from msgspec import Meta, Struct
-
-
-
-class Dir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = 'BUY'
-    SELL = 'SELL'
-
-
-HumanDuration = str
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-class TwapParams(Struct):
-    dir: Dir
-    end_time: str
-    execution_venue: str
-    interval: HumanDuration
-    quantity: Decimal
-    reject_lockout: HumanDuration
-    symbol: str
-    take_through_frac: Optional[Decimal] = None
+from .. import definitions
 
 
 class ModifyAlgoOrderRequestForTwapAlgo(Struct):
-    algo_order_id: OrderId
-    params: TwapParams
+    algo_order_id: definitions.OrderId
+    params: definitions.TwapParams
 
     @staticmethod
     def get_request_helper():

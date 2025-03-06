@@ -10,7 +10,7 @@
       "title": "order_id",
       "allOf": [
         {
-          "$ref": "#/definitions/OrderId"
+          "$ref": "../definitions.json#/OrderId"
         }
       ]
     },
@@ -23,27 +23,6 @@
         "null"
       ],
       "format": "uuid"
-    }
-  },
-  "definitions": {
-    "OrderId": {
-      "description": "System-unique, persistent order identifiers",
-      "type": "object",
-      "required": [
-        "seqid",
-        "seqno"
-      ],
-      "properties": {
-        "seqid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "seqno": {
-          "type": "integer",
-          "format": "default",
-          "minimum": 0.0
-        }
-      }
     }
   },
   "route": "/json.architect.Oms/CancelOrder",

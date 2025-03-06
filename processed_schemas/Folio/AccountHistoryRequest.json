@@ -7,7 +7,7 @@
   ],
   "properties": {
     "account": {
-      "$ref": "#/definitions/AccountIdOrName"
+      "$ref": "../definitions.json#/AccountIdOrName"
     },
     "from_inclusive": {
       "type": [
@@ -22,11 +22,6 @@
         "null"
       ],
       "format": "date-time"
-    }
-  },
-  "definitions": {
-    "AccountIdOrName": {
-      "type": "string"
     }
   },
   "route": "/json.architect.Folio/AccountHistory",

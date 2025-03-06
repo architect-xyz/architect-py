@@ -7,7 +7,7 @@ from functools import partial
 from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
 
 from architect_py.async_client import AsyncClient
-from architect_py.protocol.client_protocol import AsyncClientProtocol
+from .client_protocol import AsyncClientProtocol
 
 
 T = TypeVar("T")

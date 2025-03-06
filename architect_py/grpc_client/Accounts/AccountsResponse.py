@@ -7,34 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-AccountName = str
-
-
-class AccountPermissions(Struct):
-    """
-    Set of flags for account permissions
-    """
-
-    list: bool
-    reduce_or_close: bool
-    set_limits: bool
-    trade: bool
-    view: bool
-
-
-UserId = str
-
-
-class Account(Struct):
-    id: str
-    name: AccountName
-
-
-class AccountWithPermissions(Struct):
-    account: Account
-    permissions: AccountPermissions
-    trader: UserId
+from .. import definitions
 
 
 class AccountsResponse(Struct):
-    accounts: List[AccountWithPermissions]
+    accounts: List[definitions.AccountWithPermissions]

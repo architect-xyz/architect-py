@@ -180,5 +180,3 @@ L2BookUpdate = Annotated[
         title='L2BookUpdate',
     ),
 ]
-
-

@@ -4,11 +4,11 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
-from decimal import Decimal
-from enum import Enum
 from typing import Annotated
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class Price(Struct):
@@ -19,19 +19,8 @@ class Size(Struct):
     pass
 
 
-
-
-class Dir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = 'BUY'
-    SELL = 'SELL'
-
-
 class Liquidation(Struct):
-    d: Annotated[Dir, Meta(title='direction')]
+    d: Annotated[definitions.Dir, Meta(title='direction')]
     p: Annotated[Price, Meta(title='price')]
     q: Annotated[Size, Meta(title='size')]
     s: Annotated[str, Meta(title='symbol')]
@@ -39,11 +28,11 @@ class Liquidation(Struct):
     ts: Annotated[int, Meta(title='timestamp')]
 
     @property
-    def direction(self) -> Dir:
+    def direction(self) -> definitions.Dir:
         return self.d
 
     @direction.setter
-    def direction(self, value: Dir) -> None:
+    def direction(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property

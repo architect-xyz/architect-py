@@ -6,22 +6,16 @@ from architect_py.grpc_client.Marketdata.TickersResponse import TickersResponse
 from architect_py.grpc_client.request import RequestUnary
 
 
-from enum import Enum
 from typing import List, Optional
 
 from msgspec import Struct
 
-
-class SortTickersBy(str, Enum):
-    VOLUME_DESC = 'VOLUME_DESC'
-    CHANGE_ASC = 'CHANGE_ASC'
-    CHANGE_DESC = 'CHANGE_DESC'
-    ABS_CHANGE_DESC = 'ABS_CHANGE_DESC'
+from .. import definitions
 
 
 class TickersRequest(Struct):
     i: Optional[int] = None
-    k: Optional[SortTickersBy] = None
+    k: Optional[definitions.SortTickersBy] = None
     n: Optional[int] = None
     symbols: Optional[List[str]] = None
     venue: Optional[str] = None

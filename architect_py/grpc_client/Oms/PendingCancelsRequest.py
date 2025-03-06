@@ -10,17 +10,14 @@ from typing import List, Optional
 
 from msgspec import Struct
 
-AccountIdOrName = str
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class PendingCancelsRequest(Struct):
-    account: Optional[AccountIdOrName] = None
+    account: Optional[definitions.AccountIdOrName] = None
     cancel_ids: Optional[List[str]] = None
     symbol: Optional[str] = None
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
     @staticmethod

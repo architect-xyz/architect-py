@@ -21,7 +21,7 @@
       "type": "string"
     },
     "algo_order_id": {
-      "$ref": "#/definitions/OrderId"
+      "$ref": "../definitions.json#/OrderId"
     },
     "create_time": {
       "type": "string",
@@ -50,12 +50,12 @@
       "format": "date-time"
     },
     "params": {
-      "$ref": "#/definitions/TwapParams"
+      "$ref": "../definitions.json#/TwapParams"
     },
     "parent_order_id": {
       "anyOf": [
         {
-          "$ref": "#/definitions/OrderId"
+          "$ref": "../definitions.json#/OrderId"
         },
         {
           "type": "null"
@@ -63,132 +63,13 @@
       ]
     },
     "state": {
-      "$ref": "#/definitions/AlgoState"
+      "$ref": "../definitions.json#/AlgoState"
     },
     "status": {
-      "$ref": "#/definitions/TwapStatus"
+      "$ref": "../definitions.json#/TwapStatus"
     },
     "trader": {
-      "$ref": "#/definitions/UserId"
-    }
-  },
-  "definitions": {
-    "AlgoState": {
-      "type": "string",
-      "enum": [
-        "Pending",
-        "Running",
-        "Stopped"
-      ]
-    },
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
-    },
-    "Dir": {
-      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
-      "type": "string",
-      "enum": [
-        "BUY",
-        "SELL"
-      ]
-    },
-    "HumanDuration": {
-      "type": "string"
-    },
-    "OrderId": {
-      "description": "System-unique, persistent order identifiers",
-      "type": "object",
-      "required": [
-        "seqid",
-        "seqno"
-      ],
-      "properties": {
-        "seqid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "seqno": {
-          "type": "integer",
-          "format": "default",
-          "minimum": 0.0
-        }
-      }
-    },
-    "TwapParams": {
-      "type": "object",
-      "required": [
-        "dir",
-        "end_time",
-        "execution_venue",
-        "interval",
-        "quantity",
-        "reject_lockout",
-        "symbol"
-      ],
-      "properties": {
-        "dir": {
-          "$ref": "#/definitions/Dir"
-        },
-        "end_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "execution_venue": {
-          "type": "string"
-        },
-        "interval": {
-          "$ref": "#/definitions/HumanDuration"
-        },
-        "quantity": {
-          "type": "string",
-          "format": "decimal"
-        },
-        "reject_lockout": {
-          "$ref": "#/definitions/HumanDuration"
-        },
-        "symbol": {
-          "type": "string"
-        },
-        "take_through_frac": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "decimal"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
-    },
-    "TwapStatus": {
-      "type": "object",
-      "required": [
-        "quantity_filled"
-      ],
-      "properties": {
-        "quantity_filled": {
-          "type": "string",
-          "format": "decimal"
-        },
-        "realized_twap": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "decimal"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
-    },
-    "UserId": {
-      "type": "string",
-      "format": "uuid"
+      "$ref": "../definitions.json#/UserId"
     }
   }
 }

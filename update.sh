@@ -75,13 +75,15 @@ for file in "${json_files[@]}"; do
     post_process_file "$file"
 done
 
+cp -r templates/grpc_client.py architect_py/grpc_client/__init__.py
+
 
 # ariadne codegen
 printf "\n\nGenerating GraphQL code\n"
 poetry run ariadne-codegen --config ariadne-codegen.toml
 
 printf "\nGenerating client protocol"
-python generate_sync_client_protocol.py > architect_py/protocol/client_protocol.py
+python generate_sync_client_protocol.py > architect_py/client_protocol.py
 
 # Version check
 VERSION_FILE="version"

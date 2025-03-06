@@ -6,31 +6,19 @@ from architect_py.grpc_client.Oms.OpenOrdersResponse import OpenOrdersResponse
 from architect_py.grpc_client.request import RequestUnary
 
 
-from typing import Annotated, List, Optional
+from typing import List, Optional
 
-from msgspec import Meta, Struct
+from msgspec import Struct
 
-AccountIdOrName = str
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class OpenOrdersRequest(Struct):
-    account: Optional[AccountIdOrName] = None
-    order_ids: Optional[List[OrderId]] = None
-    parent_order_id: Optional[OrderId] = None
+    account: Optional[definitions.AccountIdOrName] = None
+    order_ids: Optional[List[definitions.OrderId]] = None
+    parent_order_id: Optional[definitions.OrderId] = None
     symbol: Optional[str] = None
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
     @staticmethod

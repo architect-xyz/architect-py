@@ -8,11 +8,11 @@ from architect_py.grpc_client.request import RequestUnary
 
 from msgspec import Struct
 
-AccountIdOrName = str
+from .. import definitions
 
 
 class AccountSummaryRequest(Struct):
-    account: AccountIdOrName
+    account: definitions.AccountIdOrName
 
     @staticmethod
     def get_request_helper():

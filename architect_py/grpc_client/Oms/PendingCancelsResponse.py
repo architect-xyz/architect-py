@@ -3,36 +3,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import Annotated, List, Optional
+from typing import List
 
-from msgspec import Meta, Struct
+from msgspec import Struct
 
-
-class CancelStatus(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_127 = 127
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-class Cancel(Struct):
-    id: OrderId
-    o: CancelStatus
-    tn: Annotated[int, Meta(ge=0)]
-    ts: int
-    xid: str
-    r: Optional[str] = None
+from .. import definitions
 
 
 class PendingCancelsResponse(Struct):
-    pending_cancels: List[Cancel]
+    pending_cancels: List[definitions.Cancel]

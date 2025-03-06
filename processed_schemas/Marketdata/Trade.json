@@ -14,7 +14,7 @@
       "title": "direction",
       "anyOf": [
         {
-          "$ref": "#/definitions/Dir"
+          "$ref": "../definitions.json#/Dir"
         },
         {
           "type": "null"
@@ -53,20 +53,6 @@
       "title": "timestamp",
       "type": "integer",
       "format": "int64"
-    }
-  },
-  "definitions": {
-    "Decimal": {
-      "type": "string",
-      "format": "decimal"
-    },
-    "Dir": {
-      "description": "An order side/direction or a trade execution side/direction. In GraphQL these are serialized as \"buy\" or \"sell\".",
-      "type": "string",
-      "enum": [
-        "BUY",
-        "SELL"
-      ]
     }
   }
 }

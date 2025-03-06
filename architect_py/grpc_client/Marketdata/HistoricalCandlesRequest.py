@@ -6,22 +6,13 @@ from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import Histor
 from architect_py.grpc_client.request import RequestUnary
 
 
-from enum import Enum
-
 from msgspec import Struct
 
-
-class CandleWidth(int, Enum):
-    integer_1 = 1
-    integer_2 = 2
-    integer_4 = 4
-    integer_8 = 8
-    integer_16 = 16
-    integer_32 = 32
+from .. import definitions
 
 
 class HistoricalCandlesRequest(Struct):
-    candle_width: CandleWidth
+    candle_width: definitions.CandleWidth
     end_date: str
     start_date: str
     symbol: str

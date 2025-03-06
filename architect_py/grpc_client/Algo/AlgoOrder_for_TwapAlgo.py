@@ -3,71 +3,23 @@
 
 from __future__ import annotations
 
-from decimal import Decimal
-from enum import Enum
-from typing import Annotated, List, Optional
+from typing import List, Optional
 
-from msgspec import Meta, Struct
+from msgspec import Struct
 
-
-class AlgoState(str, Enum):
-    Pending = 'Pending'
-    Running = 'Running'
-    Stopped = 'Stopped'
-
-
-
-
-class Dir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = 'BUY'
-    SELL = 'SELL'
-
-
-HumanDuration = str
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-class TwapParams(Struct):
-    dir: Dir
-    end_time: str
-    execution_venue: str
-    interval: HumanDuration
-    quantity: Decimal
-    reject_lockout: HumanDuration
-    symbol: str
-    take_through_frac: Optional[Decimal] = None
-
-
-class TwapStatus(Struct):
-    quantity_filled: Decimal
-    realized_twap: Optional[Decimal] = None
-
-
-UserId = str
+from .. import definitions
 
 
 class AlgoOrderForTwapAlgo(Struct):
     account: str
     algo_name: str
-    algo_order_id: OrderId
+    algo_order_id: definitions.OrderId
     create_time: str
-    params: TwapParams
-    state: AlgoState
-    status: TwapStatus
-    trader: UserId
+    params: definitions.TwapParams
+    state: definitions.AlgoState
+    status: definitions.TwapStatus
+    trader: definitions.UserId
     display_symbols: Optional[List[str]] = None
     last_error: Optional[str] = None
     last_error_time: Optional[str] = None
-    parent_order_id: Optional[OrderId] = None
+    parent_order_id: Optional[definitions.OrderId] = None

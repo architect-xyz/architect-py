@@ -10,19 +10,16 @@ from typing import Optional
 
 from msgspec import Struct
 
-AccountIdOrName = str
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class DropcopyRequest(Struct):
     aberrant_fills: Optional[bool] = False
-    account: Optional[AccountIdOrName] = None
+    account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None
     fills: Optional[bool] = True
     orders: Optional[bool] = False
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
     def get_request_helper():

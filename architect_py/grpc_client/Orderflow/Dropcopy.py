@@ -4,10 +4,11 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from enum import Enum
 from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class Quantity(Struct):
@@ -30,101 +31,30 @@ class Price(Struct):
     pass
 
 
-
-
-class Dir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = 'BUY'
-    SELL = 'SELL'
-
-
-class FillKind(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-class OrderRejectReason(str, Enum):
-    DuplicateOrderId = 'DuplicateOrderId'
-    NotAuthorized = 'NotAuthorized'
-    NoExecutionVenue = 'NoExecutionVenue'
-    NoAccount = 'NoAccount'
-    NoCpty = 'NoCpty'
-    UnsupportedOrderType = 'UnsupportedOrderType'
-    UnsupportedExecutionVenue = 'UnsupportedExecutionVenue'
-    Unknown = 'Unknown'
-
-
-class OrderSource(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_3 = 3
-    integer_4 = 4
-    integer_5 = 5
-    integer_255 = 255
-
-
-class OrderStatus(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_127 = 127
-    integer_128 = 128
-    integer_129 = 129
-    integer_254 = 254
-
-
-class TimeInForce1(str, Enum):
-    GTC = 'GTC'
-    IOC = 'IOC'
-    FOK = 'FOK'
-
-
-class TimeInForce2(Struct):
-    GTD: str
-
-
-TimeInForce = Union[TimeInForce1, TimeInForce2, Literal['DAY']]
-
-
-UserId = str
-
-
 class Dropcopy1(Struct):
     a: Annotated[str, Meta(title='account')]
-    d: Annotated[Dir, Meta(title='dir')]
-    id: OrderId
-    o: Annotated[OrderStatus, Meta(title='status')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    id: definitions.OrderId
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[OrderSource, Meta(title='source')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
     t: Literal['o']
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[UserId, Meta(title='trader')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
+    r: Optional[
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+    ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
@@ -137,19 +67,19 @@ class Dropcopy1(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
-    def status(self) -> OrderStatus:
+    def status(self) -> definitions.OrderStatus:
         return self.o
 
     @status.setter
-    def status(self, value: OrderStatus) -> None:
+    def status(self, value: definitions.OrderStatus) -> None:
         self.o = value
 
     @property
@@ -169,19 +99,19 @@ class Dropcopy1(Struct):
         self.s = value
 
     @property
-    def source(self) -> OrderSource:
+    def source(self) -> definitions.OrderSource:
         return self.src
 
     @source.setter
-    def source(self, value: OrderSource) -> None:
+    def source(self, value: definitions.OrderSource) -> None:
         self.src = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -201,11 +131,11 @@ class Dropcopy1(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> UserId:
+    def trader(self) -> definitions.UserId:
         return self.u
 
     @trader.setter
-    def trader(self, value: UserId) -> None:
+    def trader(self, value: definitions.UserId) -> None:
         self.u = value
 
     @property
@@ -241,19 +171,19 @@ class Dropcopy1(Struct):
         self.po = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def reject_reason(self) -> Optional[OrderRejectReason]:
+    def reject_reason(self) -> Optional[definitions.OrderRejectReason]:
         return self.r
 
     @reject_reason.setter
-    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+    def reject_reason(self, value: Optional[definitions.OrderRejectReason]) -> None:
         self.r = value
 
     @property
@@ -275,26 +205,28 @@ class Dropcopy1(Struct):
 
 class Dropcopy2(Struct):
     a: Annotated[str, Meta(title='account')]
-    d: Annotated[Dir, Meta(title='dir')]
-    id: OrderId
-    o: Annotated[OrderStatus, Meta(title='status')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    id: definitions.OrderId
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[OrderSource, Meta(title='source')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
     t: Literal['o']
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[UserId, Meta(title='trader')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
+    r: Optional[
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+    ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
@@ -307,19 +239,19 @@ class Dropcopy2(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
-    def status(self) -> OrderStatus:
+    def status(self) -> definitions.OrderStatus:
         return self.o
 
     @status.setter
-    def status(self, value: OrderStatus) -> None:
+    def status(self, value: definitions.OrderStatus) -> None:
         self.o = value
 
     @property
@@ -339,19 +271,19 @@ class Dropcopy2(Struct):
         self.s = value
 
     @property
-    def source(self) -> OrderSource:
+    def source(self) -> definitions.OrderSource:
         return self.src
 
     @source.setter
-    def source(self, value: OrderSource) -> None:
+    def source(self, value: definitions.OrderSource) -> None:
         self.src = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -371,11 +303,11 @@ class Dropcopy2(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> UserId:
+    def trader(self) -> definitions.UserId:
         return self.u
 
     @trader.setter
-    def trader(self, value: UserId) -> None:
+    def trader(self, value: definitions.UserId) -> None:
         self.u = value
 
     @property
@@ -411,19 +343,19 @@ class Dropcopy2(Struct):
         self.tp = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def reject_reason(self) -> Optional[OrderRejectReason]:
+    def reject_reason(self) -> Optional[definitions.OrderRejectReason]:
         return self.r
 
     @reject_reason.setter
-    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+    def reject_reason(self, value: Optional[definitions.OrderRejectReason]) -> None:
         self.r = value
 
     @property
@@ -445,26 +377,28 @@ class Dropcopy2(Struct):
 
 class Dropcopy3(Struct):
     a: Annotated[str, Meta(title='account')]
-    d: Annotated[Dir, Meta(title='dir')]
-    id: OrderId
-    o: Annotated[OrderStatus, Meta(title='status')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    id: definitions.OrderId
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[OrderSource, Meta(title='source')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
     t: Literal['o']
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[UserId, Meta(title='trader')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
+    r: Optional[
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+    ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
@@ -477,19 +411,19 @@ class Dropcopy3(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
-    def status(self) -> OrderStatus:
+    def status(self) -> definitions.OrderStatus:
         return self.o
 
     @status.setter
-    def status(self, value: OrderStatus) -> None:
+    def status(self, value: definitions.OrderStatus) -> None:
         self.o = value
 
     @property
@@ -509,19 +443,19 @@ class Dropcopy3(Struct):
         self.s = value
 
     @property
-    def source(self) -> OrderSource:
+    def source(self) -> definitions.OrderSource:
         return self.src
 
     @source.setter
-    def source(self, value: OrderSource) -> None:
+    def source(self, value: definitions.OrderSource) -> None:
         self.src = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -541,11 +475,11 @@ class Dropcopy3(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> UserId:
+    def trader(self) -> definitions.UserId:
         return self.u
 
     @trader.setter
-    def trader(self, value: UserId) -> None:
+    def trader(self, value: definitions.UserId) -> None:
         self.u = value
 
     @property
@@ -581,19 +515,19 @@ class Dropcopy3(Struct):
         self.tp = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def reject_reason(self) -> Optional[OrderRejectReason]:
+    def reject_reason(self) -> Optional[definitions.OrderRejectReason]:
         return self.r
 
     @reject_reason.setter
-    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+    def reject_reason(self, value: Optional[definitions.OrderRejectReason]) -> None:
         self.r = value
 
     @property
@@ -614,9 +548,9 @@ class Dropcopy3(Struct):
 
 
 class Dropcopy4(Struct):
-    d: Annotated[Dir, Meta(title='direction')]
+    d: Annotated[definitions.Dir, Meta(title='direction')]
     id: Annotated[str, Meta(title='fill_id')]
-    k: Annotated[FillKind, Meta(title='fill_kind')]
+    k: Annotated[definitions.FillKind, Meta(title='fill_kind')]
     p: Annotated[Price, Meta(title='price')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
@@ -657,16 +591,18 @@ class Dropcopy4(Struct):
     """
     Fee currency, if different from the price currency
     """
-    oid: Optional[Annotated[Optional[OrderId], Meta(title='order_id')]] = None
-    u: Optional[Annotated[Optional[UserId], Meta(title='trader')]] = None
+    oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='order_id')]] = (
+        None
+    )
+    u: Optional[Annotated[Optional[definitions.UserId], Meta(title='trader')]] = None
     xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None
 
     @property
-    def direction(self) -> Dir:
+    def direction(self) -> definitions.Dir:
         return self.d
 
     @direction.setter
-    def direction(self, value: Dir) -> None:
+    def direction(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
@@ -678,11 +614,11 @@ class Dropcopy4(Struct):
         self.id = value
 
     @property
-    def fill_kind(self) -> FillKind:
+    def fill_kind(self) -> definitions.FillKind:
         return self.k
 
     @fill_kind.setter
-    def fill_kind(self, value: FillKind) -> None:
+    def fill_kind(self, value: definitions.FillKind) -> None:
         self.k = value
 
     @property
@@ -782,19 +718,19 @@ class Dropcopy4(Struct):
         self.fu = value
 
     @property
-    def order_id(self) -> Optional[OrderId]:
+    def order_id(self) -> Optional[definitions.OrderId]:
         return self.oid
 
     @order_id.setter
-    def order_id(self, value: Optional[OrderId]) -> None:
+    def order_id(self, value: Optional[definitions.OrderId]) -> None:
         self.oid = value
 
     @property
-    def trader(self) -> Optional[UserId]:
+    def trader(self) -> Optional[definitions.UserId]:
         return self.u
 
     @trader.setter
-    def trader(self, value: Optional[UserId]) -> None:
+    def trader(self, value: Optional[definitions.UserId]) -> None:
         self.u = value
 
     @property
@@ -817,17 +753,21 @@ class Dropcopy5(Struct):
     a: Optional[Annotated[Optional[str], Meta(title='account')]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None
     ats: Optional[Annotated[Optional[int], Meta(title='recv_time')]] = None
-    d: Optional[Annotated[Optional[Dir], Meta(title='direction')]] = None
+    d: Optional[Annotated[Optional[definitions.Dir], Meta(title='direction')]] = None
     f: Optional[Annotated[Optional[Decimal], Meta(title='fee')]] = None
     fu: Optional[Annotated[Optional[str], Meta(title='fee_currency')]] = None
-    k: Optional[Annotated[Optional[FillKind], Meta(title='fill_kind')]] = None
-    oid: Optional[Annotated[Optional[OrderId], Meta(title='order_id')]] = None
+    k: Optional[Annotated[Optional[definitions.FillKind], Meta(title='fill_kind')]] = (
+        None
+    )
+    oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='order_id')]] = (
+        None
+    )
     p: Optional[Annotated[Optional[Decimal], Meta(title='price')]] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title='quantity')]] = None
     s: Optional[Annotated[Optional[str], Meta(title='symbol')]] = None
     tn: Optional[Annotated[Optional[int], Meta(ge=0, title='trade_time_ns')]] = None
     ts: Optional[Annotated[Optional[int], Meta(title='trade_time')]] = None
-    u: Optional[Annotated[Optional[UserId], Meta(title='trader')]] = None
+    u: Optional[Annotated[Optional[definitions.UserId], Meta(title='trader')]] = None
     xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None
 
     @property
@@ -871,11 +811,11 @@ class Dropcopy5(Struct):
         self.ats = value
 
     @property
-    def direction(self) -> Optional[Dir]:
+    def direction(self) -> Optional[definitions.Dir]:
         return self.d
 
     @direction.setter
-    def direction(self, value: Optional[Dir]) -> None:
+    def direction(self, value: Optional[definitions.Dir]) -> None:
         self.d = value
 
     @property
@@ -895,19 +835,19 @@ class Dropcopy5(Struct):
         self.fu = value
 
     @property
-    def fill_kind(self) -> Optional[FillKind]:
+    def fill_kind(self) -> Optional[definitions.FillKind]:
         return self.k
 
     @fill_kind.setter
-    def fill_kind(self, value: Optional[FillKind]) -> None:
+    def fill_kind(self, value: Optional[definitions.FillKind]) -> None:
         self.k = value
 
     @property
-    def order_id(self) -> Optional[OrderId]:
+    def order_id(self) -> Optional[definitions.OrderId]:
         return self.oid
 
     @order_id.setter
-    def order_id(self, value: Optional[OrderId]) -> None:
+    def order_id(self, value: Optional[definitions.OrderId]) -> None:
         self.oid = value
 
     @property
@@ -951,11 +891,11 @@ class Dropcopy5(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> Optional[UserId]:
+    def trader(self) -> Optional[definitions.UserId]:
         return self.u
 
     @trader.setter
-    def trader(self, value: Optional[UserId]) -> None:
+    def trader(self, value: Optional[definitions.UserId]) -> None:
         self.u = value
 
     @property

@@ -10,13 +10,13 @@ from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class AccountsRequest(Struct):
     trader: Optional[
         Annotated[
-            Optional[TraderIdOrEmail],
+            Optional[definitions.TraderIdOrEmail],
             Meta(
                 description='Request accounts from the perspective of this trader; if not specified, defaults to the caller user.'
             ),

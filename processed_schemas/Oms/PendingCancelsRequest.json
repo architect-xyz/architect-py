@@ -6,7 +6,7 @@
     "account": {
       "anyOf": [
         {
-          "$ref": "#/definitions/AccountIdOrName"
+          "$ref": "../definitions.json#/AccountIdOrName"
         },
         {
           "type": "null"
@@ -32,7 +32,7 @@
     "trader": {
       "anyOf": [
         {
-          "$ref": "#/definitions/TraderIdOrEmail"
+          "$ref": "../definitions.json#/TraderIdOrEmail"
         },
         {
           "type": "null"
@@ -44,14 +44,6 @@
         "string",
         "null"
       ]
-    }
-  },
-  "definitions": {
-    "AccountIdOrName": {
-      "type": "string"
-    },
-    "TraderIdOrEmail": {
-      "type": "string"
     }
   },
   "route": "/json.architect.Oms/PendingCancels",

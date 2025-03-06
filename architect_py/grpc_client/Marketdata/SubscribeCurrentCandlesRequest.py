@@ -6,19 +6,11 @@ from architect_py.grpc_client.Marketdata.Candle import Candle
 from architect_py.grpc_client.request import RequestStream
 
 
-from enum import Enum
 from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
-
-class CandleWidth(int, Enum):
-    integer_1 = 1
-    integer_2 = 2
-    integer_4 = 4
-    integer_8 = 8
-    integer_16 = 16
-    integer_32 = 32
+from .. import definitions
 
 
 class SubscribeCurrentCandlesRequest(Struct):
@@ -26,7 +18,7 @@ class SubscribeCurrentCandlesRequest(Struct):
     Subscribe to the current candle.  This allows you to display the most recent/building candle live in a UI, for example.
     """
 
-    candle_width: CandleWidth
+    candle_width: definitions.CandleWidth
     symbol: str
     tick_period_ms: Optional[
         Annotated[

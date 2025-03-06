@@ -11,7 +11,7 @@
       "default": null,
       "anyOf": [
         {
-          "$ref": "#/definitions/AccountIdOrName"
+          "$ref": "../definitions.json#/AccountIdOrName"
         },
         {
           "type": "null"
@@ -37,20 +37,12 @@
       "default": null,
       "anyOf": [
         {
-          "$ref": "#/definitions/TraderIdOrEmail"
+          "$ref": "../definitions.json#/TraderIdOrEmail"
         },
         {
           "type": "null"
         }
       ]
-    }
-  },
-  "definitions": {
-    "AccountIdOrName": {
-      "type": "string"
-    },
-    "TraderIdOrEmail": {
-      "type": "string"
     }
   },
   "route": "/json.architect.Orderflow/Dropcopy",

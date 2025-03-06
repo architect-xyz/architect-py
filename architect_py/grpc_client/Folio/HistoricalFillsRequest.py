@@ -10,23 +10,11 @@ from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
-AccountIdOrName = str
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-TraderIdOrEmail = str
+from .. import definitions
 
 
 class HistoricalFillsRequest(Struct):
-    account: Optional[AccountIdOrName] = None
+    account: Optional[definitions.AccountIdOrName] = None
     from_inclusive: Optional[str] = None
     limit: Optional[
         Annotated[Optional[int], Meta(description='Default maximum is 1000.', ge=0)]
@@ -34,9 +22,9 @@ class HistoricalFillsRequest(Struct):
     """
     Default maximum is 1000.
     """
-    order_id: Optional[OrderId] = None
+    order_id: Optional[definitions.OrderId] = None
     to_exclusive: Optional[str] = None
-    trader: Optional[TraderIdOrEmail] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
     @staticmethod

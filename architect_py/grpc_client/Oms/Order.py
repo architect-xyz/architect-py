@@ -4,10 +4,11 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from enum import Enum
 from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class Quantity(Struct):
@@ -26,94 +27,29 @@ class TriggerPrice(Struct):
     pass
 
 
-
-
-class Dir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = 'BUY'
-    SELL = 'SELL'
-
-
-class OrderId(Struct):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-
-class OrderRejectReason(str, Enum):
-    DuplicateOrderId = 'DuplicateOrderId'
-    NotAuthorized = 'NotAuthorized'
-    NoExecutionVenue = 'NoExecutionVenue'
-    NoAccount = 'NoAccount'
-    NoCpty = 'NoCpty'
-    UnsupportedOrderType = 'UnsupportedOrderType'
-    UnsupportedExecutionVenue = 'UnsupportedExecutionVenue'
-    Unknown = 'Unknown'
-
-
-class OrderSource(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_3 = 3
-    integer_4 = 4
-    integer_5 = 5
-    integer_255 = 255
-
-
-class OrderStatus(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_127 = 127
-    integer_128 = 128
-    integer_129 = 129
-    integer_254 = 254
-
-
-class TimeInForce7(str, Enum):
-    GTC = 'GTC'
-    IOC = 'IOC'
-    FOK = 'FOK'
-
-
-class TimeInForce8(Struct):
-    GTD: str
-
-
-TimeInForce = Union[TimeInForce7, TimeInForce8, Literal['DAY']]
-
-
-UserId = str
-
-
-class Order7(Struct):
+class Order1(Struct):
     a: Annotated[str, Meta(title='account')]
-    d: Annotated[Dir, Meta(title='dir')]
-    id: OrderId
-    o: Annotated[OrderStatus, Meta(title='status')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    id: definitions.OrderId
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[OrderSource, Meta(title='source')]
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[UserId, Meta(title='trader')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
+    r: Optional[
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+    ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
@@ -126,19 +62,19 @@ class Order7(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
-    def status(self) -> OrderStatus:
+    def status(self) -> definitions.OrderStatus:
         return self.o
 
     @status.setter
-    def status(self, value: OrderStatus) -> None:
+    def status(self, value: definitions.OrderStatus) -> None:
         self.o = value
 
     @property
@@ -158,19 +94,19 @@ class Order7(Struct):
         self.s = value
 
     @property
-    def source(self) -> OrderSource:
+    def source(self) -> definitions.OrderSource:
         return self.src
 
     @source.setter
-    def source(self, value: OrderSource) -> None:
+    def source(self, value: definitions.OrderSource) -> None:
         self.src = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -190,11 +126,11 @@ class Order7(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> UserId:
+    def trader(self) -> definitions.UserId:
         return self.u
 
     @trader.setter
-    def trader(self, value: UserId) -> None:
+    def trader(self, value: definitions.UserId) -> None:
         self.u = value
 
     @property
@@ -230,19 +166,19 @@ class Order7(Struct):
         self.po = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def reject_reason(self) -> Optional[OrderRejectReason]:
+    def reject_reason(self) -> Optional[definitions.OrderRejectReason]:
         return self.r
 
     @reject_reason.setter
-    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+    def reject_reason(self, value: Optional[definitions.OrderRejectReason]) -> None:
         self.r = value
 
     @property
@@ -262,27 +198,29 @@ class Order7(Struct):
         self.xp = value
 
 
-class Order8(Struct):
+class Order2(Struct):
     a: Annotated[str, Meta(title='account')]
-    d: Annotated[Dir, Meta(title='dir')]
-    id: OrderId
-    o: Annotated[OrderStatus, Meta(title='status')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    id: definitions.OrderId
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[OrderSource, Meta(title='source')]
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[UserId, Meta(title='trader')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['STOP_LOSS_LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
+    r: Optional[
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+    ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
@@ -295,19 +233,19 @@ class Order8(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
-    def status(self) -> OrderStatus:
+    def status(self) -> definitions.OrderStatus:
         return self.o
 
     @status.setter
-    def status(self, value: OrderStatus) -> None:
+    def status(self, value: definitions.OrderStatus) -> None:
         self.o = value
 
     @property
@@ -327,19 +265,19 @@ class Order8(Struct):
         self.s = value
 
     @property
-    def source(self) -> OrderSource:
+    def source(self) -> definitions.OrderSource:
         return self.src
 
     @source.setter
-    def source(self, value: OrderSource) -> None:
+    def source(self, value: definitions.OrderSource) -> None:
         self.src = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -359,11 +297,11 @@ class Order8(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> UserId:
+    def trader(self) -> definitions.UserId:
         return self.u
 
     @trader.setter
-    def trader(self, value: UserId) -> None:
+    def trader(self, value: definitions.UserId) -> None:
         self.u = value
 
     @property
@@ -399,19 +337,19 @@ class Order8(Struct):
         self.tp = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def reject_reason(self) -> Optional[OrderRejectReason]:
+    def reject_reason(self) -> Optional[definitions.OrderRejectReason]:
         return self.r
 
     @reject_reason.setter
-    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+    def reject_reason(self, value: Optional[definitions.OrderRejectReason]) -> None:
         self.r = value
 
     @property
@@ -431,27 +369,29 @@ class Order8(Struct):
         self.xp = value
 
 
-class Order9(Struct):
+class Order3(Struct):
     a: Annotated[str, Meta(title='account')]
-    d: Annotated[Dir, Meta(title='dir')]
-    id: OrderId
-    o: Annotated[OrderStatus, Meta(title='status')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    id: definitions.OrderId
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
     q: Annotated[Quantity, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[OrderSource, Meta(title='source')]
-    tif: Annotated[TimeInForce, Meta(title='time_in_force')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
     tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
     ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[UserId, Meta(title='trader')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
     xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
     k: Literal['TAKE_PROFIT_LIMIT']
     p: Annotated[LimitPrice, Meta(title='limit_price')]
     tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
-    pid: Optional[Annotated[Optional[OrderId], Meta(title='parent_id')]] = None
-    r: Optional[Annotated[Optional[OrderRejectReason], Meta(title='reject_reason')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
+    r: Optional[
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+    ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
 
@@ -464,19 +404,19 @@ class Order9(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
-    def status(self) -> OrderStatus:
+    def status(self) -> definitions.OrderStatus:
         return self.o
 
     @status.setter
-    def status(self, value: OrderStatus) -> None:
+    def status(self, value: definitions.OrderStatus) -> None:
         self.o = value
 
     @property
@@ -496,19 +436,19 @@ class Order9(Struct):
         self.s = value
 
     @property
-    def source(self) -> OrderSource:
+    def source(self) -> definitions.OrderSource:
         return self.src
 
     @source.setter
-    def source(self, value: OrderSource) -> None:
+    def source(self, value: definitions.OrderSource) -> None:
         self.src = value
 
     @property
-    def time_in_force(self) -> TimeInForce:
+    def time_in_force(self) -> definitions.TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: TimeInForce) -> None:
+    def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -528,11 +468,11 @@ class Order9(Struct):
         self.ts = value
 
     @property
-    def trader(self) -> UserId:
+    def trader(self) -> definitions.UserId:
         return self.u
 
     @trader.setter
-    def trader(self, value: UserId) -> None:
+    def trader(self, value: definitions.UserId) -> None:
         self.u = value
 
     @property
@@ -568,19 +508,19 @@ class Order9(Struct):
         self.tp = value
 
     @property
-    def parent_id(self) -> Optional[OrderId]:
+    def parent_id(self) -> Optional[definitions.OrderId]:
         return self.pid
 
     @parent_id.setter
-    def parent_id(self, value: Optional[OrderId]) -> None:
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
         self.pid = value
 
     @property
-    def reject_reason(self) -> Optional[OrderRejectReason]:
+    def reject_reason(self) -> Optional[definitions.OrderRejectReason]:
         return self.r
 
     @reject_reason.setter
-    def reject_reason(self, value: Optional[OrderRejectReason]) -> None:
+    def reject_reason(self, value: Optional[definitions.OrderRejectReason]) -> None:
         self.r = value
 
     @property
@@ -600,4 +540,4 @@ class Order9(Struct):
         self.xp = value
 
 
-Order = Annotated[Union[Order7, Order8, Order9], Meta(title='Order')]
+Order = Annotated[Union[Order1, Order2, Order3], Meta(title='Order')]

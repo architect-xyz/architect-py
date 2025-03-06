@@ -507,5 +507,3 @@ class TickerUpdate2(Struct):
 TickerUpdate = Annotated[
     Union[TickerUpdate1, TickerUpdate2], Meta(title='TickerUpdate')
 ]
-
-

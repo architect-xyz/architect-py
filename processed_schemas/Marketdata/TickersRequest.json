@@ -13,7 +13,7 @@
     "k": {
       "anyOf": [
         {
-          "$ref": "#/definitions/SortTickersBy"
+          "$ref": "../definitions.json#/SortTickersBy"
         },
         {
           "type": "null"
@@ -40,17 +40,6 @@
       "type": [
         "string",
         "null"
-      ]
-    }
-  },
-  "definitions": {
-    "SortTickersBy": {
-      "type": "string",
-      "enum": [
-        "VOLUME_DESC",
-        "CHANGE_ASC",
-        "CHANGE_DESC",
-        "ABS_CHANGE_DESC"
       ]
     }
   },
