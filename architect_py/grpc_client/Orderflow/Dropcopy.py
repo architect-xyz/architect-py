@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from decimal import Decimal
 from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
@@ -11,32 +10,12 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Quantity(Struct):
-    pass
-
-
-class FilledQuantity(Struct):
-    pass
-
-
-class LimitPrice(Struct):
-    pass
-
-
-class TriggerPrice(Struct):
-    pass
-
-
-class Price(Struct):
-    pass
-
-
 class Dropcopy1(Struct):
     a: Annotated[str, Meta(title='account')]
     d: Annotated[definitions.Dir, Meta(title='dir')]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[Quantity, Meta(title='quantity')]
+    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[definitions.OrderSource, Meta(title='source')]
     t: Literal['o']
@@ -45,9 +24,9 @@ class Dropcopy1(Struct):
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
+    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
     k: Literal['LIMIT']
-    p: Annotated[LimitPrice, Meta(title='limit_price')]
+    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
     po: Annotated[bool, Meta(title='post_only')]
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
@@ -56,7 +35,9 @@ class Dropcopy1(Struct):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    xp: Optional[
+        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+    ] = None
 
     @property
     def account(self) -> str:
@@ -83,11 +64,11 @@ class Dropcopy1(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> Quantity:
+    def quantity(self) -> definitions.DecimalModel:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Quantity) -> None:
+    def quantity(self, value: definitions.DecimalModel) -> None:
         self.q = value
 
     @property
@@ -147,19 +128,19 @@ class Dropcopy1(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> FilledQuantity:
+    def filled_quantity(self) -> definitions.DecimalModel:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: FilledQuantity) -> None:
+    def filled_quantity(self, value: definitions.DecimalModel) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> LimitPrice:
+    def limit_price(self) -> definitions.DecimalModel:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: LimitPrice) -> None:
+    def limit_price(self, value: definitions.DecimalModel) -> None:
         self.p = value
 
     @property
@@ -195,11 +176,11 @@ class Dropcopy1(Struct):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[Decimal]:
+    def average_fill_price(self) -> Optional[definitions.DecimalModel]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[Decimal]) -> None:
+    def average_fill_price(self, value: Optional[definitions.DecimalModel]) -> None:
         self.xp = value
 
 
@@ -208,7 +189,7 @@ class Dropcopy2(Struct):
     d: Annotated[definitions.Dir, Meta(title='dir')]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[Quantity, Meta(title='quantity')]
+    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[definitions.OrderSource, Meta(title='source')]
     t: Literal['o']
@@ -217,10 +198,10 @@ class Dropcopy2(Struct):
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
+    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
     k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[LimitPrice, Meta(title='limit_price')]
-    tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
+    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
+    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -228,7 +209,9 @@ class Dropcopy2(Struct):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    xp: Optional[
+        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+    ] = None
 
     @property
     def account(self) -> str:
@@ -255,11 +238,11 @@ class Dropcopy2(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> Quantity:
+    def quantity(self) -> definitions.DecimalModel:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Quantity) -> None:
+    def quantity(self, value: definitions.DecimalModel) -> None:
         self.q = value
 
     @property
@@ -319,27 +302,27 @@ class Dropcopy2(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> FilledQuantity:
+    def filled_quantity(self) -> definitions.DecimalModel:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: FilledQuantity) -> None:
+    def filled_quantity(self, value: definitions.DecimalModel) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> LimitPrice:
+    def limit_price(self) -> definitions.DecimalModel:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: LimitPrice) -> None:
+    def limit_price(self, value: definitions.DecimalModel) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> TriggerPrice:
+    def trigger_price(self) -> definitions.DecimalModel:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: TriggerPrice) -> None:
+    def trigger_price(self, value: definitions.DecimalModel) -> None:
         self.tp = value
 
     @property
@@ -367,11 +350,11 @@ class Dropcopy2(Struct):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[Decimal]:
+    def average_fill_price(self) -> Optional[definitions.DecimalModel]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[Decimal]) -> None:
+    def average_fill_price(self, value: Optional[definitions.DecimalModel]) -> None:
         self.xp = value
 
 
@@ -380,7 +363,7 @@ class Dropcopy3(Struct):
     d: Annotated[definitions.Dir, Meta(title='dir')]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[Quantity, Meta(title='quantity')]
+    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     src: Annotated[definitions.OrderSource, Meta(title='source')]
     t: Literal['o']
@@ -389,10 +372,10 @@ class Dropcopy3(Struct):
     ts: Annotated[int, Meta(title='recv_time')]
     u: Annotated[definitions.UserId, Meta(title='trader')]
     ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[FilledQuantity, Meta(title='filled_quantity')]
+    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
     k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[LimitPrice, Meta(title='limit_price')]
-    tp: Annotated[TriggerPrice, Meta(title='trigger_price')]
+    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
+    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
@@ -400,7 +383,9 @@ class Dropcopy3(Struct):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    xp: Optional[
+        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+    ] = None
 
     @property
     def account(self) -> str:
@@ -427,11 +412,11 @@ class Dropcopy3(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> Quantity:
+    def quantity(self) -> definitions.DecimalModel:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Quantity) -> None:
+    def quantity(self, value: definitions.DecimalModel) -> None:
         self.q = value
 
     @property
@@ -491,27 +476,27 @@ class Dropcopy3(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> FilledQuantity:
+    def filled_quantity(self) -> definitions.DecimalModel:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: FilledQuantity) -> None:
+    def filled_quantity(self, value: definitions.DecimalModel) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> LimitPrice:
+    def limit_price(self) -> definitions.DecimalModel:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: LimitPrice) -> None:
+    def limit_price(self, value: definitions.DecimalModel) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> TriggerPrice:
+    def trigger_price(self) -> definitions.DecimalModel:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: TriggerPrice) -> None:
+    def trigger_price(self, value: definitions.DecimalModel) -> None:
         self.tp = value
 
     @property
@@ -539,11 +524,11 @@ class Dropcopy3(Struct):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[Decimal]:
+    def average_fill_price(self) -> Optional[definitions.DecimalModel]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[Decimal]) -> None:
+    def average_fill_price(self, value: Optional[definitions.DecimalModel]) -> None:
         self.xp = value
 
 
@@ -551,8 +536,8 @@ class Dropcopy4(Struct):
     d: Annotated[definitions.Dir, Meta(title='direction')]
     id: Annotated[str, Meta(title='fill_id')]
     k: Annotated[definitions.FillKind, Meta(title='fill_kind')]
-    p: Annotated[Price, Meta(title='price')]
-    q: Annotated[Quantity, Meta(title='quantity')]
+    p: Annotated[definitions.DecimalModel, Meta(title='price')]
+    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
     t: Annotated[int, Meta(title='is_taker')]
     tn: Annotated[int, Meta(ge=0, title='trade_time_ns')]
@@ -578,7 +563,7 @@ class Dropcopy4(Struct):
     """
     When Architect received the fill, if realtime
     """
-    f: Optional[Annotated[Optional[Decimal], Meta(title='fee')]] = None
+    f: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='fee')]] = None
     fu: Optional[
         Annotated[
             Optional[str],
@@ -622,19 +607,19 @@ class Dropcopy4(Struct):
         self.k = value
 
     @property
-    def price(self) -> Price:
+    def price(self) -> definitions.DecimalModel:
         return self.p
 
     @price.setter
-    def price(self, value: Price) -> None:
+    def price(self, value: definitions.DecimalModel) -> None:
         self.p = value
 
     @property
-    def quantity(self) -> Quantity:
+    def quantity(self) -> definitions.DecimalModel:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Quantity) -> None:
+    def quantity(self, value: definitions.DecimalModel) -> None:
         self.q = value
 
     @property
@@ -702,11 +687,11 @@ class Dropcopy4(Struct):
         self.ats = value
 
     @property
-    def fee(self) -> Optional[Decimal]:
+    def fee(self) -> Optional[definitions.DecimalModel]:
         return self.f
 
     @fee.setter
-    def fee(self, value: Optional[Decimal]) -> None:
+    def fee(self, value: Optional[definitions.DecimalModel]) -> None:
         self.f = value
 
     @property
@@ -754,7 +739,7 @@ class Dropcopy5(Struct):
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None
     ats: Optional[Annotated[Optional[int], Meta(title='recv_time')]] = None
     d: Optional[Annotated[Optional[definitions.Dir], Meta(title='direction')]] = None
-    f: Optional[Annotated[Optional[Decimal], Meta(title='fee')]] = None
+    f: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='fee')]] = None
     fu: Optional[Annotated[Optional[str], Meta(title='fee_currency')]] = None
     k: Optional[Annotated[Optional[definitions.FillKind], Meta(title='fill_kind')]] = (
         None
@@ -762,8 +747,12 @@ class Dropcopy5(Struct):
     oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='order_id')]] = (
         None
     )
-    p: Optional[Annotated[Optional[Decimal], Meta(title='price')]] = None
-    q: Optional[Annotated[Optional[Decimal], Meta(title='quantity')]] = None
+    p: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='price')]] = (
+        None
+    )
+    q: Optional[
+        Annotated[Optional[definitions.DecimalModel], Meta(title='quantity')]
+    ] = None
     s: Optional[Annotated[Optional[str], Meta(title='symbol')]] = None
     tn: Optional[Annotated[Optional[int], Meta(ge=0, title='trade_time_ns')]] = None
     ts: Optional[Annotated[Optional[int], Meta(title='trade_time')]] = None
@@ -819,11 +808,11 @@ class Dropcopy5(Struct):
         self.d = value
 
     @property
-    def fee(self) -> Optional[Decimal]:
+    def fee(self) -> Optional[definitions.DecimalModel]:
         return self.f
 
     @fee.setter
-    def fee(self, value: Optional[Decimal]) -> None:
+    def fee(self, value: Optional[definitions.DecimalModel]) -> None:
         self.f = value
 
     @property
@@ -851,19 +840,19 @@ class Dropcopy5(Struct):
         self.oid = value
 
     @property
-    def price(self) -> Optional[Decimal]:
+    def price(self) -> Optional[definitions.DecimalModel]:
         return self.p
 
     @price.setter
-    def price(self, value: Optional[Decimal]) -> None:
+    def price(self, value: Optional[definitions.DecimalModel]) -> None:
         self.p = value
 
     @property
-    def quantity(self) -> Optional[Decimal]:
+    def quantity(self) -> Optional[definitions.DecimalModel]:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Optional[Decimal]) -> None:
+    def quantity(self, value: Optional[definitions.DecimalModel]) -> None:
         self.q = value
 
     @property

@@ -4,15 +4,16 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
-from decimal import Decimal
 from typing import Annotated, List
 
 from msgspec import Meta, Struct
 
-Ask = List[Decimal]
+from .. import definitions
+
+Ask = List[definitions.DecimalModel]
 
 
-Bid = List[Decimal]
+Bid = List[definitions.DecimalModel]
 
 
 class L2BookSnapshot(Struct):

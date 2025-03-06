@@ -23,8 +23,7 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "type": "string",
-                  "format": "decimal"
+                  "$ref": "../definitions.json#/Decimal"
                 }
               ]
             },
@@ -52,8 +51,7 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "type": "string",
-                  "format": "decimal"
+                  "$ref": "../definitions.json#/Decimal"
                 }
               ]
             },
@@ -61,8 +59,7 @@
               "title": "trigger_price",
               "allOf": [
                 {
-                  "type": "string",
-                  "format": "decimal"
+                  "$ref": "../definitions.json#/Decimal"
                 }
               ]
             }
@@ -86,8 +83,7 @@
               "title": "limit_price",
               "allOf": [
                 {
-                  "type": "string",
-                  "format": "decimal"
+                  "$ref": "../definitions.json#/Decimal"
                 }
               ]
             },
@@ -95,8 +91,7 @@
               "title": "trigger_price",
               "allOf": [
                 {
-                  "type": "string",
-                  "format": "decimal"
+                  "$ref": "../definitions.json#/Decimal"
                 }
               ]
             }
@@ -159,8 +154,7 @@
           "title": "quantity",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         },
@@ -235,8 +229,7 @@
           "title": "average_fill_price",
           "anyOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             },
             {
               "type": "null"
@@ -247,8 +240,7 @@
           "title": "filled_quantity",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         }
@@ -307,8 +299,7 @@
           "title": "fee",
           "anyOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             },
             {
               "type": "null"
@@ -351,8 +342,7 @@
           "title": "price",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         },
@@ -360,8 +350,7 @@
           "title": "quantity",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         },
@@ -460,8 +449,7 @@
           "title": "fee",
           "anyOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             },
             {
               "type": "null"
@@ -506,8 +494,7 @@
           "title": "price",
           "anyOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             },
             {
               "type": "null"
@@ -518,8 +505,7 @@
           "title": "quantity",
           "anyOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             },
             {
               "type": "null"

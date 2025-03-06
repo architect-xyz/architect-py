@@ -42,6 +42,7 @@ datamodel-codegen \
     --custom-template-dir templates \
     --use-title-as-name \
     --enum-field-as-literal one \
+    --use-subclass-enum \
     --use-field-description \
     --use-schema-description \
     --disable-timestamp
@@ -78,6 +79,8 @@ else
         post_process_file "$file"
     done
 fi
+
+post_process_file "definitions.json"
 
 echo -e "# Copied gRPC client from templates folder\n" > architect_py/grpc_client/__init__.py
 cat templates/grpc_client.py >> architect_py/grpc_client/__init__.py

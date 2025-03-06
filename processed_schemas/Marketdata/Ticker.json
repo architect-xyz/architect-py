@@ -13,8 +13,7 @@
       "title": "ask_price",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -25,8 +24,7 @@
       "title": "ask_size",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -37,8 +35,7 @@
       "title": "bid_price",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -49,8 +46,7 @@
       "title": "bid_size",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -60,8 +56,7 @@
     "dividend": {
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -71,8 +66,7 @@
     "dividend_yield": {
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -82,8 +76,7 @@
     "eps_adj": {
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -94,8 +87,7 @@
       "title": "funding_rate",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -114,8 +106,7 @@
       "title": "high_24h",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -126,8 +117,7 @@
       "title": "index_price",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -138,8 +128,7 @@
       "title": "low_24h",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -149,8 +138,7 @@
     "market_cap": {
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -161,8 +149,7 @@
       "title": "mark_price",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -173,8 +160,7 @@
       "title": "open_24h",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -185,8 +171,7 @@
       "title": "open_interest",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -197,8 +182,7 @@
       "title": "last_price",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -208,8 +192,7 @@
     "price_to_earnings": {
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -220,8 +203,7 @@
       "title": "last_size",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -235,8 +217,7 @@
     "shares_outstanding_weighted_adj": {
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -247,8 +228,7 @@
       "title": "last_settlement_price",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -270,8 +250,7 @@
       "title": "volume_24h",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -286,8 +265,7 @@
       "title": "volume_30d",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -298,8 +276,7 @@
       "title": "session_high",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -310,8 +287,7 @@
       "title": "session_low",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -322,8 +298,7 @@
       "title": "session_open",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"
@@ -334,8 +309,7 @@
       "title": "session_volume",
       "anyOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         },
         {
           "type": "null"

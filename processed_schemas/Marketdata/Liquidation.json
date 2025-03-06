@@ -23,8 +23,7 @@
       "title": "price",
       "allOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         }
       ]
     },
@@ -32,8 +31,7 @@
       "title": "size",
       "allOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         }
       ]
     },

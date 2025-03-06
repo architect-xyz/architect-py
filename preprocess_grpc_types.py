@@ -14,12 +14,11 @@ def fix_line(lines: str, remap_defs: bool) -> str:
     lines = lines.replace("uint64", "default")
     lines = lines.replace('"format": "int"', '"format": "default"')
 
-    pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
-    lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
-
     if remap_defs:
         lines = lines.replace("#/definitions", "../definitions.json#")
     else:
+        pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
+        # lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
         lines = lines.replace("#/definitions", "#")
 
     return lines

@@ -21,8 +21,7 @@
           "title": "limit_price",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         },
@@ -50,8 +49,7 @@
           "title": "limit_price",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         },
@@ -59,8 +57,7 @@
           "title": "trigger_price",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         }
@@ -84,8 +81,7 @@
           "title": "limit_price",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         },
@@ -93,8 +89,7 @@
           "title": "trigger_price",
           "allOf": [
             {
-              "type": "string",
-              "format": "decimal"
+              "$ref": "../definitions.json#/Decimal"
             }
           ]
         }
@@ -154,8 +149,7 @@
       "title": "quantity",
       "allOf": [
         {
-          "type": "string",
-          "format": "decimal"
+          "$ref": "../definitions.json#/Decimal"
         }
       ]
     },

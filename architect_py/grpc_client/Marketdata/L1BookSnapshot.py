@@ -4,18 +4,23 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
-from decimal import Decimal
 from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class L1BookSnapshot(Struct):
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
-    a: Optional[Annotated[List[Decimal], Meta(title='best_ask')]] = None
-    b: Optional[Annotated[List[Decimal], Meta(title='best_bid')]] = None
+    a: Optional[Annotated[List[definitions.DecimalModel], Meta(title='best_ask')]] = (
+        None
+    )
+    b: Optional[Annotated[List[definitions.DecimalModel], Meta(title='best_bid')]] = (
+        None
+    )
 
     @property
     def symbol(self) -> str:
@@ -50,17 +55,17 @@ class L1BookSnapshot(Struct):
         return datetime.fromtimestamp(self.ts)
 
     @property
-    def best_ask(self) -> Optional[List[Decimal]]:
+    def best_ask(self) -> Optional[List[definitions.DecimalModel]]:
         return self.a
 
     @best_ask.setter
-    def best_ask(self, value: Optional[List[Decimal]]) -> None:
+    def best_ask(self, value: Optional[List[definitions.DecimalModel]]) -> None:
         self.a = value
 
     @property
-    def best_bid(self) -> Optional[List[Decimal]]:
+    def best_bid(self) -> Optional[List[definitions.DecimalModel]]:
         return self.b
 
     @best_bid.setter
-    def best_bid(self, value: Optional[List[Decimal]]) -> None:
+    def best_bid(self, value: Optional[List[definitions.DecimalModel]]) -> None:
         self.b = value

@@ -19,12 +19,10 @@
         "type": "array",
         "items": [
           {
-            "type": "string",
-            "format": "decimal"
+            "$ref": "../definitions.json#/Decimal"
           },
           {
-            "type": "string",
-            "format": "decimal"
+            "$ref": "../definitions.json#/Decimal"
           }
         ],
         "maxItems": 2,
@@ -38,12 +36,10 @@
         "type": "array",
         "items": [
           {
-            "type": "string",
-            "format": "decimal"
+            "$ref": "../definitions.json#/Decimal"
           },
           {
-            "type": "string",
-            "format": "decimal"
+            "$ref": "../definitions.json#/Decimal"
           }
         ],
         "maxItems": 2,

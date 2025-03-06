@@ -11,36 +11,28 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Price(Struct):
-    pass
-
-
-class Size(Struct):
-    pass
-
-
 class Trade(Struct):
-    p: Annotated[Price, Meta(title='price')]
-    q: Annotated[Size, Meta(title='size')]
+    p: Annotated[definitions.DecimalModel, Meta(title='price')]
+    q: Annotated[definitions.DecimalModel, Meta(title='size')]
     s: Annotated[str, Meta(title='symbol')]
     tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
     ts: Annotated[int, Meta(title='timestamp')]
     d: Optional[Annotated[Optional[definitions.Dir], Meta(title='direction')]] = None
 
     @property
-    def price(self) -> Price:
+    def price(self) -> definitions.DecimalModel:
         return self.p
 
     @price.setter
-    def price(self, value: Price) -> None:
+    def price(self, value: definitions.DecimalModel) -> None:
         self.p = value
 
     @property
-    def size(self) -> Size:
+    def size(self) -> definitions.DecimalModel:
         return self.q
 
     @size.setter
-    def size(self, value: Size) -> None:
+    def size(self, value: definitions.DecimalModel) -> None:
         self.q = value
 
     @property
