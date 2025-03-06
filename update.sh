@@ -79,7 +79,9 @@ else
     done
 fi
 
-cp -r templates/grpc_client.py architect_py/grpc_client/__init__.py
+echo -e "# Copied gRPC client from templates folder\n" > architect_py/grpc_client/__init__.py
+cat templates/grpc_client.py >> architect_py/grpc_client/__init__.py
+
 
 
 # ariadne codegen

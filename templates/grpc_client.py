@@ -1,6 +1,6 @@
 import asyncio
 from asyncio.log import logger
-from typing import Annotated, Any, AsyncIterator, Optional, cast
+from typing import Any, AsyncIterator, Optional, cast
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
