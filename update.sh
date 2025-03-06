@@ -34,6 +34,18 @@ if [[ ! -d "$PROCESSED_DIR" ]]; then
     exit 1
 fi
 
+datamodel-codegen \
+    --input "$PROCESSED_DIR" \
+    --output "$GRPC_CLIENT_DIR" \
+    --input-file-type jsonschema \
+    --output-model-type msgspec.Struct \
+    --custom-template-dir templates \
+    --use-title-as-name \
+    --enum-field-as-literal one \
+    --use-field-description \
+    --use-schema-description \
+    --disable-timestamp
+
 post_process_file() {
     local filepath="$1"
     local folder service_name filename out_dir output_file
@@ -50,30 +62,22 @@ post_process_file() {
 export -f post_process_file
 export GRPC_CLIENT_DIR
 
-
 # Capture list of JSON files to process
 json_files=()
 while IFS= read -r file; do
     json_files+=("$file")
 done < <(find "$PROCESSED_DIR" -mindepth 2 -name '*.json')
 
-datamodel-codegen \
-    --input "$PROCESSED_DIR" \
-    --output "$GRPC_CLIENT_DIR" \
-    --input-file-type jsonschema \
-    --output-model-type msgspec.Struct \
-    --custom-template-dir templates \
-    --use-title-as-name \
-    --enum-field-as-literal one \
-    --use-subclass-enum \
-    --use-field-description \
-    --use-schema-description \
-    --disable-timestamp
-
 printf "\nPost processing files\n"
-for file in "${json_files[@]}"; do
-    post_process_file "$file"
-done
+if command -v parallel &> /dev/null; then
+    printf "Running in parallel mode\n"
+    printf "%s\n" "${json_files[@]}" | parallel post_process_file
+else
+    printf "GNU parallel not found. Running sequentially\n"
+    for file in "${json_files[@]}"; do
+        post_process_file "$file"
+    done
+fi
 
 cp -r templates/grpc_client.py architect_py/grpc_client/__init__.py
 

@@ -49,10 +49,7 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 """
 TODO:
-Custom Code Generation for the gRPC client
-    - might fix duplication of types issue
-    - Dir
-Fix the duplication of types issue in the generated code
+- map Dir to OrderDir
 
 The decoder should be reused
 but it needs to be instantiated per response type
