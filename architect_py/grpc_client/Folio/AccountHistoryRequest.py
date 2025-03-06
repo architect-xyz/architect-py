@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Folio.AccountHistoryResponse import AccountHistoryResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Optional
 
@@ -19,9 +17,19 @@ class AccountHistoryRequest(Struct):
     to_exclusive: Optional[str] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(AccountHistoryRequest, AccountHistoryResponse, "/json.architect.Folio/AccountHistory")
+ResponseType = AccountHistoryResponse
+route = "/json.architect.Folio/AccountHistory"
+unary_type = "unary"
 

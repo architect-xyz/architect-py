@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.Liquidation import Liquidation
-from architect_py.grpc_client.request import RequestStream
-
 
 from typing import List, Optional
 
@@ -15,9 +13,19 @@ class SubscribeLiquidationsRequest(Struct):
     symbols: Optional[List[str]] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestStream(SubscribeLiquidationsRequest, Liquidation, "/json.architect.Marketdata/SubscribeLiquidations")
+ResponseType = Liquidation
+route = "/json.architect.Marketdata/SubscribeLiquidations"
+unary_type = "stream"
 

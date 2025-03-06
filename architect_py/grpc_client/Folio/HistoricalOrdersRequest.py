@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Folio.HistoricalOrdersResponse import HistoricalOrdersResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, List, Optional
 
@@ -37,9 +35,19 @@ class HistoricalOrdersRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(HistoricalOrdersRequest, HistoricalOrdersResponse, "/json.architect.Folio/HistoricalOrders")
+ResponseType = HistoricalOrdersResponse
+route = "/json.architect.Folio/HistoricalOrders"
+unary_type = "unary"
 

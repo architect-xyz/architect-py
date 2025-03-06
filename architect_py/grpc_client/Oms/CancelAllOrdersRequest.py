@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Optional
 
@@ -20,9 +18,19 @@ class CancelAllOrdersRequest(Struct):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(CancelAllOrdersRequest, CancelAllOrdersResponse, "/json.architect.Oms/CancelAllOrders")
+ResponseType = CancelAllOrdersResponse
+route = "/json.architect.Oms/CancelAllOrders"
+unary_type = "unary"
 

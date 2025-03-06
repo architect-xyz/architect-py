@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
-from architect_py.grpc_client.request import RequestStream
-
 
 from typing import Optional
 
@@ -23,9 +21,19 @@ class SubscribeOrderflowRequest(Struct):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestStream(SubscribeOrderflowRequest, Orderflow, "/json.architect.Orderflow/SubscribeOrderflow")
+ResponseType = Orderflow
+route = "/json.architect.Orderflow/SubscribeOrderflow"
+unary_type = "stream"
 

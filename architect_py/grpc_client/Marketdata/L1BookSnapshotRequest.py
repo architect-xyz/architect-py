@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_client.request import RequestUnary
-
 
 from msgspec import Struct
 
@@ -13,9 +11,19 @@ class L1BookSnapshotRequest(Struct):
     symbol: str
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(L1BookSnapshotRequest, L1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshot")
+ResponseType = L1BookSnapshot
+route = "/json.architect.Marketdata/L1BookSnapshot"
+unary_type = "unary"
 

@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Symbology.SymbologySnapshot import SymbologySnapshot
-from architect_py.grpc_client.request import RequestUnary
-
 
 from msgspec import Struct
 
@@ -13,9 +11,19 @@ class SymbologyRequest(Struct):
     pass
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(SymbologyRequest, SymbologySnapshot, "/json.architect.Symbology/Symbology")
+ResponseType = SymbologySnapshot
+route = "/json.architect.Symbology/Symbology"
+unary_type = "unary"
 

@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Folio.AccountSummariesResponse import AccountSummariesResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, List, Optional
 
@@ -28,9 +26,19 @@ class AccountSummariesRequest(Struct):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(AccountSummariesRequest, AccountSummariesResponse, "/json.architect.Folio/AccountSummaries")
+ResponseType = AccountSummariesResponse
+route = "/json.architect.Folio/AccountSummaries"
+unary_type = "unary"
 

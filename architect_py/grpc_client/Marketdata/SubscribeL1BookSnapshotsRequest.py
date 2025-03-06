@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_client.request import RequestStream
-
 
 from typing import Annotated, List, Optional
 
@@ -23,9 +21,19 @@ class SubscribeL1BookSnapshotsRequest(Struct):
     """
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestStream(SubscribeL1BookSnapshotsRequest, L1BookSnapshot, "/json.architect.Marketdata/SubscribeL1BookSnapshots")
+ResponseType = L1BookSnapshot
+route = "/json.architect.Marketdata/SubscribeL1BookSnapshots"
+unary_type = "stream"
 

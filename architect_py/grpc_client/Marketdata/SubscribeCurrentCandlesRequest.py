@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.Candle import Candle
-from architect_py.grpc_client.request import RequestStream
-
 
 from typing import Annotated, Optional
 
@@ -35,9 +33,19 @@ class SubscribeCurrentCandlesRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestStream(SubscribeCurrentCandlesRequest, Candle, "/json.architect.Marketdata/SubscribeCurrentCandles")
+ResponseType = Candle
+route = "/json.architect.Marketdata/SubscribeCurrentCandles"
+unary_type = "stream"
 

@@ -2,7 +2,16 @@
 
 import asyncio
 from asyncio.log import logger
-from typing import Any, AsyncIterator, Optional, cast
+from typing import (
+    Any,
+    AsyncIterator,
+    Optional,
+    ParamSpec,
+    Protocol,
+    Type,
+    TypeVar,
+    cast,
+)
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
@@ -37,14 +46,6 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
-from architect_py.grpc_client.request import (
-    P,
-    RequestStream,
-    RequestUnary,
-    TReq,
-    TRes,
-    Tag,
-)
 from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
@@ -52,6 +53,10 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 """
 TODO:
 - map Dir to OrderDir
+- map DecimalModel to Decimal
+
+for decode, don't create your own decoder
+use the union types and tag values
 
 The decoder should be reused
 but it needs to be instantiated per response type
@@ -65,6 +70,22 @@ def enc_hook(obj: Any) -> Any:
 
 
 encoder = msgspec.json.Encoder(enc_hook=enc_hook)
+TReq = TypeVar("TReq", covariant=True)
+TRes = TypeVar("TRes", covariant=True)
+P = ParamSpec("P")
+
+
+class RequestType(Protocol[P, TRes]):
+    @staticmethod
+    def get_response_type() -> Type[TRes]: ...
+
+    @staticmethod
+    def get_route() -> str: ...
+
+    @staticmethod
+    def get_unary_type() -> Any: ...
+
+    def __init__(self, *args: P.args, **kwargs: P.kwargs) -> None: ...
 
 
 class GRPCClient:
@@ -168,13 +189,7 @@ class GRPCClient:
     async def l2_book_snapshot(
         self, venue: Optional[str], symbol: str
     ) -> L2BookSnapshot:
-        # stub = L2BookSnapshotRequest.create_stub(self.channel, encoder)
-        # req = L2BookSnapshotRequest(venue=venue, symbol=symbol)
-        # jwt = await self.refresh_grpc_credentials()
-        # return await stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
-        return await self.request(
-            L2BookSnapshotRequest.get_request_helper(), venue=venue, symbol=symbol
-        )
+        return await self.request(L2BookSnapshotRequest, venue=venue, symbol=symbol)
 
     def initialize_l1_books(
         self, symbols: list[TradableProduct]
@@ -209,7 +224,7 @@ class GRPCClient:
     async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
         symbols_cast = cast(list[str], symbols)
         async for snap in self.subscribe(
-            SubscribeL1BookSnapshotsRequest.get_request_helper(), symbols=symbols_cast
+            SubscribeL1BookSnapshotsRequest, symbols=symbols_cast
         ):
             book = self.l1_books[cast(TradableProduct, snap.symbol)]
             update_struct(book, snap)
@@ -236,7 +251,7 @@ class GRPCClient:
 
     def stream_l1_books(self, symbols: list[str]) -> AsyncIterator[L1BookSnapshot]:
         return self.subscribe(
-            SubscribeL1BookSnapshotsRequest.get_request_helper(),
+            SubscribeL1BookSnapshotsRequest,
             symbols=symbols,
         )
 
@@ -244,9 +259,8 @@ class GRPCClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
         return self.subscribe(
-            SubscribeL2BookUpdatesRequest.get_request_helper(),
-            self.l2_update_decoder,
-            symbol=symbol,
+            SubscribeL2BookUpdatesRequest,
+            symbol,
             venue=venue,
         )
 
@@ -254,8 +268,7 @@ class GRPCClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> None:
         async for up in self.subscribe(
-            SubscribeL2BookUpdatesRequest.get_request_helper(),
-            self.l2_update_decoder,
+            SubscribeL2BookUpdatesRequest,
             symbol=symbol,
             venue=venue,
         ):
@@ -273,35 +286,25 @@ class GRPCClient:
                         f"received update out of order for L2 book {symbol}"
                     )
                 L2_update_from_diff(book, up)
-            else:  # isinstance(up, Snapshot):  # if up.t = "s":
+            elif isinstance(up, Snapshot):  # if up.t = "s":
                 book = self.l2_books[symbol]
                 update_struct(book, up)
 
-    @staticmethod
-    def l2_update_decoder(
-        data: bytes,
-    ) -> L2BookUpdate:
-        tag = msgspec.json.decode(data, type=Tag)
-        if tag.t == "d":
-            return msgspec.json.decode(data, type=Diff)
-        else:  # tag.t == "s"
-            return msgspec.json.decode(data, type=Snapshot)
-
     async def subscribe(
         self,
-        rr: RequestStream[TReq, TRes, P],
-        decode_function: Callable[[bytes], TRes] = lambda x: msgspec.json.decode(
-            x, type=TRes
-        ),
+        request_type: Type[RequestType[P, TRes]],
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> AsyncIterator[TRes]:
+        decode_function: Callable[[bytes], TRes] = lambda buf: msgspec.json.decode(
+            buf, type=request_type.get_response_type()
+        )
         stub = self.channel.unary_stream(
-            rr.route,
+            request_type.get_route(),
             request_serializer=encoder.encode,
             response_deserializer=decode_function,
         )
-        req = rr.request(*args, **kwargs)
+        req = request_type(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()
         call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
         async for update in call:
@@ -309,19 +312,19 @@ class GRPCClient:
 
     async def request(
         self,
-        rr: RequestUnary[TReq, TRes, P],
-        decode_function: Callable[[bytes], TRes] = lambda x: msgspec.json.decode(
-            x, type=TRes
-        ),
+        request_type: Type[RequestType[P, TRes]],
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> TRes:
+        decode_function: Callable[[bytes], TRes] = lambda buf: msgspec.json.decode(
+            buf, type=request_type.get_response_type()
+        )
         stub = self.channel.unary_unary(
-            rr.route,
+            request_type.get_route(),
             request_serializer=encoder.encode,
             response_deserializer=decode_function,
         )
-        req = rr.request(*args, **kwargs)
+        req = request_type(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()
         return await stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
 

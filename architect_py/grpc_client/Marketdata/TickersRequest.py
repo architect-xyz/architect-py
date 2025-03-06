@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.TickersResponse import TickersResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import List, Optional
 
@@ -21,9 +19,19 @@ class TickersRequest(Struct):
     venue: Optional[str] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(TickersRequest, TickersResponse, "/json.architect.Marketdata/Tickers")
+ResponseType = TickersResponse
+route = "/json.architect.Marketdata/Tickers"
+unary_type = "unary"
 

@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Oms.Cancel import Cancel
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, Optional
 
@@ -45,9 +43,19 @@ class CancelOrderRequest(Struct):
         self.xid = value
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(CancelOrderRequest, Cancel, "/json.architect.Oms/CancelOrder")
+ResponseType = Cancel
+route = "/json.architect.Oms/CancelOrder"
+unary_type = "unary"
 

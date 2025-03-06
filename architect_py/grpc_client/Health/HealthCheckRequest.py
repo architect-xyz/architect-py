@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Health.HealthCheckResponse import HealthCheckResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, Optional
 
@@ -27,9 +25,19 @@ class HealthCheckRequest(Struct):
     """
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(HealthCheckRequest, HealthCheckResponse, "/json.architect.Health/Check")
+ResponseType = HealthCheckResponse
+route = "/json.architect.Health/Check"
+unary_type = "unary"
 

@@ -61,6 +61,14 @@ class {{ class_name }}:
 
 {%- if "Request" in class_name %}
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+    
+    @staticmethod
+    def get_route() -> str:
+        return route
+    
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 {%- endif %}

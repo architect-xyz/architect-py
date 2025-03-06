@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import ArrayOfL1BookSnapshot
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import List, Optional
 
@@ -15,9 +13,19 @@ class L1BookSnapshotsRequest(Struct):
     symbols: Optional[List[str]] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(L1BookSnapshotsRequest, ArrayOfL1BookSnapshot, "/json.architect.Marketdata/L1BookSnapshots")
+ResponseType = ArrayOfL1BookSnapshot
+route = "/json.architect.Marketdata/L1BookSnapshots"
+unary_type = "unary"
 

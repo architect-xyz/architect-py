@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Accounts.AccountsResponse import AccountsResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, Optional
 
@@ -27,9 +25,19 @@ class AccountsRequest(Struct):
     """
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(AccountsRequest, AccountsResponse, "/json.architect.Accounts/Accounts")
+ResponseType = AccountsResponse
+route = "/json.architect.Accounts/Accounts"
+unary_type = "unary"
 

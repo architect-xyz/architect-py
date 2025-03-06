@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Symbology.UploadSymbologyResponse import UploadSymbologyResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Dict, Optional
 
@@ -20,9 +18,19 @@ class UploadSymbologyRequest(Struct):
     products: Optional[Dict[str, definitions.ProductInfo]] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(UploadSymbologyRequest, UploadSymbologyResponse, "/json.architect.Symbology/UploadSymbology")
+ResponseType = UploadSymbologyResponse
+route = "/json.architect.Symbology/UploadSymbology"
+unary_type = "unary"
 

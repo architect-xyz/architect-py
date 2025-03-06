@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, Literal, Optional, Union
 
@@ -136,8 +134,16 @@ class OrderflowRequest1(Struct):
         self.x = value
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
 class OrderflowRequest2(Struct):
@@ -263,8 +269,16 @@ class OrderflowRequest2(Struct):
         self.x = value
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
 class OrderflowRequest3(Struct):
@@ -390,8 +404,16 @@ class OrderflowRequest3(Struct):
         self.x = value
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
 class OrderflowRequest4(Struct):
@@ -427,8 +449,16 @@ class OrderflowRequest4(Struct):
         self.xid = value
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
 class OrderflowRequest5(Struct):
@@ -439,8 +469,16 @@ class OrderflowRequest5(Struct):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
 OrderflowRequest = Annotated[
@@ -453,5 +491,7 @@ OrderflowRequest = Annotated[
 ]
 
 
-request_helper = RequestDuplex_Stream(OrderflowRequest, Orderflow, "/json.architect.Orderflow/Orderflow")
+ResponseType = Orderflow
+route = "/json.architect.Orderflow/Orderflow"
+unary_type = "duplex_stream"
 

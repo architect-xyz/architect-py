@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Algo.AlgoOrder_for_TwapAlgo import AlgoOrderForTwapAlgo
-from architect_py.grpc_client.request import RequestUnary
-
 
 from msgspec import Struct
 
@@ -16,9 +14,19 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
     params: definitions.TwapParams
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(ModifyAlgoOrderRequestForTwapAlgo, AlgoOrderForTwapAlgo, "/json.architect.Algo/ModifyTwapAlgoOrder")
+ResponseType = AlgoOrderForTwapAlgo
+route = "/json.architect.Algo/ModifyTwapAlgoOrder"
+unary_type = "unary"
 

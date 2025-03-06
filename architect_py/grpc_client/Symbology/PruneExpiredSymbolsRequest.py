@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Symbology.PruneExpiredSymbolsResponse import PruneExpiredSymbolsResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from typing import Annotated, Optional
 
@@ -25,9 +23,19 @@ class PruneExpiredSymbolsRequest(Struct):
     """
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(PruneExpiredSymbolsRequest, PruneExpiredSymbolsResponse, "/json.architect.Symbology/PruneExpiredSymbols")
+ResponseType = PruneExpiredSymbolsResponse
+route = "/json.architect.Symbology/PruneExpiredSymbols"
+unary_type = "unary"
 

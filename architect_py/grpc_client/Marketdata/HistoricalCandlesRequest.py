@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import HistoricalCandlesResponse
-from architect_py.grpc_client.request import RequestUnary
-
 
 from msgspec import Struct
 
@@ -18,9 +16,19 @@ class HistoricalCandlesRequest(Struct):
     symbol: str
 
     @staticmethod
-    def get_request_helper():
-        return request_helper
+    def get_response_type():
+        return ResponseType
+
+    @staticmethod
+    def get_route() -> str:
+        return route
+
+    @staticmethod
+    def get_unary_type():
+        return unary_type
 
 
-request_helper = RequestUnary(HistoricalCandlesRequest, HistoricalCandlesResponse, "/json.architect.Marketdata/HistoricalCandles")
+ResponseType = HistoricalCandlesResponse
+route = "/json.architect.Marketdata/HistoricalCandles"
+unary_type = "unary"
 
