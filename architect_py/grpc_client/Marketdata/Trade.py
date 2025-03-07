@@ -2,6 +2,7 @@
 #   filename:  Marketdata/Trade.json
 
 from __future__ import annotations
+from architect_py.scalars import OrderDir
 from datetime import datetime, timezone
 
 from decimal import Decimal

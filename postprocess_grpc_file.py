@@ -320,13 +320,13 @@ def fix_lines(file_path: str) -> None:
 
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")
-    
+
     lines = [line.replace("Dir", "OrderDir") for line in lines]
     lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
 
     if file_path.endswith("definitions.py"):
         lines.insert(4, "from architect_py.scalars import OrderDir\n")
-    elif any("definitions.Dir" in line for line in lines):
+    elif any("OrderDir" in line for line in lines):
         lines.insert(4, "from architect_py.scalars import OrderDir\n")
 
     l = "".join(lines)

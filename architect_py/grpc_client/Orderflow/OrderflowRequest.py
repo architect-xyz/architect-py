@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.scalars import OrderDir
 
 from decimal import Decimal
 from typing import Annotated, Literal, Optional, Union

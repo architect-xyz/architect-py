@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 from architect_py.grpc_client.Oms.Order import Order
+from architect_py.scalars import OrderDir
 
 from decimal import Decimal
 from typing import Annotated, Literal, Optional, Union

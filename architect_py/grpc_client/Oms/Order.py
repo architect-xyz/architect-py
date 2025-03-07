@@ -2,6 +2,7 @@
 #   filename:  Oms/Order.json
 
 from __future__ import annotations
+from architect_py.scalars import OrderDir
 
 from decimal import Decimal
 from typing import Annotated, Literal, Optional, Union
