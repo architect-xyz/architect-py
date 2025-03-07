@@ -95,25 +95,25 @@ class AlgoState(str, Enum):
 
 
 class CancelStatus(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_127 = 127
+    Pending = 0
+    Acked = 1
+    Rejected = 2
+    Out = 127
 
 
 class CandleWidth(int, Enum):
-    integer_1 = 1
-    integer_2 = 2
-    integer_4 = 4
-    integer_8 = 8
-    integer_16 = 16
-    integer_32 = 32
+    OneSecond = 1
+    FiveSecond = 2
+    OneMinute = 4
+    FifteenMinute = 8
+    OneHour = 16
+    OneDay = 32
 
 
 class FillKind(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
+    Normal = 0
+    Reversal = 1
+    Correction = 2
 
 
 class HealthStatus(str, Enum):
@@ -200,25 +200,25 @@ class OrderRejectReason(str, Enum):
 
 
 class OrderSource(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_3 = 3
-    integer_4 = 4
-    integer_5 = 5
-    integer_255 = 255
+    API = 0
+    GUI = 1
+    Algo = 2
+    Reconciled = 3
+    CLI = 4
+    Telegram = 5
+    Other = 255
 
 
 class OrderStatus(int, Enum):
-    integer_0 = 0
-    integer_1 = 1
-    integer_2 = 2
-    integer_127 = 127
-    integer_128 = 128
-    integer_129 = 129
-    integer_130 = 130
-    integer_254 = 254
-    integer_255 = 255
+    Pending = 0
+    Open = 1
+    Rejected = 2
+    Out = 127
+    Canceling = 128
+    Canceled = 129
+    ReconciledOut = 130
+    Stale = 254
+    Unknown = 255
 
 
 class SortTickersBy(str, Enum):

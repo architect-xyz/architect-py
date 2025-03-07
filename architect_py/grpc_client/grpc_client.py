@@ -50,8 +50,8 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 """
 TODO:
-- Fix Enums like CandleWidth and CancelStatus (not parsing numbers/titles correctly)
 - rewrite examples
+- fix partial-date-time
 
 
 for decode, don't create your own decoder

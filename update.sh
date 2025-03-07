@@ -89,8 +89,9 @@ else
         post_process_file "$file"
     done
 fi
+python postprocess_grpc_file.py --file_path "$GRPC_CLIENT_DIR/definitions.py" --json_folder "$PROCESSED_DIR"
+black -q "$GRPC_CLIENT_DIR/definitions.py"
 
-post_process_file "definitions.json"
 
 echo "# datamodel-code-generator stomps on the __init__.py file so we import from adjacent file" > architect_py/grpc_client/__init__.py
 echo "from .grpc_client import *" >> architect_py/grpc_client/__init__.py

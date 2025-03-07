@@ -272,6 +272,117 @@ def generate_type_tags(input_file: str) -> None:
         sys.exit(f"Error writing output file: {e}")
 
 
+def fix_enum_member_names(file_path: str, json_folder: str) -> None:
+    """
+    This function reads a Python file and a corresponding JSON file that defines enums.
+    For each enum class in the Python file (i.e. classes that inherit from Enum),
+    it replaces the member names with the names defined in the JSON file under "x-enumNames".
+
+    The JSON file is expected to have the same base name as the Python file.
+    Example JSON structure for a key "CandleWidth":
+
+    {
+      "CandleWidth": {
+        "type": "integer",
+        "enum": [1, 2, 4, 8, 16, 32],
+        "x-enumNames": [
+          "OneSecond",
+          "FiveSecond",
+          "OneMinute",
+          "FifteenMinute",
+          "OneHour",
+          "OneDay"
+        ]
+      },
+      ...
+    }
+    """
+    # Determine the JSON file path based on the Python file name.
+    base_name = os.path.basename(file_path)
+    name, _ = os.path.splitext(base_name)
+    json_fp = os.path.join(json_folder, f"{name}.json")
+
+    # Load JSON configuration.
+    with open(json_fp, "r") as jf:
+        json_data = json.load(jf)
+
+    # Read the Python file lines.
+    with open(file_path, "r") as pf:
+        lines = pf.readlines()
+
+    new_lines = []
+    in_enum_class = False
+    enum_class_indent = ""
+    enum_values = []
+    enum_names = []
+
+    # Regex to find enum class definitions.
+    class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
+
+    # Regex to find member assignments. It assumes the member value is an integer literal.
+    member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
+
+    for line in lines:
+        # Remove any trailing newline for easier manipulation.
+        line_stripped = line.rstrip("\n")
+
+        # Look for an enum class definition.
+        class_match = class_header_re.match(line_stripped)
+        if class_match:
+            indent, class_name = class_match.groups()
+            if class_name in json_data:
+                # Entering an enum class that is defined in the JSON.
+                in_enum_class = True
+                enum_class_indent = indent
+                enum_values = json_data[class_name].get("enum", [])
+                enum_names = json_data[class_name].get("x-enumNames", [])
+            else:
+                in_enum_class = False
+            new_lines.append(line_stripped)
+            continue
+
+        # Process lines inside an enum class.
+        if in_enum_class:
+            member_match = member_re.match(line_stripped)
+            if member_match:
+                member_indent, member_name, member_value, rest = member_match.groups()
+                # Check that the line is still indented relative to the enum class header.
+                if len(member_indent) <= len(enum_class_indent):
+                    # We've reached a dedented line; exit the enum class block.
+                    in_enum_class = False
+                    new_lines.append(line_stripped)
+                    continue
+                try:
+                    value_int = int(member_value)
+                except ValueError:
+                    # If conversion fails, leave the line as is.
+                    new_lines.append(line_stripped)
+                    continue
+                if value_int in enum_values:
+                    index = enum_values.index(value_int)
+                    new_member_name = enum_names[index]
+                    # Construct the new line with the new member name.
+                    new_line = (
+                        f"{member_indent}{new_member_name} = {member_value}{rest}"
+                    )
+                    new_lines.append(new_line)
+                else:
+                    new_lines.append(line_stripped)
+            else:
+                # If the line doesn't match a member assignment, check if it is dedented.
+                if line_stripped.strip() and not line_stripped.startswith(
+                    " " * (len(enum_class_indent) + 1)
+                ):
+                    in_enum_class = False
+                new_lines.append(line_stripped)
+        else:
+            new_lines.append(line_stripped)
+
+    # Write the updated content back to the Python file.
+    with open(file_path, "w") as pf:
+        pf.write("\n".join(new_lines) + "\n")
+
+
 def generate_stub(file_path: str, json_folder: str) -> None:
     base_name = os.path.basename(file_path)
     name, _ = os.path.splitext(base_name)
@@ -288,9 +399,6 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         response_file_root_name: str = j["response_type"]  # no extension
         route = j["route"]
 
-        request_type_name = "".join(
-            capitalize_first_letter(word) for word in name.split("_")
-        )
         response_type_name = "".join(
             capitalize_first_letter(word) for word in response_file_root_name.split("_")
         )
@@ -345,6 +453,8 @@ def main(file_path: str, json_folder: str) -> None:
     if not file_path.endswith("definitions.py"):
         generate_stub(file_path, json_folder)
         generate_type_tags(file_path)
+    else:
+        fix_enum_member_names(file_path, json_folder)
 
 
 if __name__ == "__main__":
