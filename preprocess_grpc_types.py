@@ -116,11 +116,11 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a JSON file.")
     parser.add_argument(
-        "--input_file",
+        "--architect_dir",
         type=str,
         nargs="?",
-        default="~/architect/api/schema.json",
-        help="Path to the JSON file with the gRPC service definitions",
+        default="~/architect",
+        help="Path to architect directory containing the api/schema.json file.",
     )
 
     parser.add_argument(
@@ -131,5 +131,7 @@ if __name__ == "__main__":
         help="Path to output the extracted schema files.",
     )
     args = parser.parse_args()
-    input_file = os.path.expanduser(args.input_file)
+    input_file = os.path.expanduser(args.architect_dir)
+
+    input_file = os.path.join(input_file, "api/schema.json")
     preprocess_json(input_file, args.output_dir)
