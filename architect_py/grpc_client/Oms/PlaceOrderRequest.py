@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class PlaceOrderRequest1(Struct):
+class PlaceOrderRequest1(Struct, tag_field = "k", tag = "LIMIT"):
     d: Annotated[definitions.Dir, Meta(title='dir')]
     q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
@@ -145,7 +145,7 @@ class PlaceOrderRequest1(Struct):
         return unary_type
 
 
-class PlaceOrderRequest2(Struct):
+class PlaceOrderRequest2(Struct, tag_field = "k", tag = "STOP_LOSS_LIMIT"):
     d: Annotated[definitions.Dir, Meta(title='dir')]
     q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
@@ -279,7 +279,7 @@ class PlaceOrderRequest2(Struct):
         return unary_type
 
 
-class PlaceOrderRequest3(Struct):
+class PlaceOrderRequest3(Struct, tag_field = "k", tag = "TAKE_PROFIT_LIMIT"):
     d: Annotated[definitions.Dir, Meta(title='dir')]
     q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
     s: Annotated[str, Meta(title='symbol')]
@@ -414,8 +414,7 @@ class PlaceOrderRequest3(Struct):
 
 
 PlaceOrderRequest = Annotated[
-    Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3],
-    Meta(title='PlaceOrderRequest'),
+    Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3], Meta(title='PlaceOrderRequest'),
 ]
 
 

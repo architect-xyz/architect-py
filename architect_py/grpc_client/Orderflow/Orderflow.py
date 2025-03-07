@@ -1010,6 +1010,5 @@ Orderflow = Annotated[
         Orderflow12,
         Orderflow13,
         Orderflow14,
-    ],
-    Meta(title='Orderflow'),
+    ], Meta(title='Orderflow'),
 ]

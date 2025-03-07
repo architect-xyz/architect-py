@@ -924,6 +924,5 @@ class Dropcopy5(Struct):
 
 
 Dropcopy = Annotated[
-    Union[Union[Dropcopy1, Dropcopy2, Dropcopy3], Dropcopy4, Dropcopy5],
-    Meta(title='Dropcopy'),
+    Union[Union[Dropcopy1, Dropcopy2, Dropcopy3], Dropcopy4, Dropcopy5], Meta(title='Dropcopy'),
 ]
