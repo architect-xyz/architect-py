@@ -34,4 +34,3 @@ class TickersRequest(Struct):
 ResponseType = TickersResponse
 route = "/json.architect.Marketdata/Tickers"
 unary_type = "unary"
-

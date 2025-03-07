@@ -28,4 +28,3 @@ class AccountSummaryRequest(Struct):
 ResponseType = AccountSummary
 route = "/json.architect.Folio/AccountSummary"
 unary_type = "unary"
-

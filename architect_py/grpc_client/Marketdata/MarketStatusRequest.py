@@ -29,4 +29,3 @@ class MarketStatusRequest(Struct):
 ResponseType = MarketStatus
 route = "/json.architect.Marketdata/MarketStatus"
 unary_type = "unary"
-

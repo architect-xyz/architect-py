@@ -11,16 +11,16 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class PlaceOrderRequest1(Struct, tag_field = "k", tag = "LIMIT"):
-    d: Annotated[definitions.Dir, Meta(title='dir')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    k: Literal['LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    po: Annotated[bool, Meta(title='post_only')]
+class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
+    d: Annotated[definitions.Dir, Meta(title="dir")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    po: Annotated[bool, Meta(title="post_only")]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
     id: Optional[
         Annotated[
@@ -33,16 +33,16 @@ class PlaceOrderRequest1(Struct, tag_field = "k", tag = "LIMIT"):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
     def dir(self) -> definitions.Dir:
@@ -145,16 +145,16 @@ class PlaceOrderRequest1(Struct, tag_field = "k", tag = "LIMIT"):
         return unary_type
 
 
-class PlaceOrderRequest2(Struct, tag_field = "k", tag = "STOP_LOSS_LIMIT"):
-    d: Annotated[definitions.Dir, Meta(title='dir')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
+    d: Annotated[definitions.Dir, Meta(title="dir")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["STOP_LOSS_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
     id: Optional[
         Annotated[
@@ -167,16 +167,16 @@ class PlaceOrderRequest2(Struct, tag_field = "k", tag = "STOP_LOSS_LIMIT"):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
     def dir(self) -> definitions.Dir:
@@ -279,16 +279,16 @@ class PlaceOrderRequest2(Struct, tag_field = "k", tag = "STOP_LOSS_LIMIT"):
         return unary_type
 
 
-class PlaceOrderRequest3(Struct, tag_field = "k", tag = "TAKE_PROFIT_LIMIT"):
-    d: Annotated[definitions.Dir, Meta(title='dir')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+class PlaceOrderRequest3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
+    d: Annotated[definitions.Dir, Meta(title="dir")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["TAKE_PROFIT_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
     id: Optional[
         Annotated[
@@ -301,16 +301,16 @@ class PlaceOrderRequest3(Struct, tag_field = "k", tag = "TAKE_PROFIT_LIMIT"):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
     def dir(self) -> definitions.Dir:
@@ -414,11 +414,11 @@ class PlaceOrderRequest3(Struct, tag_field = "k", tag = "TAKE_PROFIT_LIMIT"):
 
 
 PlaceOrderRequest = Annotated[
-    Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3], Meta(title='PlaceOrderRequest'),
+    Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3],
+    Meta(title="PlaceOrderRequest"),
 ]
 
 
 ResponseType = Order
 route = "/json.architect.Oms/PlaceOrder"
 unary_type = "unary"
-

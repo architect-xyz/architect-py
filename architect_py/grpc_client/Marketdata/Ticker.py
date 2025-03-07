@@ -12,78 +12,78 @@ from .. import definitions
 
 
 class Ticker(Struct):
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
-    ve: Annotated[str, Meta(title='venue')]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
+    ve: Annotated[str, Meta(title="venue")]
     ap: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='ask_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="ask_price")]
     ] = None
     as_: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='ask_size')]
-    ] = field(name='as', default=None)
+        Annotated[Optional[definitions.DecimalModel], Meta(title="ask_size")]
+    ] = field(name="as", default=None)
     bp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='bid_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="bid_price")]
     ] = None
     bs: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='bid_size')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="bid_size")]
     ] = None
     dividend: Optional[definitions.DecimalModel] = None
     dividend_yield: Optional[definitions.DecimalModel] = None
     eps_adj: Optional[definitions.DecimalModel] = None
     fr: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='funding_rate')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="funding_rate")]
     ] = None
-    ft: Optional[Annotated[Optional[str], Meta(title='next_funding_time')]] = None
+    ft: Optional[Annotated[Optional[str], Meta(title="next_funding_time")]] = None
     h: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='high_24h')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="high_24h")]
     ] = None
     ip: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='index_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="index_price")]
     ] = None
     l: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='low_24h')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="low_24h")]
     ] = None
     market_cap: Optional[definitions.DecimalModel] = None
     mp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='mark_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="mark_price")]
     ] = None
     o: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='open_24h')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="open_24h")]
     ] = None
     oi: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='open_interest')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="open_interest")]
     ] = None
     p: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='last_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="last_price")]
     ] = None
     price_to_earnings: Optional[definitions.DecimalModel] = None
     q: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='last_size')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="last_size")]
     ] = None
     shares_outstanding_weighted_adj: Optional[definitions.DecimalModel] = None
     sp: Optional[
         Annotated[
-            Optional[definitions.DecimalModel], Meta(title='last_settlement_price')
+            Optional[definitions.DecimalModel], Meta(title="last_settlement_price")
         ]
     ] = None
     v: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='volume_24h')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="volume_24h")]
     ] = None
     vm: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='volume_30d')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="volume_30d")]
     ] = None
     xh: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='session_high')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="session_high")]
     ] = None
     xl: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='session_low')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="session_low")]
     ] = None
     xo: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='session_open')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="session_open")]
     ] = None
     xv: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='session_volume')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="session_volume")]
     ] = None
 
     @property

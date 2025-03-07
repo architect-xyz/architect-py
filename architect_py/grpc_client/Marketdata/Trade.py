@@ -12,12 +12,12 @@ from .. import definitions
 
 
 class Trade(Struct):
-    p: Annotated[definitions.DecimalModel, Meta(title='price')]
-    q: Annotated[definitions.DecimalModel, Meta(title='size')]
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
-    d: Optional[Annotated[Optional[definitions.Dir], Meta(title='direction')]] = None
+    p: Annotated[definitions.DecimalModel, Meta(title="price")]
+    q: Annotated[definitions.DecimalModel, Meta(title="size")]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
+    d: Optional[Annotated[Optional[definitions.Dir], Meta(title="direction")]] = None
 
     @property
     def price(self) -> definitions.DecimalModel:

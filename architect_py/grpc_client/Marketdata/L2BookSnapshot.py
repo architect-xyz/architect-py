@@ -21,12 +21,12 @@ class L2BookSnapshot(Struct):
     Unique sequence id and number.
     """
 
-    a: Annotated[List[Ask], Meta(title='asks')]
-    b: Annotated[List[Bid], Meta(title='bids')]
-    sid: Annotated[int, Meta(ge=0, title='sequence_id')]
-    sn: Annotated[int, Meta(ge=0, title='sequence_number')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
+    a: Annotated[List[Ask], Meta(title="asks")]
+    b: Annotated[List[Bid], Meta(title="bids")]
+    sid: Annotated[int, Meta(ge=0, title="sequence_id")]
+    sn: Annotated[int, Meta(ge=0, title="sequence_number")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
 
     @property
     def asks(self) -> List[Ask]:

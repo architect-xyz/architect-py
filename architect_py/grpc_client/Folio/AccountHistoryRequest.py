@@ -32,4 +32,3 @@ class AccountHistoryRequest(Struct):
 ResponseType = AccountHistoryResponse
 route = "/json.architect.Folio/AccountHistory"
 unary_type = "unary"
-

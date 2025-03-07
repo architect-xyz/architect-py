@@ -29,4 +29,3 @@ class TickerRequest(Struct):
 ResponseType = Ticker
 route = "/json.architect.Marketdata/Ticker"
 unary_type = "unary"
-

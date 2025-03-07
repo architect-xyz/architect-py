@@ -18,7 +18,7 @@ class AccountSummary(Struct):
     cash_excess: Optional[
         Annotated[
             Optional[definitions.DecimalModel],
-            Meta(description='Cash available to withdraw.'),
+            Meta(description="Cash available to withdraw."),
         ]
     ] = None
     """
@@ -28,7 +28,7 @@ class AccountSummary(Struct):
     position_margin: Optional[
         Annotated[
             Optional[definitions.DecimalModel],
-            Meta(description='Margin requirement based on current positions only.'),
+            Meta(description="Margin requirement based on current positions only."),
         ]
     ] = None
     """
@@ -40,7 +40,7 @@ class AccountSummary(Struct):
         Annotated[
             Optional[definitions.DecimalModel],
             Meta(
-                description='Margin requirement calculated for worst-case based on open positions and working orders.'
+                description="Margin requirement calculated for worst-case based on open positions and working orders."
             ),
         ]
     ] = None

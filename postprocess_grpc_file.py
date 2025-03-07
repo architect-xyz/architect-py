@@ -141,8 +141,9 @@ def flatten_union(union_node: cst.Subscript) -> cst.BaseExpression:
             ):
                 flattened_inner = flatten_union(value)
                 # flattened_inner.slice is a sequence of SubscriptElements.
-                for inner_elem in flattened_inner.slice:
-                    new_elements.append(inner_elem)
+                if isinstance(flattened_inner, cst.Subscript):
+                    for inner_elem in flattened_inner.slice:
+                        new_elements.append(inner_elem)
             else:
                 new_elements.append(elem)
         else:
@@ -163,47 +164,36 @@ class TagTransformer(cst.CSTTransformer):
         self, original_node: cst.Assign, updated_node: cst.Assign
     ) -> cst.Assign:
         """
-        Process assignments that define type aliases. If the assignment’s value is
-        an Annotated[...] whose first argument is a Union (possibly nested), flatten that Union.
+        Process type alias assignments. If the assignment’s value is an Annotated[...] whose
+        first argument is a Union (possibly nested), flatten that Union.
         """
-        # We only want assignments that look like a type alias:
-        #    Identifier = Annotated[..., Meta(...)]
-        if not (
-            len(updated_node.targets) == 1
-            and isinstance(updated_node.targets[0].target, cst.Name)
-        ):
+        # Only process assignments that look like a type alias:
+        #   Identifier = Annotated[..., Meta(...)]
+        if not (len(updated_node.targets) == 1 and isinstance(updated_node.targets[0].target, cst.Name)):
             return updated_node
 
         # Check if the value is a Subscript (i.e. a call to Annotated).
         if isinstance(updated_node.value, cst.Subscript):
-            # Check if the base is Annotated.
             base = updated_node.value.value
-            if (isinstance(base, cst.Name) and base.value == "Annotated") or (
-                isinstance(base, cst.Attribute) and base.attr.value == "Annotated"
-            ):
-                # The Annotated[...] should have at least one argument.
+            if ((isinstance(base, cst.Name) and base.value == "Annotated") or
+                (isinstance(base, cst.Attribute) and base.attr.value == "Annotated")):
                 if updated_node.value.slice:
+                    # The first element should be the type expression.
                     first_elem = updated_node.value.slice[0].slice
                     if isinstance(first_elem, cst.Index):
                         type_expr = first_elem.value
-                        # If type_expr is a Union, attempt to flatten it.
+                        # Check if the type expression is a Union that might be nested.
                         if isinstance(type_expr, cst.Subscript) and (
-                            (
-                                isinstance(type_expr.value, cst.Name)
-                                and type_expr.value.value == "Union"
-                            )
-                            or (
-                                isinstance(type_expr.value, cst.Attribute)
-                                and type_expr.value.attr.value == "Union"
-                            )
+                            (isinstance(type_expr.value, cst.Name) and type_expr.value.value == "Union") or
+                            (isinstance(type_expr.value, cst.Attribute) and type_expr.value.attr.value == "Union")
                         ):
+                            print("Original Union:", type_expr, file=sys.stderr)
                             flattened = flatten_union(type_expr)
-                            new_index = cst.Index(value=type_expr)
+                            print("Flattened Union:", flattened, file=sys.stderr)
+                            new_index = cst.Index(value=flattened)
                             new_slice = list(updated_node.value.slice)
                             new_slice[0] = cst.SubscriptElement(slice=new_index)
-                            new_subscript = updated_node.value.with_changes(
-                                slice=new_slice
-                            )
+                            new_subscript = updated_node.value.with_changes(slice=new_slice)
                             return updated_node.with_changes(value=new_subscript)
         return updated_node
 

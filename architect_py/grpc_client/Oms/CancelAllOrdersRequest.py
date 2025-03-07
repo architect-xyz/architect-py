@@ -33,4 +33,3 @@ class CancelAllOrdersRequest(Struct):
 ResponseType = CancelAllOrdersResponse
 route = "/json.architect.Oms/CancelAllOrders"
 unary_type = "unary"
-

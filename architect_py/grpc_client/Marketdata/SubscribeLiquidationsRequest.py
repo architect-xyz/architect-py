@@ -28,4 +28,3 @@ class SubscribeLiquidationsRequest(Struct):
 ResponseType = Liquidation
 route = "/json.architect.Marketdata/SubscribeLiquidations"
 unary_type = "stream"
-

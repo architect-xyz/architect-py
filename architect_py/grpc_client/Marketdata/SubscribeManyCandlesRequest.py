@@ -16,7 +16,7 @@ class SubscribeManyCandlesRequest(Struct):
     symbols: Optional[
         Annotated[
             List[str],
-            Meta(description='If None, subscribe from all symbols on the feed'),
+            Meta(description="If None, subscribe from all symbols on the feed"),
         ]
     ] = None
     """
@@ -40,4 +40,3 @@ class SubscribeManyCandlesRequest(Struct):
 ResponseType = Candle
 route = "/json.architect.Marketdata/SubscribeManyCandles"
 unary_type = "stream"
-

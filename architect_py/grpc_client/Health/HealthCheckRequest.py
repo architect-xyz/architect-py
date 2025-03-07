@@ -40,4 +40,3 @@ class HealthCheckRequest(Struct):
 ResponseType = HealthCheckResponse
 route = "/json.architect.Health/Check"
 unary_type = "unary"
-

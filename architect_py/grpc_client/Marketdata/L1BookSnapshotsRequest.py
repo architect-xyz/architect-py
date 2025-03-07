@@ -2,7 +2,9 @@
 #   filename:  Marketdata/L1BookSnapshotsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import ArrayOfL1BookSnapshot
+from architect_py.grpc_client.Marketdata.Array_of_L1BookSnapshot import (
+    ArrayOfL1BookSnapshot,
+)
 
 from typing import List, Optional
 
@@ -28,4 +30,3 @@ class L1BookSnapshotsRequest(Struct):
 ResponseType = ArrayOfL1BookSnapshot
 route = "/json.architect.Marketdata/L1BookSnapshots"
 unary_type = "unary"
-

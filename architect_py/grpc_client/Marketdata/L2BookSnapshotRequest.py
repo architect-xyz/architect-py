@@ -29,4 +29,3 @@ class L2BookSnapshotRequest(Struct):
 ResponseType = L2BookSnapshot
 route = "/json.architect.Marketdata/L2BookSnapshot"
 unary_type = "unary"
-

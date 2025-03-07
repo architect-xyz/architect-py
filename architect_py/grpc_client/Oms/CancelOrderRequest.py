@@ -12,13 +12,13 @@ from .. import definitions
 
 
 class CancelOrderRequest(Struct):
-    id: Annotated[definitions.OrderId, Meta(title='order_id')]
+    id: Annotated[definitions.OrderId, Meta(title="order_id")]
     xid: Optional[
         Annotated[
             Optional[str],
             Meta(
                 description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
-                title='cancel_id',
+                title="cancel_id",
             ),
         ]
     ] = None
@@ -58,4 +58,3 @@ class CancelOrderRequest(Struct):
 ResponseType = Cancel
 route = "/json.architect.Oms/CancelOrder"
 unary_type = "unary"
-

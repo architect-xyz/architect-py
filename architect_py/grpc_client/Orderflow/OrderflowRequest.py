@@ -11,17 +11,17 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class OrderflowRequest1(Struct, tag_field = "t", tag = "p"):
-    d: Annotated[definitions.Dir, Meta(title='dir')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    t: Literal['p']
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    k: Literal['LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    po: Annotated[bool, Meta(title='post_only')]
+class OrderflowRequest1(Struct, tag_field="t", tag="p"):
+    d: Annotated[definitions.Dir, Meta(title="dir")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    t: Literal["p"]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    po: Annotated[bool, Meta(title="post_only")]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
     id: Optional[
         Annotated[
@@ -34,16 +34,16 @@ class OrderflowRequest1(Struct, tag_field = "t", tag = "p"):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
     def dir(self) -> definitions.Dir:
@@ -146,17 +146,17 @@ class OrderflowRequest1(Struct, tag_field = "t", tag = "p"):
         return unary_type
 
 
-class OrderflowRequest2(Struct, tag_field = "t", tag = "p"):
-    d: Annotated[definitions.Dir, Meta(title='dir')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    t: Literal['p']
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+class OrderflowRequest2(Struct, tag_field="t", tag="p"):
+    d: Annotated[definitions.Dir, Meta(title="dir")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    t: Literal["p"]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["STOP_LOSS_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
     id: Optional[
         Annotated[
@@ -169,16 +169,16 @@ class OrderflowRequest2(Struct, tag_field = "t", tag = "p"):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
     def dir(self) -> definitions.Dir:
@@ -281,17 +281,17 @@ class OrderflowRequest2(Struct, tag_field = "t", tag = "p"):
         return unary_type
 
 
-class OrderflowRequest3(Struct, tag_field = "t", tag = "p"):
-    d: Annotated[definitions.Dir, Meta(title='dir')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    t: Literal['p']
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
+class OrderflowRequest3(Struct, tag_field="t", tag="p"):
+    d: Annotated[definitions.Dir, Meta(title="dir")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    t: Literal["p"]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["TAKE_PROFIT_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
     id: Optional[
         Annotated[
@@ -304,16 +304,16 @@ class OrderflowRequest3(Struct, tag_field = "t", tag = "p"):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
+        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
     def dir(self) -> definitions.Dir:
@@ -416,15 +416,15 @@ class OrderflowRequest3(Struct, tag_field = "t", tag = "p"):
         return unary_type
 
 
-class OrderflowRequest4(Struct, tag_field = "t", tag = "x"):
-    id: Annotated[definitions.OrderId, Meta(title='order_id')]
-    t: Literal['x']
+class OrderflowRequest4(Struct, tag_field="t", tag="x"):
+    id: Annotated[definitions.OrderId, Meta(title="order_id")]
+    t: Literal["x"]
     xid: Optional[
         Annotated[
             Optional[str],
             Meta(
                 description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
-                title='cancel_id',
+                title="cancel_id",
             ),
         ]
     ] = None
@@ -461,9 +461,9 @@ class OrderflowRequest4(Struct, tag_field = "t", tag = "x"):
         return unary_type
 
 
-class OrderflowRequest5(Struct, tag_field = "t", tag = "xo"):
+class OrderflowRequest5(Struct, tag_field="t", tag="xo"):
     id: str
-    t: Literal['xo']
+    t: Literal["xo"]
     account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
@@ -483,14 +483,16 @@ class OrderflowRequest5(Struct, tag_field = "t", tag = "xo"):
 
 OrderflowRequest = Annotated[
     Union[
-        Union[OrderflowRequest1, OrderflowRequest2, OrderflowRequest3],
+        OrderflowRequest1,
+        OrderflowRequest2,
+        OrderflowRequest3,
         OrderflowRequest4,
         OrderflowRequest5,
-    ], Meta(title='OrderflowRequest'),
+    ],
+    Meta(title="OrderflowRequest"),
 ]
 
 
 ResponseType = Orderflow
 route = "/json.architect.Orderflow/Orderflow"
 unary_type = "duplex_stream"
-

@@ -11,33 +11,33 @@ from .. import definitions
 
 
 class Dropcopy1(Struct):
-    a: Annotated[str, Meta(title='account')]
-    d: Annotated[definitions.Dir, Meta(title='dir')]
+    a: Annotated[str, Meta(title="account")]
+    d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[definitions.OrderSource, Meta(title='source')]
-    t: Literal['o']
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
-    ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[definitions.UserId, Meta(title='trader')]
-    ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
-    k: Literal['LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    po: Annotated[bool, Meta(title='post_only')]
-    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title="status")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    src: Annotated[definitions.OrderSource, Meta(title="source")]
+    t: Literal["o"]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    u: Annotated[definitions.UserId, Meta(title="trader")]
+    ve: Annotated[str, Meta(title="execution_venue")]
+    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
+    k: Literal["LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    po: Annotated[bool, Meta(title="post_only")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
     ] = None
 
     @property
@@ -194,33 +194,33 @@ class Dropcopy1(Struct):
 
 
 class Dropcopy2(Struct):
-    a: Annotated[str, Meta(title='account')]
-    d: Annotated[definitions.Dir, Meta(title='dir')]
+    a: Annotated[str, Meta(title="account")]
+    d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[definitions.OrderSource, Meta(title='source')]
-    t: Literal['o']
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
-    ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[definitions.UserId, Meta(title='trader')]
-    ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
-    k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
-    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title="status")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    src: Annotated[definitions.OrderSource, Meta(title="source")]
+    t: Literal["o"]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    u: Annotated[definitions.UserId, Meta(title="trader")]
+    ve: Annotated[str, Meta(title="execution_venue")]
+    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
+    k: Literal["STOP_LOSS_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
     ] = None
 
     @property
@@ -377,33 +377,33 @@ class Dropcopy2(Struct):
 
 
 class Dropcopy3(Struct):
-    a: Annotated[str, Meta(title='account')]
-    d: Annotated[definitions.Dir, Meta(title='dir')]
+    a: Annotated[str, Meta(title="account")]
+    d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[definitions.OrderSource, Meta(title='source')]
-    t: Literal['o']
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
-    ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[definitions.UserId, Meta(title='trader')]
-    ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
-    k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
-    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title="status")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    src: Annotated[definitions.OrderSource, Meta(title="source")]
+    t: Literal["o"]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    u: Annotated[definitions.UserId, Meta(title="trader")]
+    ve: Annotated[str, Meta(title="execution_venue")]
+    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
+    k: Literal["TAKE_PROFIT_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
     ] = None
 
     @property
@@ -560,54 +560,54 @@ class Dropcopy3(Struct):
 
 
 class Dropcopy4(Struct):
-    d: Annotated[definitions.Dir, Meta(title='direction')]
-    id: Annotated[str, Meta(title='fill_id')]
-    k: Annotated[definitions.FillKind, Meta(title='fill_kind')]
-    p: Annotated[definitions.DecimalModel, Meta(title='price')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    t: Annotated[int, Meta(title='is_taker')]
-    tn: Annotated[int, Meta(ge=0, title='trade_time_ns')]
+    d: Annotated[definitions.Dir, Meta(title="direction")]
+    id: Annotated[str, Meta(title="fill_id")]
+    k: Annotated[definitions.FillKind, Meta(title="fill_kind")]
+    p: Annotated[definitions.DecimalModel, Meta(title="price")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    t: Annotated[int, Meta(title="is_taker")]
+    tn: Annotated[int, Meta(ge=0, title="trade_time_ns")]
     ts: Annotated[
         int,
-        Meta(description='When the cpty claims the trade happened', title='trade_time'),
+        Meta(description="When the cpty claims the trade happened", title="trade_time"),
     ]
     """
     When the cpty claims the trade happened
     """
-    x: Annotated[str, Meta(title='execution_venue')]
-    a: Optional[Annotated[Optional[str], Meta(title='account')]] = None
-    atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None
+    x: Annotated[str, Meta(title="execution_venue")]
+    a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
+    atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
     ats: Optional[
         Annotated[
             Optional[int],
             Meta(
-                description='When Architect received the fill, if realtime',
-                title='recv_time',
+                description="When Architect received the fill, if realtime",
+                title="recv_time",
             ),
         ]
     ] = None
     """
     When Architect received the fill, if realtime
     """
-    f: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='fee')]] = None
+    f: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="fee")]] = None
     fu: Optional[
         Annotated[
             Optional[str],
             Meta(
-                description='Fee currency, if different from the price currency',
-                title='fee_currency',
+                description="Fee currency, if different from the price currency",
+                title="fee_currency",
             ),
         ]
     ] = None
     """
     Fee currency, if different from the price currency
     """
-    oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='order_id')]] = (
+    oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="order_id")]] = (
         None
     )
-    u: Optional[Annotated[Optional[definitions.UserId], Meta(title='trader')]] = None
-    xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None
+    u: Optional[Annotated[Optional[definitions.UserId], Meta(title="trader")]] = None
+    xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
     @property
     def direction(self) -> definitions.Dir:
@@ -759,32 +759,32 @@ class Dropcopy5(Struct):
     Fills which we received but couldn't parse fully, return details best effort
     """
 
-    id: Annotated[str, Meta(title='fill_id')]
-    t: Literal['af']
-    x: Annotated[str, Meta(title='execution_venue')]
-    a: Optional[Annotated[Optional[str], Meta(title='account')]] = None
-    atn: Optional[Annotated[Optional[int], Meta(ge=0, title='recv_time_ns')]] = None
-    ats: Optional[Annotated[Optional[int], Meta(title='recv_time')]] = None
-    d: Optional[Annotated[Optional[definitions.Dir], Meta(title='direction')]] = None
-    f: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='fee')]] = None
-    fu: Optional[Annotated[Optional[str], Meta(title='fee_currency')]] = None
-    k: Optional[Annotated[Optional[definitions.FillKind], Meta(title='fill_kind')]] = (
+    id: Annotated[str, Meta(title="fill_id")]
+    t: Literal["af"]
+    x: Annotated[str, Meta(title="execution_venue")]
+    a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
+    atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
+    ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
+    d: Optional[Annotated[Optional[definitions.Dir], Meta(title="direction")]] = None
+    f: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="fee")]] = None
+    fu: Optional[Annotated[Optional[str], Meta(title="fee_currency")]] = None
+    k: Optional[Annotated[Optional[definitions.FillKind], Meta(title="fill_kind")]] = (
         None
     )
-    oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='order_id')]] = (
+    oid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="order_id")]] = (
         None
     )
-    p: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='price')]] = (
+    p: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="price")]] = (
         None
     )
     q: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='quantity')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="quantity")]
     ] = None
-    s: Optional[Annotated[Optional[str], Meta(title='symbol')]] = None
-    tn: Optional[Annotated[Optional[int], Meta(ge=0, title='trade_time_ns')]] = None
-    ts: Optional[Annotated[Optional[int], Meta(title='trade_time')]] = None
-    u: Optional[Annotated[Optional[definitions.UserId], Meta(title='trader')]] = None
-    xid: Optional[Annotated[Optional[str], Meta(title='exchange_fill_id')]] = None
+    s: Optional[Annotated[Optional[str], Meta(title="symbol")]] = None
+    tn: Optional[Annotated[Optional[int], Meta(ge=0, title="trade_time_ns")]] = None
+    ts: Optional[Annotated[Optional[int], Meta(title="trade_time")]] = None
+    u: Optional[Annotated[Optional[definitions.UserId], Meta(title="trader")]] = None
+    xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
     @property
     def fill_id(self) -> str:
@@ -924,5 +924,6 @@ class Dropcopy5(Struct):
 
 
 Dropcopy = Annotated[
-    Union[Union[Dropcopy1, Dropcopy2, Dropcopy3], Dropcopy4, Dropcopy5], Meta(title='Dropcopy'),
+    Union[Dropcopy1, Dropcopy2, Dropcopy3, Dropcopy4, Dropcopy5],
+    Meta(title="Dropcopy"),
 ]

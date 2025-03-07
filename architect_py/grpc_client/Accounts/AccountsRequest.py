@@ -16,7 +16,7 @@ class AccountsRequest(Struct):
         Annotated[
             Optional[definitions.TraderIdOrEmail],
             Meta(
-                description='Request accounts from the perspective of this trader; if not specified, defaults to the caller user.'
+                description="Request accounts from the perspective of this trader; if not specified, defaults to the caller user."
             ),
         ]
     ] = None
@@ -40,4 +40,3 @@ class AccountsRequest(Struct):
 ResponseType = AccountsResponse
 route = "/json.architect.Accounts/Accounts"
 unary_type = "unary"
-

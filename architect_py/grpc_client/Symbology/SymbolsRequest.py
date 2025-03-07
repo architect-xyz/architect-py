@@ -28,4 +28,3 @@ class SymbolsRequest(Struct):
 ResponseType = SymbolsResponse
 route = "/json.architect.Symbology/Symbols"
 unary_type = "unary"
-

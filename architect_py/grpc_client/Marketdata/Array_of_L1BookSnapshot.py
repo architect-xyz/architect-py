@@ -10,5 +10,5 @@ from msgspec import Meta
 from .. import definitions
 
 ArrayOfL1BookSnapshot = Annotated[
-    List[definitions.L1BookSnapshot], Meta(title='Array_of_L1BookSnapshot')
+    List[definitions.L1BookSnapshot], Meta(title="Array_of_L1BookSnapshot")
 ]

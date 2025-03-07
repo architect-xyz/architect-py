@@ -11,32 +11,32 @@ from .. import definitions
 
 
 class Order1(Struct):
-    a: Annotated[str, Meta(title='account')]
-    d: Annotated[definitions.Dir, Meta(title='dir')]
+    a: Annotated[str, Meta(title="account")]
+    d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[definitions.OrderSource, Meta(title='source')]
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
-    ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[definitions.UserId, Meta(title='trader')]
-    ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
-    k: Literal['LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    po: Annotated[bool, Meta(title='post_only')]
-    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title="status")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    src: Annotated[definitions.OrderSource, Meta(title="source")]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    u: Annotated[definitions.UserId, Meta(title="trader")]
+    ve: Annotated[str, Meta(title="execution_venue")]
+    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
+    k: Literal["LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    po: Annotated[bool, Meta(title="post_only")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
     ] = None
 
     @property
@@ -193,32 +193,32 @@ class Order1(Struct):
 
 
 class Order2(Struct):
-    a: Annotated[str, Meta(title='account')]
-    d: Annotated[definitions.Dir, Meta(title='dir')]
+    a: Annotated[str, Meta(title="account")]
+    d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[definitions.OrderSource, Meta(title='source')]
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
-    ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[definitions.UserId, Meta(title='trader')]
-    ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
-    k: Literal['STOP_LOSS_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
-    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title="status")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    src: Annotated[definitions.OrderSource, Meta(title="source")]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    u: Annotated[definitions.UserId, Meta(title="trader")]
+    ve: Annotated[str, Meta(title="execution_venue")]
+    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
+    k: Literal["STOP_LOSS_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
     ] = None
 
     @property
@@ -375,32 +375,32 @@ class Order2(Struct):
 
 
 class Order3(Struct):
-    a: Annotated[str, Meta(title='account')]
-    d: Annotated[definitions.Dir, Meta(title='dir')]
+    a: Annotated[str, Meta(title="account")]
+    d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title='status')]
-    q: Annotated[definitions.DecimalModel, Meta(title='quantity')]
-    s: Annotated[str, Meta(title='symbol')]
-    src: Annotated[definitions.OrderSource, Meta(title='source')]
-    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
-    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
-    ts: Annotated[int, Meta(title='recv_time')]
-    u: Annotated[definitions.UserId, Meta(title='trader')]
-    ve: Annotated[str, Meta(title='execution_venue')]
-    xq: Annotated[definitions.DecimalModel, Meta(title='filled_quantity')]
-    k: Literal['TAKE_PROFIT_LIMIT']
-    p: Annotated[definitions.DecimalModel, Meta(title='limit_price')]
-    tp: Annotated[definitions.DecimalModel, Meta(title='trigger_price')]
-    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title="status")]
+    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    s: Annotated[str, Meta(title="symbol")]
+    src: Annotated[definitions.OrderSource, Meta(title="source")]
+    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    u: Annotated[definitions.UserId, Meta(title="trader")]
+    ve: Annotated[str, Meta(title="execution_venue")]
+    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
+    k: Literal["TAKE_PROFIT_LIMIT"]
+    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='average_fill_price')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
     ] = None
 
     @property
@@ -556,4 +556,4 @@ class Order3(Struct):
         self.xp = value
 
 
-Order = Annotated[Union[Order1, Order2, Order3], Meta(title='Order')]
+Order = Annotated[Union[Order1, Order2, Order3], Meta(title="Order")]

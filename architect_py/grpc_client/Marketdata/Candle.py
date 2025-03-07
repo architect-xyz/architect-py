@@ -12,57 +12,57 @@ from .. import definitions
 
 
 class Candle(Struct):
-    av: Annotated[definitions.DecimalModel, Meta(title='sell_volume')]
-    bv: Annotated[definitions.DecimalModel, Meta(title='buy_volume')]
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
-    v: Annotated[definitions.DecimalModel, Meta(title='volume')]
-    w: Annotated[definitions.CandleWidth, Meta(title='width')]
+    av: Annotated[definitions.DecimalModel, Meta(title="sell_volume")]
+    bv: Annotated[definitions.DecimalModel, Meta(title="buy_volume")]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
+    v: Annotated[definitions.DecimalModel, Meta(title="volume")]
+    w: Annotated[definitions.CandleWidth, Meta(title="width")]
     ac: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='ask_close')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="ask_close")]
     ] = None
     ah: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='ask_high')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="ask_high")]
     ] = None
     al: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='ask_low')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="ask_low")]
     ] = None
     ao: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='ask_open')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="ask_open")]
     ] = None
     bc: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='bid_close')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="bid_close")]
     ] = None
     bh: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='bid_high')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="bid_high")]
     ] = None
     bl: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='bid_low')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="bid_low")]
     ] = None
     bo: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='bid_open')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="bid_open")]
     ] = None
-    c: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='close')]] = (
+    c: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="close")]] = (
         None
     )
-    h: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='high')]] = (
+    h: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="high")]] = (
         None
     )
-    l: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='low')]] = None
+    l: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="low")]] = None
     mc: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='mid_close')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="mid_close")]
     ] = None
     mh: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='mid_high')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="mid_high")]
     ] = None
     ml: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='mid_low')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="mid_low")]
     ] = None
     mo: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title='mid_open')]
+        Annotated[Optional[definitions.DecimalModel], Meta(title="mid_open")]
     ] = None
-    o: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title='open')]] = (
+    o: Optional[Annotated[Optional[definitions.DecimalModel], Meta(title="open")]] = (
         None
     )
 

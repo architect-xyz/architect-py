@@ -35,4 +35,3 @@ class OpenOrdersRequest(Struct):
 ResponseType = OpenOrdersResponse
 route = "/json.architect.Oms/OpenOrders"
 unary_type = "unary"
-

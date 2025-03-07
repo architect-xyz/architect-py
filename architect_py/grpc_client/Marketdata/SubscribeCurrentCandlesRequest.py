@@ -22,7 +22,7 @@ class SubscribeCurrentCandlesRequest(Struct):
         Annotated[
             Optional[int],
             Meta(
-                description='If None, send the current candle on every trade or candle tick. Otherwise, send a candle every `tick_period_ms`.',
+                description="If None, send the current candle on every trade or candle tick. Otherwise, send a candle every `tick_period_ms`.",
                 ge=0,
             ),
         ]
@@ -48,4 +48,3 @@ class SubscribeCurrentCandlesRequest(Struct):
 ResponseType = Candle
 route = "/json.architect.Marketdata/SubscribeCurrentCandles"
 unary_type = "stream"
-

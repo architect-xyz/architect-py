@@ -58,6 +58,7 @@ post_process_file() {
     output_file="${out_dir}/${filename}.py"
 
     python postprocess_grpc_file.py --file_path "$output_file" --json_folder "$folder"
+    black "$output_file" -q
 }
 
 export -f post_process_file

@@ -2,7 +2,9 @@
 #   filename:  Folio/AccountSummariesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Folio.AccountSummariesResponse import AccountSummariesResponse
+from architect_py.grpc_client.Folio.AccountSummariesResponse import (
+    AccountSummariesResponse,
+)
 
 from typing import Annotated, List, Optional
 
@@ -16,7 +18,7 @@ class AccountSummariesRequest(Struct):
         Annotated[
             List[definitions.AccountIdOrName],
             Meta(
-                description='If trader and accounts are both None, return all accounts for the user'
+                description="If trader and accounts are both None, return all accounts for the user"
             ),
         ]
     ] = None
@@ -41,4 +43,3 @@ class AccountSummariesRequest(Struct):
 ResponseType = AccountSummariesResponse
 route = "/json.architect.Folio/AccountSummaries"
 unary_type = "unary"
-

@@ -2,7 +2,9 @@
 #   filename:  Marketdata/HistoricalCandlesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import HistoricalCandlesResponse
+from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
+    HistoricalCandlesResponse,
+)
 
 from msgspec import Struct
 
@@ -31,4 +33,3 @@ class HistoricalCandlesRequest(Struct):
 ResponseType = HistoricalCandlesResponse
 route = "/json.architect.Marketdata/HistoricalCandles"
 unary_type = "unary"
-

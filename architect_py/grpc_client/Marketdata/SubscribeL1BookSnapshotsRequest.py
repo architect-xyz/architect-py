@@ -13,7 +13,7 @@ class SubscribeL1BookSnapshotsRequest(Struct):
     symbols: Optional[
         Annotated[
             List[str],
-            Meta(description='If None, subscribe from all symbols on the feed'),
+            Meta(description="If None, subscribe from all symbols on the feed"),
         ]
     ] = None
     """
@@ -36,4 +36,3 @@ class SubscribeL1BookSnapshotsRequest(Struct):
 ResponseType = L1BookSnapshot
 route = "/json.architect.Marketdata/SubscribeL1BookSnapshots"
 unary_type = "stream"
-

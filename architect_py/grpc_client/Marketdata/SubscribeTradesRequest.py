@@ -13,7 +13,7 @@ class SubscribeTradesRequest(Struct):
     symbol: Optional[
         Annotated[
             Optional[str],
-            Meta(description='If None, subscribe from all symbols on the feed'),
+            Meta(description="If None, subscribe from all symbols on the feed"),
         ]
     ] = None
     """
@@ -37,4 +37,3 @@ class SubscribeTradesRequest(Struct):
 ResponseType = Trade
 route = "/json.architect.Marketdata/SubscribeTrades"
 unary_type = "stream"
-

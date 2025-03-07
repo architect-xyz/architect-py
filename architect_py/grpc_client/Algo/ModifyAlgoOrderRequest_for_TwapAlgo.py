@@ -29,4 +29,3 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
 ResponseType = AlgoOrderForTwapAlgo
 route = "/json.architect.Algo/ModifyTwapAlgoOrder"
 unary_type = "unary"
-

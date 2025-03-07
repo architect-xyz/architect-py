@@ -35,4 +35,3 @@ class DropcopyRequest(Struct):
 ResponseType = Dropcopy
 route = "/json.architect.Orderflow/Dropcopy"
 unary_type = "stream"
-

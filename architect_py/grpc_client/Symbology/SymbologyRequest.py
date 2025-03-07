@@ -26,4 +26,3 @@ class SymbologyRequest(Struct):
 ResponseType = SymbologySnapshot
 route = "/json.architect.Symbology/Symbology"
 unary_type = "unary"
-

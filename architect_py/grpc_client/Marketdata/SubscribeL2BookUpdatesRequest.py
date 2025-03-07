@@ -29,4 +29,3 @@ class SubscribeL2BookUpdatesRequest(Struct):
 ResponseType = L2BookUpdate
 route = "/json.architect.Marketdata/SubscribeL2BookUpdates"
 unary_type = "stream"
-

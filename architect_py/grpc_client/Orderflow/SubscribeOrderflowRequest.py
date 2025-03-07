@@ -36,4 +36,3 @@ class SubscribeOrderflowRequest(Struct):
 ResponseType = Orderflow
 route = "/json.architect.Orderflow/SubscribeOrderflow"
 unary_type = "stream"
-

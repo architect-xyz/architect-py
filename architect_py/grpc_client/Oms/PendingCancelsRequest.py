@@ -34,4 +34,3 @@ class PendingCancelsRequest(Struct):
 ResponseType = PendingCancelsResponse
 route = "/json.architect.Oms/PendingCancels"
 unary_type = "unary"
-
