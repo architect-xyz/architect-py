@@ -11,7 +11,7 @@ from msgspec import Meta, Struct, field
 from .. import definitions
 
 
-class TickerUpdate1(Struct):
+class TickerUpdate1(Struct, tag_field="t", tag="snapshot"):
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["snapshot"]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
@@ -296,7 +296,7 @@ class TickerUpdate1(Struct):
         self.xv = value
 
 
-class TickerUpdate2(Struct):
+class TickerUpdate2(Struct, tag_field="t", tag="diff"):
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["diff"]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]

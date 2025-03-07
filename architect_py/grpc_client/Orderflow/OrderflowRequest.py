@@ -483,9 +483,7 @@ class OrderflowRequest5(Struct, tag_field="t", tag="xo"):
 
 OrderflowRequest = Annotated[
     Union[
-        OrderflowRequest1,
-        OrderflowRequest2,
-        OrderflowRequest3,
+        Union[OrderflowRequest1, OrderflowRequest2, OrderflowRequest3],
         OrderflowRequest4,
         OrderflowRequest5,
     ],

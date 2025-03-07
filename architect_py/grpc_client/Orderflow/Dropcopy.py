@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Dropcopy1(Struct):
+class Dropcopy1(Struct, tag_field="t", tag="o"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -193,7 +193,7 @@ class Dropcopy1(Struct):
         self.xp = value
 
 
-class Dropcopy2(Struct):
+class Dropcopy2(Struct, tag_field="t", tag="o"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -376,7 +376,7 @@ class Dropcopy2(Struct):
         self.xp = value
 
 
-class Dropcopy3(Struct):
+class Dropcopy3(Struct, tag_field="t", tag="o"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -754,7 +754,7 @@ class Dropcopy4(Struct):
         self.xid = value
 
 
-class Dropcopy5(Struct):
+class Dropcopy5(Struct, tag_field="t", tag="af"):
     """
     Fills which we received but couldn't parse fully, return details best effort
     """
@@ -924,6 +924,6 @@ class Dropcopy5(Struct):
 
 
 Dropcopy = Annotated[
-    Union[Dropcopy1, Dropcopy2, Dropcopy3, Dropcopy4, Dropcopy5],
+    Union[Union[Dropcopy1, Dropcopy2, Dropcopy3], Dropcopy4, Dropcopy5],
     Meta(title="Dropcopy"),
 ]

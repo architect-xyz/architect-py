@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Orderflow1(Struct):
+class Orderflow1(Struct, tag_field="t", tag="w"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -193,7 +193,7 @@ class Orderflow1(Struct):
         self.xp = value
 
 
-class Orderflow2(Struct):
+class Orderflow2(Struct, tag_field="t", tag="w"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -376,7 +376,7 @@ class Orderflow2(Struct):
         self.xp = value
 
 
-class Orderflow3(Struct):
+class Orderflow3(Struct, tag_field="t", tag="w"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -559,7 +559,7 @@ class Orderflow3(Struct):
         self.xp = value
 
 
-class Orderflow4(Struct):
+class Orderflow4(Struct, tag_field="t", tag="a"):
     id: Annotated[definitions.OrderId, Meta(title="order_id")]
     t: Literal["a"]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
@@ -581,29 +581,29 @@ class Orderflow4(Struct):
         self.eid = value
 
 
-class Orderflow5(Struct):
+class Orderflow5(Struct, tag_field="t", tag="r"):
     id: definitions.OrderId
     r: definitions.OrderRejectReason
     t: Literal["r"]
     rm: Optional[str] = None
 
 
-class Orderflow6(Struct):
+class Orderflow6(Struct, tag_field="t", tag="o"):
     id: definitions.OrderId
     t: Literal["o"]
 
 
-class Orderflow7(Struct):
+class Orderflow7(Struct, tag_field="t", tag="ox"):
     id: definitions.OrderId
     t: Literal["ox"]
 
 
-class Orderflow8(Struct):
+class Orderflow8(Struct, tag_field="t", tag="z"):
     id: definitions.OrderId
     t: Literal["z"]
 
 
-class Orderflow9(Struct):
+class Orderflow9(Struct, tag_field="t", tag="xc"):
     id: definitions.OrderId
     o: definitions.CancelStatus
     t: Literal["xc"]
@@ -613,20 +613,20 @@ class Orderflow9(Struct):
     r: Optional[str] = None
 
 
-class Orderflow10(Struct):
+class Orderflow10(Struct, tag_field="t", tag="xr"):
     id: definitions.OrderId
     t: Literal["xr"]
     xid: str
     rm: Optional[str] = None
 
 
-class Orderflow11(Struct):
+class Orderflow11(Struct, tag_field="t", tag="xa"):
     id: definitions.OrderId
     t: Literal["xa"]
     xid: Optional[str] = None
 
 
-class Orderflow12(Struct):
+class Orderflow12(Struct, tag_field="t", tag="xx"):
     id: definitions.OrderId
     t: Literal["xx"]
     xid: Optional[str] = None
@@ -827,7 +827,7 @@ class Orderflow13(Struct):
         self.xid = value
 
 
-class Orderflow14(Struct):
+class Orderflow14(Struct, tag_field="t", tag="af"):
     """
     Fills which we received but couldn't parse fully, return details best effort
     """
@@ -998,9 +998,7 @@ class Orderflow14(Struct):
 
 Orderflow = Annotated[
     Union[
-        Orderflow1,
-        Orderflow2,
-        Orderflow3,
+        Union[Orderflow1, Orderflow2, Orderflow3],
         Orderflow4,
         Orderflow5,
         Orderflow6,

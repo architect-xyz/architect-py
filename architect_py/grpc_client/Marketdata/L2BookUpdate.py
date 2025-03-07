@@ -16,7 +16,7 @@ Ask = List[definitions.DecimalModel]
 Bid = List[definitions.DecimalModel]
 
 
-class Snapshot(Struct):
+class Snapshot(Struct, tag_field="t", tag="s"):
     """
     Unique sequence id and number.
     """
@@ -86,7 +86,7 @@ class Snapshot(Struct):
         return datetime.fromtimestamp(self.ts)
 
 
-class Diff(Struct):
+class Diff(Struct, tag_field="t", tag="d"):
     """
     Unique sequence id and number.
     """

@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Order1(Struct):
+class Order1(Struct, tag_field="k", tag="LIMIT"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -192,7 +192,7 @@ class Order1(Struct):
         self.xp = value
 
 
-class Order2(Struct):
+class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -374,7 +374,7 @@ class Order2(Struct):
         self.xp = value
 
 
-class Order3(Struct):
+class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId

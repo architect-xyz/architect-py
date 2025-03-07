@@ -1,45 +1,26 @@
 import argparse
 import ast
-from typing import Optional, Union
+from typing import Optional, Set, Union
 import libcst as cst
 import os
 import json
-import os
 import sys
-
-
-def main(file_path: str, json_folder: str) -> None:
-    fix_lines(file_path)
-    if "definitions.py" not in file_path:
-        generate_stub(file_path, json_folder)
-        generate_type_tags(file_path)
 
 
 def capitalize_first_letter(word: str) -> str:
     return word[0].upper() + word[1:]
 
 
-def generate_type_tags(input_file: str) -> None:
-    with open(input_file, "r", encoding="utf-8") as f:
-        source = f.read()
-
-    module = cst.parse_module(source)
-
-    target_class = os.path.splitext(os.path.basename(input_file))[0]
-    transformer = TagTransformer(target_class)
-    modified_module = module.visit(transformer)
-
-    try:
-        # Generate the modified source code while preserving formatting and comments.
-        new_source = modified_module.code
-    except Exception as e:
-        sys.exit(f"Error generating modified source: {e}")
-
-    try:
-        with open(input_file, "w", encoding="utf-8") as f:
-            f.write(new_source)
-    except Exception as e:
-        sys.exit(f"Error writing output file: {e}")
+def is_literal_node(node: cst.BaseExpression) -> bool:
+    """
+    Check if the given node represents 'Literal', either as a bare name
+    or as an attribute (e.g. typing.Literal).
+    """
+    if isinstance(node, cst.Name) and node.value == "Literal":
+        return True
+    if isinstance(node, cst.Attribute) and node.attr.value == "Literal":
+        return True
+    return False
 
 
 def extract_literal_value(
@@ -47,24 +28,14 @@ def extract_literal_value(
 ) -> Optional[str]:
     """
     Attempt to extract the literal value from an annotation if it represents
-    either a Literal (e.g. Literal['VALUE']) or an Annotated wrapping a Literal.
-
-    Args:
-        annotation: A libcst expression representing a type annotation.
-                    If this is an Annotation node, it will be unwrapped.
-
-    Returns:
-        The literal value as a string if found, otherwise None.
+    either a Literal[...] or an Annotated[...] wrapping a Literal[...].
     """
     if isinstance(annotation, cst.Annotation):
         annotation = annotation.annotation
 
-    # Check for a direct Literal[...] case.
     if isinstance(annotation, cst.Subscript):
-        if (
-            isinstance(annotation.value, cst.Name)
-            and annotation.value.value == "Literal"
-        ):
+        # Direct Literal[...] case.
+        if is_literal_node(annotation.value):
             if annotation.slice and isinstance(
                 annotation.slice[0], cst.SubscriptElement
             ):
@@ -78,7 +49,7 @@ def extract_literal_value(
                         except Exception as e:
                             print(f"Error evaluating literal: {e}", file=sys.stderr)
                             return None
-        # Check for an Annotated[...] wrapping a Literal[...] case.
+        # Annotated[...] wrapping a Literal[...] case.
         if (
             isinstance(annotation.value, cst.Name)
             and annotation.value.value == "Annotated"
@@ -87,10 +58,8 @@ def extract_literal_value(
                 first_elem = annotation.slice[0].slice
                 if isinstance(first_elem, cst.Index):
                     inner = first_elem.value
-                    if (
-                        isinstance(inner, cst.Subscript)
-                        and isinstance(inner.value, cst.Name)
-                        and inner.value.value == "Literal"
+                    if isinstance(inner, cst.Subscript) and is_literal_node(
+                        inner.value
                     ):
                         if inner.slice and isinstance(
                             inner.slice[0], cst.SubscriptElement
@@ -111,10 +80,10 @@ def extract_literal_value(
     return None
 
 
-def flatten_union(union_node: cst.Subscript) -> cst.BaseExpression:
+def flatten_union(union_node: cst.Subscript) -> cst.Subscript:
     """
     Given a Subscript node representing a Union (e.g. Union[...]),
-    recursively flatten any nested Unions and return a new node.
+    recursively flatten any nested Unions and return a new Subscript node.
     """
     # Confirm that this node represents a Union.
     if not (
@@ -128,10 +97,9 @@ def flatten_union(union_node: cst.Subscript) -> cst.BaseExpression:
 
     new_elements = []
     for elem in union_node.slice:
-        # Each elem is a SubscriptElement; its slice should be an Index.
         if isinstance(elem.slice, cst.Index):
             value = elem.slice.value
-            # If the value is itself a Union, flatten it.
+            # If the value itself is a Union, flatten it.
             if isinstance(value, cst.Subscript) and (
                 (isinstance(value.value, cst.Name) and value.value.value == "Union")
                 or (
@@ -140,10 +108,8 @@ def flatten_union(union_node: cst.Subscript) -> cst.BaseExpression:
                 )
             ):
                 flattened_inner = flatten_union(value)
-                # flattened_inner.slice is a sequence of SubscriptElements.
-                if isinstance(flattened_inner, cst.Subscript):
-                    for inner_elem in flattened_inner.slice:
-                        new_elements.append(inner_elem)
+                for inner_elem in flattened_inner.slice:
+                    new_elements.append(inner_elem)
             else:
                 new_elements.append(elem)
         else:
@@ -151,61 +117,75 @@ def flatten_union(union_node: cst.Subscript) -> cst.BaseExpression:
     return union_node.with_changes(slice=new_elements)
 
 
-class TagTransformer(cst.CSTTransformer):
-    """
-    A CST transformer that finds the class with a name matching the target (derived from the file name)
-    and appends keyword arguments (tag_field and tag) to the class definition.
-    """
+class UnionMemberCollector(cst.CSTVisitor):
+    def __init__(self, target_alias: str) -> None:
+        self.target_alias = target_alias
+        self.union_members: Set[str] = set()
 
-    def __init__(self, target_class: str) -> None:
-        self.target_class = target_class
-
-    def leave_Assign(
-        self, original_node: cst.Assign, updated_node: cst.Assign
-    ) -> cst.Assign:
-        """
-        Process type alias assignments. If the assignment’s value is an Annotated[...] whose
-        first argument is a Union (possibly nested), flatten that Union.
-        """
-        # Only process assignments that look like a type alias:
-        #   Identifier = Annotated[..., Meta(...)]
-        if not (len(updated_node.targets) == 1 and isinstance(updated_node.targets[0].target, cst.Name)):
-            return updated_node
-
-        # Check if the value is a Subscript (i.e. a call to Annotated).
-        if isinstance(updated_node.value, cst.Subscript):
-            base = updated_node.value.value
-            if ((isinstance(base, cst.Name) and base.value == "Annotated") or
-                (isinstance(base, cst.Attribute) and base.attr.value == "Annotated")):
-                if updated_node.value.slice:
-                    # The first element should be the type expression.
-                    first_elem = updated_node.value.slice[0].slice
+    def visit_Assign(self, node: cst.Assign) -> None:
+        # Process assignments similar to your leave_Assign,
+        # but just record the union members without modifying nodes.
+        if not (
+            len(node.targets) == 1 and isinstance(node.targets[0].target, cst.Name)
+        ):
+            return
+        target_name = node.targets[0].target.value
+        if target_name != self.target_alias:
+            return
+        if isinstance(node.value, cst.Subscript):
+            base = node.value.value
+            if (isinstance(base, cst.Name) and base.value == "Annotated") or (
+                isinstance(base, cst.Attribute) and base.attr.value == "Annotated"
+            ):
+                if node.value.slice:
+                    first_elem = node.value.slice[0].slice
                     if isinstance(first_elem, cst.Index):
                         type_expr = first_elem.value
-                        # Check if the type expression is a Union that might be nested.
                         if isinstance(type_expr, cst.Subscript) and (
-                            (isinstance(type_expr.value, cst.Name) and type_expr.value.value == "Union") or
-                            (isinstance(type_expr.value, cst.Attribute) and type_expr.value.attr.value == "Union")
+                            (
+                                isinstance(type_expr.value, cst.Name)
+                                and type_expr.value.value == "Union"
+                            )
+                            or (
+                                isinstance(type_expr.value, cst.Attribute)
+                                and type_expr.value.attr.value == "Union"
+                            )
                         ):
-                            print("Original Union:", type_expr, file=sys.stderr)
                             flattened = flatten_union(type_expr)
-                            print("Flattened Union:", flattened, file=sys.stderr)
-                            new_index = cst.Index(value=flattened)
-                            new_slice = list(updated_node.value.slice)
-                            new_slice[0] = cst.SubscriptElement(slice=new_index)
-                            new_subscript = updated_node.value.with_changes(slice=new_slice)
-                            return updated_node.with_changes(value=new_subscript)
-        return updated_node
+                            for elem in flattened.slice:
+                                if isinstance(elem.slice, cst.Index):
+                                    constituent = elem.slice.value
+                                    if isinstance(constituent, cst.Name):
+                                        self.union_members.add(constituent.value)
+
+
+class TagTransformer(cst.CSTTransformer):
+    """
+    A CST transformer that:
+      1. Searches for a type alias assignment whose target name equals the file's base name.
+         If found and if its value is an Annotated[...] whose first argument is a (possibly nested) Union,
+         it flattens that union and records the names of its constituent types.
+      2. Later, for each class definition, if the class name is in the recorded union members,
+         it scans the class for the first annotated field with a literal and appends keyword arguments
+         (tag_field and tag) to the class definition.
+    """
+
+    def __init__(self, target_alias: str, union_members: Set[str]) -> None:
+        self.target_alias = target_alias
+        self.union_members = union_members
 
     def leave_ClassDef(
         self, original_node: cst.ClassDef, updated_node: cst.ClassDef
     ) -> cst.ClassDef:
-        # Only process classes whose names contain "Request".
-        if "Request" in original_node.name.value:
+        """
+        If the class name is in the recorded union members, then find its first annotated field
+        whose annotation is a Literal (or Annotated[...] with a Literal) and add tag configuration.
+        """
+        if original_node.name.value in self.union_members:
             tag_field = None
             tag_value = None
 
-            # Annotated assignments are often wrapped in SimpleStatementLine nodes.
+            # Search for an annotated assignment within the class body.
             for stmt in original_node.body.body:
                 if isinstance(stmt, cst.SimpleStatementLine):
                     for small_stmt in stmt.body:
@@ -214,6 +194,10 @@ class TagTransformer(cst.CSTTransformer):
                         ):
                             field_name = small_stmt.target.value
                             literal = extract_literal_value(small_stmt.annotation)
+                            print(
+                                f"In class {original_node.name.value}: found field {field_name} with literal value: {literal}",
+                                file=sys.stderr,
+                            )
                             if literal is not None:
                                 tag_field = field_name
                                 tag_value = literal
@@ -222,7 +206,6 @@ class TagTransformer(cst.CSTTransformer):
                         break
 
             if tag_field is not None and tag_value is not None:
-                # Append new keyword arguments to the class definition.
                 new_keywords = list(updated_node.keywords) + [
                     cst.Arg(
                         keyword=cst.Name("tag_field"),
@@ -233,8 +216,39 @@ class TagTransformer(cst.CSTTransformer):
                         value=cst.SimpleString(f'"{tag_value}"'),
                     ),
                 ]
+                print(
+                    f"Adding tag_field='{tag_field}' and tag='{tag_value}' to class {original_node.name.value}",
+                    file=sys.stderr,
+                )
                 updated_node = updated_node.with_changes(keywords=new_keywords)
         return updated_node
+
+
+def generate_type_tags(input_file: str) -> None:
+    with open(input_file, "r", encoding="utf-8") as f:
+        source = f.read()
+
+    module = cst.parse_module(source)
+    target_alias = os.path.splitext(os.path.basename(input_file))[0]
+
+    # First pass: collect union members.
+    collector = UnionMemberCollector(target_alias)
+    module.visit(collector)
+
+    # Second pass: use a transformer that relies on collector.union_members.
+    transformer = TagTransformer(target_alias, union_members=collector.union_members)
+    modified_module = module.visit(transformer)
+
+    try:
+        new_source = modified_module.code
+    except Exception as e:
+        sys.exit(f"Error generating modified source: {e}")
+
+    try:
+        with open(input_file, "w", encoding="utf-8") as f:
+            f.write(new_source)
+    except Exception as e:
+        sys.exit(f"Error writing output file: {e}")
 
 
 def generate_stub(file_path: str, json_folder: str) -> None:
@@ -253,7 +267,6 @@ def generate_stub(file_path: str, json_folder: str) -> None:
         response_file_root_name: str = j["response_type"]  # no extension
         route = j["route"]
 
-        # the split("_") is for files like Array_of_L1BookSnapshot.json
         request_type_name = "".join(
             capitalize_first_letter(word) for word in name.split("_")
         )
@@ -272,10 +285,7 @@ unary_type = "{unary_type}"
 
         lines.insert(
             4,
-            (
-                f"from architect_py.grpc_client.{service}.{response_file_root_name} import {response_type_name}\n"
-                # f"{request_import}\n"
-            ),
+            f"from architect_py.grpc_client.{service}.{response_file_root_name} import {response_type_name}\n",
         )
         lines.append(f"\n{request_str}\n")
 
@@ -287,17 +297,18 @@ def fix_lines(file_path: str) -> None:
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    # lines = [
-    #     line
-    #     for line in lines
-    #     if line != "Decimal1 = Decimal\n" and line != "DecimalModel = Decimal\n"
-    # ]
-
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.writelines(lines)
+
+
+def main(file_path: str, json_folder: str) -> None:
+    fix_lines(file_path)
+    if "definitions.py" not in file_path:
+        generate_stub(file_path, json_folder)
+        generate_type_tags(file_path)
 
 
 if __name__ == "__main__":
