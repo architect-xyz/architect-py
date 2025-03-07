@@ -25,7 +25,6 @@ class Snapshot(Struct, tag_field="t", tag="s"):
     b: Annotated[List[Bid], Meta(title="bids")]
     sid: Annotated[int, Meta(ge=0, title="sequence_id")]
     sn: Annotated[int, Meta(ge=0, title="sequence_number")]
-    t: Literal["s"]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
 
@@ -113,7 +112,6 @@ class Diff(Struct, tag_field="t", tag="d"):
     """
     sid: Annotated[int, Meta(ge=0, title="sequence_id")]
     sn: Annotated[int, Meta(ge=0, title="sequence_number")]
-    t: Literal["d"]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
 

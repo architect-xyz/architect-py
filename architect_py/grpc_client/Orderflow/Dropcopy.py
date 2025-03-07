@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Dropcopy1(Struct, tag_field="t", tag="o"):
+class Dropcopy1(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -193,7 +193,7 @@ class Dropcopy1(Struct, tag_field="t", tag="o"):
         self.xp = value
 
 
-class Dropcopy2(Struct, tag_field="t", tag="o"):
+class Dropcopy2(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -376,7 +376,7 @@ class Dropcopy2(Struct, tag_field="t", tag="o"):
         self.xp = value
 
 
-class Dropcopy3(Struct, tag_field="t", tag="o"):
+class Dropcopy3(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -760,7 +760,6 @@ class Dropcopy5(Struct, tag_field="t", tag="af"):
     """
 
     id: Annotated[str, Meta(title="fill_id")]
-    t: Literal["af"]
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None

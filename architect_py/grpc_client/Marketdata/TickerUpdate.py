@@ -13,7 +13,6 @@ from .. import definitions
 
 class TickerUpdate1(Struct, tag_field="t", tag="snapshot"):
     s: Annotated[str, Meta(title="symbol")]
-    t: Literal["snapshot"]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
     ve: Annotated[str, Meta(title="venue")]
@@ -298,7 +297,6 @@ class TickerUpdate1(Struct, tag_field="t", tag="snapshot"):
 
 class TickerUpdate2(Struct, tag_field="t", tag="diff"):
     s: Annotated[str, Meta(title="symbol")]
-    t: Literal["diff"]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
     ve: Annotated[str, Meta(title="venue")]

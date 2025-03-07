@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class OrderflowRequest1(Struct, tag_field="t", tag="p"):
+class OrderflowRequest1(Struct):
     d: Annotated[definitions.Dir, Meta(title="dir")]
     q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
@@ -146,7 +146,7 @@ class OrderflowRequest1(Struct, tag_field="t", tag="p"):
         return unary_type
 
 
-class OrderflowRequest2(Struct, tag_field="t", tag="p"):
+class OrderflowRequest2(Struct):
     d: Annotated[definitions.Dir, Meta(title="dir")]
     q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
@@ -281,7 +281,7 @@ class OrderflowRequest2(Struct, tag_field="t", tag="p"):
         return unary_type
 
 
-class OrderflowRequest3(Struct, tag_field="t", tag="p"):
+class OrderflowRequest3(Struct):
     d: Annotated[definitions.Dir, Meta(title="dir")]
     q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
@@ -418,7 +418,6 @@ class OrderflowRequest3(Struct, tag_field="t", tag="p"):
 
 class OrderflowRequest4(Struct, tag_field="t", tag="x"):
     id: Annotated[definitions.OrderId, Meta(title="order_id")]
-    t: Literal["x"]
     xid: Optional[
         Annotated[
             Optional[str],
@@ -463,7 +462,6 @@ class OrderflowRequest4(Struct, tag_field="t", tag="x"):
 
 class OrderflowRequest5(Struct, tag_field="t", tag="xo"):
     id: str
-    t: Literal["xo"]
     account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None
     trader: Optional[definitions.TraderIdOrEmail] = None

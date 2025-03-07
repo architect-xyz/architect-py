@@ -4,11 +4,14 @@
 set -euo pipefail
 
 # Check schema
-if ! cmp -s schema.graphql ../architect/gql/schema.graphql; then
+
+ARCHITECT_FOLDER_PATH="../architect"
+
+if ! cmp -s schema.graphql $ARCHITECT_FOLDER_PATH/gql/schema.graphql; then
     printf "Schema has changed. Updating schema (y/n)?"
     read -r response
     if [[ "$response" =~ ^[Yy]$ ]]; then
-        cp ../architect/gql/schema.graphql schema.graphql
+        cp $ARCHITECT_FOLDER_PATH/gql/schema.graphql schema.graphql
         printf "Schema updated.\n"
     else
         printf "Update skipped.\n"
@@ -22,7 +25,7 @@ fi
 GRPC_CLIENT_DIR="architect_py/grpc_client"
 PROCESSED_DIR="processed_schemas"
 
-printf "\nRegenerating gRPC models"
+printf "\nRegenerating gRPC models\n"
 rm -rf "${PROCESSED_DIR:?}"/*
 find "$GRPC_CLIENT_DIR" -mindepth 1 -type d -exec rm -rf {} +
 python preprocess_grpc_types.py --output_dir "$PROCESSED_DIR"

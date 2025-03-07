@@ -97,7 +97,6 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                 resp_path = os.path.join(output_sub_dir, resp_filename)
                 with open(resp_path, "w") as out_file:
                     json.dump(resp_schema, out_file, indent=2)
-                print(f"Extracted response schema to: {resp_path}")
 
     with open(os.path.join(output_dir, "definitions.json"), "w") as out_file:
         definitions = fix_dict(definitions, False)

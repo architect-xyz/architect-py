@@ -24,7 +24,6 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
-    k: Literal["LIMIT"]
     p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
@@ -206,7 +205,6 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
-    k: Literal["STOP_LOSS_LIMIT"]
     p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
     tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
@@ -388,7 +386,6 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
-    k: Literal["TAKE_PROFIT_LIMIT"]
     p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
     tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None

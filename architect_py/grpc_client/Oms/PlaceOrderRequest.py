@@ -16,7 +16,6 @@ class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
     q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    k: Literal["LIMIT"]
     p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     a: Optional[
@@ -150,7 +149,6 @@ class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    k: Literal["STOP_LOSS_LIMIT"]
     p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
     tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     a: Optional[
@@ -284,7 +282,6 @@ class PlaceOrderRequest3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    k: Literal["TAKE_PROFIT_LIMIT"]
     p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
     tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
     a: Optional[

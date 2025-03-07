@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Orderflow1(Struct, tag_field="t", tag="w"):
+class Orderflow1(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -193,7 +193,7 @@ class Orderflow1(Struct, tag_field="t", tag="w"):
         self.xp = value
 
 
-class Orderflow2(Struct, tag_field="t", tag="w"):
+class Orderflow2(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -376,7 +376,7 @@ class Orderflow2(Struct, tag_field="t", tag="w"):
         self.xp = value
 
 
-class Orderflow3(Struct, tag_field="t", tag="w"):
+class Orderflow3(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
@@ -561,7 +561,6 @@ class Orderflow3(Struct, tag_field="t", tag="w"):
 
 class Orderflow4(Struct, tag_field="t", tag="a"):
     id: Annotated[definitions.OrderId, Meta(title="order_id")]
-    t: Literal["a"]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
 
     @property
@@ -584,29 +583,24 @@ class Orderflow4(Struct, tag_field="t", tag="a"):
 class Orderflow5(Struct, tag_field="t", tag="r"):
     id: definitions.OrderId
     r: definitions.OrderRejectReason
-    t: Literal["r"]
     rm: Optional[str] = None
 
 
 class Orderflow6(Struct, tag_field="t", tag="o"):
     id: definitions.OrderId
-    t: Literal["o"]
 
 
 class Orderflow7(Struct, tag_field="t", tag="ox"):
     id: definitions.OrderId
-    t: Literal["ox"]
 
 
 class Orderflow8(Struct, tag_field="t", tag="z"):
     id: definitions.OrderId
-    t: Literal["z"]
 
 
 class Orderflow9(Struct, tag_field="t", tag="xc"):
     id: definitions.OrderId
     o: definitions.CancelStatus
-    t: Literal["xc"]
     tn: Annotated[int, Meta(ge=0)]
     ts: int
     xid: str
@@ -615,20 +609,17 @@ class Orderflow9(Struct, tag_field="t", tag="xc"):
 
 class Orderflow10(Struct, tag_field="t", tag="xr"):
     id: definitions.OrderId
-    t: Literal["xr"]
     xid: str
     rm: Optional[str] = None
 
 
 class Orderflow11(Struct, tag_field="t", tag="xa"):
     id: definitions.OrderId
-    t: Literal["xa"]
     xid: Optional[str] = None
 
 
 class Orderflow12(Struct, tag_field="t", tag="xx"):
     id: definitions.OrderId
-    t: Literal["xx"]
     xid: Optional[str] = None
 
 
@@ -833,7 +824,6 @@ class Orderflow14(Struct, tag_field="t", tag="af"):
     """
 
     id: Annotated[str, Meta(title="fill_id")]
-    t: Literal["af"]
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None

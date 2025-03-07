@@ -74,7 +74,6 @@ def extract_literal_value(
                                     except Exception as e:
                                         print(
                                             f"Error evaluating inner literal: {e}",
-                                            file=sys.stderr,
                                         )
                                         return None
     return None
@@ -178,14 +177,13 @@ class TagTransformer(cst.CSTTransformer):
         self, original_node: cst.ClassDef, updated_node: cst.ClassDef
     ) -> cst.ClassDef:
         """
-        If the class name is in the recorded union members, then find its first annotated field
-        whose annotation is a Literal (or Annotated[...] with a Literal) and add tag configuration.
+        If the class name is in the recorded union members, then scan the class for all annotated fields
+        whose annotation is a Literal (or Annotated[...] with a Literal). If exactly one such field exists,
+        add tag configuration and remove the field declaration from the class body.
         """
         if original_node.name.value in self.union_members:
-            tag_field = None
-            tag_value = None
-
-            # Search for an annotated assignment within the class body.
+            literal_fields = []
+            # Annotated assignments are often wrapped in SimpleStatementLine nodes.
             for stmt in original_node.body.body:
                 if isinstance(stmt, cst.SimpleStatementLine):
                     for small_stmt in stmt.body:
@@ -194,18 +192,11 @@ class TagTransformer(cst.CSTTransformer):
                         ):
                             field_name = small_stmt.target.value
                             literal = extract_literal_value(small_stmt.annotation)
-                            print(
-                                f"In class {original_node.name.value}: found field {field_name} with literal value: {literal}",
-                                file=sys.stderr,
-                            )
                             if literal is not None:
-                                tag_field = field_name
-                                tag_value = literal
-                                break
-                    if tag_field is not None:
-                        break
-
-            if tag_field is not None and tag_value is not None:
+                                literal_fields.append((field_name, literal))
+            # Only tag the class if exactly one literal field is found.
+            if len(literal_fields) == 1:
+                tag_field, tag_value = literal_fields[0]
                 new_keywords = list(updated_node.keywords) + [
                     cst.Arg(
                         keyword=cst.Name("tag_field"),
@@ -221,6 +212,35 @@ class TagTransformer(cst.CSTTransformer):
                     file=sys.stderr,
                 )
                 updated_node = updated_node.with_changes(keywords=new_keywords)
+
+                # Remove the tagged field from the class body.
+                new_body = []
+                for stmt in updated_node.body.body:
+                    if isinstance(stmt, cst.SimpleStatementLine):
+                        new_small_stmts = []
+                        for small_stmt in stmt.body:
+                            if (
+                                isinstance(small_stmt, cst.AnnAssign)
+                                and isinstance(small_stmt.target, cst.Name)
+                                and small_stmt.target.value == tag_field
+                            ):
+                                # Skip this assignment (i.e. remove the tag field).
+                                continue
+                            new_small_stmts.append(small_stmt)
+                        if new_small_stmts:
+                            new_stmt = stmt.with_changes(body=new_small_stmts)
+                            new_body.append(new_stmt)
+                        # If no small statements remain in the line, skip adding it.
+                    else:
+                        new_body.append(stmt)
+                # Update the class body.
+                updated_node = updated_node.with_changes(
+                    body=updated_node.body.with_changes(body=tuple(new_body))
+                )
+            elif len(literal_fields) > 1:
+                print(
+                    f"Class {original_node.name.value} has multiple literal fields, skipping tagging: {literal_fields}",
+                )
         return updated_node
 
 
