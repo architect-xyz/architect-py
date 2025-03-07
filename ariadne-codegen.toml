@@ -29,6 +29,8 @@ UserId.type = "str"
 Uuid.type = "uuid.UUID"
 
 Dir.type = "architect_py.scalars.OrderDir"  # enums auto serialize/parse
+Dir.serialize = "architect_py.scalars.graphql_serialize_order_dir"
+Dir.parse = "architect_py.scalars.graphql_parse_order_dir"
 
 DateTime.type = "datetime.datetime"
 DateTime.serialize = "architect_py.scalars.convert_datetime_to_utc_str"

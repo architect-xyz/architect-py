@@ -3,12 +3,12 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Literal, Optional, Union
+from typing import Annotated, Literal, Optional, Union
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import BeforeValidator, Field
 
-from architect_py.scalars import OrderDir
+from architect_py.scalars import OrderDir, graphql_parse_order_dir
 
 from .base_model import BaseModel
 from .enums import FillKind
@@ -85,7 +85,7 @@ class SubscribeOrderflowOrderflowFill(BaseModel):
     execution_venue: str = Field(alias="executionVenue")
     exchange_fill_id: Optional[str] = Field(alias="exchangeFillId")
     symbol: str
-    dir: OrderDir
+    dir: Annotated[OrderDir, BeforeValidator(graphql_parse_order_dir)]
     quantity: Decimal
     price: Decimal
     recv_time: Optional[datetime] = Field(alias="recvTime")

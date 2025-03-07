@@ -8,7 +8,12 @@ from uuid import UUID
 
 from pydantic import BeforeValidator, Field
 
-from architect_py.scalars import OrderDir, TradableProduct, parse_tradable_product
+from architect_py.scalars import (
+    OrderDir,
+    TradableProduct,
+    graphql_parse_order_dir,
+    parse_tradable_product,
+)
 
 from .base_model import BaseModel
 from .enums import (
@@ -146,7 +151,7 @@ class OrderFields(BaseModel):
     symbol: str
     trader: str
     account: UUID
-    dir: OrderDir
+    dir: Annotated[OrderDir, BeforeValidator(graphql_parse_order_dir)]
     quantity: Decimal
     filled_quantity: Decimal = Field(alias="filledQuantity")
     average_fill_price: Optional[Decimal] = Field(alias="averageFillPrice")

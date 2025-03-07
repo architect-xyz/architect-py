@@ -3,9 +3,11 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
+from typing import Annotated, Optional
 
-from architect_py.scalars import OrderDir
+from pydantic import BeforeValidator
+
+from architect_py.scalars import OrderDir, graphql_parse_order_dir
 
 from .base_model import BaseModel
 
@@ -16,7 +18,7 @@ class SubscribeTrades(BaseModel):
 
 class SubscribeTradesTrades(BaseModel):
     timestamp: Optional[datetime]
-    direction: Optional[OrderDir]
+    direction: Optional[Annotated[OrderDir, BeforeValidator(graphql_parse_order_dir)]]
     price: Decimal
     size: Decimal
 

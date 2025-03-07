@@ -98,24 +98,12 @@ class OrderDir(str, Enum):
         else:
             raise ValueError(f"Unknown Dir: {self}")
 
-    @classmethod
-    def parse(cls, value: str) -> "OrderDir":
-        if value == "buy":
-            return cls.BUY
-        elif value == "sell":
-            return cls.SELL
-        else:
-            raise ValueError(f"Unknown Dir: {value}")
-
-    def serialize(self) -> str:
-        return self.value
-
     def __str__(self) -> str:
-        return f"Dir.{self.name}"
-
-    def __repr__(self) -> str:
-        return f"Dir.{self.name}"
-
+        return self.value
+    
+    def lower(self) -> str:
+        return self.value.lower()
+    
     @classmethod
     def from_string(cls, value: str) -> "OrderDir":
         lower = value.lower()
@@ -151,6 +139,17 @@ class OrderDir(str, Enum):
             return cls.SELL
         else:
             raise ValueError(f"Unknown Dir: {value}")
+
+
+def graphql_serialize_order_dir(value: OrderDir) -> str:
+    return value.lower()
+
+def graphql_parse_order_dir(value: str) -> OrderDir:
+    if value == "buy":
+        return OrderDir.BUY
+    else:
+        return OrderDir.SELL
+
 
 
 def convert_datetime_to_utc_str(dt: "Optional[datetime] | UnsetType") -> Optional[str]:
