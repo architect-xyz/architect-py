@@ -2,6 +2,8 @@
 
 A Python API for [Architect](https://architect.co).
 
+https://pypi.org/project/architect-py/
+
 Just some of the features of this API:
 symbology, market snapshots, past trades, account queries, order management (including sending advanced algos!), and market feed subscriptions.
 
