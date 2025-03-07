@@ -16,7 +16,8 @@
       "title": "ask_close",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -27,7 +28,8 @@
       "title": "ask_high",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -38,7 +40,8 @@
       "title": "ask_low",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -49,7 +52,8 @@
       "title": "ask_open",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -58,17 +62,15 @@
     },
     "av": {
       "title": "sell_volume",
-      "allOf": [
-        {
-          "$ref": "../definitions.json#/Decimal"
-        }
-      ]
+      "type": "number",
+      "format": "decimal"
     },
     "bc": {
       "title": "bid_close",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -79,7 +81,8 @@
       "title": "bid_high",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -90,7 +93,8 @@
       "title": "bid_low",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -101,7 +105,8 @@
       "title": "bid_open",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -110,17 +115,15 @@
     },
     "bv": {
       "title": "buy_volume",
-      "allOf": [
-        {
-          "$ref": "../definitions.json#/Decimal"
-        }
-      ]
+      "type": "number",
+      "format": "decimal"
     },
     "c": {
       "title": "close",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -131,7 +134,8 @@
       "title": "high",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -142,7 +146,8 @@
       "title": "low",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -153,7 +158,8 @@
       "title": "mid_close",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -164,7 +170,8 @@
       "title": "mid_high",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -175,7 +182,8 @@
       "title": "mid_low",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -186,7 +194,8 @@
       "title": "mid_open",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -197,7 +206,8 @@
       "title": "open",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -221,11 +231,8 @@
     },
     "v": {
       "title": "volume",
-      "allOf": [
-        {
-          "$ref": "../definitions.json#/Decimal"
-        }
-      ]
+      "type": "number",
+      "format": "decimal"
     },
     "w": {
       "title": "width",

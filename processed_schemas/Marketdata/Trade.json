@@ -23,19 +23,13 @@
     },
     "p": {
       "title": "price",
-      "allOf": [
-        {
-          "$ref": "../definitions.json#/Decimal"
-        }
-      ]
+      "type": "number",
+      "format": "decimal"
     },
     "q": {
       "title": "size",
-      "allOf": [
-        {
-          "$ref": "../definitions.json#/Decimal"
-        }
-      ]
+      "type": "number",
+      "format": "decimal"
     },
     "s": {
       "title": "symbol",

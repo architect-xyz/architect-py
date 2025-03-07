@@ -21,11 +21,8 @@
             },
             "p": {
               "title": "limit_price",
-              "allOf": [
-                {
-                  "$ref": "../definitions.json#/Decimal"
-                }
-              ]
+              "type": "number",
+              "format": "decimal"
             },
             "po": {
               "title": "post_only",
@@ -49,19 +46,13 @@
             },
             "p": {
               "title": "limit_price",
-              "allOf": [
-                {
-                  "$ref": "../definitions.json#/Decimal"
-                }
-              ]
+              "type": "number",
+              "format": "decimal"
             },
             "tp": {
               "title": "trigger_price",
-              "allOf": [
-                {
-                  "$ref": "../definitions.json#/Decimal"
-                }
-              ]
+              "type": "number",
+              "format": "decimal"
             }
           }
         },
@@ -81,19 +72,13 @@
             },
             "p": {
               "title": "limit_price",
-              "allOf": [
-                {
-                  "$ref": "../definitions.json#/Decimal"
-                }
-              ]
+              "type": "number",
+              "format": "decimal"
             },
             "tp": {
               "title": "trigger_price",
-              "allOf": [
-                {
-                  "$ref": "../definitions.json#/Decimal"
-                }
-              ]
+              "type": "number",
+              "format": "decimal"
             }
           }
         }
@@ -159,11 +144,8 @@
         },
         "q": {
           "title": "quantity",
-          "allOf": [
-            {
-              "$ref": "../definitions.json#/Decimal"
-            }
-          ]
+          "type": "number",
+          "format": "decimal"
         },
         "r": {
           "title": "reject_reason",
@@ -236,7 +218,8 @@
           "title": "average_fill_price",
           "anyOf": [
             {
-              "$ref": "../definitions.json#/Decimal"
+              "type": "number",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -245,11 +228,8 @@
         },
         "xq": {
           "title": "filled_quantity",
-          "allOf": [
-            {
-              "$ref": "../definitions.json#/Decimal"
-            }
-          ]
+          "type": "number",
+          "format": "decimal"
         }
       }
     },
@@ -306,7 +286,8 @@
           "title": "fee",
           "anyOf": [
             {
-              "$ref": "../definitions.json#/Decimal"
+              "type": "number",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -347,19 +328,13 @@
         },
         "p": {
           "title": "price",
-          "allOf": [
-            {
-              "$ref": "../definitions.json#/Decimal"
-            }
-          ]
+          "type": "number",
+          "format": "decimal"
         },
         "q": {
           "title": "quantity",
-          "allOf": [
-            {
-              "$ref": "../definitions.json#/Decimal"
-            }
-          ]
+          "type": "number",
+          "format": "decimal"
         },
         "s": {
           "title": "symbol",
@@ -456,7 +431,8 @@
           "title": "fee",
           "anyOf": [
             {
-              "$ref": "../definitions.json#/Decimal"
+              "type": "number",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -501,7 +477,8 @@
           "title": "price",
           "anyOf": [
             {
-              "$ref": "../definitions.json#/Decimal"
+              "type": "number",
+              "format": "decimal"
             },
             {
               "type": "null"
@@ -512,7 +489,8 @@
           "title": "quantity",
           "anyOf": [
             {
-              "$ref": "../definitions.json#/Decimal"
+              "type": "number",
+              "format": "decimal"
             },
             {
               "type": "null"

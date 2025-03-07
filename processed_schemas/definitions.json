@@ -152,7 +152,8 @@
                 "format": "date-time"
               },
               "strike": {
-                "$ref": "#/Decimal"
+                "type": "number",
+                "format": "decimal"
               }
             }
           }
@@ -186,7 +187,8 @@
       "initial_margin": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -199,7 +201,8 @@
       "maintenance_margin": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -207,13 +210,15 @@
         ]
       },
       "min_order_quantity": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       },
       "min_order_quantity_unit": {
         "$ref": "#/MinOrderQuantityUnit"
       },
       "step_size": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       },
       "tick_size": {
         "$ref": "#/TickSize"
@@ -292,7 +297,8 @@
         "type": "boolean"
       },
       "multiplier": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       },
       "options_series": {
         "type": "string"
@@ -305,7 +311,8 @@
         "additionalProperties": {
           "type": "array",
           "items": {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           "uniqueItems": true
         }
@@ -338,7 +345,8 @@
         "$ref": "#/PutOrCall"
       },
       "strike": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       }
     }
   },
@@ -480,7 +488,8 @@
             "format": "date"
           },
           "multiplier": {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           "product_type": {
             "type": "string",
@@ -535,7 +544,8 @@
             "$ref": "#/DerivativeKind"
           },
           "multiplier": {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           "product_type": {
             "type": "string",
@@ -630,11 +640,8 @@
       },
       "quantity": {
         "description": "Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       }
     }
   },
@@ -647,7 +654,8 @@
         ],
         "properties": {
           "simple": {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           }
         },
         "additionalProperties": false
@@ -671,10 +679,12 @@
                   "type": "array",
                   "items": [
                     {
-                      "$ref": "#/Decimal"
+                      "type": "number",
+                      "format": "decimal"
                     },
                     {
-                      "$ref": "#/Decimal"
+                      "type": "number",
+                      "format": "decimal"
                     }
                   ],
                   "maxItems": 2,
@@ -1601,10 +1611,12 @@
         ],
         "items": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           }
         ],
         "maxItems": 2,
@@ -1618,10 +1630,12 @@
         ],
         "items": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           }
         ],
         "maxItems": 2,
@@ -1679,7 +1693,8 @@
         "title": "ask_close",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1690,7 +1705,8 @@
         "title": "ask_high",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1701,7 +1717,8 @@
         "title": "ask_low",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1712,7 +1729,8 @@
         "title": "ask_open",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1721,17 +1739,15 @@
       },
       "av": {
         "title": "sell_volume",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       },
       "bc": {
         "title": "bid_close",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1742,7 +1758,8 @@
         "title": "bid_high",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1753,7 +1770,8 @@
         "title": "bid_low",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1764,7 +1782,8 @@
         "title": "bid_open",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1773,17 +1792,15 @@
       },
       "bv": {
         "title": "buy_volume",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       },
       "c": {
         "title": "close",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1794,7 +1811,8 @@
         "title": "high",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1805,7 +1823,8 @@
         "title": "low",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1816,7 +1835,8 @@
         "title": "mid_close",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1827,7 +1847,8 @@
         "title": "mid_high",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1838,7 +1859,8 @@
         "title": "mid_low",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1849,7 +1871,8 @@
         "title": "mid_open",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1860,7 +1883,8 @@
         "title": "open",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1884,11 +1908,8 @@
       },
       "v": {
         "title": "volume",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       },
       "w": {
         "title": "width",
@@ -1930,7 +1951,8 @@
         "title": "ask_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1941,7 +1963,8 @@
         "title": "ask_size",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1952,7 +1975,8 @@
         "title": "bid_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1963,7 +1987,8 @@
         "title": "bid_size",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1973,7 +1998,8 @@
       "dividend": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1983,7 +2009,8 @@
       "dividend_yield": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -1993,7 +2020,8 @@
       "eps_adj": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2004,7 +2032,8 @@
         "title": "funding_rate",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2023,7 +2052,8 @@
         "title": "high_24h",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2034,7 +2064,8 @@
         "title": "index_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2045,7 +2076,8 @@
         "title": "low_24h",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2055,7 +2087,8 @@
       "market_cap": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2066,7 +2099,8 @@
         "title": "mark_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2077,7 +2111,8 @@
         "title": "open_24h",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2088,7 +2123,8 @@
         "title": "open_interest",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2099,7 +2135,8 @@
         "title": "last_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2109,7 +2146,8 @@
       "price_to_earnings": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2120,7 +2158,8 @@
         "title": "last_size",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2134,7 +2173,8 @@
       "shares_outstanding_weighted_adj": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2145,7 +2185,8 @@
         "title": "last_settlement_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2167,7 +2208,8 @@
         "title": "volume_24h",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2182,7 +2224,8 @@
         "title": "volume_30d",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2193,7 +2236,8 @@
         "title": "session_high",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2204,7 +2248,8 @@
         "title": "session_low",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2215,7 +2260,8 @@
         "title": "session_open",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2226,7 +2272,8 @@
         "title": "session_volume",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2397,11 +2444,8 @@
           },
           "p": {
             "title": "limit_price",
-            "allOf": [
-              {
-                "$ref": "#/Decimal"
-              }
-            ]
+            "type": "number",
+            "format": "decimal"
           },
           "po": {
             "title": "post_only",
@@ -2425,19 +2469,13 @@
           },
           "p": {
             "title": "limit_price",
-            "allOf": [
-              {
-                "$ref": "#/Decimal"
-              }
-            ]
+            "type": "number",
+            "format": "decimal"
           },
           "tp": {
             "title": "trigger_price",
-            "allOf": [
-              {
-                "$ref": "#/Decimal"
-              }
-            ]
+            "type": "number",
+            "format": "decimal"
           }
         }
       },
@@ -2457,19 +2495,13 @@
           },
           "p": {
             "title": "limit_price",
-            "allOf": [
-              {
-                "$ref": "#/Decimal"
-              }
-            ]
+            "type": "number",
+            "format": "decimal"
           },
           "tp": {
             "title": "trigger_price",
-            "allOf": [
-              {
-                "$ref": "#/Decimal"
-              }
-            ]
+            "type": "number",
+            "format": "decimal"
           }
         }
       }
@@ -2534,11 +2566,8 @@
       },
       "q": {
         "title": "quantity",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       },
       "r": {
         "title": "reject_reason",
@@ -2605,7 +2634,8 @@
         "title": "average_fill_price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2614,11 +2644,8 @@
       },
       "xq": {
         "title": "filled_quantity",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       }
     }
   },
@@ -2668,7 +2695,8 @@
       "break_even_price": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2679,7 +2707,8 @@
         "description": "Cost basis of the position, if known.",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2689,7 +2718,8 @@
       "liquidation_price": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2697,7 +2727,8 @@
         ]
       },
       "quantity": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       },
       "trade_time": {
         "description": "NB: the meaning of this field varies by reporting venue",
@@ -2711,7 +2742,8 @@
         "description": "Unrealized PNL of the position, if known.",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2736,14 +2768,16 @@
       "balances": {
         "type": "object",
         "additionalProperties": {
-          "$ref": "#/Decimal"
+          "type": "number",
+          "format": "decimal"
         }
       },
       "cash_excess": {
         "description": "Cash available to withdraw.",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2753,7 +2787,8 @@
       "equity": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2764,7 +2799,8 @@
         "description": "Margin requirement based on current positions only.",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2783,7 +2819,8 @@
       "purchasing_power": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2793,7 +2830,8 @@
       "realized_pnl": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2808,7 +2846,8 @@
         "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2818,7 +2857,8 @@
       "unrealized_pnl": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2828,7 +2868,8 @@
       "yesterday_equity": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2885,7 +2926,8 @@
         "title": "fee",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2930,7 +2972,8 @@
         "title": "price",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -2941,7 +2984,8 @@
         "title": "quantity",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -3048,7 +3092,8 @@
         "title": "fee",
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -3089,19 +3134,13 @@
       },
       "p": {
         "title": "price",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       },
       "q": {
         "title": "quantity",
-        "allOf": [
-          {
-            "$ref": "#/Decimal"
-          }
-        ]
+        "type": "number",
+        "format": "decimal"
       },
       "s": {
         "title": "symbol",
@@ -3178,7 +3217,8 @@
         "$ref": "#/HumanDuration"
       },
       "quantity": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       },
       "reject_lockout": {
         "$ref": "#/HumanDuration"
@@ -3189,7 +3229,8 @@
       "take_through_frac": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
@@ -3213,12 +3254,14 @@
     ],
     "properties": {
       "quantity_filled": {
-        "$ref": "#/Decimal"
+        "type": "number",
+        "format": "decimal"
       },
       "realized_twap": {
         "anyOf": [
           {
-            "$ref": "#/Decimal"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"

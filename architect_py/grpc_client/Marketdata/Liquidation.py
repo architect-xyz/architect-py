@@ -4,6 +4,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
+from decimal import Decimal
 from typing import Annotated
 
 from msgspec import Meta, Struct
@@ -13,8 +14,8 @@ from .. import definitions
 
 class Liquidation(Struct):
     d: Annotated[definitions.Dir, Meta(title="direction")]
-    p: Annotated[definitions.DecimalModel, Meta(title="price")]
-    q: Annotated[definitions.DecimalModel, Meta(title="size")]
+    p: Annotated[Decimal, Meta(title="price")]
+    q: Annotated[Decimal, Meta(title="size")]
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
@@ -28,19 +29,19 @@ class Liquidation(Struct):
         self.d = value
 
     @property
-    def price(self) -> definitions.DecimalModel:
+    def price(self) -> Decimal:
         return self.p
 
     @price.setter
-    def price(self, value: definitions.DecimalModel) -> None:
+    def price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def size(self) -> definitions.DecimalModel:
+    def size(self) -> Decimal:
         return self.q
 
     @size.setter
-    def size(self, value: definitions.DecimalModel) -> None:
+    def size(self, value: Decimal) -> None:
         self.q = value
 
     @property

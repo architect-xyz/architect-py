@@ -4,6 +4,7 @@
 from __future__ import annotations
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 
+from decimal import Decimal
 from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
@@ -13,12 +14,12 @@ from .. import definitions
 
 class OrderflowRequest1(Struct):
     d: Annotated[definitions.Dir, Meta(title="dir")]
-    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["p"]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
     k: Literal["LIMIT"]
-    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     a: Optional[
         Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
@@ -54,11 +55,11 @@ class OrderflowRequest1(Struct):
         self.d = value
 
     @property
-    def quantity(self) -> definitions.DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: definitions.DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -78,11 +79,11 @@ class OrderflowRequest1(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> definitions.DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: definitions.DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
@@ -148,13 +149,13 @@ class OrderflowRequest1(Struct):
 
 class OrderflowRequest2(Struct):
     d: Annotated[definitions.Dir, Meta(title="dir")]
-    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["p"]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
     k: Literal["STOP_LOSS_LIMIT"]
-    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
-    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    tp: Annotated[Decimal, Meta(title="trigger_price")]
     a: Optional[
         Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
@@ -189,11 +190,11 @@ class OrderflowRequest2(Struct):
         self.d = value
 
     @property
-    def quantity(self) -> definitions.DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: definitions.DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -213,19 +214,19 @@ class OrderflowRequest2(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> definitions.DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: definitions.DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> definitions.DecimalModel:
+    def trigger_price(self) -> Decimal:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: definitions.DecimalModel) -> None:
+    def trigger_price(self, value: Decimal) -> None:
         self.tp = value
 
     @property
@@ -283,13 +284,13 @@ class OrderflowRequest2(Struct):
 
 class OrderflowRequest3(Struct):
     d: Annotated[definitions.Dir, Meta(title="dir")]
-    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["p"]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
     k: Literal["TAKE_PROFIT_LIMIT"]
-    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
-    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    tp: Annotated[Decimal, Meta(title="trigger_price")]
     a: Optional[
         Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
@@ -324,11 +325,11 @@ class OrderflowRequest3(Struct):
         self.d = value
 
     @property
-    def quantity(self) -> definitions.DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: definitions.DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -348,19 +349,19 @@ class OrderflowRequest3(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> definitions.DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: definitions.DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> definitions.DecimalModel:
+    def trigger_price(self) -> Decimal:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: definitions.DecimalModel) -> None:
+    def trigger_price(self, value: Decimal) -> None:
         self.tp = value
 
     @property

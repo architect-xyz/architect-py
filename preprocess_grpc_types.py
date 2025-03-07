@@ -6,27 +6,37 @@ import re
 
 def replace_and_indent(m):
     indent = m.group(1)
-    return f'{indent}"type": "string",\n{indent}"format": "decimal"'
+    return f'{indent}"type": "number",\n{indent}"format": "decimal"'
 
 
-def fix_line(lines: str, remap_defs: bool) -> str:
+def fix_lines(lines: str, is_definitions_file: bool) -> str:
     lines = lines.replace("uint32", "default")
     lines = lines.replace("uint64", "default")
     lines = lines.replace('"format": "int"', '"format": "default"')
 
-    if remap_defs:
-        lines = lines.replace("#/definitions", "../definitions.json#")
-    else:
-        pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
-        # lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
+    pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
+    lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
+
+    # all of pattern
+    pattern = (
+        r'"allOf":\s*\[\s*\{\s*'
+        r'(?P<indent>[ \t]*)"type":\s*"number",\s*'
+        r'(?P=indent)"format":\s*"decimal"\s*'
+        r"\}\s*\]"
+    )
+    lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)
+
+    if is_definitions_file:
         lines = lines.replace("#/definitions", "#")
+    else:
+        lines = lines.replace("#/definitions", "../definitions.json#")
 
     return lines
 
 
-def fix_dict(d: dict, remap_def: bool) -> dict:
+def fix_dict(d: dict, is_definitions_file: bool) -> dict:
     lines = json.dumps(d, indent=2)
-    lines = fix_line(lines, remap_def)
+    lines = fix_lines(lines, is_definitions_file)
     return json.loads(lines)
 
 
@@ -71,8 +81,8 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
             definitions.update(process_schema_definitions(req_schema))
             definitions.update(process_schema_definitions(resp_schema))
 
-            req_schema = fix_dict(req_schema, True)
-            resp_schema = fix_dict(resp_schema, True)
+            req_schema = fix_dict(req_schema, False)
+            resp_schema = fix_dict(resp_schema, False)
 
             route = rpc.get("route")
             unary_type = rpc.get("type")
@@ -99,7 +109,7 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                     json.dump(resp_schema, out_file, indent=2)
 
     with open(os.path.join(output_dir, "definitions.json"), "w") as out_file:
-        definitions = fix_dict(definitions, False)
+        definitions = fix_dict(definitions, True)
         json.dump(definitions, out_file, indent=2)
 
 

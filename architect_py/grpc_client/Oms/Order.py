@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Annotated, Literal, Optional, Union
 
 from msgspec import Meta, Struct
@@ -15,7 +16,7 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
-    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[definitions.OrderSource, Meta(title="source")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
@@ -23,8 +24,8 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
-    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
+    xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
@@ -34,9 +35,7 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
 
     @property
     def account(self) -> str:
@@ -63,11 +62,11 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
         self.o = value
 
     @property
-    def quantity(self) -> definitions.DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: definitions.DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -127,19 +126,19 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> definitions.DecimalModel:
+    def filled_quantity(self) -> Decimal:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: definitions.DecimalModel) -> None:
+    def filled_quantity(self, value: Decimal) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> definitions.DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: definitions.DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
@@ -183,11 +182,11 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[definitions.DecimalModel]:
+    def average_fill_price(self) -> Optional[Decimal]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[definitions.DecimalModel]) -> None:
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
         self.xp = value
 
 
@@ -196,7 +195,7 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
-    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[definitions.OrderSource, Meta(title="source")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
@@ -204,9 +203,9 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
-    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
-    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    tp: Annotated[Decimal, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
@@ -215,9 +214,7 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
 
     @property
     def account(self) -> str:
@@ -244,11 +241,11 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
         self.o = value
 
     @property
-    def quantity(self) -> definitions.DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: definitions.DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -308,27 +305,27 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> definitions.DecimalModel:
+    def filled_quantity(self) -> Decimal:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: definitions.DecimalModel) -> None:
+    def filled_quantity(self, value: Decimal) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> definitions.DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: definitions.DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> definitions.DecimalModel:
+    def trigger_price(self) -> Decimal:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: definitions.DecimalModel) -> None:
+    def trigger_price(self, value: Decimal) -> None:
         self.tp = value
 
     @property
@@ -364,11 +361,11 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[definitions.DecimalModel]:
+    def average_fill_price(self) -> Optional[Decimal]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[definitions.DecimalModel]) -> None:
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
         self.xp = value
 
 
@@ -377,7 +374,7 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     d: Annotated[definitions.Dir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
-    q: Annotated[definitions.DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[definitions.OrderSource, Meta(title="source")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
@@ -385,9 +382,9 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[definitions.DecimalModel, Meta(title="filled_quantity")]
-    p: Annotated[definitions.DecimalModel, Meta(title="limit_price")]
-    tp: Annotated[definitions.DecimalModel, Meta(title="trigger_price")]
+    xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    tp: Annotated[Decimal, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
@@ -396,9 +393,7 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[
-        Annotated[Optional[definitions.DecimalModel], Meta(title="average_fill_price")]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
 
     @property
     def account(self) -> str:
@@ -425,11 +420,11 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
         self.o = value
 
     @property
-    def quantity(self) -> definitions.DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: definitions.DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -489,27 +484,27 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> definitions.DecimalModel:
+    def filled_quantity(self) -> Decimal:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: definitions.DecimalModel) -> None:
+    def filled_quantity(self, value: Decimal) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> definitions.DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: definitions.DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> definitions.DecimalModel:
+    def trigger_price(self) -> Decimal:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: definitions.DecimalModel) -> None:
+    def trigger_price(self, value: Decimal) -> None:
         self.tp = value
 
     @property
@@ -545,11 +540,11 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[definitions.DecimalModel]:
+    def average_fill_price(self) -> Optional[Decimal]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[definitions.DecimalModel]) -> None:
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
         self.xp = value
 
 

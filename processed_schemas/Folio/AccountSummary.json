@@ -16,14 +16,16 @@
     "balances": {
       "type": "object",
       "additionalProperties": {
-        "$ref": "../definitions.json#/Decimal"
+        "type": "number",
+        "format": "decimal"
       }
     },
     "cash_excess": {
       "description": "Cash available to withdraw.",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -33,7 +35,8 @@
     "equity": {
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -44,7 +47,8 @@
       "description": "Margin requirement based on current positions only.",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -63,7 +67,8 @@
     "purchasing_power": {
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -73,7 +78,8 @@
     "realized_pnl": {
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -88,7 +94,8 @@
       "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -98,7 +105,8 @@
     "unrealized_pnl": {
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"
@@ -108,7 +116,8 @@
     "yesterday_equity": {
       "anyOf": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
           "type": "null"

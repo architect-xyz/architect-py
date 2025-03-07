@@ -16,6 +16,76 @@ Model = Any
 AccountIdOrName = str
 
 
+class AccountPosition(Struct):
+    quantity: Decimal
+    break_even_price: Optional[Decimal] = None
+    cost_basis: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Cost basis of the position, if known.")
+        ]
+    ] = None
+    """
+    Cost basis of the position, if known.
+    """
+    liquidation_price: Optional[Decimal] = None
+    trade_time: Optional[
+        Annotated[
+            Optional[str],
+            Meta(description="NB: the meaning of this field varies by reporting venue"),
+        ]
+    ] = None
+    """
+    NB: the meaning of this field varies by reporting venue
+    """
+    unrealized_pnl: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Unrealized PNL of the position, if known."),
+        ]
+    ] = None
+    """
+    Unrealized PNL of the position, if known.
+    """
+
+
+class AccountSummary(Struct):
+    account: str
+    balances: Dict[str, Decimal]
+    positions: Dict[str, List[AccountPosition]]
+    timestamp: str
+    cash_excess: Optional[
+        Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
+    ] = None
+    """
+    Cash available to withdraw.
+    """
+    equity: Optional[Decimal] = None
+    position_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Margin requirement based on current positions only."),
+        ]
+    ] = None
+    """
+    Margin requirement based on current positions only.
+    """
+    purchasing_power: Optional[Decimal] = None
+    realized_pnl: Optional[Decimal] = None
+    total_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Margin requirement calculated for worst-case based on open positions and working orders."
+            ),
+        ]
+    ] = None
+    """
+    Margin requirement calculated for worst-case based on open positions and working orders.
+    """
+    unrealized_pnl: Optional[Decimal] = None
+    yesterday_equity: Optional[Decimal] = None
+
+
 class AlgoState(str, Enum):
     Pending = "Pending"
     Running = "Running"
@@ -36,9 +106,6 @@ class CandleWidth(int, Enum):
     integer_8 = 8
     integer_16 = 16
     integer_32 = 32
-
-
-DecimalModel = Decimal
 
 
 class Dir(str, Enum):
@@ -67,8 +134,8 @@ class L1BookSnapshot(Struct):
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
-    a: Optional[Annotated[List[DecimalModel], Meta(title="best_ask")]] = None
-    b: Optional[Annotated[List[DecimalModel], Meta(title="best_bid")]] = None
+    a: Optional[Annotated[List[Decimal], Meta(title="best_ask")]] = None
+    b: Optional[Annotated[List[Decimal], Meta(title="best_bid")]] = None
 
     @property
     def symbol(self) -> str:
@@ -103,19 +170,19 @@ class L1BookSnapshot(Struct):
         return datetime.fromtimestamp(self.ts)
 
     @property
-    def best_ask(self) -> Optional[List[DecimalModel]]:
+    def best_ask(self) -> Optional[List[Decimal]]:
         return self.a
 
     @best_ask.setter
-    def best_ask(self, value: Optional[List[DecimalModel]]) -> None:
+    def best_ask(self, value: Optional[List[Decimal]]) -> None:
         self.a = value
 
     @property
-    def best_bid(self) -> Optional[List[DecimalModel]]:
+    def best_bid(self) -> Optional[List[Decimal]]:
         return self.b
 
     @best_bid.setter
-    def best_bid(self, value: Optional[List[DecimalModel]]) -> None:
+    def best_bid(self, value: Optional[List[Decimal]]) -> None:
         self.b = value
 
 
@@ -173,37 +240,37 @@ class Ticker(Struct):
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
     ve: Annotated[str, Meta(title="venue")]
-    ap: Optional[Annotated[Optional[DecimalModel], Meta(title="ask_price")]] = None
-    as_: Optional[Annotated[Optional[DecimalModel], Meta(title="ask_size")]] = field(
+    ap: Optional[Annotated[Optional[Decimal], Meta(title="ask_price")]] = None
+    as_: Optional[Annotated[Optional[Decimal], Meta(title="ask_size")]] = field(
         name="as", default=None
     )
-    bp: Optional[Annotated[Optional[DecimalModel], Meta(title="bid_price")]] = None
-    bs: Optional[Annotated[Optional[DecimalModel], Meta(title="bid_size")]] = None
-    dividend: Optional[DecimalModel] = None
-    dividend_yield: Optional[DecimalModel] = None
-    eps_adj: Optional[DecimalModel] = None
-    fr: Optional[Annotated[Optional[DecimalModel], Meta(title="funding_rate")]] = None
+    bp: Optional[Annotated[Optional[Decimal], Meta(title="bid_price")]] = None
+    bs: Optional[Annotated[Optional[Decimal], Meta(title="bid_size")]] = None
+    dividend: Optional[Decimal] = None
+    dividend_yield: Optional[Decimal] = None
+    eps_adj: Optional[Decimal] = None
+    fr: Optional[Annotated[Optional[Decimal], Meta(title="funding_rate")]] = None
     ft: Optional[Annotated[Optional[str], Meta(title="next_funding_time")]] = None
-    h: Optional[Annotated[Optional[DecimalModel], Meta(title="high_24h")]] = None
-    ip: Optional[Annotated[Optional[DecimalModel], Meta(title="index_price")]] = None
-    l: Optional[Annotated[Optional[DecimalModel], Meta(title="low_24h")]] = None
-    market_cap: Optional[DecimalModel] = None
-    mp: Optional[Annotated[Optional[DecimalModel], Meta(title="mark_price")]] = None
-    o: Optional[Annotated[Optional[DecimalModel], Meta(title="open_24h")]] = None
-    oi: Optional[Annotated[Optional[DecimalModel], Meta(title="open_interest")]] = None
-    p: Optional[Annotated[Optional[DecimalModel], Meta(title="last_price")]] = None
-    price_to_earnings: Optional[DecimalModel] = None
-    q: Optional[Annotated[Optional[DecimalModel], Meta(title="last_size")]] = None
-    shares_outstanding_weighted_adj: Optional[DecimalModel] = None
-    sp: Optional[
-        Annotated[Optional[DecimalModel], Meta(title="last_settlement_price")]
-    ] = None
-    v: Optional[Annotated[Optional[DecimalModel], Meta(title="volume_24h")]] = None
-    vm: Optional[Annotated[Optional[DecimalModel], Meta(title="volume_30d")]] = None
-    xh: Optional[Annotated[Optional[DecimalModel], Meta(title="session_high")]] = None
-    xl: Optional[Annotated[Optional[DecimalModel], Meta(title="session_low")]] = None
-    xo: Optional[Annotated[Optional[DecimalModel], Meta(title="session_open")]] = None
-    xv: Optional[Annotated[Optional[DecimalModel], Meta(title="session_volume")]] = None
+    h: Optional[Annotated[Optional[Decimal], Meta(title="high_24h")]] = None
+    ip: Optional[Annotated[Optional[Decimal], Meta(title="index_price")]] = None
+    l: Optional[Annotated[Optional[Decimal], Meta(title="low_24h")]] = None
+    market_cap: Optional[Decimal] = None
+    mp: Optional[Annotated[Optional[Decimal], Meta(title="mark_price")]] = None
+    o: Optional[Annotated[Optional[Decimal], Meta(title="open_24h")]] = None
+    oi: Optional[Annotated[Optional[Decimal], Meta(title="open_interest")]] = None
+    p: Optional[Annotated[Optional[Decimal], Meta(title="last_price")]] = None
+    price_to_earnings: Optional[Decimal] = None
+    q: Optional[Annotated[Optional[Decimal], Meta(title="last_size")]] = None
+    shares_outstanding_weighted_adj: Optional[Decimal] = None
+    sp: Optional[Annotated[Optional[Decimal], Meta(title="last_settlement_price")]] = (
+        None
+    )
+    v: Optional[Annotated[Optional[Decimal], Meta(title="volume_24h")]] = None
+    vm: Optional[Annotated[Optional[Decimal], Meta(title="volume_30d")]] = None
+    xh: Optional[Annotated[Optional[Decimal], Meta(title="session_high")]] = None
+    xl: Optional[Annotated[Optional[Decimal], Meta(title="session_low")]] = None
+    xo: Optional[Annotated[Optional[Decimal], Meta(title="session_open")]] = None
+    xv: Optional[Annotated[Optional[Decimal], Meta(title="session_volume")]] = None
 
     @property
     def symbol(self) -> str:
@@ -246,43 +313,43 @@ class Ticker(Struct):
         self.ve = value
 
     @property
-    def ask_price(self) -> Optional[DecimalModel]:
+    def ask_price(self) -> Optional[Decimal]:
         return self.ap
 
     @ask_price.setter
-    def ask_price(self, value: Optional[DecimalModel]) -> None:
+    def ask_price(self, value: Optional[Decimal]) -> None:
         self.ap = value
 
     @property
-    def ask_size(self) -> Optional[DecimalModel]:
+    def ask_size(self) -> Optional[Decimal]:
         return self.as_
 
     @ask_size.setter
-    def ask_size(self, value: Optional[DecimalModel]) -> None:
+    def ask_size(self, value: Optional[Decimal]) -> None:
         self.as_ = value
 
     @property
-    def bid_price(self) -> Optional[DecimalModel]:
+    def bid_price(self) -> Optional[Decimal]:
         return self.bp
 
     @bid_price.setter
-    def bid_price(self, value: Optional[DecimalModel]) -> None:
+    def bid_price(self, value: Optional[Decimal]) -> None:
         self.bp = value
 
     @property
-    def bid_size(self) -> Optional[DecimalModel]:
+    def bid_size(self) -> Optional[Decimal]:
         return self.bs
 
     @bid_size.setter
-    def bid_size(self, value: Optional[DecimalModel]) -> None:
+    def bid_size(self, value: Optional[Decimal]) -> None:
         self.bs = value
 
     @property
-    def funding_rate(self) -> Optional[DecimalModel]:
+    def funding_rate(self) -> Optional[Decimal]:
         return self.fr
 
     @funding_rate.setter
-    def funding_rate(self, value: Optional[DecimalModel]) -> None:
+    def funding_rate(self, value: Optional[Decimal]) -> None:
         self.fr = value
 
     @property
@@ -294,123 +361,123 @@ class Ticker(Struct):
         self.ft = value
 
     @property
-    def high_24h(self) -> Optional[DecimalModel]:
+    def high_24h(self) -> Optional[Decimal]:
         return self.h
 
     @high_24h.setter
-    def high_24h(self, value: Optional[DecimalModel]) -> None:
+    def high_24h(self, value: Optional[Decimal]) -> None:
         self.h = value
 
     @property
-    def index_price(self) -> Optional[DecimalModel]:
+    def index_price(self) -> Optional[Decimal]:
         return self.ip
 
     @index_price.setter
-    def index_price(self, value: Optional[DecimalModel]) -> None:
+    def index_price(self, value: Optional[Decimal]) -> None:
         self.ip = value
 
     @property
-    def low_24h(self) -> Optional[DecimalModel]:
+    def low_24h(self) -> Optional[Decimal]:
         return self.l
 
     @low_24h.setter
-    def low_24h(self, value: Optional[DecimalModel]) -> None:
+    def low_24h(self, value: Optional[Decimal]) -> None:
         self.l = value
 
     @property
-    def mark_price(self) -> Optional[DecimalModel]:
+    def mark_price(self) -> Optional[Decimal]:
         return self.mp
 
     @mark_price.setter
-    def mark_price(self, value: Optional[DecimalModel]) -> None:
+    def mark_price(self, value: Optional[Decimal]) -> None:
         self.mp = value
 
     @property
-    def open_24h(self) -> Optional[DecimalModel]:
+    def open_24h(self) -> Optional[Decimal]:
         return self.o
 
     @open_24h.setter
-    def open_24h(self, value: Optional[DecimalModel]) -> None:
+    def open_24h(self, value: Optional[Decimal]) -> None:
         self.o = value
 
     @property
-    def open_interest(self) -> Optional[DecimalModel]:
+    def open_interest(self) -> Optional[Decimal]:
         return self.oi
 
     @open_interest.setter
-    def open_interest(self, value: Optional[DecimalModel]) -> None:
+    def open_interest(self, value: Optional[Decimal]) -> None:
         self.oi = value
 
     @property
-    def last_price(self) -> Optional[DecimalModel]:
+    def last_price(self) -> Optional[Decimal]:
         return self.p
 
     @last_price.setter
-    def last_price(self, value: Optional[DecimalModel]) -> None:
+    def last_price(self, value: Optional[Decimal]) -> None:
         self.p = value
 
     @property
-    def last_size(self) -> Optional[DecimalModel]:
+    def last_size(self) -> Optional[Decimal]:
         return self.q
 
     @last_size.setter
-    def last_size(self, value: Optional[DecimalModel]) -> None:
+    def last_size(self, value: Optional[Decimal]) -> None:
         self.q = value
 
     @property
-    def last_settlement_price(self) -> Optional[DecimalModel]:
+    def last_settlement_price(self) -> Optional[Decimal]:
         return self.sp
 
     @last_settlement_price.setter
-    def last_settlement_price(self, value: Optional[DecimalModel]) -> None:
+    def last_settlement_price(self, value: Optional[Decimal]) -> None:
         self.sp = value
 
     @property
-    def volume_24h(self) -> Optional[DecimalModel]:
+    def volume_24h(self) -> Optional[Decimal]:
         return self.v
 
     @volume_24h.setter
-    def volume_24h(self, value: Optional[DecimalModel]) -> None:
+    def volume_24h(self, value: Optional[Decimal]) -> None:
         self.v = value
 
     @property
-    def volume_30d(self) -> Optional[DecimalModel]:
+    def volume_30d(self) -> Optional[Decimal]:
         return self.vm
 
     @volume_30d.setter
-    def volume_30d(self, value: Optional[DecimalModel]) -> None:
+    def volume_30d(self, value: Optional[Decimal]) -> None:
         self.vm = value
 
     @property
-    def session_high(self) -> Optional[DecimalModel]:
+    def session_high(self) -> Optional[Decimal]:
         return self.xh
 
     @session_high.setter
-    def session_high(self, value: Optional[DecimalModel]) -> None:
+    def session_high(self, value: Optional[Decimal]) -> None:
         self.xh = value
 
     @property
-    def session_low(self) -> Optional[DecimalModel]:
+    def session_low(self) -> Optional[Decimal]:
         return self.xl
 
     @session_low.setter
-    def session_low(self, value: Optional[DecimalModel]) -> None:
+    def session_low(self, value: Optional[Decimal]) -> None:
         self.xl = value
 
     @property
-    def session_open(self) -> Optional[DecimalModel]:
+    def session_open(self) -> Optional[Decimal]:
         return self.xo
 
     @session_open.setter
-    def session_open(self, value: Optional[DecimalModel]) -> None:
+    def session_open(self, value: Optional[Decimal]) -> None:
         self.xo = value
 
     @property
-    def session_volume(self) -> Optional[DecimalModel]:
+    def session_volume(self) -> Optional[Decimal]:
         return self.xv
 
     @session_volume.setter
-    def session_volume(self, value: Optional[DecimalModel]) -> None:
+    def session_volume(self, value: Optional[Decimal]) -> None:
         self.xv = value
 
 
@@ -433,8 +500,8 @@ TraderIdOrEmail = str
 
 
 class TwapStatus(Struct):
-    quantity_filled: DecimalModel
-    realized_twap: Optional[DecimalModel] = None
+    quantity_filled: Decimal
+    realized_twap: Optional[Decimal] = None
 
 
 UserId = str
@@ -504,7 +571,7 @@ class ProductType5(Struct):
 class ProductType6(Struct):
     derivative_kind: DerivativeKind
     expiration: str
-    multiplier: DecimalModel
+    multiplier: Decimal
     product_type: Literal["Future"]
     first_notice_date: Optional[str] = None
     series: Optional[str] = None
@@ -513,7 +580,7 @@ class ProductType6(Struct):
 
 class ProductType8(Struct):
     derivative_kind: DerivativeKind
-    multiplier: DecimalModel
+    multiplier: Decimal
     product_type: Literal["Perpetual"]
     underlying: Optional[str] = None
 
@@ -539,10 +606,10 @@ SnapshotOrUpdateForStringAndString = Union[
 
 
 class TickSize1(Struct):
-    simple: DecimalModel
+    simple: Decimal
 
 
-Threshold = List[DecimalModel]
+Threshold = List[Decimal]
 
 
 class Varying(Struct):
@@ -1163,7 +1230,7 @@ AccountName = str
 
 
 class OptionLike(Struct):
-    strike: DecimalModel
+    strike: Decimal
     expiration: Optional[str] = None
 
 
@@ -1174,7 +1241,7 @@ class EventContractSeriesInstance2(Struct):
 class SpreadLeg(Struct):
     product: str
     quantity: Annotated[
-        DecimalModel,
+        Decimal,
         Meta(
             description="Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1"
         ),
@@ -1204,12 +1271,12 @@ class AberrantFill(Struct):
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
     ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
     d: Optional[Annotated[Optional[Dir], Meta(title="direction")]] = None
-    f: Optional[Annotated[Optional[DecimalModel], Meta(title="fee")]] = None
+    f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
     fu: Optional[Annotated[Optional[str], Meta(title="fee_currency")]] = None
     k: Optional[Annotated[Optional[FillKind], Meta(title="fill_kind")]] = None
     oid: Optional[Annotated[Optional[OrderId], Meta(title="order_id")]] = None
-    p: Optional[Annotated[Optional[DecimalModel], Meta(title="price")]] = None
-    q: Optional[Annotated[Optional[DecimalModel], Meta(title="quantity")]] = None
+    p: Optional[Annotated[Optional[Decimal], Meta(title="price")]] = None
+    q: Optional[Annotated[Optional[Decimal], Meta(title="quantity")]] = None
     s: Optional[Annotated[Optional[str], Meta(title="symbol")]] = None
     tn: Optional[Annotated[Optional[int], Meta(ge=0, title="trade_time_ns")]] = None
     ts: Optional[Annotated[Optional[int], Meta(title="trade_time")]] = None
@@ -1265,11 +1332,11 @@ class AberrantFill(Struct):
         self.d = value
 
     @property
-    def fee(self) -> Optional[DecimalModel]:
+    def fee(self) -> Optional[Decimal]:
         return self.f
 
     @fee.setter
-    def fee(self, value: Optional[DecimalModel]) -> None:
+    def fee(self, value: Optional[Decimal]) -> None:
         self.f = value
 
     @property
@@ -1297,19 +1364,19 @@ class AberrantFill(Struct):
         self.oid = value
 
     @property
-    def price(self) -> Optional[DecimalModel]:
+    def price(self) -> Optional[Decimal]:
         return self.p
 
     @price.setter
-    def price(self, value: Optional[DecimalModel]) -> None:
+    def price(self, value: Optional[Decimal]) -> None:
         self.p = value
 
     @property
-    def quantity(self) -> Optional[DecimalModel]:
+    def quantity(self) -> Optional[Decimal]:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: Optional[DecimalModel]) -> None:
+    def quantity(self, value: Optional[Decimal]) -> None:
         self.q = value
 
     @property
@@ -1353,79 +1420,6 @@ class AberrantFill(Struct):
         self.xid = value
 
 
-class AccountPosition(Struct):
-    quantity: DecimalModel
-    break_even_price: Optional[DecimalModel] = None
-    cost_basis: Optional[
-        Annotated[
-            Optional[DecimalModel],
-            Meta(description="Cost basis of the position, if known."),
-        ]
-    ] = None
-    """
-    Cost basis of the position, if known.
-    """
-    liquidation_price: Optional[DecimalModel] = None
-    trade_time: Optional[
-        Annotated[
-            Optional[str],
-            Meta(description="NB: the meaning of this field varies by reporting venue"),
-        ]
-    ] = None
-    """
-    NB: the meaning of this field varies by reporting venue
-    """
-    unrealized_pnl: Optional[
-        Annotated[
-            Optional[DecimalModel],
-            Meta(description="Unrealized PNL of the position, if known."),
-        ]
-    ] = None
-    """
-    Unrealized PNL of the position, if known.
-    """
-
-
-class AccountSummary(Struct):
-    account: str
-    balances: Dict[str, DecimalModel]
-    positions: Dict[str, List[AccountPosition]]
-    timestamp: str
-    cash_excess: Optional[
-        Annotated[
-            Optional[DecimalModel], Meta(description="Cash available to withdraw.")
-        ]
-    ] = None
-    """
-    Cash available to withdraw.
-    """
-    equity: Optional[DecimalModel] = None
-    position_margin: Optional[
-        Annotated[
-            Optional[DecimalModel],
-            Meta(description="Margin requirement based on current positions only."),
-        ]
-    ] = None
-    """
-    Margin requirement based on current positions only.
-    """
-    purchasing_power: Optional[DecimalModel] = None
-    realized_pnl: Optional[DecimalModel] = None
-    total_margin: Optional[
-        Annotated[
-            Optional[DecimalModel],
-            Meta(
-                description="Margin requirement calculated for worst-case based on open positions and working orders."
-            ),
-        ]
-    ] = None
-    """
-    Margin requirement calculated for worst-case based on open positions and working orders.
-    """
-    unrealized_pnl: Optional[DecimalModel] = None
-    yesterday_equity: Optional[DecimalModel] = None
-
-
 class Cancel(Struct):
     id: OrderId
     o: CancelStatus
@@ -1436,44 +1430,44 @@ class Cancel(Struct):
 
 
 class Candle(Struct):
-    av: Annotated[DecimalModel, Meta(title="sell_volume")]
-    bv: Annotated[DecimalModel, Meta(title="buy_volume")]
+    av: Annotated[Decimal, Meta(title="sell_volume")]
+    bv: Annotated[Decimal, Meta(title="buy_volume")]
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
-    v: Annotated[DecimalModel, Meta(title="volume")]
+    v: Annotated[Decimal, Meta(title="volume")]
     w: Annotated[CandleWidth, Meta(title="width")]
-    ac: Optional[Annotated[Optional[DecimalModel], Meta(title="ask_close")]] = None
-    ah: Optional[Annotated[Optional[DecimalModel], Meta(title="ask_high")]] = None
-    al: Optional[Annotated[Optional[DecimalModel], Meta(title="ask_low")]] = None
-    ao: Optional[Annotated[Optional[DecimalModel], Meta(title="ask_open")]] = None
-    bc: Optional[Annotated[Optional[DecimalModel], Meta(title="bid_close")]] = None
-    bh: Optional[Annotated[Optional[DecimalModel], Meta(title="bid_high")]] = None
-    bl: Optional[Annotated[Optional[DecimalModel], Meta(title="bid_low")]] = None
-    bo: Optional[Annotated[Optional[DecimalModel], Meta(title="bid_open")]] = None
-    c: Optional[Annotated[Optional[DecimalModel], Meta(title="close")]] = None
-    h: Optional[Annotated[Optional[DecimalModel], Meta(title="high")]] = None
-    l: Optional[Annotated[Optional[DecimalModel], Meta(title="low")]] = None
-    mc: Optional[Annotated[Optional[DecimalModel], Meta(title="mid_close")]] = None
-    mh: Optional[Annotated[Optional[DecimalModel], Meta(title="mid_high")]] = None
-    ml: Optional[Annotated[Optional[DecimalModel], Meta(title="mid_low")]] = None
-    mo: Optional[Annotated[Optional[DecimalModel], Meta(title="mid_open")]] = None
-    o: Optional[Annotated[Optional[DecimalModel], Meta(title="open")]] = None
+    ac: Optional[Annotated[Optional[Decimal], Meta(title="ask_close")]] = None
+    ah: Optional[Annotated[Optional[Decimal], Meta(title="ask_high")]] = None
+    al: Optional[Annotated[Optional[Decimal], Meta(title="ask_low")]] = None
+    ao: Optional[Annotated[Optional[Decimal], Meta(title="ask_open")]] = None
+    bc: Optional[Annotated[Optional[Decimal], Meta(title="bid_close")]] = None
+    bh: Optional[Annotated[Optional[Decimal], Meta(title="bid_high")]] = None
+    bl: Optional[Annotated[Optional[Decimal], Meta(title="bid_low")]] = None
+    bo: Optional[Annotated[Optional[Decimal], Meta(title="bid_open")]] = None
+    c: Optional[Annotated[Optional[Decimal], Meta(title="close")]] = None
+    h: Optional[Annotated[Optional[Decimal], Meta(title="high")]] = None
+    l: Optional[Annotated[Optional[Decimal], Meta(title="low")]] = None
+    mc: Optional[Annotated[Optional[Decimal], Meta(title="mid_close")]] = None
+    mh: Optional[Annotated[Optional[Decimal], Meta(title="mid_high")]] = None
+    ml: Optional[Annotated[Optional[Decimal], Meta(title="mid_low")]] = None
+    mo: Optional[Annotated[Optional[Decimal], Meta(title="mid_open")]] = None
+    o: Optional[Annotated[Optional[Decimal], Meta(title="open")]] = None
 
     @property
-    def sell_volume(self) -> DecimalModel:
+    def sell_volume(self) -> Decimal:
         return self.av
 
     @sell_volume.setter
-    def sell_volume(self, value: DecimalModel) -> None:
+    def sell_volume(self, value: Decimal) -> None:
         self.av = value
 
     @property
-    def buy_volume(self) -> DecimalModel:
+    def buy_volume(self) -> Decimal:
         return self.bv
 
     @buy_volume.setter
-    def buy_volume(self, value: DecimalModel) -> None:
+    def buy_volume(self, value: Decimal) -> None:
         self.bv = value
 
     @property
@@ -1509,11 +1503,11 @@ class Candle(Struct):
         return datetime.fromtimestamp(self.ts)
 
     @property
-    def volume(self) -> DecimalModel:
+    def volume(self) -> Decimal:
         return self.v
 
     @volume.setter
-    def volume(self, value: DecimalModel) -> None:
+    def volume(self, value: Decimal) -> None:
         self.v = value
 
     @property
@@ -1525,131 +1519,131 @@ class Candle(Struct):
         self.w = value
 
     @property
-    def ask_close(self) -> Optional[DecimalModel]:
+    def ask_close(self) -> Optional[Decimal]:
         return self.ac
 
     @ask_close.setter
-    def ask_close(self, value: Optional[DecimalModel]) -> None:
+    def ask_close(self, value: Optional[Decimal]) -> None:
         self.ac = value
 
     @property
-    def ask_high(self) -> Optional[DecimalModel]:
+    def ask_high(self) -> Optional[Decimal]:
         return self.ah
 
     @ask_high.setter
-    def ask_high(self, value: Optional[DecimalModel]) -> None:
+    def ask_high(self, value: Optional[Decimal]) -> None:
         self.ah = value
 
     @property
-    def ask_low(self) -> Optional[DecimalModel]:
+    def ask_low(self) -> Optional[Decimal]:
         return self.al
 
     @ask_low.setter
-    def ask_low(self, value: Optional[DecimalModel]) -> None:
+    def ask_low(self, value: Optional[Decimal]) -> None:
         self.al = value
 
     @property
-    def ask_open(self) -> Optional[DecimalModel]:
+    def ask_open(self) -> Optional[Decimal]:
         return self.ao
 
     @ask_open.setter
-    def ask_open(self, value: Optional[DecimalModel]) -> None:
+    def ask_open(self, value: Optional[Decimal]) -> None:
         self.ao = value
 
     @property
-    def bid_close(self) -> Optional[DecimalModel]:
+    def bid_close(self) -> Optional[Decimal]:
         return self.bc
 
     @bid_close.setter
-    def bid_close(self, value: Optional[DecimalModel]) -> None:
+    def bid_close(self, value: Optional[Decimal]) -> None:
         self.bc = value
 
     @property
-    def bid_high(self) -> Optional[DecimalModel]:
+    def bid_high(self) -> Optional[Decimal]:
         return self.bh
 
     @bid_high.setter
-    def bid_high(self, value: Optional[DecimalModel]) -> None:
+    def bid_high(self, value: Optional[Decimal]) -> None:
         self.bh = value
 
     @property
-    def bid_low(self) -> Optional[DecimalModel]:
+    def bid_low(self) -> Optional[Decimal]:
         return self.bl
 
     @bid_low.setter
-    def bid_low(self, value: Optional[DecimalModel]) -> None:
+    def bid_low(self, value: Optional[Decimal]) -> None:
         self.bl = value
 
     @property
-    def bid_open(self) -> Optional[DecimalModel]:
+    def bid_open(self) -> Optional[Decimal]:
         return self.bo
 
     @bid_open.setter
-    def bid_open(self, value: Optional[DecimalModel]) -> None:
+    def bid_open(self, value: Optional[Decimal]) -> None:
         self.bo = value
 
     @property
-    def close(self) -> Optional[DecimalModel]:
+    def close(self) -> Optional[Decimal]:
         return self.c
 
     @close.setter
-    def close(self, value: Optional[DecimalModel]) -> None:
+    def close(self, value: Optional[Decimal]) -> None:
         self.c = value
 
     @property
-    def high(self) -> Optional[DecimalModel]:
+    def high(self) -> Optional[Decimal]:
         return self.h
 
     @high.setter
-    def high(self, value: Optional[DecimalModel]) -> None:
+    def high(self, value: Optional[Decimal]) -> None:
         self.h = value
 
     @property
-    def low(self) -> Optional[DecimalModel]:
+    def low(self) -> Optional[Decimal]:
         return self.l
 
     @low.setter
-    def low(self, value: Optional[DecimalModel]) -> None:
+    def low(self, value: Optional[Decimal]) -> None:
         self.l = value
 
     @property
-    def mid_close(self) -> Optional[DecimalModel]:
+    def mid_close(self) -> Optional[Decimal]:
         return self.mc
 
     @mid_close.setter
-    def mid_close(self, value: Optional[DecimalModel]) -> None:
+    def mid_close(self, value: Optional[Decimal]) -> None:
         self.mc = value
 
     @property
-    def mid_high(self) -> Optional[DecimalModel]:
+    def mid_high(self) -> Optional[Decimal]:
         return self.mh
 
     @mid_high.setter
-    def mid_high(self, value: Optional[DecimalModel]) -> None:
+    def mid_high(self, value: Optional[Decimal]) -> None:
         self.mh = value
 
     @property
-    def mid_low(self) -> Optional[DecimalModel]:
+    def mid_low(self) -> Optional[Decimal]:
         return self.ml
 
     @mid_low.setter
-    def mid_low(self, value: Optional[DecimalModel]) -> None:
+    def mid_low(self, value: Optional[Decimal]) -> None:
         self.ml = value
 
     @property
-    def mid_open(self) -> Optional[DecimalModel]:
+    def mid_open(self) -> Optional[Decimal]:
         return self.mo
 
     @mid_open.setter
-    def mid_open(self, value: Optional[DecimalModel]) -> None:
+    def mid_open(self, value: Optional[Decimal]) -> None:
         self.mo = value
 
     @property
-    def open(self) -> Optional[DecimalModel]:
+    def open(self) -> Optional[Decimal]:
         return self.o
 
     @open.setter
-    def open(self, value: Optional[DecimalModel]) -> None:
+    def open(self, value: Optional[Decimal]) -> None:
         self.o = value
 
 
@@ -1660,9 +1654,9 @@ class ExecutionInfo(Struct):
 
     execution_venue: str
     is_delisted: bool
-    min_order_quantity: DecimalModel
+    min_order_quantity: Decimal
     min_order_quantity_unit: MinOrderQuantityUnit
-    step_size: DecimalModel
+    step_size: Decimal
     tick_size: TickSize
     exchange_symbol: Optional[
         Annotated[
@@ -1675,16 +1669,16 @@ class ExecutionInfo(Struct):
     """
     If the execution venue has stable symbology, this may be populated
     """
-    initial_margin: Optional[DecimalModel] = None
-    maintenance_margin: Optional[DecimalModel] = None
+    initial_margin: Optional[Decimal] = None
+    maintenance_margin: Optional[Decimal] = None
 
 
 class Fill(Struct):
     d: Annotated[Dir, Meta(title="direction")]
     id: Annotated[str, Meta(title="fill_id")]
     k: Annotated[FillKind, Meta(title="fill_kind")]
-    p: Annotated[DecimalModel, Meta(title="price")]
-    q: Annotated[DecimalModel, Meta(title="quantity")]
+    p: Annotated[Decimal, Meta(title="price")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="trade_time_ns")]
     ts: Annotated[
@@ -1709,7 +1703,7 @@ class Fill(Struct):
     """
     When Architect received the fill, if realtime
     """
-    f: Optional[Annotated[Optional[DecimalModel], Meta(title="fee")]] = None
+    f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
     fu: Optional[
         Annotated[
             Optional[str],
@@ -1752,19 +1746,19 @@ class Fill(Struct):
         self.k = value
 
     @property
-    def price(self) -> DecimalModel:
+    def price(self) -> Decimal:
         return self.p
 
     @price.setter
-    def price(self, value: DecimalModel) -> None:
+    def price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def quantity(self) -> DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -1824,11 +1818,11 @@ class Fill(Struct):
         self.ats = value
 
     @property
-    def fee(self) -> Optional[DecimalModel]:
+    def fee(self) -> Optional[Decimal]:
         return self.f
 
     @fee.setter
-    def fee(self, value: Optional[DecimalModel]) -> None:
+    def fee(self, value: Optional[Decimal]) -> None:
         self.f = value
 
     @property
@@ -1878,10 +1872,10 @@ class OptionsSeriesInfo(Struct):
     expiration_time_of_day: str
     expiration_time_zone: TimeZone
     is_cash_settled: bool
-    multiplier: DecimalModel
+    multiplier: Decimal
     options_series: str
     quote_symbol: str
-    strikes_by_expiration: Dict[str, List[DecimalModel]]
+    strikes_by_expiration: Dict[str, List[Decimal]]
     underlying: str
     venue_discriminant: Optional[str] = None
 
@@ -1891,7 +1885,7 @@ class Order4(Struct):
     d: Annotated[Dir, Meta(title="dir")]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title="status")]
-    q: Annotated[DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[OrderSource, Meta(title="source")]
     tif: Annotated[TimeInForce, Meta(title="time_in_force")]
@@ -1899,9 +1893,9 @@ class Order4(Struct):
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[DecimalModel, Meta(title="filled_quantity")]
+    xq: Annotated[Decimal, Meta(title="filled_quantity")]
     k: Literal["LIMIT"]
-    p: Annotated[DecimalModel, Meta(title="limit_price")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[OrderId], Meta(title="parent_id")]] = None
@@ -1909,9 +1903,7 @@ class Order4(Struct):
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[
-        Annotated[Optional[DecimalModel], Meta(title="average_fill_price")]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
 
     @property
     def account(self) -> str:
@@ -1938,11 +1930,11 @@ class Order4(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -2002,19 +1994,19 @@ class Order4(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> DecimalModel:
+    def filled_quantity(self) -> Decimal:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: DecimalModel) -> None:
+    def filled_quantity(self, value: Decimal) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
@@ -2058,11 +2050,11 @@ class Order4(Struct):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[DecimalModel]:
+    def average_fill_price(self) -> Optional[Decimal]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[DecimalModel]) -> None:
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
         self.xp = value
 
 
@@ -2071,7 +2063,7 @@ class Order5(Struct):
     d: Annotated[Dir, Meta(title="dir")]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title="status")]
-    q: Annotated[DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[OrderSource, Meta(title="source")]
     tif: Annotated[TimeInForce, Meta(title="time_in_force")]
@@ -2079,19 +2071,17 @@ class Order5(Struct):
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[DecimalModel, Meta(title="filled_quantity")]
+    xq: Annotated[Decimal, Meta(title="filled_quantity")]
     k: Literal["STOP_LOSS_LIMIT"]
-    p: Annotated[DecimalModel, Meta(title="limit_price")]
-    tp: Annotated[DecimalModel, Meta(title="trigger_price")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    tp: Annotated[Decimal, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[OrderId], Meta(title="parent_id")]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title="reject_reason")]] = (
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[
-        Annotated[Optional[DecimalModel], Meta(title="average_fill_price")]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
 
     @property
     def account(self) -> str:
@@ -2118,11 +2108,11 @@ class Order5(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -2182,27 +2172,27 @@ class Order5(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> DecimalModel:
+    def filled_quantity(self) -> Decimal:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: DecimalModel) -> None:
+    def filled_quantity(self, value: Decimal) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> DecimalModel:
+    def trigger_price(self) -> Decimal:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: DecimalModel) -> None:
+    def trigger_price(self, value: Decimal) -> None:
         self.tp = value
 
     @property
@@ -2238,11 +2228,11 @@ class Order5(Struct):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[DecimalModel]:
+    def average_fill_price(self) -> Optional[Decimal]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[DecimalModel]) -> None:
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
         self.xp = value
 
 
@@ -2251,7 +2241,7 @@ class Order6(Struct):
     d: Annotated[Dir, Meta(title="dir")]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title="status")]
-    q: Annotated[DecimalModel, Meta(title="quantity")]
+    q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[OrderSource, Meta(title="source")]
     tif: Annotated[TimeInForce, Meta(title="time_in_force")]
@@ -2259,19 +2249,17 @@ class Order6(Struct):
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[DecimalModel, Meta(title="filled_quantity")]
+    xq: Annotated[Decimal, Meta(title="filled_quantity")]
     k: Literal["TAKE_PROFIT_LIMIT"]
-    p: Annotated[DecimalModel, Meta(title="limit_price")]
-    tp: Annotated[DecimalModel, Meta(title="trigger_price")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    tp: Annotated[Decimal, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[OrderId], Meta(title="parent_id")]] = None
     r: Optional[Annotated[Optional[OrderRejectReason], Meta(title="reject_reason")]] = (
         None
     )
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[
-        Annotated[Optional[DecimalModel], Meta(title="average_fill_price")]
-    ] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
 
     @property
     def account(self) -> str:
@@ -2298,11 +2286,11 @@ class Order6(Struct):
         self.o = value
 
     @property
-    def quantity(self) -> DecimalModel:
+    def quantity(self) -> Decimal:
         return self.q
 
     @quantity.setter
-    def quantity(self, value: DecimalModel) -> None:
+    def quantity(self, value: Decimal) -> None:
         self.q = value
 
     @property
@@ -2362,27 +2350,27 @@ class Order6(Struct):
         self.ve = value
 
     @property
-    def filled_quantity(self) -> DecimalModel:
+    def filled_quantity(self) -> Decimal:
         return self.xq
 
     @filled_quantity.setter
-    def filled_quantity(self, value: DecimalModel) -> None:
+    def filled_quantity(self, value: Decimal) -> None:
         self.xq = value
 
     @property
-    def limit_price(self) -> DecimalModel:
+    def limit_price(self) -> Decimal:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: DecimalModel) -> None:
+    def limit_price(self, value: Decimal) -> None:
         self.p = value
 
     @property
-    def trigger_price(self) -> DecimalModel:
+    def trigger_price(self) -> Decimal:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: DecimalModel) -> None:
+    def trigger_price(self, value: Decimal) -> None:
         self.tp = value
 
     @property
@@ -2418,11 +2406,11 @@ class Order6(Struct):
         self.rm = value
 
     @property
-    def average_fill_price(self) -> Optional[DecimalModel]:
+    def average_fill_price(self) -> Optional[Decimal]:
         return self.xp
 
     @average_fill_price.setter
-    def average_fill_price(self, value: Optional[DecimalModel]) -> None:
+    def average_fill_price(self, value: Optional[Decimal]) -> None:
         self.xp = value
 
 
@@ -2468,10 +2456,10 @@ class TwapParams(Struct):
     end_time: str
     execution_venue: str
     interval: HumanDuration
-    quantity: DecimalModel
+    quantity: Decimal
     reject_lockout: HumanDuration
     symbol: str
-    take_through_frac: Optional[DecimalModel] = None
+    take_through_frac: Optional[Decimal] = None
 
 
 class Account(Struct):
@@ -2521,7 +2509,7 @@ class OptionsSeriesInstance(Struct):
 
     expiration: str
     put_or_call: PutOrCall
-    strike: DecimalModel
+    strike: Decimal
 
 
 class AccountWithPermissions(Struct):

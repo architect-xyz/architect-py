@@ -16,10 +16,12 @@
       ],
       "items": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         }
       ],
       "maxItems": 2,
@@ -33,10 +35,12 @@
       ],
       "items": [
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         },
         {
-          "$ref": "../definitions.json#/Decimal"
+          "type": "number",
+          "format": "decimal"
         }
       ],
       "maxItems": 2,
