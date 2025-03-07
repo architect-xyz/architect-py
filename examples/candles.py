@@ -9,7 +9,7 @@ from .common import create_async_client
 
 
 async def main():
-    c: AsyncClient = create_async_client()
+    c: AsyncClient = await create_async_client()
     symbol = "ES 20250321 CME Future"
     quote = "USD"
     tradable_product = TradableProduct(symbol, quote)
@@ -18,7 +18,7 @@ async def main():
         stream = c.subscribe_candles_stream(
             tradable_product,
             venue,
-            candle_widths=[CandleWidth.integer_1],
+            candle_widths=[CandleWidth.OneHour],
         )
         async for candle in stream:
             print(candle)

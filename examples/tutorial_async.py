@@ -3,13 +3,14 @@ from decimal import Decimal
 
 from architect_py.async_client import AsyncClient, OrderDir
 from architect_py.graphql_client.enums import OrderStatus
+from architect_py.scalars import TradableProduct
 from examples.common import create_async_client
 
 
 async def main():
-    c = create_async_client()
+    c = await create_async_client()
 
-    market = "ES 20281215 CME Future/US"
+    market = TradableProduct("ES 20281215 CME Future/US")
     execution_venue = "CME"
 
     # Get market snapshot for a single market
