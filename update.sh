@@ -6,6 +6,11 @@ set -euo pipefail
 # Check schema
 
 ARCHITECT_FOLDER_PATH="../architect"
+if [[ ! -d "$ARCHITECT_FOLDER_PATH" ]]; then
+    printf "Error: Directory $ARCHITECT_FOLDER_PATH does not exist."
+    printf "Please update the ARCHITECT_FOLDER_PATH path in the update script."
+    exit 1
+fi
 
 if ! cmp -s schema.graphql $ARCHITECT_FOLDER_PATH/gql/schema.graphql; then
     printf "Schema has changed. Updating schema (y/n)?"
@@ -28,7 +33,7 @@ PROCESSED_DIR="processed_schemas"
 printf "\nRegenerating gRPC models\n"
 rm -rf "${PROCESSED_DIR:?}"/*
 find "$GRPC_CLIENT_DIR" -mindepth 1 -type d -exec rm -rf {} +
-python preprocess_grpc_types.py --output_dir "$PROCESSED_DIR"
+python preprocess_grpc_types.py --architect_dir "$ARCHITECT_FOLDER_PATH" --output_dir "$PROCESSED_DIR"
 
 mkdir -p "$GRPC_CLIENT_DIR"
 
@@ -86,9 +91,8 @@ fi
 
 post_process_file "definitions.json"
 
-echo -e "# Copied gRPC client from templates folder\n" > architect_py/grpc_client/__init__.py
-cat templates/grpc_client.py >> architect_py/grpc_client/__init__.py
-
+echo "# datamodel-code-generator stomps on the __init__.py file so we import from adjacent file" > architect_py/grpc_client/__init__.py
+echo "from .grpc_client import *" >> architect_py/grpc_client/__init__.py
 
 
 # ariadne codegen
