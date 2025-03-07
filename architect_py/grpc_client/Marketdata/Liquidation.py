@@ -13,7 +13,7 @@ from .. import definitions
 
 
 class Liquidation(Struct):
-    d: Annotated[definitions.Dir, Meta(title="direction")]
+    d: Annotated[OrderDir, Meta(title="direction")]
     p: Annotated[Decimal, Meta(title="price")]
     q: Annotated[Decimal, Meta(title="size")]
     s: Annotated[str, Meta(title="symbol")]
@@ -21,11 +21,11 @@ class Liquidation(Struct):
     ts: Annotated[int, Meta(title="timestamp")]
 
     @property
-    def direction(self) -> definitions.Dir:
+    def direction(self) -> OrderDir:
         return self.d
 
     @direction.setter
-    def direction(self, value: definitions.Dir) -> None:
+    def direction(self, value: OrderDir) -> None:
         self.d = value
 
     @property

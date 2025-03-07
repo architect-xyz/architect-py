@@ -320,6 +320,12 @@ def fix_lines(file_path: str) -> None:
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")
 
+    if any("definitions.dir" in line for line in lines):
+        lines.insert(4, "from architect_py.scalars import OrderDir\n")
+
+    lines = list(map(lambda l: l.replace("Dir", "OrderDir"), lines))
+    lines = list(map(lambda l: l.replace("definitions.OrderDir", "OrderDir"), lines))
+
     with open(file_path, "w", encoding="utf-8") as f:
         f.writelines(lines)
 

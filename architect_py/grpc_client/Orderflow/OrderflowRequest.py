@@ -13,7 +13,7 @@ from .. import definitions
 
 
 class OrderflowRequest1(Struct):
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["p"]
@@ -47,11 +47,11 @@ class OrderflowRequest1(Struct):
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -148,7 +148,7 @@ class OrderflowRequest1(Struct):
 
 
 class OrderflowRequest2(Struct):
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["p"]
@@ -182,11 +182,11 @@ class OrderflowRequest2(Struct):
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -283,7 +283,7 @@ class OrderflowRequest2(Struct):
 
 
 class OrderflowRequest3(Struct):
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     t: Literal["p"]
@@ -317,11 +317,11 @@ class OrderflowRequest3(Struct):
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property

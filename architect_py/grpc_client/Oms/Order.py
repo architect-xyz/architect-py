@@ -13,7 +13,7 @@ from .. import definitions
 
 class Order1(Struct, tag_field="k", tag="LIMIT"):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -46,11 +46,11 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
         self.a = value
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -192,7 +192,7 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
 
 class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -225,11 +225,11 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
         self.a = value
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -371,7 +371,7 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
 
 class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -404,11 +404,11 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
         self.a = value
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property

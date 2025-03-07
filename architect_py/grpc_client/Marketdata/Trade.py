@@ -18,7 +18,7 @@ class Trade(Struct):
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
-    d: Optional[Annotated[Optional[definitions.Dir], Meta(title="direction")]] = None
+    d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
 
     @property
     def price(self) -> Decimal:
@@ -69,9 +69,9 @@ class Trade(Struct):
         return datetime.fromtimestamp(self.ts)
 
     @property
-    def direction(self) -> Optional[definitions.Dir]:
+    def direction(self) -> Optional[OrderDir]:
         return self.d
 
     @direction.setter
-    def direction(self, value: Optional[definitions.Dir]) -> None:
+    def direction(self, value: Optional[OrderDir]) -> None:
         self.d = value

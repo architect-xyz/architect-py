@@ -13,7 +13,7 @@ from .. import definitions
 
 
 class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
@@ -45,11 +45,11 @@ class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -146,7 +146,7 @@ class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
 
 
 class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
@@ -178,11 +178,11 @@ class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -279,7 +279,7 @@ class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
 
 
 class PlaceOrderRequest3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
@@ -311,11 +311,11 @@ class PlaceOrderRequest3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property

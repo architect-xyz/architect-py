@@ -108,7 +108,7 @@ class CandleWidth(int, Enum):
     integer_32 = 32
 
 
-class Dir(str, Enum):
+class OrderDir(str, Enum):
     """
     An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
     """
@@ -1270,7 +1270,7 @@ class AberrantFill(Struct):
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
     ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
-    d: Optional[Annotated[Optional[Dir], Meta(title="direction")]] = None
+    d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
     f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
     fu: Optional[Annotated[Optional[str], Meta(title="fee_currency")]] = None
     k: Optional[Annotated[Optional[FillKind], Meta(title="fill_kind")]] = None
@@ -1324,11 +1324,11 @@ class AberrantFill(Struct):
         self.ats = value
 
     @property
-    def direction(self) -> Optional[Dir]:
+    def direction(self) -> Optional[OrderDir]:
         return self.d
 
     @direction.setter
-    def direction(self, value: Optional[Dir]) -> None:
+    def direction(self, value: Optional[OrderDir]) -> None:
         self.d = value
 
     @property
@@ -1674,7 +1674,7 @@ class ExecutionInfo(Struct):
 
 
 class Fill(Struct):
-    d: Annotated[Dir, Meta(title="direction")]
+    d: Annotated[OrderDir, Meta(title="direction")]
     id: Annotated[str, Meta(title="fill_id")]
     k: Annotated[FillKind, Meta(title="fill_kind")]
     p: Annotated[Decimal, Meta(title="price")]
@@ -1722,11 +1722,11 @@ class Fill(Struct):
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
     @property
-    def direction(self) -> Dir:
+    def direction(self) -> OrderDir:
         return self.d
 
     @direction.setter
-    def direction(self, value: Dir) -> None:
+    def direction(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -1882,7 +1882,7 @@ class OptionsSeriesInfo(Struct):
 
 class Order4(Struct):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -1914,11 +1914,11 @@ class Order4(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -2060,7 +2060,7 @@ class Order4(Struct):
 
 class Order5(Struct):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -2092,11 +2092,11 @@ class Order5(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -2238,7 +2238,7 @@ class Order5(Struct):
 
 class Order6(Struct):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: OrderId
     o: Annotated[OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -2270,11 +2270,11 @@ class Order6(Struct):
         self.a = value
 
     @property
-    def dir(self) -> Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -2452,7 +2452,7 @@ SnapshotOrUpdateForStringAndOptionsSeriesInfo = Union[
 
 
 class TwapParams(Struct):
-    dir: Dir
+    dir: OrderDir
     end_time: str
     execution_venue: str
     interval: HumanDuration

@@ -13,7 +13,7 @@ from .. import definitions
 
 class Dropcopy1(Struct):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -48,11 +48,11 @@ class Dropcopy1(Struct):
         self.a = value
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -194,7 +194,7 @@ class Dropcopy1(Struct):
 
 class Dropcopy2(Struct):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -229,11 +229,11 @@ class Dropcopy2(Struct):
         self.a = value
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -375,7 +375,7 @@ class Dropcopy2(Struct):
 
 class Dropcopy3(Struct):
     a: Annotated[str, Meta(title="account")]
-    d: Annotated[definitions.Dir, Meta(title="dir")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
     o: Annotated[definitions.OrderStatus, Meta(title="status")]
     q: Annotated[Decimal, Meta(title="quantity")]
@@ -410,11 +410,11 @@ class Dropcopy3(Struct):
         self.a = value
 
     @property
-    def dir(self) -> definitions.Dir:
+    def dir(self) -> OrderDir:
         return self.d
 
     @dir.setter
-    def dir(self, value: definitions.Dir) -> None:
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -555,7 +555,7 @@ class Dropcopy3(Struct):
 
 
 class Dropcopy4(Struct):
-    d: Annotated[definitions.Dir, Meta(title="direction")]
+    d: Annotated[OrderDir, Meta(title="direction")]
     id: Annotated[str, Meta(title="fill_id")]
     k: Annotated[definitions.FillKind, Meta(title="fill_kind")]
     p: Annotated[Decimal, Meta(title="price")]
@@ -605,11 +605,11 @@ class Dropcopy4(Struct):
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
     @property
-    def direction(self) -> definitions.Dir:
+    def direction(self) -> OrderDir:
         return self.d
 
     @direction.setter
-    def direction(self, value: definitions.Dir) -> None:
+    def direction(self, value: OrderDir) -> None:
         self.d = value
 
     @property
@@ -759,7 +759,7 @@ class Dropcopy5(Struct, tag_field="t", tag="af"):
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
     ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
-    d: Optional[Annotated[Optional[definitions.Dir], Meta(title="direction")]] = None
+    d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
     f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
     fu: Optional[Annotated[Optional[str], Meta(title="fee_currency")]] = None
     k: Optional[Annotated[Optional[definitions.FillKind], Meta(title="fill_kind")]] = (
@@ -817,11 +817,11 @@ class Dropcopy5(Struct, tag_field="t", tag="af"):
         self.ats = value
 
     @property
-    def direction(self) -> Optional[definitions.Dir]:
+    def direction(self) -> Optional[OrderDir]:
         return self.d
 
     @direction.setter
-    def direction(self, value: Optional[definitions.Dir]) -> None:
+    def direction(self, value: Optional[OrderDir]) -> None:
         self.d = value
 
     @property
