@@ -50,14 +50,16 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 """
 TODO:
-- map Dir to OrderDir
-- map DecimalModel to Decimal
+- Fix Enums like CandleWidth and CancelStatus (not parsing numbers/titles correctly)
+- rewrite examples
+
 
 for decode, don't create your own decoder
 use the union types and tag values
 
 The decoder should be reused
 but it needs to be instantiated per response type
+
 """
 
 
@@ -184,7 +186,7 @@ class GRPCClient:
                 logger.error("Failed to refresh gRPC credentials: %s", e)
         return self.jwt
 
-    async def l2_book_snapshot(
+    async def request_l2_book_snapshot(
         self, venue: Optional[str], symbol: str
     ) -> L2BookSnapshot:
         return await self.request(L2BookSnapshotRequest, venue=venue, symbol=symbol)
@@ -227,13 +229,15 @@ class GRPCClient:
             self.l2_books[symbol] = L2BookSnapshot([], [], 0, 0, 0, 0)
         return self.l2_books[symbol]
 
-    def stream_l1_books(self, symbols: list[str]) -> AsyncIterator[L1BookSnapshot]:
+    async def subscribe_l1_books_stream(
+        self, symbols: list[str]
+    ) -> AsyncIterator[L1BookSnapshot]:
         return self.subscribe(
             SubscribeL1BookSnapshotsRequest,
             symbols=symbols,
         )
 
-    async def stream_l2_book(
+    async def subscribe_l2_books_stream(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
         decode_function: Callable[[bytes], L2BookUpdate] = (
@@ -255,7 +259,7 @@ class GRPCClient:
     async def watch_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> None:
-        async for up in self.stream_l2_book(symbol, venue):
+        async for up in self.subscribe_l2_books_stream(symbol, venue):
             if isinstance(up, Diff):  # elif up.t = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(

@@ -1,9 +1,6 @@
 import asyncio
 import pytest
 from architect_py.async_client import AsyncClient
-from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
-    SubscribeL1BookSnapshotsRequest,
-)
 from architect_py.scalars import TradableProduct
 
 from pytest_lazy_fixtures import lf
@@ -47,9 +44,7 @@ async def test_subscribe_l1_stream(
     [l1_book] = await async_client.subscribe_l1_book(symbols)
 
     i = 0
-    async for snap in async_client.grpc_client.subscribe(
-        SubscribeL1BookSnapshotsRequest, symbols=[symbol]
-    ):
+    async for snap in async_client.subscribe_l1_book_stream(symbols, venue):
         assert snap.best_bid is not None, f"{symbol} should always be bid"
         assert snap.best_ask is not None, f"{symbol} should always be offered"
         assert snap.best_bid[0] > 1_000, f"{symbol} should be > $1000"
@@ -76,7 +71,9 @@ async def test_subscribe_l2_stream(async_client: AsyncClient, front_ES_future: s
     ts = l2_book.timestamp
 
     i = 0
-    async for snap in async_client.grpc_client.stream_l2_book(symbol=tp, venue=venue):
+    async for snap in async_client.grpc_client.subscribe_l2_books_stream(
+        symbol=tp, venue=venue
+    ):
         assert snap is not None
         if i > 5:
             break
@@ -101,7 +98,7 @@ async def test_subscribe_cme_trades(async_client: AsyncClient):
         pytest.skip("market is not trading")
 
     i = 0
-    async for trade in async_client.subscribe_trades(market, venue):
+    async for trade in async_client.subscribe_trades_stream(market, venue):
         assert trade is not None, "trade from stream was None"
         if i > 3:
             break

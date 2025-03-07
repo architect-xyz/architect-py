@@ -5,6 +5,7 @@ from __future__ import annotations
 from architect_py.scalars import OrderDir
 from datetime import datetime, timezone
 
+from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
@@ -31,7 +32,7 @@ class AccountPosition(Struct):
     liquidation_price: Optional[Decimal] = None
     trade_time: Optional[
         Annotated[
-            Optional[str],
+            Optional[datetime],
             Meta(description="NB: the meaning of this field varies by reporting venue"),
         ]
     ] = None
@@ -53,7 +54,7 @@ class AccountSummary(Struct):
     account: str
     balances: Dict[str, Decimal]
     positions: Dict[str, List[AccountPosition]]
-    timestamp: str
+    timestamp: datetime
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
     ] = None
@@ -242,7 +243,7 @@ class Ticker(Struct):
     dividend_yield: Optional[Decimal] = None
     eps_adj: Optional[Decimal] = None
     fr: Optional[Annotated[Optional[Decimal], Meta(title="funding_rate")]] = None
-    ft: Optional[Annotated[Optional[str], Meta(title="next_funding_time")]] = None
+    ft: Optional[Annotated[Optional[datetime], Meta(title="next_funding_time")]] = None
     h: Optional[Annotated[Optional[Decimal], Meta(title="high_24h")]] = None
     ip: Optional[Annotated[Optional[Decimal], Meta(title="index_price")]] = None
     l: Optional[Annotated[Optional[Decimal], Meta(title="low_24h")]] = None
@@ -345,11 +346,11 @@ class Ticker(Struct):
         self.fr = value
 
     @property
-    def next_funding_time(self) -> Optional[str]:
+    def next_funding_time(self) -> Optional[datetime]:
         return self.ft
 
     @next_funding_time.setter
-    def next_funding_time(self, value: Optional[str]) -> None:
+    def next_funding_time(self, value: Optional[datetime]) -> None:
         self.ft = value
 
     @property
@@ -482,7 +483,7 @@ class TimeInForce1(str, Enum):
 
 
 class TimeInForce2(Struct):
-    GTD: str
+    GTD: datetime
 
 
 TimeInForce = Union[TimeInForce1, TimeInForce2, Literal["DAY"]]
@@ -562,10 +563,10 @@ class ProductType5(Struct):
 
 class ProductType6(Struct):
     derivative_kind: DerivativeKind
-    expiration: str
+    expiration: datetime
     multiplier: Decimal
     product_type: Literal["Future"]
-    first_notice_date: Optional[str] = None
+    first_notice_date: Optional[date] = None
     series: Optional[str] = None
     underlying: Optional[str] = None
 
@@ -1223,7 +1224,7 @@ AccountName = str
 
 class OptionLike(Struct):
     strike: Decimal
-    expiration: Optional[str] = None
+    expiration: Optional[datetime] = None
 
 
 class EventContractSeriesInstance2(Struct):
@@ -2445,7 +2446,7 @@ SnapshotOrUpdateForStringAndOptionsSeriesInfo = Union[
 
 class TwapParams(Struct):
     dir: OrderDir
-    end_time: str
+    end_time: datetime
     execution_venue: str
     interval: HumanDuration
     quantity: Decimal
@@ -2499,7 +2500,7 @@ class OptionsSeriesInstance(Struct):
     A specific option from a series.
     """
 
-    expiration: str
+    expiration: datetime
     put_or_call: PutOrCall
     strike: Decimal
 

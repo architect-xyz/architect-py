@@ -13,11 +13,13 @@ async def test_grpc(async_client: AsyncClient, front_ES_future: str):
     endpoint = "cme.marketdata.architect.co"
 
     tp = TradableProduct(front_ES_future, "USD")
-    snapshot = await async_client.grpc_client.l2_book_snapshot("CME", tp)
+    snapshot = await async_client.grpc_client.request_l2_book_snapshot("CME", tp)
     assert snapshot is not None
 
     i = 0
-    async for update in async_client.grpc_client.stream_l1_books([front_ES_future]):
+    async for update in await async_client.grpc_client.subscribe_l1_books_stream(
+        [front_ES_future]
+    ):
         assert update is not None
         if i == 100:
             break

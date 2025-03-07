@@ -18,14 +18,27 @@ import asyncio
 import logging
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, AsyncIterator, List, Optional, Sequence, cast
+from typing import Any, AsyncIterator, List, Optional, Sequence
 
 from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
+
+from architect_py.grpc_client.Marketdata.Candle import Candle
+from architect_py.grpc_client.Marketdata.HistoricalCandlesRequest import (
+    HistoricalCandlesRequest,
+)
+from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
+    HistoricalCandlesResponse,
+)
+import architect_py.grpc_client.definitions as grpc_definitions
 from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
+from architect_py.grpc_client.Marketdata.L2BookUpdate import L2BookUpdate
+from architect_py.grpc_client.Marketdata.SubscribeCandlesRequest import (
+    SubscribeCandlesRequest,
+)
 from architect_py.grpc_client.Marketdata.SubscribeTradesRequest import (
     SubscribeTradesRequest,
 )
@@ -36,7 +49,6 @@ from templates.exceptions import GraphQLClientGraphQLMultiError
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
-    CandleWidth,
     OrderType,
     TimeInForce,
 )
@@ -44,7 +56,6 @@ from .graphql_client.fragments import (
     AccountSummaryFields,
     AccountWithPermissionsFields,
     CancelFields,
-    CandleFields,
     ExecutionInfoFields,
     L2BookFields,
     MarketStatusFields,
@@ -634,14 +645,13 @@ class AsyncClient:
             venue=venue, symbols=symbols  # type: ignore
         )
 
-    async def get_candles_snapshot(
+    async def get_historical_candles(
         self,
         symbol: str,
-        venue: str,
-        candle_width: CandleWidth,
+        candle_width: grpc_definitions.CandleWidth,
         start: datetime,
-        end: Optional[datetime] = None,
-    ) -> Sequence[CandleFields]:
+        end: datetime,
+    ) -> HistoricalCandlesResponse:
         """
         Args:
             symbol: the symbol to get the candles for
@@ -652,12 +662,14 @@ class AsyncClient:
         Returns:
             a list of CandleFields for the specified candles
         """
-        if end is None:
-            end = datetime.now(tz=start.tzinfo)
-        candles = await self.graphql_client.get_candle_snapshot_query(
-            venue=venue, symbol=symbol, candle_width=candle_width, start=start, end=end
+
+        return await self.grpc_client.request(
+            HistoricalCandlesRequest,
+            symbol=symbol,
+            candle_width=candle_width,
+            start_date=start,
+            end_date=end,
         )
-        return candles.historical_candles
 
     async def get_l1_book_snapshot(
         self,
@@ -706,6 +718,40 @@ class AsyncClient:
             symbol=symbol, venue=venue
         )
         return l2_book.l_2_book_snapshot
+
+    async def subscribe_l1_book_stream(
+        self, symbols: list[TradableProduct], venue: str
+    ) -> AsyncIterator[L1BookSnapshot]:
+        """
+        Args:
+            symbol: the symbol to subscribe to
+            venue: the venue to subscribe to
+        Returns:
+            an async iterator that yields L1BookSnapshot, representing the l1 book updates
+        """
+        async for snapshot in await self.grpc_client.subscribe_l1_books_stream(
+            symbols=[str(s) for s in symbols]
+        ):
+            yield snapshot
+
+    async def subscribe_l2_book_stream(
+        self, symbol: TradableProduct, venue: str
+    ) -> AsyncIterator[L2BookUpdate]:
+        """
+        IMPORTANT: note that the Snapshot is a different type than
+        L2BookSnapshot
+        Args:
+            symbol: the symbol to subscribe to
+            venue: the venue to subscribe to
+        Returns:
+            an async iterator that yields L2BookFields
+            L2BookFields is either a Snapshot or a Diff
+            See the grpc_client code for how to handle the different types
+        """
+        async for snapshot in self.grpc_client.subscribe_l2_books_stream(
+            symbol=symbol, venue=venue
+        ):
+            yield snapshot
 
     async def subscribe_l1_book(
         self, symbols: list[TradableProduct]
@@ -781,11 +827,24 @@ class AsyncClient:
 
         return book
 
-    def subscribe_trades(
+    def subscribe_trades_stream(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[Trade]:
         return self.grpc_client.subscribe(
             SubscribeTradesRequest, symbol=symbol, venue=venue
+        )
+
+    def subscribe_candles_stream(
+        self,
+        symbol: TradableProduct,
+        venue: Optional[str],
+        candle_widths: Optional[list[grpc_definitions.CandleWidth]],
+    ) -> AsyncIterator[Candle]:
+        return self.grpc_client.subscribe(
+            SubscribeCandlesRequest,
+            symbol=str(symbol),
+            venue=venue,
+            candle_widths=candle_widths,
         )
 
     async def send_limit_order(

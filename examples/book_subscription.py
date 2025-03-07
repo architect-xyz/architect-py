@@ -6,6 +6,8 @@ from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 
 from pydantic import ValidationError
 
+from architect_py.scalars import TradableProduct
+
 from .common import create_async_client
 
 buy_columns = "{:>15} {:>15} {:>15}"
@@ -34,10 +36,10 @@ def print_book(book):
 
 async def main():
     c: AsyncClient = create_async_client()
-    endpoint = "app.architect.co"
-    symbol = "SOL-USDC BINANCE Perpetual/USDC Crypto*BINANCE-FUTURES-USD-M/DIRECT"
+    await c.grpc_client.change_channel("binance.marketdata.architect.co")
+    symbol = TradableProduct("SOL-USDC BINANCE Perpetual/USDC Crypto")
     try:
-        stream = c.subscribe_l1_book_snapshots(endpoint, symbols=[symbol])
+        stream = c.subscribe_l1_book_stream(symbols=[symbol], venue="BINANCE")
         # it is better to do `Decimal("0.1")` instead of Decimal(0.1) to avoid floating point errors
         async for book in stream:
             print_book(book)
