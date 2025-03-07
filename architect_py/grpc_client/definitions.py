@@ -2,6 +2,7 @@
 #   filename:  definitions.json
 
 from __future__ import annotations
+from architect_py.scalars import OrderDir
 from datetime import datetime, timezone
 
 from decimal import Decimal
@@ -106,15 +107,6 @@ class CandleWidth(int, Enum):
     integer_8 = 8
     integer_16 = 16
     integer_32 = 32
-
-
-class OrderDir(str, Enum):
-    """
-    An order side/direction or a trade execution side/direction. In GraphQL these are serialized as "buy" or "sell".
-    """
-
-    BUY = "BUY"
-    SELL = "SELL"
 
 
 class FillKind(int, Enum):

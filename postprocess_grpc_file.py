@@ -1,5 +1,6 @@
 import argparse
 import ast
+import re
 from typing import Optional, Set, Union
 import libcst as cst
 import os
@@ -319,20 +320,29 @@ def fix_lines(file_path: str) -> None:
 
     if any(line.strip() == "def timestamp(self) -> int:" for line in lines):
         lines.insert(4, "from datetime import datetime, timezone\n")
+    
+    lines = [line.replace("Dir", "OrderDir") for line in lines]
+    lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
 
-    if any("definitions.dir" in line for line in lines):
+    if file_path.endswith("definitions.py"):
+        lines.insert(4, "from architect_py.scalars import OrderDir\n")
+    elif any("definitions.Dir" in line for line in lines):
         lines.insert(4, "from architect_py.scalars import OrderDir\n")
 
-    lines = list(map(lambda l: l.replace("Dir", "OrderDir"), lines))
-    lines = list(map(lambda l: l.replace("definitions.OrderDir", "OrderDir"), lines))
+    l = "".join(lines)
+
+    # Removes the OrderDir class definition from the file
+    # (originally it was the Dir class definition)
+    pattern = r"^class\s+OrderDir\b.*?(?=^class\s+\w|\Z)"
+    l = re.sub(pattern, "", l, flags=re.MULTILINE | re.DOTALL)
 
     with open(file_path, "w", encoding="utf-8") as f:
-        f.writelines(lines)
+        f.writelines(l)
 
 
 def main(file_path: str, json_folder: str) -> None:
     fix_lines(file_path)
-    if "definitions.py" not in file_path:
+    if not file_path.endswith("definitions.py"):
         generate_stub(file_path, json_folder)
         generate_type_tags(file_path)
 
