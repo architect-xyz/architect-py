@@ -9,7 +9,7 @@ def replace_and_indent(m):
     return f'{indent}"type": "number",\n{indent}"format": "decimal"'
 
 
-def fix_lines(lines: str, is_definitions_file: bool) -> str:
+def fix_types_in_json_lines(lines: str, is_definitions_file: bool) -> str:
     lines = lines.replace("uint32", "default")
     lines = lines.replace("uint64", "default")
     lines = lines.replace('"format": "int"', '"format": "default"')
@@ -38,13 +38,22 @@ def fix_lines(lines: str, is_definitions_file: bool) -> str:
     return lines
 
 
-def fix_dict(d: dict, is_definitions_file: bool) -> dict:
+def fix_types_in_dict(d: dict, is_definitions_file: bool) -> dict:
     lines = json.dumps(d, indent=2)
-    lines = fix_lines(lines, is_definitions_file)
+    lines = fix_types_in_json_lines(lines, is_definitions_file)
     return json.loads(lines)
 
 
 def process_schema_definitions(schema: dict) -> dict:
+    """
+    we pop the definitions because we want to keep the definitions in a separate file
+
+    this will lead to the creation of a definitions.json file that will be used to
+    reference the definitions in the other files
+
+    We do this because the defintions are repeated in the schema files and we want to
+    avoid duplicate class definitions
+    """
     if "definitions" not in schema:
         return {}
 
@@ -68,7 +77,8 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
         lines = f.read()
     services = json.loads("".join(lines))
 
-    definitions = {}
+    definitions = {}  # for definitions.json
+
     for service in services:
         service_name = service["name"].replace(" ", "_")
 
@@ -85,13 +95,15 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
             definitions.update(process_schema_definitions(req_schema))
             definitions.update(process_schema_definitions(resp_schema))
 
-            req_schema = fix_dict(req_schema, False)
-            resp_schema = fix_dict(resp_schema, False)
+            req_schema = fix_types_in_dict(req_schema, False)
+            resp_schema = fix_types_in_dict(resp_schema, False)
 
             route = rpc.get("route")
             unary_type = rpc.get("type")
 
             if req_schema:
+                # these dict keys will later be referenced in the post-processing for
+                # linking the request and response types to the service and route
                 req_schema["route"] = route
                 req_schema["unary_type"] = unary_type
                 req_schema["service"] = service_name
@@ -113,7 +125,7 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
                     json.dump(resp_schema, out_file, indent=2)
 
     with open(os.path.join(output_dir, "definitions.json"), "w") as out_file:
-        definitions = fix_dict(definitions, True)
+        definitions = fix_types_in_dict(definitions, True)
         json.dump(definitions, out_file, indent=2)
 
 

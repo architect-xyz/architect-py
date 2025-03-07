@@ -8,10 +8,6 @@ import json
 import sys
 
 
-def capitalize_first_letter(word: str) -> str:
-    return word[0].upper() + word[1:]
-
-
 def is_literal_node(node: cst.BaseExpression) -> bool:
     """
     Check if the given node represents 'Literal', either as a bare name
@@ -246,6 +242,11 @@ class TagTransformer(cst.CSTTransformer):
 
 
 def generate_type_tags(input_file: str) -> None:
+    """
+    Generates the tag_field and tag keyword arguments for class definitions
+    based on if there is a field with a Literal type, which will be used as the tag field.
+    The value of the literal will be used as the tag value.
+    """
     with open(input_file, "r", encoding="utf-8") as f:
         source = f.read()
 
@@ -383,7 +384,18 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
         pf.write("\n".join(new_lines) + "\n")
 
 
+def capitalize_first_letter(word: str) -> str:
+    return word[0].upper() + word[1:]
+
+
 def generate_stub(file_path: str, json_folder: str) -> None:
+    """
+    For a request file, this generates the stub code for the request type
+    that links the Request type to the Response type, service, and route.
+
+    Reads from the json to get the information
+    """
+
     base_name = os.path.basename(file_path)
     name, _ = os.path.splitext(base_name)
 
@@ -423,6 +435,11 @@ unary_type = "{unary_type}"
 
 
 def fix_lines(file_path: str) -> None:
+    """
+    fixes types
+
+    adds imports
+    """
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
@@ -432,9 +449,7 @@ def fix_lines(file_path: str) -> None:
     lines = [line.replace("Dir", "OrderDir") for line in lines]
     lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
 
-    if file_path.endswith("definitions.py"):
-        lines.insert(4, "from architect_py.scalars import OrderDir\n")
-    elif any("OrderDir" in line for line in lines):
+    if any("OrderDir" in line for line in lines):
         lines.insert(4, "from architect_py.scalars import OrderDir\n")
 
     l = "".join(lines)
