@@ -764,7 +764,7 @@ class AsyncClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[Trade]:
         return self.grpc_client.subscribe(
-            SubscribeTradesRequest.get_request_helper(), symbol=symbol, venue=venue
+            SubscribeTradesRequest, symbol=symbol, venue=venue
         )
 
     async def send_limit_order(
