@@ -6,6 +6,8 @@ from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
     HistoricalCandlesResponse,
 )
 
+from datetime import datetime
+
 from msgspec import Struct
 
 from .. import definitions
@@ -13,8 +15,8 @@ from .. import definitions
 
 class HistoricalCandlesRequest(Struct):
     candle_width: definitions.CandleWidth
-    end_date: str
-    start_date: str
+    end_date: datetime
+    start_date: datetime
     symbol: str
 
     @staticmethod

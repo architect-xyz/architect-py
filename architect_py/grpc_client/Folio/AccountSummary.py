@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, Dict, List, Optional
 
@@ -15,7 +16,7 @@ class AccountSummary(Struct):
     account: str
     balances: Dict[str, Decimal]
     positions: Dict[str, List[definitions.AccountPosition]]
-    timestamp: str
+    timestamp: datetime
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
     ] = None

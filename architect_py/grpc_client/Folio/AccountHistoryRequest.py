@@ -4,6 +4,7 @@
 from __future__ import annotations
 from architect_py.grpc_client.Folio.AccountHistoryResponse import AccountHistoryResponse
 
+from datetime import datetime
 from typing import Optional
 
 from msgspec import Struct
@@ -13,8 +14,8 @@ from .. import definitions
 
 class AccountHistoryRequest(Struct):
     account: definitions.AccountIdOrName
-    from_inclusive: Optional[str] = None
-    to_exclusive: Optional[str] = None
+    from_inclusive: Optional[datetime] = None
+    to_exclusive: Optional[datetime] = None
 
     @staticmethod
     def get_response_type():

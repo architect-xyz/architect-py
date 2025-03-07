@@ -6,6 +6,7 @@ from architect_py.grpc_client.Folio.HistoricalOrdersResponse import (
     HistoricalOrdersResponse,
 )
 
+from datetime import datetime
 from typing import Annotated, List, Optional
 
 from msgspec import Meta, Struct
@@ -15,7 +16,7 @@ from .. import definitions
 
 class HistoricalOrdersRequest(Struct):
     account: Optional[definitions.AccountIdOrName] = None
-    from_inclusive: Optional[str] = None
+    from_inclusive: Optional[datetime] = None
     limit: Optional[
         Annotated[Optional[int], Meta(description="Default maximum is 1000.", ge=0)]
     ] = None
@@ -32,7 +33,7 @@ class HistoricalOrdersRequest(Struct):
     if order_ids is not empty, the limit field is ignored
     """
     parent_order_id: Optional[definitions.OrderId] = None
-    to_exclusive: Optional[str] = None
+    to_exclusive: Optional[datetime] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 

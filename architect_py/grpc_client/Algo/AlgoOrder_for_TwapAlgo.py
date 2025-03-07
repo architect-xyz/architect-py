@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import List, Optional
 
 from msgspec import Struct
@@ -14,12 +15,12 @@ class AlgoOrderForTwapAlgo(Struct):
     account: str
     algo_name: str
     algo_order_id: definitions.OrderId
-    create_time: str
+    create_time: datetime
     params: definitions.TwapParams
     state: definitions.AlgoState
     status: definitions.TwapStatus
     trader: definitions.UserId
     display_symbols: Optional[List[str]] = None
     last_error: Optional[str] = None
-    last_error_time: Optional[str] = None
+    last_error_time: Optional[datetime] = None
     parent_order_id: Optional[definitions.OrderId] = None

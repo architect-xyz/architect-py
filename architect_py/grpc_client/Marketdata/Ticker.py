@@ -4,6 +4,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
+from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, Optional
 
@@ -25,7 +26,7 @@ class Ticker(Struct):
     dividend_yield: Optional[Decimal] = None
     eps_adj: Optional[Decimal] = None
     fr: Optional[Annotated[Optional[Decimal], Meta(title="funding_rate")]] = None
-    ft: Optional[Annotated[Optional[str], Meta(title="next_funding_time")]] = None
+    ft: Optional[Annotated[Optional[datetime], Meta(title="next_funding_time")]] = None
     h: Optional[Annotated[Optional[Decimal], Meta(title="high_24h")]] = None
     ip: Optional[Annotated[Optional[Decimal], Meta(title="index_price")]] = None
     l: Optional[Annotated[Optional[Decimal], Meta(title="low_24h")]] = None
@@ -128,11 +129,11 @@ class Ticker(Struct):
         self.fr = value
 
     @property
-    def next_funding_time(self) -> Optional[str]:
+    def next_funding_time(self) -> Optional[datetime]:
         return self.ft
 
     @next_funding_time.setter
-    def next_funding_time(self, value: Optional[str]) -> None:
+    def next_funding_time(self, value: Optional[datetime]) -> None:
         self.ft = value
 
     @property
