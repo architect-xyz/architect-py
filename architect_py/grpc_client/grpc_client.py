@@ -208,17 +208,6 @@ class GRPCClient:
 
         return [self.l1_books[symbol] for symbol in symbols]
 
-    async def wait_for_l1_books(self, symbols: list[TradableProduct]) -> None:
-        """
-        Wait for the L1 books to be initialized.
-        """
-        condition = asyncio.Condition()
-
-        async with condition:
-            await condition.wait_for(
-                lambda: all(self.l1_books[symbol].ts > 0 for symbol in symbols)
-            )
-
     async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
         symbols_cast = cast(list[str], symbols)
         async for snap in self.subscribe(
@@ -238,38 +227,35 @@ class GRPCClient:
             self.l2_books[symbol] = L2BookSnapshot([], [], 0, 0, 0, 0)
         return self.l2_books[symbol]
 
-    async def wait_for_L2_books(self, symbol: TradableProduct) -> None:
-        """
-        Wait for the L2 books to be initialized.
-        """
-        condition = asyncio.Condition()
-
-        async with condition:
-            await condition.wait_for(lambda: self.l2_books[symbol].ts > 0)
-
     def stream_l1_books(self, symbols: list[str]) -> AsyncIterator[L1BookSnapshot]:
         return self.subscribe(
             SubscribeL1BookSnapshotsRequest,
             symbols=symbols,
         )
 
-    def stream_l2_book(
+    async def stream_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
-        return self.subscribe(
-            SubscribeL2BookUpdatesRequest,
-            symbol,
-            venue=venue,
+        decode_function: Callable[[bytes], L2BookUpdate] = (
+            lambda buf: msgspec.json.decode(
+                buf, type=SubscribeL2BookUpdatesRequest.get_response_type()
+            )
         )
+        stub = self.channel.unary_stream(
+            SubscribeL2BookUpdatesRequest.get_route(),
+            request_serializer=encoder.encode,
+            response_deserializer=decode_function,
+        )
+        req = SubscribeL2BookUpdatesRequest(symbol=symbol, venue=venue)
+        jwt = await self.refresh_grpc_credentials()
+        call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
+        async for update in call:
+            yield update
 
     async def watch_l2_book(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> None:
-        async for up in self.subscribe(
-            SubscribeL2BookUpdatesRequest,
-            symbol=symbol,
-            venue=venue,
-        ):
+        async for up in self.stream_l2_book(symbol, venue):
             if isinstance(up, Diff):  # elif up.t = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(

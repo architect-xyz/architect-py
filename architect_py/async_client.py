@@ -730,7 +730,15 @@ class AsyncClient:
         """
         books = self.grpc_client.initialize_l1_books(symbols)
         asyncio.create_task(self.grpc_client.watch_l1_books(symbols=symbols))
-        await self.grpc_client.wait_for_l1_books(symbols)
+        i = 0
+        while not all(book.ts > 0 for book in books) and i < 10:
+            await asyncio.sleep(0.2)
+            i += 1
+        if i == 10:
+            raise ValueError(
+                f"Could not get L1 books for {symbols}. Check if market is quoting via client.get_market_status."
+            )
+
         return books
 
     async def subscribe_l2_book(
@@ -758,6 +766,19 @@ class AsyncClient:
         """
         book = self.grpc_client.initialize_l2_book(symbol, venue)
         asyncio.create_task(self.grpc_client.watch_l2_book(symbol, venue))
+        i = 0
+        while book.ts == 0 and i < 10:
+            await asyncio.sleep(0.2)
+            i += 1
+        if book.ts == 0:
+            if venue:
+                market_status = await self.get_market_status(symbol, venue)
+                if not market_status.is_quoting:
+                    raise ValueError(
+                        f"Market {symbol} is currently closed, cannot get L2."
+                    )
+            raise ValueError(f"Could not get L2 book for {symbol}.")
+
         return book
 
     def subscribe_trades(
