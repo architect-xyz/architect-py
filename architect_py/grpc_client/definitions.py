@@ -5,7 +5,7 @@ from __future__ import annotations
 from architect_py.scalars import OrderDir
 from datetime import datetime, timezone
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
@@ -1862,7 +1862,7 @@ class Fill(Struct):
 class OptionsSeriesInfo(Struct):
     derivative_kind: DerivativeKind
     exercise_type: OptionsExerciseType
-    expiration_time_of_day: str
+    expiration_time_of_day: time
     expiration_time_zone: TimeZone
     is_cash_settled: bool
     multiplier: Decimal

@@ -13,6 +13,10 @@ def fix_lines(lines: str, is_definitions_file: bool) -> str:
     lines = lines.replace("uint32", "default")
     lines = lines.replace("uint64", "default")
     lines = lines.replace('"format": "int"', '"format": "default"')
+    lines = lines.replace(
+        '"format": "partial-date-time"', '"format": "time"'
+    )  # NaiveTime -> partial-date-time
+    # NaiveDate goes to "format": "date"
 
     pattern = r'(^\s*)"\$ref": "#/definitions/Decimal"'
     lines = re.sub(pattern, replace_and_indent, lines, flags=re.MULTILINE)

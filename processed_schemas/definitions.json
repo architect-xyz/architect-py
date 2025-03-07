@@ -288,7 +288,7 @@
       },
       "expiration_time_of_day": {
         "type": "string",
-        "format": "partial-date-time"
+        "format": "time"
       },
       "expiration_time_zone": {
         "$ref": "#/TimeZone"

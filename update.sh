@@ -31,9 +31,9 @@ GRPC_CLIENT_DIR="architect_py/grpc_client"
 PROCESSED_DIR="processed_schemas"
 
 printf "\nRegenerating gRPC models\n"
-# rm -rf "${PROCESSED_DIR:?}"/*
-# find "$GRPC_CLIENT_DIR" -mindepth 1 -type d -exec rm -rf {} +
-# python preprocess_grpc_types.py --architect_dir "$ARCHITECT_FOLDER_PATH" --output_dir "$PROCESSED_DIR"
+rm -rf "${PROCESSED_DIR:?}"/*
+find "$GRPC_CLIENT_DIR" -mindepth 1 -type d -exec rm -rf {} +
+python preprocess_grpc_types.py --architect_dir "$ARCHITECT_FOLDER_PATH" --output_dir "$PROCESSED_DIR"
 
 mkdir -p "$GRPC_CLIENT_DIR"
 

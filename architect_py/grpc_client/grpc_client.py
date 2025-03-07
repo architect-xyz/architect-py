@@ -51,15 +51,12 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 """
 TODO:
 - rewrite examples
-- fix partial-date-time
-
 
 for decode, don't create your own decoder
 use the union types and tag values
 
 The decoder should be reused
 but it needs to be instantiated per response type
-
 """
 
 
