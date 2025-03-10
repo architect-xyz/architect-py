@@ -12,17 +12,12 @@ class SymbologyRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return SymbologySnapshot
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Symbology/Symbology"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = SymbologySnapshot
-route = "/json.architect.Symbology/Symbology"
-unary_type = "unary"
+        return "unary"

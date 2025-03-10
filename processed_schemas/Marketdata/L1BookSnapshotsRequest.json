@@ -16,5 +16,5 @@
   "route": "/json.architect.Marketdata/L1BookSnapshots",
   "unary_type": "unary",
   "service": "Marketdata",
-  "response_type": "Array_of_L1BookSnapshot"
+  "response_type": "ArrayOfL1BookSnapshot"
 }

@@ -44,17 +44,12 @@ class CancelOrderRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return Cancel
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Oms/CancelOrder"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = Cancel
-route = "/json.architect.Oms/CancelOrder"
-unary_type = "unary"
+        return "unary"

@@ -15,17 +15,12 @@ class SubscribeL2BookUpdatesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return L2BookUpdate
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/SubscribeL2BookUpdates"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = L2BookUpdate
-route = "/json.architect.Marketdata/SubscribeL2BookUpdates"
-unary_type = "stream"
+        return "stream"

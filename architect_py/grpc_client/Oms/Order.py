@@ -12,7 +12,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Order1(Struct, tag_field="k", tag="LIMIT"):
+class Order1(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
@@ -26,6 +26,7 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    k: Literal["LIMIT"]
     p: Annotated[Decimal, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
@@ -191,7 +192,7 @@ class Order1(Struct, tag_field="k", tag="LIMIT"):
         self.xp = value
 
 
-class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
+class Order2(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
@@ -205,6 +206,7 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    k: Literal["STOP_LOSS_LIMIT"]
     p: Annotated[Decimal, Meta(title="limit_price")]
     tp: Annotated[Decimal, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
@@ -370,7 +372,7 @@ class Order2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
         self.xp = value
 
 
-class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
+class Order3(Struct):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId
@@ -384,6 +386,7 @@ class Order3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    k: Literal["TAKE_PROFIT_LIMIT"]
     p: Annotated[Decimal, Meta(title="limit_price")]
     tp: Annotated[Decimal, Meta(title="trigger_price")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None

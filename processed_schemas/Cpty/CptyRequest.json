@@ -1,43 +1,43 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "OrderflowRequest",
+  "title": "CptyRequest",
   "oneOf": [
     {
-      "$ref": "../Oms/PlaceOrderRequest.json/#",
+      "$ref": "../definitions.json#/CptyLoginRequest",
       "tag": "t",
       "tag_field": {
         "type": "string",
         "enum": [
-          "p"
+          "login"
+        ]
+      },
+      "variant_name": "Login"
+    },
+    {
+      "$ref": "../definitions.json#/CptyLogoutRequest",
+      "tag": "t",
+      "tag_field": {
+        "type": "string",
+        "enum": [
+          "logout"
+        ]
+      },
+      "variant_name": "Logout"
+    },
+    {
+      "$ref": "../Oms/Order.json/#",
+      "tag": "t",
+      "tag_field": {
+        "type": "string",
+        "enum": [
+          "place_order"
         ]
       },
       "variant_name": "PlaceOrder"
-    },
-    {
-      "$ref": "../Oms/CancelOrderRequest.json/#",
-      "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "x"
-        ]
-      },
-      "variant_name": "CancelOrder"
-    },
-    {
-      "$ref": "../Oms/CancelAllOrdersRequest.json/#",
-      "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "xo"
-        ]
-      },
-      "variant_name": "CancelAllOrders"
     }
   ],
-  "route": "/json.architect.Orderflow/Orderflow",
+  "route": "/json.architect.Cpty/Cpty",
   "unary_type": "duplex_stream",
-  "service": "Orderflow",
-  "response_type": "Orderflow"
+  "service": "Cpty",
+  "response_type": "CptyResponse"
 }

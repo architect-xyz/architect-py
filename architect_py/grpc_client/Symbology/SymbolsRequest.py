@@ -14,17 +14,12 @@ class SymbolsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return SymbolsResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Symbology/Symbols"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = SymbolsResponse
-route = "/json.architect.Symbology/Symbols"
-unary_type = "unary"
+        return "unary"

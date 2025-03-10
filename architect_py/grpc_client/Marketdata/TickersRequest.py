@@ -20,17 +20,12 @@ class TickersRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return TickersResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/Tickers"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = TickersResponse
-route = "/json.architect.Marketdata/Tickers"
-unary_type = "unary"
+        return "unary"

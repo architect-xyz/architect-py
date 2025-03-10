@@ -21,17 +21,12 @@ class UploadSymbologyRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return UploadSymbologyResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Symbology/UploadSymbology"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = UploadSymbologyResponse
-route = "/json.architect.Symbology/UploadSymbology"
-unary_type = "unary"
+        return "unary"

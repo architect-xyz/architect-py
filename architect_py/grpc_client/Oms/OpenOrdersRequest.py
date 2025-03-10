@@ -21,17 +21,12 @@ class OpenOrdersRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return OpenOrdersResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Oms/OpenOrders"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = OpenOrdersResponse
-route = "/json.architect.Oms/OpenOrders"
-unary_type = "unary"
+        return "unary"

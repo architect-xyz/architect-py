@@ -15,17 +15,12 @@ class L2BookSnapshotRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return L2BookSnapshot
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/L2BookSnapshot"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = L2BookSnapshot
-route = "/json.architect.Marketdata/L2BookSnapshot"
-unary_type = "unary"
+        return "unary"

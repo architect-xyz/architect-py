@@ -13,11 +13,12 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
+class PlaceOrderRequest1(Struct):
     d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["LIMIT"]
     p: Annotated[Decimal, Meta(title="limit_price")]
     po: Annotated[bool, Meta(title="post_only")]
     a: Optional[
@@ -135,22 +136,23 @@ class PlaceOrderRequest1(Struct, tag_field="k", tag="LIMIT"):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return "&RESPONSE_TYPE:PlaceOrderRequest1"
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "&ROUTE:PlaceOrderRequest1"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
+        return "&UNARY_TYPE:PlaceOrderRequest1"
 
 
-class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
+class PlaceOrderRequest2(Struct):
     d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["STOP_LOSS_LIMIT"]
     p: Annotated[Decimal, Meta(title="limit_price")]
     tp: Annotated[Decimal, Meta(title="trigger_price")]
     a: Optional[
@@ -268,22 +270,23 @@ class PlaceOrderRequest2(Struct, tag_field="k", tag="STOP_LOSS_LIMIT"):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return "&RESPONSE_TYPE:PlaceOrderRequest2"
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "&ROUTE:PlaceOrderRequest2"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
+        return "&UNARY_TYPE:PlaceOrderRequest2"
 
 
-class PlaceOrderRequest3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
+class PlaceOrderRequest3(Struct):
     d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    k: Literal["TAKE_PROFIT_LIMIT"]
     p: Annotated[Decimal, Meta(title="limit_price")]
     tp: Annotated[Decimal, Meta(title="trigger_price")]
     a: Optional[
@@ -401,23 +404,18 @@ class PlaceOrderRequest3(Struct, tag_field="k", tag="TAKE_PROFIT_LIMIT"):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return "&RESPONSE_TYPE:PlaceOrderRequest3"
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "&ROUTE:PlaceOrderRequest3"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
+        return "&UNARY_TYPE:PlaceOrderRequest3"
 
 
 PlaceOrderRequest = Annotated[
     Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3],
     Meta(title="PlaceOrderRequest"),
 ]
-
-
-ResponseType = Order
-route = "/json.architect.Oms/PlaceOrder"
-unary_type = "unary"

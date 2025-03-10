@@ -110,10 +110,20 @@ class CandleWidth(int, Enum):
     OneDay = 32
 
 
-class FillKind(int, Enum):
-    Normal = 0
-    Reversal = 1
-    Correction = 2
+class CptyLogoutRequest(Struct):
+    pass
+
+    @staticmethod
+    def get_response_type():
+        return "&RESPONSE_TYPE:CptyLogoutRequest"
+
+    @staticmethod
+    def get_route() -> str:
+        return "&ROUTE:CptyLogoutRequest"
+
+    @staticmethod
+    def get_unary_type():
+        return "&UNARY_TYPE:CptyLogoutRequest"
 
 
 class HealthStatus(str, Enum):
@@ -179,6 +189,99 @@ class L1BookSnapshot(Struct):
         self.b = value
 
 
+Ask = List[Decimal]
+
+
+Bid = List[Decimal]
+
+
+class L2BookDiff(Struct):
+    """
+    Unique sequence id and number.
+    """
+
+    a: Annotated[
+        List[Ask],
+        Meta(
+            description="Set of (price, level) updates. If zero, the price level has been removed from the book.",
+            title="asks",
+        ),
+    ]
+    """
+    Set of (price, level) updates. If zero, the price level has been removed from the book.
+    """
+    b: Annotated[
+        List[Bid],
+        Meta(
+            description="Set of (price, level) updates. If zero, the price level has been removed from the book.",
+            title="bids",
+        ),
+    ]
+    """
+    Set of (price, level) updates. If zero, the price level has been removed from the book.
+    """
+    sid: Annotated[int, Meta(ge=0, title="sequence_id")]
+    sn: Annotated[int, Meta(ge=0, title="sequence_number")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
+
+    @property
+    def asks(self) -> List[Ask]:
+        return self.a
+
+    @asks.setter
+    def asks(self, value: List[Ask]) -> None:
+        self.a = value
+
+    @property
+    def bids(self) -> List[Bid]:
+        return self.b
+
+    @bids.setter
+    def bids(self, value: List[Bid]) -> None:
+        self.b = value
+
+    @property
+    def sequence_id(self) -> int:
+        return self.sid
+
+    @sequence_id.setter
+    def sequence_id(self, value: int) -> None:
+        self.sid = value
+
+    @property
+    def sequence_number(self) -> int:
+        return self.sn
+
+    @sequence_number.setter
+    def sequence_number(self, value: int) -> None:
+        self.sn = value
+
+    @property
+    def timestamp_ns(self) -> int:
+        return self.tn
+
+    @timestamp_ns.setter
+    def timestamp_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def timestamp(self) -> int:
+        return self.ts
+
+    @timestamp.setter
+    def timestamp(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
+
+    @property
+    def datetime_local(self) -> datetime:
+        return datetime.fromtimestamp(self.ts)
+
+
 class OrderId(Struct):
     """
     System-unique, persistent order identifiers
@@ -186,6 +289,10 @@ class OrderId(Struct):
 
     seqid: str
     seqno: Annotated[int, Meta(ge=0)]
+
+
+class OrderOut(Struct):
+    id: OrderId
 
 
 class OrderRejectReason(str, Enum):
@@ -207,6 +314,10 @@ class OrderSource(int, Enum):
     CLI = 4
     Telegram = 5
     Other = 255
+
+
+class OrderStale(Struct):
+    id: OrderId
 
 
 class OrderStatus(int, Enum):
@@ -516,6 +627,12 @@ AliasKind = Literal["CME_GLOBEX"]
 
 
 DerivativeKind = Union[Literal["Linear"], Literal["Inverse"], Literal["Quanto"]]
+
+
+class FillKind(int, Enum):
+    Normal = 0
+    Reversal = 1
+    Correction = 2
 
 
 HumanDuration = str
@@ -1422,6 +1539,12 @@ class Cancel(Struct):
     r: Optional[str] = None
 
 
+class CancelReject(Struct):
+    id: OrderId
+    xid: str
+    rm: Optional[str] = None
+
+
 class Candle(Struct):
     av: Annotated[Decimal, Meta(title="sell_volume")]
     bv: Annotated[Decimal, Meta(title="buy_volume")]
@@ -1640,6 +1763,23 @@ class Candle(Struct):
         self.o = value
 
 
+class CptyLoginRequest(Struct):
+    account: str
+    trader: UserId
+
+    @staticmethod
+    def get_response_type():
+        return "&RESPONSE_TYPE:CptyLoginRequest"
+
+    @staticmethod
+    def get_route() -> str:
+        return "&ROUTE:CptyLoginRequest"
+
+    @staticmethod
+    def get_unary_type():
+        return "&UNARY_TYPE:CptyLoginRequest"
+
+
 class ExecutionInfo(Struct):
     """
     Information about a symbol related to its execution route.
@@ -1683,6 +1823,7 @@ class Fill(Struct):
     """
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
+    agg: Optional[Annotated[int, Meta(title="is_taker")]] = None
     atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
     ats: Optional[
         Annotated[
@@ -1710,7 +1851,6 @@ class Fill(Struct):
     Fee currency, if different from the price currency
     """
     oid: Optional[Annotated[Optional[OrderId], Meta(title="order_id")]] = None
-    t: Optional[Annotated[int, Meta(title="is_taker")]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title="trader")]] = None
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
@@ -1795,6 +1935,14 @@ class Fill(Struct):
         self.a = value
 
     @property
+    def is_taker(self) -> Optional[int]:
+        return self.agg
+
+    @is_taker.setter
+    def is_taker(self, value: Optional[int]) -> None:
+        self.agg = value
+
+    @property
     def recv_time_ns(self) -> Optional[int]:
         return self.atn
 
@@ -1833,14 +1981,6 @@ class Fill(Struct):
     @order_id.setter
     def order_id(self, value: Optional[OrderId]) -> None:
         self.oid = value
-
-    @property
-    def is_taker(self) -> Optional[int]:
-        return self.t
-
-    @is_taker.setter
-    def is_taker(self, value: Optional[int]) -> None:
-        self.t = value
 
     @property
     def trader(self) -> Optional[UserId]:
@@ -2408,6 +2548,43 @@ class Order6(Struct):
 
 
 Order = Union[Order4, Order5, Order6]
+
+
+class OrderAck(Struct):
+    id: Annotated[OrderId, Meta(title="order_id")]
+    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+
+    @property
+    def order_id(self) -> OrderId:
+        return self.id
+
+    @order_id.setter
+    def order_id(self, value: OrderId) -> None:
+        self.id = value
+
+    @property
+    def exchange_order_id(self) -> Optional[str]:
+        return self.eid
+
+    @exchange_order_id.setter
+    def exchange_order_id(self, value: Optional[str]) -> None:
+        self.eid = value
+
+
+class OrderCanceled(Struct):
+    id: OrderId
+    xid: Optional[str] = None
+
+
+class OrderCanceling(Struct):
+    id: OrderId
+    xid: Optional[str] = None
+
+
+class OrderReject(Struct):
+    id: OrderId
+    r: OrderRejectReason
+    rm: Optional[str] = None
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(Struct):

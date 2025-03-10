@@ -19,17 +19,12 @@ class AccountHistoryRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return AccountHistoryResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Folio/AccountHistory"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = AccountHistoryResponse
-route = "/json.architect.Folio/AccountHistory"
-unary_type = "unary"
+        return "unary"

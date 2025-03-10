@@ -2,179 +2,18 @@
 #   filename:  Marketdata/L2BookUpdate.json
 
 from __future__ import annotations
-from datetime import datetime, timezone
 
-from decimal import Decimal
-from typing import Annotated, List, Literal, Union
+from typing import Annotated, Union
 
-from msgspec import Meta, Struct
+from msgspec import Meta
 
-Ask = List[Decimal]
-
-
-Bid = List[Decimal]
-
-
-class Snapshot(Struct, tag_field="t", tag="s"):
-    """
-    Unique sequence id and number.
-    """
-
-    a: Annotated[List[Ask], Meta(title="asks")]
-    b: Annotated[List[Bid], Meta(title="bids")]
-    sid: Annotated[int, Meta(ge=0, title="sequence_id")]
-    sn: Annotated[int, Meta(ge=0, title="sequence_number")]
-    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
-
-    @property
-    def asks(self) -> List[Ask]:
-        return self.a
-
-    @asks.setter
-    def asks(self, value: List[Ask]) -> None:
-        self.a = value
-
-    @property
-    def bids(self) -> List[Bid]:
-        return self.b
-
-    @bids.setter
-    def bids(self, value: List[Bid]) -> None:
-        self.b = value
-
-    @property
-    def sequence_id(self) -> int:
-        return self.sid
-
-    @sequence_id.setter
-    def sequence_id(self, value: int) -> None:
-        self.sid = value
-
-    @property
-    def sequence_number(self) -> int:
-        return self.sn
-
-    @sequence_number.setter
-    def sequence_number(self, value: int) -> None:
-        self.sn = value
-
-    @property
-    def timestamp_ns(self) -> int:
-        return self.tn
-
-    @timestamp_ns.setter
-    def timestamp_ns(self, value: int) -> None:
-        self.tn = value
-
-    @property
-    def timestamp(self) -> int:
-        return self.ts
-
-    @timestamp.setter
-    def timestamp(self, value: int) -> None:
-        self.ts = value
-
-    @property
-    def datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
-
-    @property
-    def datetime_local(self) -> datetime:
-        return datetime.fromtimestamp(self.ts)
-
-
-class Diff(Struct, tag_field="t", tag="d"):
-    """
-    Unique sequence id and number.
-    """
-
-    a: Annotated[
-        List[Ask],
-        Meta(
-            description="Set of (price, level) updates. If zero, the price level has been removed from the book.",
-            title="asks",
-        ),
-    ]
-    """
-    Set of (price, level) updates. If zero, the price level has been removed from the book.
-    """
-    b: Annotated[
-        List[Bid],
-        Meta(
-            description="Set of (price, level) updates. If zero, the price level has been removed from the book.",
-            title="bids",
-        ),
-    ]
-    """
-    Set of (price, level) updates. If zero, the price level has been removed from the book.
-    """
-    sid: Annotated[int, Meta(ge=0, title="sequence_id")]
-    sn: Annotated[int, Meta(ge=0, title="sequence_number")]
-    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
-
-    @property
-    def asks(self) -> List[Ask]:
-        return self.a
-
-    @asks.setter
-    def asks(self, value: List[Ask]) -> None:
-        self.a = value
-
-    @property
-    def bids(self) -> List[Bid]:
-        return self.b
-
-    @bids.setter
-    def bids(self, value: List[Bid]) -> None:
-        self.b = value
-
-    @property
-    def sequence_id(self) -> int:
-        return self.sid
-
-    @sequence_id.setter
-    def sequence_id(self, value: int) -> None:
-        self.sid = value
-
-    @property
-    def sequence_number(self) -> int:
-        return self.sn
-
-    @sequence_number.setter
-    def sequence_number(self, value: int) -> None:
-        self.sn = value
-
-    @property
-    def timestamp_ns(self) -> int:
-        return self.tn
-
-    @timestamp_ns.setter
-    def timestamp_ns(self, value: int) -> None:
-        self.tn = value
-
-    @property
-    def timestamp(self) -> int:
-        return self.ts
-
-    @timestamp.setter
-    def timestamp(self, value: int) -> None:
-        self.ts = value
-
-    @property
-    def datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
-
-    @property
-    def datetime_local(self) -> datetime:
-        return datetime.fromtimestamp(self.ts)
-
+from .. import definitions
+from . import L2BookSnapshot
 
 L2BookUpdate = Annotated[
-    Union[Snapshot, Diff],
+    Union[L2BookSnapshot, definitions.L2BookDiff],
     Meta(
-        description='To build a book from a stream of updates, the client should first subscribe to this update stream, which then returns a stream starting with a snapshot and following with diffs.\n\nDiffs should be applied consecutively to the snapshot in order to reconstruct the state of the book.\n\n```rust # use architect_api::marketdata::*; # use std::collections::BTreeMap; # use rust_decimal::Decimal; # use rust_decimal_macros::dec;\n\n/// Suppose we receive this snapshot from the server: let snapshot: L2BookUpdate = serde_json::from_str(r#"{ "t": "s", "ts": 1729700837, "tn": 0, "sid": 123, "sn": 8999, "b": [["99.00", "3"], ["98.78", "2"]], "a": [["100.00", "1"], ["100.10", "2"]] }"#)?;\n\n/// It corresponds to the following book: let mut book = BTreeMap::new(); book.insert(dec!(99.00), 3); book.insert(dec!(98.78), 2); book.insert(dec!(100.00), 1); book.insert(dec!(100.10), 2);\n\n/// Then we receive this update: let diff: L2BookUpdate = serde_json::from_str(r#"{ "t": "d", "ts": 1729700839, "tn": 0, "sid": 123, "sn": 9000, "b": [["99.00", "1"]], "a": [] }"#)?;\n\n/// Verify that the sequence number is correct assert!(diff.sequence().is_next_in_sequence(&snapshot.sequence()));\n\n/// Apply the update to our book book.insert(dec!(99.00), 1);\n\n// Suppose we then receive this update: let diff: L2BookUpdate = serde_json::from_str(r#"{ "t": "d", "ts": 1729700841, "tn": 0, "sid": 123, "sn": 9005, "b": [], "a": [["103.00", "1"]] }"#)?;\n\n/// We shouldn\'t apply this update because it\'s not next in sequence! assert_eq!(diff.sequence().is_next_in_sequence(&snapshot.sequence()), false);\n\n/// Or if we had received this update: let diff: L2BookUpdate = serde_json::from_str(r#"{ "t": "d", "ts": 1729700841, "tn": 0, "sid": 170, "sn": 9001, "b": [], "a": [["103.00", "1"]] }"#)?;\n\n/// It appears that the sequence id is changed, signalling a new sequence. /// In this case, we should re-request the snapshot from the server. assert_eq!(diff.sequence().is_next_in_sequence(&snapshot.sequence()), false);\n\n# Ok::<(), anyhow::Error>(()) ```',
+        description='To build a book from a stream of updates, the client should first subscribe to this update stream, which then returns a stream starting with a snapshot and following with diffs.\n\nDiffs should be applied consecutively to the snapshot in order to reconstruct the state of the book.\n\n```rust # use architect_api::marketdata::*; # use std::collections::BTreeMap; # use rust_decimal::Decimal; # use rust_decimal_macros::dec;\n\n/// Suppose we receive this snapshot from the server: let snapshot: L2BookUpdate = serde_json::from_str(r#"{ "t": "s", "ts": 1729700837, "tn": 0, "sid": 123, "sn": 8999, "b": [["99.00", "3"], ["98.78", "2"]], "a": [["100.00", "1"], ["100.10", "2"]] }"#)?;\n\n/// It corresponds to the following book: let mut book = BTreeMap::new(); book.insert(dec!(99.00), 3); book.insert(dec!(98.78), 2); book.insert(dec!(100.00), 1); book.insert(dec!(100.10), 2);\n\n/// Then we receive this update: let diff: L2BookUpdate = serde_json::from_str(r#"{ "t": "d", "ts": 1729700839, "tn": 0, "sid": 123, "sn": 9000, "b": [["99.00", "1"]], "a": [] }"#)?;\n\n/// Verify that the sequence number is correct assert!(diff.sequence().is_next_in_sequence(&snapshot.sequence()));\n\n/// Apply the update to our book book.insert(dec!(99.00), 1);\n\n// Suppose we then receive this update: let diff: L2BookUpdate = serde_json::from_str(r#"{ "t": "d", "ts": 1729700841, "tn": 0, "sid": 123, "sn": 9005, "b": [], "a": [["103.00", "1"]] }"#)?;\n\n/// We shouldn\'t apply this update because it\'s not next in sequence! assert_eq!(diff.sequence().is_next_in_sequence(&snapshot.sequence()), false);\n\n/// Or if we had received this update: let diff: L2BookUpdate = serde_json::from_str(r#"{ "t": "d", "ts": 1729700841, "tn": 0, "sid": 170, "sn": 9001, "b": [], "a": [["103.00", "1"]] }"#)?;\n\n/// It appears that the sequence id is changed, signalling a new sequence. /// In this case, we should re-request the snapshot from the server. assert_eq!(diff.sequence().is_next_in_sequence(&snapshot.sequence()), false);\n\n# Ok::<(), anyhow::Error>(()) ``` ',
         title="L2BookUpdate",
     ),
 ]

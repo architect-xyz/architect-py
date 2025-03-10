@@ -62,13 +62,13 @@ class {{ class_name }}:
 {%- if "Request" in class_name %}
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return "&RESPONSE_TYPE:{{ class_name }}"
     
     @staticmethod
     def get_route() -> str:
-        return route
+        return "&ROUTE:{{ class_name }}"
     
     @staticmethod
     def get_unary_type():
-        return unary_type
+        return "&UNARY_TYPE:{{ class_name }}"
 {%- endif %}

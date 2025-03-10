@@ -39,17 +39,12 @@ class HistoricalOrdersRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return HistoricalOrdersResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Folio/HistoricalOrders"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = HistoricalOrdersResponse
-route = "/json.architect.Folio/HistoricalOrders"
-unary_type = "unary"
+        return "unary"

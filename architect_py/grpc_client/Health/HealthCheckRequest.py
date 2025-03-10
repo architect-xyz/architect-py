@@ -26,17 +26,12 @@ class HealthCheckRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return HealthCheckResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Health/Check"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = HealthCheckResponse
-route = "/json.architect.Health/Check"
-unary_type = "unary"
+        return "unary"

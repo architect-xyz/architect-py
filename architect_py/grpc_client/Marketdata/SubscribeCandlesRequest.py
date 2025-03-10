@@ -26,17 +26,12 @@ class SubscribeCandlesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return Candle
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/SubscribeCandles"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = Candle
-route = "/json.architect.Marketdata/SubscribeCandles"
-unary_type = "stream"
+        return "stream"

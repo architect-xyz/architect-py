@@ -14,17 +14,12 @@ class SubscribeLiquidationsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return Liquidation
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/SubscribeLiquidations"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = Liquidation
-route = "/json.architect.Marketdata/SubscribeLiquidations"
-unary_type = "stream"
+        return "stream"

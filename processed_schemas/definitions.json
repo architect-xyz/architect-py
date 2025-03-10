@@ -1658,6 +1658,158 @@
       }
     }
   },
+  "L2BookSnapshot": {
+    "description": "Unique sequence id and number.",
+    "type": "object",
+    "required": [
+      "a",
+      "b",
+      "sid",
+      "sn",
+      "tn",
+      "ts"
+    ],
+    "properties": {
+      "a": {
+        "title": "asks",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "format": "decimal"
+            },
+            {
+              "type": "number",
+              "format": "decimal"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "b": {
+        "title": "bids",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "format": "decimal"
+            },
+            {
+              "type": "number",
+              "format": "decimal"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "sid": {
+        "title": "sequence_id",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "sn": {
+        "title": "sequence_number",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "tn": {
+        "title": "timestamp_ns",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ts": {
+        "title": "timestamp",
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  },
+  "L2BookDiff": {
+    "description": "Unique sequence id and number.",
+    "type": "object",
+    "required": [
+      "a",
+      "b",
+      "sid",
+      "sn",
+      "tn",
+      "ts"
+    ],
+    "properties": {
+      "a": {
+        "title": "asks",
+        "description": "Set of (price, level) updates. If zero, the price level has been removed from the book.",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "format": "decimal"
+            },
+            {
+              "type": "number",
+              "format": "decimal"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "b": {
+        "title": "bids",
+        "description": "Set of (price, level) updates. If zero, the price level has been removed from the book.",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "format": "decimal"
+            },
+            {
+              "type": "number",
+              "format": "decimal"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "sid": {
+        "title": "sequence_id",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "sn": {
+        "title": "sequence_number",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "tn": {
+        "title": "timestamp_ns",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ts": {
+        "title": "timestamp",
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  },
   "CandleWidth": {
     "type": "integer",
     "enum": [
@@ -2282,6 +2434,251 @@
       }
     }
   },
+  "PlaceOrderRequest": {
+    "type": "object",
+    "oneOf": [
+      {
+        "type": "object",
+        "required": [
+          "k",
+          "p",
+          "po"
+        ],
+        "properties": {
+          "k": {
+            "type": "string",
+            "enum": [
+              "LIMIT"
+            ]
+          },
+          "p": {
+            "title": "limit_price",
+            "type": "number",
+            "format": "decimal"
+          },
+          "po": {
+            "title": "post_only",
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "required": [
+          "k",
+          "p",
+          "tp"
+        ],
+        "properties": {
+          "k": {
+            "type": "string",
+            "enum": [
+              "STOP_LOSS_LIMIT"
+            ]
+          },
+          "p": {
+            "title": "limit_price",
+            "type": "number",
+            "format": "decimal"
+          },
+          "tp": {
+            "title": "trigger_price",
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      {
+        "type": "object",
+        "required": [
+          "k",
+          "p",
+          "tp"
+        ],
+        "properties": {
+          "k": {
+            "type": "string",
+            "enum": [
+              "TAKE_PROFIT_LIMIT"
+            ]
+          },
+          "p": {
+            "title": "limit_price",
+            "type": "number",
+            "format": "decimal"
+          },
+          "tp": {
+            "title": "trigger_price",
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      }
+    ],
+    "required": [
+      "d",
+      "q",
+      "s",
+      "tif"
+    ],
+    "properties": {
+      "a": {
+        "title": "account",
+        "default": null,
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "d": {
+        "title": "dir",
+        "allOf": [
+          {
+            "$ref": "#/Dir"
+          }
+        ]
+      },
+      "id": {
+        "description": "If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "pid": {
+        "title": "parent_id",
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "q": {
+        "title": "quantity",
+        "type": "number",
+        "format": "decimal"
+      },
+      "s": {
+        "title": "symbol",
+        "type": "string"
+      },
+      "src": {
+        "title": "source",
+        "default": null,
+        "anyOf": [
+          {
+            "$ref": "#/OrderSource"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "tif": {
+        "title": "time_in_force",
+        "allOf": [
+          {
+            "$ref": "#/TimeInForce"
+          }
+        ]
+      },
+      "u": {
+        "title": "trader",
+        "default": null,
+        "anyOf": [
+          {
+            "$ref": "#/TraderIdOrEmail"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "x": {
+        "title": "execution_venue",
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "CancelOrderRequest": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "title": "order_id",
+        "allOf": [
+          {
+            "$ref": "#/OrderId"
+          }
+        ]
+      },
+      "xid": {
+        "title": "cancel_id",
+        "description": "If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uuid"
+      }
+    }
+  },
+  "CancelAllOrdersRequest": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "account": {
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "execution_venue": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "trader": {
+        "anyOf": [
+          {
+            "$ref": "#/TraderIdOrEmail"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  },
   "AccountIdOrName": {
     "type": "string"
   },
@@ -2357,72 +2754,6 @@
           "DAY"
         ]
       }
-    ]
-  },
-  "CancelStatus": {
-    "type": "integer",
-    "enum": [
-      0,
-      1,
-      2,
-      127
-    ],
-    "x-enumNames": [
-      "Pending",
-      "Acked",
-      "Rejected",
-      "Out"
-    ]
-  },
-  "FillKind": {
-    "type": "integer",
-    "enum": [
-      0,
-      1,
-      2
-    ],
-    "x-enumNames": [
-      "Normal",
-      "Reversal",
-      "Correction"
-    ]
-  },
-  "OrderRejectReason": {
-    "type": "string",
-    "enum": [
-      "DuplicateOrderId",
-      "NotAuthorized",
-      "NoExecutionVenue",
-      "NoAccount",
-      "NoCpty",
-      "UnsupportedOrderType",
-      "UnsupportedExecutionVenue",
-      "Unknown"
-    ]
-  },
-  "OrderStatus": {
-    "type": "integer",
-    "enum": [
-      0,
-      1,
-      2,
-      127,
-      128,
-      129,
-      130,
-      254,
-      255
-    ],
-    "x-enumNames": [
-      "Pending",
-      "Open",
-      "Rejected",
-      "Out",
-      "Canceling",
-      "Canceled",
-      "ReconciledOut",
-      "Stale",
-      "Unknown"
     ]
   },
   "Order": {
@@ -2649,6 +2980,72 @@
       }
     }
   },
+  "OrderAck": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "eid": {
+        "title": "exchange_order_id",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "id": {
+        "title": "order_id",
+        "allOf": [
+          {
+            "$ref": "#/OrderId"
+          }
+        ]
+      }
+    }
+  },
+  "OrderReject": {
+    "type": "object",
+    "required": [
+      "id",
+      "r"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "r": {
+        "$ref": "#/OrderRejectReason"
+      },
+      "rm": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "OrderOut": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      }
+    }
+  },
+  "OrderStale": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      }
+    }
+  },
   "Cancel": {
     "type": "object",
     "required": [
@@ -2685,6 +3082,440 @@
         "format": "uuid"
       }
     }
+  },
+  "CancelReject": {
+    "type": "object",
+    "required": [
+      "id",
+      "xid"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "rm": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "xid": {
+        "type": "string",
+        "format": "uuid"
+      }
+    }
+  },
+  "OrderCanceling": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "xid": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uuid"
+      }
+    }
+  },
+  "OrderCanceled": {
+    "type": "object",
+    "required": [
+      "id"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "xid": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uuid"
+      }
+    }
+  },
+  "Fill": {
+    "type": "object",
+    "required": [
+      "d",
+      "id",
+      "k",
+      "p",
+      "q",
+      "s",
+      "tn",
+      "ts",
+      "x"
+    ],
+    "properties": {
+      "a": {
+        "title": "account",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uuid"
+      },
+      "agg": {
+        "title": "is_taker",
+        "default": null,
+        "type": "integer",
+        "format": "default"
+      },
+      "atn": {
+        "title": "recv_time_ns",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ats": {
+        "title": "recv_time",
+        "description": "When Architect received the fill, if realtime",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "int64"
+      },
+      "d": {
+        "title": "direction",
+        "allOf": [
+          {
+            "$ref": "#/Dir"
+          }
+        ]
+      },
+      "f": {
+        "title": "fee",
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "fu": {
+        "title": "fee_currency",
+        "description": "Fee currency, if different from the price currency",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "id": {
+        "title": "fill_id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "k": {
+        "title": "fill_kind",
+        "allOf": [
+          {
+            "$ref": "#/FillKind"
+          }
+        ]
+      },
+      "oid": {
+        "title": "order_id",
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "p": {
+        "title": "price",
+        "type": "number",
+        "format": "decimal"
+      },
+      "q": {
+        "title": "quantity",
+        "type": "number",
+        "format": "decimal"
+      },
+      "s": {
+        "title": "symbol",
+        "type": "string"
+      },
+      "tn": {
+        "title": "trade_time_ns",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ts": {
+        "title": "trade_time",
+        "description": "When the cpty claims the trade happened",
+        "type": "integer",
+        "format": "int64"
+      },
+      "u": {
+        "title": "trader",
+        "anyOf": [
+          {
+            "$ref": "#/UserId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "x": {
+        "title": "execution_venue",
+        "type": "string"
+      },
+      "xid": {
+        "title": "exchange_fill_id",
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "AberrantFill": {
+    "description": "Fills which we received but couldn't parse fully, return details best effort",
+    "type": "object",
+    "required": [
+      "id",
+      "x"
+    ],
+    "properties": {
+      "a": {
+        "title": "account",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uuid"
+      },
+      "atn": {
+        "title": "recv_time_ns",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ats": {
+        "title": "recv_time",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "int64"
+      },
+      "d": {
+        "title": "direction",
+        "anyOf": [
+          {
+            "$ref": "#/Dir"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "f": {
+        "title": "fee",
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "fu": {
+        "title": "fee_currency",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "id": {
+        "title": "fill_id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "k": {
+        "title": "fill_kind",
+        "anyOf": [
+          {
+            "$ref": "#/FillKind"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "oid": {
+        "title": "order_id",
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "p": {
+        "title": "price",
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "q": {
+        "title": "quantity",
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "s": {
+        "title": "symbol",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "tn": {
+        "title": "trade_time_ns",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ts": {
+        "title": "trade_time",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "int64"
+      },
+      "u": {
+        "title": "trader",
+        "anyOf": [
+          {
+            "$ref": "#/UserId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "x": {
+        "title": "execution_venue",
+        "type": "string"
+      },
+      "xid": {
+        "title": "exchange_fill_id",
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "CancelStatus": {
+    "type": "integer",
+    "enum": [
+      0,
+      1,
+      2,
+      127
+    ],
+    "x-enumNames": [
+      "Pending",
+      "Acked",
+      "Rejected",
+      "Out"
+    ]
+  },
+  "FillKind": {
+    "type": "integer",
+    "enum": [
+      0,
+      1,
+      2
+    ],
+    "x-enumNames": [
+      "Normal",
+      "Reversal",
+      "Correction"
+    ]
+  },
+  "OrderRejectReason": {
+    "type": "string",
+    "enum": [
+      "DuplicateOrderId",
+      "NotAuthorized",
+      "NoExecutionVenue",
+      "NoAccount",
+      "NoCpty",
+      "UnsupportedOrderType",
+      "UnsupportedExecutionVenue",
+      "Unknown"
+    ]
+  },
+  "OrderStatus": {
+    "type": "integer",
+    "enum": [
+      0,
+      1,
+      2,
+      127,
+      128,
+      129,
+      130,
+      254,
+      255
+    ],
+    "x-enumNames": [
+      "Pending",
+      "Open",
+      "Rejected",
+      "Out",
+      "Canceling",
+      "Canceled",
+      "ReconciledOut",
+      "Stale",
+      "Unknown"
+    ]
   },
   "AccountPosition": {
     "type": "object",
@@ -2878,218 +3709,32 @@
       }
     }
   },
-  "AberrantFill": {
-    "description": "Fills which we received but couldn't parse fully, return details best effort",
+  "CptyLoginRequest": {
     "type": "object",
     "required": [
-      "id",
-      "x"
+      "account",
+      "trader"
     ],
     "properties": {
-      "a": {
-        "title": "account",
-        "type": [
-          "string",
-          "null"
-        ],
-        "format": "uuid"
-      },
-      "atn": {
-        "title": "recv_time_ns",
-        "type": [
-          "integer",
-          "null"
-        ],
-        "format": "default",
-        "minimum": 0.0
-      },
-      "ats": {
-        "title": "recv_time",
-        "type": [
-          "integer",
-          "null"
-        ],
-        "format": "int64"
-      },
-      "d": {
-        "title": "direction",
-        "anyOf": [
-          {
-            "$ref": "#/Dir"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "f": {
-        "title": "fee",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "fu": {
-        "title": "fee_currency",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "id": {
-        "title": "fill_id",
+      "account": {
         "type": "string",
         "format": "uuid"
       },
-      "k": {
-        "title": "fill_kind",
-        "anyOf": [
-          {
-            "$ref": "#/FillKind"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "oid": {
-        "title": "order_id",
-        "anyOf": [
-          {
-            "$ref": "#/OrderId"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "p": {
-        "title": "price",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "q": {
-        "title": "quantity",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "s": {
-        "title": "symbol",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "tn": {
-        "title": "trade_time_ns",
-        "type": [
-          "integer",
-          "null"
-        ],
-        "format": "default",
-        "minimum": 0.0
-      },
-      "ts": {
-        "title": "trade_time",
-        "type": [
-          "integer",
-          "null"
-        ],
-        "format": "int64"
-      },
-      "u": {
-        "title": "trader",
-        "anyOf": [
-          {
-            "$ref": "#/UserId"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "x": {
-        "title": "execution_venue",
-        "type": "string"
-      },
-      "xid": {
-        "title": "exchange_fill_id",
-        "type": [
-          "string",
-          "null"
-        ]
+      "trader": {
+        "$ref": "#/UserId"
       }
     }
   },
-  "Fill": {
+  "CptyLogoutRequest": {
     "type": "object",
-    "required": [
-      "d",
-      "id",
-      "k",
-      "p",
-      "q",
-      "s",
-      "tn",
-      "ts",
-      "x"
-    ],
+    "required": [],
+    "properties": {}
+  },
+  "AccountStatistics": {
+    "type": "object",
     "properties": {
-      "a": {
-        "title": "account",
-        "type": [
-          "string",
-          "null"
-        ],
-        "format": "uuid"
-      },
-      "atn": {
-        "title": "recv_time_ns",
-        "type": [
-          "integer",
-          "null"
-        ],
-        "format": "default",
-        "minimum": 0.0
-      },
-      "ats": {
-        "title": "recv_time",
-        "description": "When Architect received the fill, if realtime",
-        "type": [
-          "integer",
-          "null"
-        ],
-        "format": "int64"
-      },
-      "d": {
-        "title": "direction",
-        "allOf": [
-          {
-            "$ref": "#/Dir"
-          }
-        ]
-      },
-      "f": {
-        "title": "fee",
+      "cash_excess": {
+        "description": "Cash available to withdraw.",
         "anyOf": [
           {
             "type": "number",
@@ -3100,90 +3745,83 @@
           }
         ]
       },
-      "fu": {
-        "title": "fee_currency",
-        "description": "Fee currency, if different from the price currency",
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "id": {
-        "title": "fill_id",
-        "type": "string",
-        "format": "uuid"
-      },
-      "k": {
-        "title": "fill_kind",
-        "allOf": [
-          {
-            "$ref": "#/FillKind"
-          }
-        ]
-      },
-      "oid": {
-        "title": "order_id",
+      "equity": {
         "anyOf": [
           {
-            "$ref": "#/OrderId"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
           }
         ]
       },
-      "p": {
-        "title": "price",
-        "type": "number",
-        "format": "decimal"
-      },
-      "q": {
-        "title": "quantity",
-        "type": "number",
-        "format": "decimal"
-      },
-      "s": {
-        "title": "symbol",
-        "type": "string"
-      },
-      "t": {
-        "title": "is_taker",
-        "default": null,
-        "type": "integer",
-        "format": "default"
-      },
-      "tn": {
-        "title": "trade_time_ns",
-        "type": "integer",
-        "format": "default",
-        "minimum": 0.0
-      },
-      "ts": {
-        "title": "trade_time",
-        "description": "When the cpty claims the trade happened",
-        "type": "integer",
-        "format": "int64"
-      },
-      "u": {
-        "title": "trader",
+      "position_margin": {
+        "description": "Margin requirement based on current positions only.",
         "anyOf": [
           {
-            "$ref": "#/UserId"
+            "type": "number",
+            "format": "decimal"
           },
           {
             "type": "null"
           }
         ]
       },
-      "x": {
-        "title": "execution_venue",
-        "type": "string"
+      "purchasing_power": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
-      "xid": {
-        "title": "exchange_fill_id",
-        "type": [
-          "string",
-          "null"
+      "realized_pnl": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "total_margin": {
+        "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "unrealized_pnl": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "yesterday_equity": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
         ]
       }
     }

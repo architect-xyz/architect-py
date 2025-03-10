@@ -21,17 +21,12 @@ class HistoricalCandlesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return HistoricalCandlesResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/HistoricalCandles"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = HistoricalCandlesResponse
-route = "/json.architect.Marketdata/HistoricalCandles"
-unary_type = "unary"
+        return "unary"

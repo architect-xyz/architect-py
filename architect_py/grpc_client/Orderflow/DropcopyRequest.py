@@ -21,17 +21,12 @@ class DropcopyRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return Dropcopy
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Orderflow/Dropcopy"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = Dropcopy
-route = "/json.architect.Orderflow/Dropcopy"
-unary_type = "stream"
+        return "stream"

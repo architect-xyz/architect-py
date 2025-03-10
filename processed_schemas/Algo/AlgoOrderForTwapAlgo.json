@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AlgoOrder_for_TwapAlgo",
+  "title": "AlgoOrderForTwapAlgo",
   "type": "object",
   "required": [
     "account",

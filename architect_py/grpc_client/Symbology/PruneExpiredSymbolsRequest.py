@@ -26,17 +26,12 @@ class PruneExpiredSymbolsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return PruneExpiredSymbolsResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Symbology/PruneExpiredSymbols"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = PruneExpiredSymbolsResponse
-route = "/json.architect.Symbology/PruneExpiredSymbols"
-unary_type = "unary"
+        return "unary"

@@ -20,17 +20,12 @@ class PendingCancelsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return PendingCancelsResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Oms/PendingCancels"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = PendingCancelsResponse
-route = "/json.architect.Oms/PendingCancels"
-unary_type = "unary"
+        return "unary"

@@ -15,17 +15,12 @@ class MarketStatusRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return MarketStatus
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/MarketStatus"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = MarketStatus
-route = "/json.architect.Marketdata/MarketStatus"
-unary_type = "unary"
+        return "unary"

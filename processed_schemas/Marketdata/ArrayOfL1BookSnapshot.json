@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Array_of_L1BookSnapshot",
+  "title": "ArrayOfL1BookSnapshot",
   "type": "array",
   "items": {
     "$ref": "../definitions.json#/L1BookSnapshot"

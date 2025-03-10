@@ -29,17 +29,12 @@ class AccountSummariesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return AccountSummariesResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Folio/AccountSummaries"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = AccountSummariesResponse
-route = "/json.architect.Folio/AccountSummaries"
-unary_type = "unary"
+        return "unary"

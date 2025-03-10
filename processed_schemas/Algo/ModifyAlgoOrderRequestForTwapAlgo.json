@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "ModifyAlgoOrderRequest_for_TwapAlgo",
+  "title": "ModifyAlgoOrderRequestForTwapAlgo",
   "type": "object",
   "required": [
     "algo_order_id",
@@ -17,5 +17,5 @@
   "route": "/json.architect.Algo/ModifyTwapAlgoOrder",
   "unary_type": "unary",
   "service": "Algo",
-  "response_type": "AlgoOrder_for_TwapAlgo"
+  "response_type": "AlgoOrderForTwapAlgo"
 }

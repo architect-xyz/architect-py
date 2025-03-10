@@ -22,17 +22,12 @@ class SubscribeOrderflowRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return Orderflow
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Orderflow/SubscribeOrderflow"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = Orderflow
-route = "/json.architect.Orderflow/SubscribeOrderflow"
-unary_type = "stream"
+        return "stream"

@@ -22,17 +22,12 @@ class SubscribeL1BookSnapshotsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return L1BookSnapshot
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Marketdata/SubscribeL1BookSnapshots"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = L1BookSnapshot
-route = "/json.architect.Marketdata/SubscribeL1BookSnapshots"
-unary_type = "stream"
+        return "stream"

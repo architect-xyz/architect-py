@@ -26,17 +26,12 @@ class AccountsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return ResponseType
+        return AccountsResponse
 
     @staticmethod
     def get_route() -> str:
-        return route
+        return "/json.architect.Accounts/Accounts"
 
     @staticmethod
     def get_unary_type():
-        return unary_type
-
-
-ResponseType = AccountsResponse
-route = "/json.architect.Accounts/Accounts"
-unary_type = "unary"
+        return "unary"

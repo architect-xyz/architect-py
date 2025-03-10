@@ -1,4 +1,3 @@
-import asyncio
 from asyncio.log import logger
 from typing import (
     Any,
@@ -34,9 +33,7 @@ from architect_py.grpc_client.Marketdata.L2BookSnapshotRequest import (
     L2BookSnapshotRequest,
 )
 from architect_py.grpc_client.Marketdata.L2BookUpdate import (
-    Diff,
     L2BookUpdate,
-    Snapshot,
 )
 from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
     SubscribeL1BookSnapshotsRequest,
@@ -44,13 +41,24 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
+from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 
 """
 TODO:
-- rewrite examples
+- confirm get_historical_candles works and fix if it doesn't work
+
+add information and standardization to the rust enums
+
+- loosen the Order types via pre-processing
+    - generally any flattened type with oneOf should be loosened and be put in the definitions file
+    - add a __post_init__ to confirm the type is correct
+
+remove duplication of:
+    CancelAllOrdersRequest
+
 
 for decode, don't create your own decoder
 use the union types and tag values
@@ -61,13 +69,11 @@ but it needs to be instantiated per response type
 
 
 def enc_hook(obj: Any) -> Any:
-    # TODO: use match statement when we lock above py3.10
     if isinstance(obj, TradableProduct):
         return str(obj)
 
 
 encoder = msgspec.json.Encoder(enc_hook=enc_hook)
-TReq = TypeVar("TReq", covariant=True)
 TRes = TypeVar("TRes", covariant=True)
 P = ParamSpec("P")
 
@@ -257,7 +263,7 @@ class GRPCClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> None:
         async for up in self.subscribe_l2_books_stream(symbol, venue):
-            if isinstance(up, Diff):  # elif up.t = "d":  # diff
+            if isinstance(up, L2BookDiff):  # elif up.t = "d":  # diff
                 if symbol not in self.l2_books:
                     raise ValueError(
                         f"received update before snapshot for L2 book {symbol}"
@@ -271,7 +277,7 @@ class GRPCClient:
                         f"received update out of order for L2 book {symbol}"
                     )
                 L2_update_from_diff(book, up)
-            elif isinstance(up, Snapshot):  # if up.t = "s":
+            elif isinstance(up, L2BookSnapshot):  # if up.t = "s":
                 book = self.l2_books[symbol]
                 update_struct(book, up)
 
@@ -347,7 +353,7 @@ def update_order_list(
             order_list.insert(idx, [price, size])
 
 
-def L2_update_from_diff(book: L2BookSnapshot, diff: Diff) -> None:
+def L2_update_from_diff(book: L2BookSnapshot, diff: L2BookDiff) -> None:
     """
     we use binary search because the L2 does not have many levels
     and is simpler to maintain in the context of the codegen
