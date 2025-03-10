@@ -3,7 +3,7 @@
   "title": "CptyResponse",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json/#",
+      "$ref": "../Oms/Order.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -11,7 +11,8 @@
           "ro"
         ]
       },
-      "variant_name": "ReconcileOrder"
+      "variant_name": "ReconcileOrder",
+      "ref_correction": "Order "
     }
   ]
 }

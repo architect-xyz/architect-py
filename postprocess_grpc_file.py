@@ -5,6 +5,16 @@ import json
 import os
 
 
+# regex for fixing imports from other grpc classes
+pattern = re.compile(r"^from\s+((?:\.+\w+))\s+import\s+(\w+)$")
+
+# Regex to find enum class definitions.
+class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
+
+# Regex to find member assignments. It assumes the member value is an integer literal.
+member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
+
+
 def fix_enum_member_names(file_path: str, json_folder: str) -> None:
     """
     This function reads a Python file and a corresponding JSON file that defines enums.
@@ -41,17 +51,15 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
     with open(file_path, "r") as pf:
         lines = pf.readlines()
 
+    for i, line in enumerate(lines):
+        if line != "from .. import definitions\n":
+            lines[i] = pattern.sub(r"from \1.\2 import \2", line)
+
     new_lines = []
     in_enum_class = False
     enum_class_indent = ""
     enum_values = []
     enum_names = []
-
-    # Regex to find enum class definitions.
-    class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
-
-    # Regex to find member assignments. It assumes the member value is an integer literal.
-    member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
 
     for line in lines:
         # Remove any trailing newline for easier manipulation.

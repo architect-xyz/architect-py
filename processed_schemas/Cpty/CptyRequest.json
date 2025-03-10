@@ -25,7 +25,7 @@
       "variant_name": "Logout"
     },
     {
-      "$ref": "../Oms/Order.json/#",
+      "$ref": "../Oms/Order.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -33,7 +33,8 @@
           "place_order"
         ]
       },
-      "variant_name": "PlaceOrder"
+      "variant_name": "PlaceOrder",
+      "ref_correction": "Order "
     }
   ],
   "route": "/json.architect.Cpty/Cpty",

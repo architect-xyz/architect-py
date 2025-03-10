@@ -3,7 +3,7 @@
   "title": "Dropcopy",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json/#",
+      "$ref": "../Oms/Order.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -11,7 +11,8 @@
           "o"
         ]
       },
-      "variant_name": "Order"
+      "variant_name": "Order",
+      "ref_correction": "Order "
     },
     {
       "$ref": "../definitions.json#/Fill",

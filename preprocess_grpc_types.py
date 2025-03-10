@@ -120,17 +120,22 @@ def correct_enums(
                 definitions[type_name] = item
 
             if type_name in type_to_json:
-                ref = f"../{type_to_json[type_name]}/#"
+                ref = f"../{type_to_json[type_name]}"
+                ref_correction = f"{type_name} "
             else:
                 ref = f"../definitions.json#/{type_name}"
+                ref_correction = None
 
+            d = {
+                "$ref": ref,
+                "tag": tag,
+                "tag_field": tag_field,
+                "variant_name": variant_name,
+            }
+            if ref_correction:
+                d["ref_correction"] = ref_correction
             new_one_of.append(
-                {
-                    "$ref": ref,
-                    "tag": tag,
-                    "tag_field": tag_field,
-                    "variant_name": variant_name,
-                }
+                d
             )  # this info is used for post-processing to add the tag / tag_field
 
         schema[one_of] = new_one_of

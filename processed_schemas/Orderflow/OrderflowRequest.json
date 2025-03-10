@@ -3,7 +3,7 @@
   "title": "OrderflowRequest",
   "oneOf": [
     {
-      "$ref": "../Oms/PlaceOrderRequest.json/#",
+      "$ref": "../Oms/PlaceOrderRequest.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -11,10 +11,11 @@
           "p"
         ]
       },
-      "variant_name": "PlaceOrder"
+      "variant_name": "PlaceOrder",
+      "ref_correction": "PlaceOrderRequest "
     },
     {
-      "$ref": "../Oms/CancelOrderRequest.json/#",
+      "$ref": "../Oms/CancelOrderRequest.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -22,10 +23,11 @@
           "x"
         ]
       },
-      "variant_name": "CancelOrder"
+      "variant_name": "CancelOrder",
+      "ref_correction": "CancelOrderRequest "
     },
     {
-      "$ref": "../Oms/CancelAllOrdersRequest.json/#",
+      "$ref": "../Oms/CancelAllOrdersRequest.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -33,7 +35,8 @@
           "xo"
         ]
       },
-      "variant_name": "CancelAllOrders"
+      "variant_name": "CancelAllOrders",
+      "ref_correction": "CancelAllOrdersRequest "
     }
   ],
   "route": "/json.architect.Orderflow/Orderflow",

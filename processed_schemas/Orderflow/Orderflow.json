@@ -3,7 +3,7 @@
   "title": "Orderflow",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json/#",
+      "$ref": "../Oms/Order.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -11,7 +11,8 @@
           "w"
         ]
       },
-      "variant_name": "OrderPending"
+      "variant_name": "OrderPending",
+      "ref_correction": "Order "
     },
     {
       "$ref": "../definitions.json#/OrderAck",
@@ -69,7 +70,7 @@
       "variant_name": "OrderStale"
     },
     {
-      "$ref": "../Oms/Cancel.json/#",
+      "$ref": "../Oms/Cancel.json",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -77,7 +78,8 @@
           "xc"
         ]
       },
-      "variant_name": "CancelPending"
+      "variant_name": "CancelPending",
+      "ref_correction": "Cancel "
     },
     {
       "$ref": "../definitions.json#/CancelReject",

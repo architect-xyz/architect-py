@@ -7,6 +7,6 @@ from typing import Annotated
 
 from msgspec import Meta
 
-from ..Oms import Order
+from ..Oms.Order import Order
 
 CptyResponse = Annotated[Order, Meta(title="CptyResponse")]
