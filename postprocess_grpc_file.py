@@ -162,15 +162,15 @@ def generate_stub(file_path: str, json_folder: str) -> None:
     json_fp = get_corresponding_json_file(file_path, json_folder)
 
     with open(json_fp, "r", encoding="utf-8") as json_file:
-        j = json.load(json_file)
+        json_data = json.load(json_file)
 
-        service = j["service"]
+        service = json_data["service"]
 
-        unary_type = j["unary_type"]
-        response_type = j["response_type"]
-        route = j["route"]
+        unary_type = json_data["unary_type"]
+        response_type = json_data["response_type"]
+        route = json_data["route"]
 
-        request_type_name = j["title"]
+        request_type_name = json_data["title"]
 
         with open(file_path, "r") as f:
             lines = f.readlines()

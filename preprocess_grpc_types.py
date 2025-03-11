@@ -2,40 +2,39 @@ import argparse
 import json
 import os
 import re
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, List, Tuple
 
+# ---------------------------------------------------------------------
+# Constants and Regular Expressions
+# ---------------------------------------------------------------------
 
-decimal_re = re.compile(r'(^\s*)"\$ref": "#/definitions/Decimal"', flags=re.MULTILINE)
-
-single_all_of_decimal = re.compile(
+DECIMAL_RE = re.compile(r'(^\s*)"\$ref": "#/definitions/Decimal"', flags=re.MULTILINE)
+SINGLE_ALL_OF_DECIMAL = re.compile(
     r'"allOf":\s*\[\s*\{\s*'
     r'(?P<indent>[ \t]*)"type":\s*"number",\s*'
     r'(?P=indent)"format":\s*"decimal"\s*'
     r"\}\s*\]",
     flags=re.MULTILINE,
 )
-
-
-# camel case regex
-camel_case_re = re.compile(r"(?<!^)(?=[A-Z])")
-
-
-extract_type_from_ref_re = re.compile(r'("\$ref":\s*"#/definitions/)([^"]+)(")')
+CAMEL_CASE_RE = re.compile(r"(?<!^)(?=[A-Z])")
+EXTRACT_REF_RE = re.compile(r'("\$ref":\s*"#/definitions/)([^"]+)(")')
 
 
 def replace_and_indent(match: re.Match) -> str:
-    """Helper function to replace matched ref lines with a formatted JSON snippet."""
     indent = match.group(1)
     return f'{indent}"type": "number",\n{indent}"format": "decimal"'
 
 
-def fix_types_in_json_lines(
-    text: str, is_definitions_file: bool, type_to_json: dict[str, str]
+# ---------------------------------------------------------------------
+# Type And Ref Fixing Functions
+# ---------------------------------------------------------------------
+
+
+def _apply_type_fixes_to_text(
+    text: str, is_definitions_file: bool, type_to_json_file: Dict[str, str]
 ) -> str:
     """
-    Apply various string replacements and regex substitutions on JSON text.
-
-    Replaces type names and formats with standardized values and adjusts JSON $ref links.
+    Perform string replacements and regex substitutions on the JSON text.
     """
     replacements = {
         "uint32": "default",
@@ -46,59 +45,51 @@ def fix_types_in_json_lines(
     for old, new in replacements.items():
         text = text.replace(old, new)
 
-    # Replace "$ref": "#/definitions/Decimal" with proper indenting.
-    text = decimal_re.sub(replace_and_indent, text)
+    # Fix Decimal references with proper indenting.
+    text = DECIMAL_RE.sub(replace_and_indent, text)
+    text = SINGLE_ALL_OF_DECIMAL.sub(replace_and_indent, text)
 
-    # Process "allOf" to be Decimal
-    text = single_all_of_decimal.sub(replace_and_indent, text)
-
-    """
-        if type_name in type_to_json:
-            ref = f"../{type_to_json[type_name]}/#"
-            ref_correction = type_name
+    def replace_ref(match: re.Match) -> str:
+        prefix, class_title, suffix = match.groups()
+        if class_title in type_to_json_file:
+            ref = (
+                f"{type_to_json_file[class_title]}/#"
+                if is_definitions_file
+                else f"../{type_to_json_file[class_title]}/#"
+            )
         else:
-            ref = f"../definitions.json#/{type_name}"
-            ref_correction = None
-    """
-
-    def replace_ref(mtch):
-        prefix, class_title, suffix = mtch.groups()
-
-        if class_title in type_to_json:
-            if is_definitions_file:
-                ref = f"{type_to_json[class_title]}/#"
-            else:
-                ref = f"../{type_to_json[class_title]}/#"
-        else:
-            if is_definitions_file:
-                ref = f"#/{class_title}"
-            else:
-                ref = f"../definitions.json#/{class_title}"
+            ref = (
+                f"#/{class_title}"
+                if is_definitions_file
+                else f"../definitions.json#/{class_title}"
+            )
         return f'"$ref": "{ref}"'
 
-    text = extract_type_from_ref_re.sub(replace_ref, text)
-
-    return text
+    return EXTRACT_REF_RE.sub(replace_ref, text)
 
 
-def fix_types_in_dict(
-    d: Dict, is_definitions_file: bool, type_to_json: dict[str, str]
+def apply_type_fixes(
+    schema: Dict, is_definitions_file: bool, type_to_json_file: Dict[str, str]
 ) -> Dict:
     """
-    Convert a dictionary to a JSON string, fix types using string operations,
-    and then parse back to a dictionary.
+    Convert the schema dictionary to text, apply type fixes, and convert it back.
     """
-    json_text = json.dumps(d, indent=2)
-    fixed_text = fix_types_in_json_lines(json_text, is_definitions_file, type_to_json)
+    json_text = json.dumps(schema, indent=2)
+    fixed_text = _apply_type_fixes_to_text(
+        json_text, is_definitions_file, type_to_json_file
+    )
     return json.loads(fixed_text)
+
+
+# ---------------------------------------------------------------------
+# Schema Metadata and Enum Correction Functions
+# ---------------------------------------------------------------------
 
 
 def parse_class_description(text: str) -> Tuple[Dict[str, str], str]:
     """
     Parse metadata from a special comment in the description.
-
     Expected format: <!-- py: key1=value1, key2=value2 -->
-    Returns a tuple of the parsed metadata dictionary and the remaining text.
     """
     pattern = r"<!--\s*py:\s*(.*?)\s*-->"
     match = re.search(pattern, text, re.DOTALL)
@@ -116,89 +107,97 @@ def parse_class_description(text: str) -> Tuple[Dict[str, str], str]:
         key, value = map(str.strip, pair.split("=", 1))
         metadata[key] = value
 
-    # Remove the metadata comment from the original text.
     cleaned_text = re.sub(pattern, "", text, flags=re.DOTALL)
     return metadata, cleaned_text
+
+
+def correct_flattened_types(schema: Dict[str, Any]) -> None:
+    """
+    Processes any type that has
+    #[serde(flatten)]
+
+    because it would generate several types in the json
+    while we want 1 type.
+
+    Removes the oneOf list and merges common keys and additional properties.
+    """
+    if "oneOf" not in schema or "required" not in schema:
+        return
+
+    one_of: List[Dict[str, Any]] = schema.pop("oneOf")
+    sets = [set(group) for group in one_of]
+    common_keys: list[str] = list(set().intersection(*sets))
+    additional_properties: Dict[str, Any] = {}
+
+    enum_tag: str = ""
+    enum_value_to_required: Dict[str, List[str]] = {}
+    enum_tag_title = CAMEL_CASE_RE.sub("_", schema["title"]).lower()
+    enum_tag_property: Dict[str, Any] = {
+        "type": "string",
+        "title": f"{enum_tag_title}_type",
+        "enum": [],
+    }
+
+    for item in one_of:
+        assert (
+            item.get("type") == "object"
+        ), f"Expected object type in {schema['title']}"
+        properties = item.get("properties", {})
+        required = item.get("required", [])
+        for key, prop in properties.items():
+            if "enum" in prop:
+                if not enum_tag:
+                    enum_tag = key
+                else:
+                    assert enum_tag == key, f"Enum field mismatch in {schema['title']}"
+                [enum_value] = prop["enum"]
+                enum_tag_property["enum"].append(enum_value)
+                enum_value_to_required[enum_value] = required
+            else:
+                if key in additional_properties:
+                    assert (
+                        additional_properties[key] == prop
+                    ), f"Conflicting properties for {key} in {schema['title']}"
+                else:
+                    additional_properties[key] = prop
+
+    if not enum_tag:
+        raise ValueError(f"Enum value not found in {schema['title']}")
+    schema["required"].extend(common_keys)
+    schema["properties"].update(additional_properties)
+    schema["properties"][enum_tag] = enum_tag_property
+    schema["enum_tag"] = enum_tag
+    schema["enum_tag_to_other_required_keys"] = enum_value_to_required
 
 
 def correct_enums(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
-    type_to_json: Dict[str, str],
+    type_to_json_file: Dict[str, str],
 ) -> None:
     """
-    Process enum-like schema entries.
+    Process types that were Enums on the rust side.
 
-    If the schema contains a "oneOf" entry without a top-level "required", parse the
-    metadata from the description to adjust enum definitions and store unique definitions.
+    This is because the Variants need both the Variant name and the actual type name.
+
+    pub enum Dropcopy {
+        #[serde(rename = "o")]
+        #[schemars(title = "Order|Order")]
+        Order(Order),
+        #[schemars(title = "Fill|Fill")]
+        #[serde(rename = "f")]
+        Fill(Fill),
+        #[serde(rename = "af")]
+        #[schemars(title = "AberrantFill|AberrantFill")]
+        AberrantFill(AberrantFill),
+    }
     """
+
     one_of_key = "oneOf"
-    if one_of_key not in schema:
+    if one_of_key not in schema or "required" in schema:
         return
 
-    # Skip processing if the schema is a flattened type rather than an enum.
-    if "required" in schema:
-        # this should be in a separate function
-
-        # see Order class for example
-        one_of: list[dict[str, str | dict[str, Any]]] = schema.pop(one_of_key)
-
-        sets = [set(group) for group in one_of]
-        common_keys: list[str] = list(set().intersection(*sets))
-        additional_properties: dict[str, dict[str, Any]] = {}
-
-        enum_tag: str | None = None
-        enum_value_to_required: dict[str, list[str]] = {}
-
-        enum_tag_title = camel_case_re.sub("_", schema["title"]).lower()
-        enum_tag_property: dict[str, str | list[str]] = {
-            "type": "string",
-            "title": f"{enum_tag_title}_type",
-            "enum": [],
-        }
-        assert isinstance(enum_tag_property["enum"], list)
-
-        for obj in one_of:
-            assert obj["type"] == "object"
-            assert "properties" in obj and isinstance(obj["properties"], dict)
-            assert "required" in obj and isinstance(obj["required"], list)
-            properties: dict[str, dict[str, Any]] = obj["properties"]
-            required: list[str] = obj["required"]
-            for key, ppty in properties.items():
-                if "enum" in ppty:
-                    key_type: str = ppty["type"]
-                    assert (
-                        key_type == "string"
-                    ), f"Field {key} in {schema['title']} is not a string"
-                    if enum_tag is None:
-                        enum_tag = key
-                    else:
-                        assert (
-                            enum_tag == key
-                        ), f"Field {key} with property {ppty} in {schema['title']} broke assumptions: enum values differ"
-                    [enum_value] = ppty["enum"]
-                    enum_tag_property["enum"].append(enum_value)
-                    enum_value_to_required[enum_value] = required
-                else:
-                    if key in additional_properties:
-                        assert (
-                            additional_properties[key] == ppty
-                        ), f"Conflicting properties for {key} in {schema['title']}"
-                    else:
-                        additional_properties[key] = ppty
-        assert enum_tag is not None, f"Enum value not found in {schema['title']}"
-
-        assert isinstance(schema["required"], list)
-
-        schema["required"].extend(common_keys)
-        schema["properties"].update(additional_properties)
-
-        schema["properties"][enum_tag] = enum_tag_property
-        schema["enum_tag"] = enum_tag
-        schema["enum_tag_to_other_required_keys"] = enum_value_to_required
-        return
-
-    description = schema["description"]
+    description = schema.get("description", "")
     metadata, new_description = parse_class_description(description)
     if new_description.strip():
         schema["description"] = new_description.strip()
@@ -207,7 +206,6 @@ def correct_enums(
 
     tag = metadata["tag"]
     new_one_of: List[Dict[str, Any]] = []
-
     for item in schema[one_of_key]:
         item["required"].remove(tag)
         tag_field = item["properties"].pop(tag)
@@ -218,20 +216,14 @@ def correct_enums(
         variant_name, type_name = title.split("|", 1)
         if type_name in definitions:
             if definitions[type_name] != item:
-                print(f"ERROR: Conflicting definitions for {type_name}.")
-                print("New item:", item)
-                print("Existing definition:", definitions[type_name])
-                for key in item:
-                    if item[key] != definitions[type_name].get(key):
-                        print(f"\n{key}:")
-                        print(item[key])
-                        print(definitions[type_name].get(key))
                 raise ValueError(f"Conflicting definitions for {type_name}.")
+        elif type_name in type_to_json_file:
+            pass
         else:
             definitions[type_name] = item
 
-        if type_name in type_to_json:
-            ref = f"../{type_to_json[type_name]}/#"
+        if type_name in type_to_json_file:
+            ref = f"../{type_to_json_file[type_name]}/#"
             ref_correction = type_name
         else:
             ref = f"../definitions.json#/{type_name}"
@@ -253,12 +245,11 @@ def correct_enums(
 def process_schema_definitions(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
-    type_to_json: Dict[str, str],
+    type_to_json_file: Dict[str, str],
 ) -> None:
     """
-    Process the "definitions" in a schema and separate them to avoid duplication.
-
-    This function also updates the "Decimal" definition and handles enum corrections.
+    Extract and process definitions from a schema.
+    Updates the "Decimal" format and applies enum corrections.
     """
     if "definitions" not in schema:
         return
@@ -266,43 +257,44 @@ def process_schema_definitions(
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
 
-    try:
-        correct_enums(schema, definitions, type_to_json)
-    except Exception:
-        print("ERROR processing schema:")
-        print(json.dumps(schema, indent=2))
-        raise
+    correct_enums(schema, definitions, type_to_json_file)
+    correct_flattened_types(schema)
 
-    # Merge processed definitions into the global definitions dictionary.
-    definitions.update(schema.pop("definitions"))
+    new_defs: dict[str, Any] = schema.pop("definitions")
+    for t, definition in new_defs.items():
+        if t in type_to_json_file:
+            continue
+        definitions[t] = definition
+
+
+# ---------------------------------------------------------------------
+# Utility Functions for Service and File Handling
+# ---------------------------------------------------------------------
 
 
 def capitalize_first_letter(word: str) -> str:
-    """Return the word with its first letter capitalized."""
     return word[0].upper() + word[1:] if word else word
 
 
 def add_info_to_schema(services: List[Dict[str, Any]]) -> Dict[str, str]:
     """
-    Enrich service definitions with additional metadata and build a mapping from type names to file paths.
-
-    This mapping is later used to generate $ref links.
+    Enrich service definitions with metadata and build a mapping from type names to file paths.
     """
-    type_to_file: Dict[str, str] = {}
+    type_to_json_file: Dict[str, str] = {}
     for service in services:
         service_name = service["name"].replace(" ", "_")
         service["service_name"] = service_name
 
         for rpc in service["rpcs"]:
-            req_schema: Dict[str, Any] = rpc["request_type"]
-            resp_schema: Dict[str, Any] = rpc["response_type"]
+            req_schema = rpc["request_type"]
+            resp_schema = rpc["response_type"]
 
             # Add service-specific metadata.
             req_schema["route"] = rpc["route"]
             req_schema["unary_type"] = rpc["type"]
             req_schema["service"] = service_name
 
-            # Standardize the response type title.
+            # Standardize titles.
             response_type_name = "".join(
                 capitalize_first_letter(word)
                 for word in resp_schema["title"].split("_")
@@ -310,71 +302,83 @@ def add_info_to_schema(services: List[Dict[str, Any]]) -> Dict[str, str]:
             req_schema["response_type"] = response_type_name
             resp_schema["title"] = response_type_name
 
-            # Standardize the request type title.
             req_title = "".join(
                 capitalize_first_letter(word) for word in req_schema["title"].split("_")
             )
             req_schema["title"] = req_title
 
-            type_to_file[req_title] = f"{service_name}/{req_title}.json"
-            type_to_file[response_type_name] = (
+            type_to_json_file[req_title] = f"{service_name}/{req_title}.json"
+            type_to_json_file[response_type_name] = (
                 f"{service_name}/{response_type_name}.json"
             )
-    return type_to_file
+    return type_to_json_file
 
 
 def write_json_file(data: Dict[Any, Any], path: str) -> None:
-    """Write a dictionary as a pretty-printed JSON file to the given path."""
     with open(path, "w") as out_file:
         json.dump(data, out_file, indent=2)
 
 
+def process_schema(
+    schema: Dict[str, Any],
+    definitions: Dict[str, Any],
+    type_to_json_file: Dict[str, str],
+    is_definitions_file: bool = False,
+) -> Dict[str, Any]:
+    """
+    Process a schema by handling definitions and applying type fixes.
+    """
+    process_schema_definitions(schema, definitions, type_to_json_file)
+    return apply_type_fixes(schema, is_definitions_file, type_to_json_file)
+
+
+def process_service(
+    service: Dict[str, Any],
+    output_dir: str,
+    definitions: Dict[str, Any],
+    type_to_json_file: Dict[str, str],
+) -> None:
+    """
+    Process each RPC within a service (both request and response) and write the resulting schema files.
+    """
+    service_name = service["service_name"]
+    service_dir = os.path.join(output_dir, service_name)
+    os.makedirs(service_dir, exist_ok=True)
+
+    for rpc in service["rpcs"]:
+        for key in ["request_type", "response_type"]:
+            schema = rpc[key]
+            processed_schema = process_schema(
+                schema, definitions, type_to_json_file, False
+            )
+            schema_title = processed_schema["title"]
+            file_path = os.path.join(service_dir, f"{schema_title}.json")
+            write_json_file(processed_schema, file_path)
+
+
 def preprocess_json(input_file: str, output_dir: str) -> None:
     """
-    Preprocess the gRPC JSON file by extracting each RPC's request and response schemas
+    Preprocess the gRPC JSON file by splitting each RPC's request and response schemas
     into separate JSON files and creating a unified definitions file.
-
-    :param input_file: Path to the input JSON file containing an array of service definitions.
-    :param output_dir: Directory where extracted schema files will be saved.
     """
     os.makedirs(output_dir, exist_ok=True)
-
     with open(input_file, "r") as f:
         services = json.load(f)
 
-    type_to_json = add_info_to_schema(services)
+    type_to_json_file = add_info_to_schema(services)
     definitions: Dict[str, Any] = {}
 
     for service in services:
-        service_name = service["service_name"]
-        service_dir = os.path.join(output_dir, service_name)
-        os.makedirs(service_dir, exist_ok=True)
+        process_service(service, output_dir, definitions, type_to_json_file)
 
-        for rpc in service["rpcs"]:
-            req_schema: Dict[str, Any] = rpc["request_type"]
-            resp_schema: Dict[str, Any] = rpc["response_type"]
-
-            process_schema_definitions(req_schema, definitions, type_to_json)
-            process_schema_definitions(resp_schema, definitions, type_to_json)
-
-            # Fix type formats in the schemas.
-            req_schema = fix_types_in_dict(req_schema, False, type_to_json)
-            resp_schema = fix_types_in_dict(resp_schema, False, type_to_json)
-
-            # Write request schema.
-            req_title = req_schema["title"]
-            req_path = os.path.join(service_dir, f"{req_title}.json")
-            write_json_file(req_schema, req_path)
-
-            # Write response schema.
-            resp_title = resp_schema["title"]
-            resp_path = os.path.join(service_dir, f"{resp_title}.json")
-            write_json_file(resp_schema, resp_path)
-
-    # Process and write the consolidated definitions.
-    definitions = fix_types_in_dict(definitions, True, type_to_json)
+    fixed_definitions = apply_type_fixes(definitions, True, type_to_json_file)
     definitions_path = os.path.join(output_dir, "definitions.json")
-    write_json_file(definitions, definitions_path)
+    write_json_file(fixed_definitions, definitions_path)
+
+
+# ---------------------------------------------------------------------
+# Main Entry Point
+# ---------------------------------------------------------------------
 
 
 def main() -> None:
