@@ -9,7 +9,7 @@
     "candles": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/Candle"
+        "$ref": "../Marketdata/Candle.json/#"
       }
     }
   }

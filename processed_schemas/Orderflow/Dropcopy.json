@@ -12,7 +12,7 @@
         ]
       },
       "variant_name": "Order",
-      "ref_correction": "Order "
+      "ref_correction": "Order"
     },
     {
       "$ref": "../definitions.json#/Fill",

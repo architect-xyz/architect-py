@@ -7,8 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from ..Oms.Order import Order
 
 
 class HistoricalOrdersResponse(Struct):
-    orders: List[definitions.Order]
+    orders: List[Order]

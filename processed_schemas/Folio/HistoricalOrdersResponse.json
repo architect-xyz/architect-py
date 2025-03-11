@@ -9,7 +9,7 @@
     "orders": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/Order"
+        "$ref": "../Oms/Order.json/#"
       }
     }
   }

@@ -6,21 +6,25 @@ from architect_py.grpc_client.Oms.Order import Order
 from architect_py.scalars import OrderDir
 
 from decimal import Decimal
-from typing import Annotated, Literal, Optional, Union
+from enum import Enum
+from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
 from .. import definitions
 
 
-class PlaceOrderRequest1(Struct):
+class PlaceOrderRequestType(str, Enum):
+    LIMIT = "LIMIT"
+    STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
+    TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
+
+
+class PlaceOrderRequest(Struct):
     d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    k: Literal["LIMIT"]
-    p: Annotated[Decimal, Meta(title="limit_price")]
-    po: Annotated[bool, Meta(title="post_only")]
     a: Optional[
         Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
     ] = None
@@ -45,6 +49,12 @@ class PlaceOrderRequest1(Struct):
         Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
+    p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
+    po: Optional[Annotated[bool, Meta(title="post_only")]] = None
+    tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
+    k: Optional[
+        Annotated[PlaceOrderRequestType, Meta(title="place_order_request_type")]
+    ] = None
 
     @property
     def dir(self) -> OrderDir:
@@ -79,343 +89,85 @@ class PlaceOrderRequest1(Struct):
         self.tif = value
 
     @property
-    def limit_price(self) -> Decimal:
+    def account(self) -> Optional[definitions.AccountIdOrName]:
+        return self.a
+
+    @account.setter
+    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
+        self.a = value
+
+    @property
+    def parent_id(self) -> Optional[definitions.OrderId]:
+        return self.pid
+
+    @parent_id.setter
+    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
+        self.pid = value
+
+    @property
+    def source(self) -> Optional[definitions.OrderSource]:
+        return self.src
+
+    @source.setter
+    def source(self, value: Optional[definitions.OrderSource]) -> None:
+        self.src = value
+
+    @property
+    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
+        return self.u
+
+    @trader.setter
+    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
+        self.u = value
+
+    @property
+    def execution_venue(self) -> Optional[str]:
+        return self.x
+
+    @execution_venue.setter
+    def execution_venue(self, value: Optional[str]) -> None:
+        self.x = value
+
+    @property
+    def limit_price(self) -> Optional[Decimal]:
         return self.p
 
     @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
+    def limit_price(self, value: Optional[Decimal]) -> None:
         self.p = value
 
     @property
-    def post_only(self) -> bool:
+    def post_only(self) -> Optional[bool]:
         return self.po
 
     @post_only.setter
-    def post_only(self, value: bool) -> None:
+    def post_only(self, value: Optional[bool]) -> None:
         self.po = value
 
     @property
-    def account(self) -> Optional[definitions.AccountIdOrName]:
-        return self.a
-
-    @account.setter
-    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
-        self.a = value
-
-    @property
-    def parent_id(self) -> Optional[definitions.OrderId]:
-        return self.pid
-
-    @parent_id.setter
-    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
-        self.pid = value
-
-    @property
-    def source(self) -> Optional[definitions.OrderSource]:
-        return self.src
-
-    @source.setter
-    def source(self, value: Optional[definitions.OrderSource]) -> None:
-        self.src = value
-
-    @property
-    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
-        return self.u
-
-    @trader.setter
-    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
-        self.u = value
-
-    @property
-    def execution_venue(self) -> Optional[str]:
-        return self.x
-
-    @execution_venue.setter
-    def execution_venue(self, value: Optional[str]) -> None:
-        self.x = value
-
-    @staticmethod
-    def get_response_type():
-        return "&RESPONSE_TYPE:PlaceOrderRequest1"
-
-    @staticmethod
-    def get_route() -> str:
-        return "&ROUTE:PlaceOrderRequest1"
-
-    @staticmethod
-    def get_unary_type():
-        return "&UNARY_TYPE:PlaceOrderRequest1"
-
-
-class PlaceOrderRequest2(Struct):
-    d: Annotated[OrderDir, Meta(title="dir")]
-    q: Annotated[Decimal, Meta(title="quantity")]
-    s: Annotated[str, Meta(title="symbol")]
-    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    k: Literal["STOP_LOSS_LIMIT"]
-    p: Annotated[Decimal, Meta(title="limit_price")]
-    tp: Annotated[Decimal, Meta(title="trigger_price")]
-    a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
-    ] = None
-    id: Optional[
-        Annotated[
-            Optional[definitions.OrderId],
-            Meta(
-                description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through."
-            ),
-        ]
-    ] = None
-    """
-    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
-    """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
-        None
-    )
-    src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
-    ] = None
-    u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
-    ] = None
-    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
-
-    @property
-    def dir(self) -> OrderDir:
-        return self.d
-
-    @dir.setter
-    def dir(self, value: OrderDir) -> None:
-        self.d = value
-
-    @property
-    def quantity(self) -> Decimal:
-        return self.q
-
-    @quantity.setter
-    def quantity(self, value: Decimal) -> None:
-        self.q = value
-
-    @property
-    def symbol(self) -> str:
-        return self.s
-
-    @symbol.setter
-    def symbol(self, value: str) -> None:
-        self.s = value
-
-    @property
-    def time_in_force(self) -> definitions.TimeInForce:
-        return self.tif
-
-    @time_in_force.setter
-    def time_in_force(self, value: definitions.TimeInForce) -> None:
-        self.tif = value
-
-    @property
-    def limit_price(self) -> Decimal:
-        return self.p
-
-    @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
-        self.p = value
-
-    @property
-    def trigger_price(self) -> Decimal:
+    def trigger_price(self) -> Optional[Decimal]:
         return self.tp
 
     @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
+    def trigger_price(self, value: Optional[Decimal]) -> None:
         self.tp = value
 
     @property
-    def account(self) -> Optional[definitions.AccountIdOrName]:
-        return self.a
+    def place_order_request_type(self) -> Optional[PlaceOrderRequestType]:
+        return self.k
 
-    @account.setter
-    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
-        self.a = value
-
-    @property
-    def parent_id(self) -> Optional[definitions.OrderId]:
-        return self.pid
-
-    @parent_id.setter
-    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
-        self.pid = value
-
-    @property
-    def source(self) -> Optional[definitions.OrderSource]:
-        return self.src
-
-    @source.setter
-    def source(self, value: Optional[definitions.OrderSource]) -> None:
-        self.src = value
-
-    @property
-    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
-        return self.u
-
-    @trader.setter
-    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
-        self.u = value
-
-    @property
-    def execution_venue(self) -> Optional[str]:
-        return self.x
-
-    @execution_venue.setter
-    def execution_venue(self, value: Optional[str]) -> None:
-        self.x = value
+    @place_order_request_type.setter
+    def place_order_request_type(self, value: Optional[PlaceOrderRequestType]) -> None:
+        self.k = value
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:PlaceOrderRequest2"
+        return Order
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:PlaceOrderRequest2"
+        return "/json.architect.Oms/PlaceOrder"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:PlaceOrderRequest2"
-
-
-class PlaceOrderRequest3(Struct):
-    d: Annotated[OrderDir, Meta(title="dir")]
-    q: Annotated[Decimal, Meta(title="quantity")]
-    s: Annotated[str, Meta(title="symbol")]
-    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    k: Literal["TAKE_PROFIT_LIMIT"]
-    p: Annotated[Decimal, Meta(title="limit_price")]
-    tp: Annotated[Decimal, Meta(title="trigger_price")]
-    a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
-    ] = None
-    id: Optional[
-        Annotated[
-            Optional[definitions.OrderId],
-            Meta(
-                description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through."
-            ),
-        ]
-    ] = None
-    """
-    If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
-    """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
-        None
-    )
-    src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
-    ] = None
-    u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
-    ] = None
-    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
-
-    @property
-    def dir(self) -> OrderDir:
-        return self.d
-
-    @dir.setter
-    def dir(self, value: OrderDir) -> None:
-        self.d = value
-
-    @property
-    def quantity(self) -> Decimal:
-        return self.q
-
-    @quantity.setter
-    def quantity(self, value: Decimal) -> None:
-        self.q = value
-
-    @property
-    def symbol(self) -> str:
-        return self.s
-
-    @symbol.setter
-    def symbol(self, value: str) -> None:
-        self.s = value
-
-    @property
-    def time_in_force(self) -> definitions.TimeInForce:
-        return self.tif
-
-    @time_in_force.setter
-    def time_in_force(self, value: definitions.TimeInForce) -> None:
-        self.tif = value
-
-    @property
-    def limit_price(self) -> Decimal:
-        return self.p
-
-    @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
-        self.p = value
-
-    @property
-    def trigger_price(self) -> Decimal:
-        return self.tp
-
-    @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
-        self.tp = value
-
-    @property
-    def account(self) -> Optional[definitions.AccountIdOrName]:
-        return self.a
-
-    @account.setter
-    def account(self, value: Optional[definitions.AccountIdOrName]) -> None:
-        self.a = value
-
-    @property
-    def parent_id(self) -> Optional[definitions.OrderId]:
-        return self.pid
-
-    @parent_id.setter
-    def parent_id(self, value: Optional[definitions.OrderId]) -> None:
-        self.pid = value
-
-    @property
-    def source(self) -> Optional[definitions.OrderSource]:
-        return self.src
-
-    @source.setter
-    def source(self, value: Optional[definitions.OrderSource]) -> None:
-        self.src = value
-
-    @property
-    def trader(self) -> Optional[definitions.TraderIdOrEmail]:
-        return self.u
-
-    @trader.setter
-    def trader(self, value: Optional[definitions.TraderIdOrEmail]) -> None:
-        self.u = value
-
-    @property
-    def execution_venue(self) -> Optional[str]:
-        return self.x
-
-    @execution_venue.setter
-    def execution_venue(self, value: Optional[str]) -> None:
-        self.x = value
-
-    @staticmethod
-    def get_response_type():
-        return "&RESPONSE_TYPE:PlaceOrderRequest3"
-
-    @staticmethod
-    def get_route() -> str:
-        return "&ROUTE:PlaceOrderRequest3"
-
-    @staticmethod
-    def get_unary_type():
-        return "&UNARY_TYPE:PlaceOrderRequest3"
-
-
-PlaceOrderRequest = Annotated[
-    Union[PlaceOrderRequest1, PlaceOrderRequest2, PlaceOrderRequest3],
-    Meta(title="PlaceOrderRequest"),
-]
+        return "unary"

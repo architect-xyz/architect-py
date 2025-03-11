@@ -7,8 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from .Order import Order
 
 
 class OpenOrdersResponse(Struct):
-    open_orders: List[definitions.Order]
+    open_orders: List[Order]

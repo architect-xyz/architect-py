@@ -54,6 +54,10 @@ TODO:
     - generally any flattened type with oneOf should be loosened and be put in the definitions file
     - add a __post_init__ to confirm the type is correct
 
+- add tags via subclasses
+
+-omit_defaults=True
+
 for decode, don't create your own decoder
 use the union types and tag values
 

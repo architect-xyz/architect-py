@@ -56,6 +56,8 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
     with open(file_path, "r") as pf:
         lines = pf.readlines()
 
+    # fix imports from other grpc classes
+    # move to another function
     for i, line in enumerate(lines):
         if line != "from .. import definitions\n":
             m = import_fix.match(line)

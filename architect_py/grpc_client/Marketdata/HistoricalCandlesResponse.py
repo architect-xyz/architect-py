@@ -7,8 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from .Candle import Candle
 
 
 class HistoricalCandlesResponse(Struct):
-    candles: List[definitions.Candle]
+    candles: List[Candle]

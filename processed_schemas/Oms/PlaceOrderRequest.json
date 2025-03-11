@@ -2,85 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "PlaceOrderRequest",
   "type": "object",
-  "oneOf": [
-    {
-      "type": "object",
-      "required": [
-        "k",
-        "p",
-        "po"
-      ],
-      "properties": {
-        "k": {
-          "type": "string",
-          "enum": [
-            "LIMIT"
-          ]
-        },
-        "p": {
-          "title": "limit_price",
-          "type": "number",
-          "format": "decimal"
-        },
-        "po": {
-          "title": "post_only",
-          "type": "boolean"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "required": [
-        "k",
-        "p",
-        "tp"
-      ],
-      "properties": {
-        "k": {
-          "type": "string",
-          "enum": [
-            "STOP_LOSS_LIMIT"
-          ]
-        },
-        "p": {
-          "title": "limit_price",
-          "type": "number",
-          "format": "decimal"
-        },
-        "tp": {
-          "title": "trigger_price",
-          "type": "number",
-          "format": "decimal"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "required": [
-        "k",
-        "p",
-        "tp"
-      ],
-      "properties": {
-        "k": {
-          "type": "string",
-          "enum": [
-            "TAKE_PROFIT_LIMIT"
-          ]
-        },
-        "p": {
-          "title": "limit_price",
-          "type": "number",
-          "format": "decimal"
-        },
-        "tp": {
-          "title": "trigger_price",
-          "type": "number",
-          "format": "decimal"
-        }
-      }
-    }
-  ],
   "required": [
     "d",
     "q",
@@ -178,10 +99,51 @@
         "string",
         "null"
       ]
+    },
+    "p": {
+      "title": "limit_price",
+      "type": "number",
+      "format": "decimal"
+    },
+    "po": {
+      "title": "post_only",
+      "type": "boolean"
+    },
+    "tp": {
+      "title": "trigger_price",
+      "type": "number",
+      "format": "decimal"
+    },
+    "k": {
+      "type": "string",
+      "title": "place_order_request_type",
+      "enum": [
+        "LIMIT",
+        "STOP_LOSS_LIMIT",
+        "TAKE_PROFIT_LIMIT"
+      ]
     }
   },
   "route": "/json.architect.Oms/PlaceOrder",
   "unary_type": "unary",
   "service": "Oms",
-  "response_type": "Order"
+  "response_type": "Order",
+  "enum_tag": "k",
+  "enum_tag_to_other_required_keys": {
+    "LIMIT": [
+      "k",
+      "p",
+      "po"
+    ],
+    "STOP_LOSS_LIMIT": [
+      "k",
+      "p",
+      "tp"
+    ],
+    "TAKE_PROFIT_LIMIT": [
+      "k",
+      "p",
+      "tp"
+    ]
+  }
 }

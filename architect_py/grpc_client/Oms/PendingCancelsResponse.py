@@ -7,8 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from .Cancel import Cancel
 
 
 class PendingCancelsResponse(Struct):
-    pending_cancels: List[definitions.Cancel]
+    pending_cancels: List[Cancel]

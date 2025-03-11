@@ -13,7 +13,7 @@
         ]
       },
       "variant_name": "Snapshot",
-      "ref_correction": "L2BookSnapshot "
+      "ref_correction": "L2BookSnapshot"
     },
     {
       "$ref": "../definitions.json#/L2BookDiff",

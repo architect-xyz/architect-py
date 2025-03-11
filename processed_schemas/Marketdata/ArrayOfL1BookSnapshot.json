@@ -3,6 +3,6 @@
   "title": "ArrayOfL1BookSnapshot",
   "type": "array",
   "items": {
-    "$ref": "../definitions.json#/L1BookSnapshot"
+    "$ref": "../Marketdata/L1BookSnapshot.json/#"
   }
 }

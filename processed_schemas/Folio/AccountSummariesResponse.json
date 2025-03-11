@@ -9,7 +9,7 @@
     "account_summaries": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/AccountSummary"
+        "$ref": "../Folio/AccountSummary.json/#"
       }
     }
   }

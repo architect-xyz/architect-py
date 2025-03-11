@@ -12,7 +12,7 @@
         ]
       },
       "variant_name": "Snapshot",
-      "ref_correction": "Ticker "
+      "ref_correction": "Ticker"
     },
     {
       "$ref": "../Marketdata/Ticker.json/#",
@@ -24,7 +24,7 @@
         ]
       },
       "variant_name": "Diff",
-      "ref_correction": "Ticker "
+      "ref_correction": "Ticker"
     }
   ]
 }

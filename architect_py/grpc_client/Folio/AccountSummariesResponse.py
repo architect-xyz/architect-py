@@ -7,8 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from .AccountSummary import AccountSummary
 
 
 class AccountSummariesResponse(Struct):
-    account_summaries: List[definitions.AccountSummary]
+    account_summaries: List[AccountSummary]

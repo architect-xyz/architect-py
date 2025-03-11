@@ -7,8 +7,8 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from .Ticker import Ticker
 
 
 class TickersResponse(Struct):
-    tickers: List[definitions.Ticker]
+    tickers: List[Ticker]

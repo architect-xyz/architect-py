@@ -12,7 +12,7 @@
         ]
       },
       "variant_name": "OrderPending",
-      "ref_correction": "Order "
+      "ref_correction": "Order"
     },
     {
       "$ref": "../definitions.json#/OrderAck",
@@ -79,7 +79,7 @@
         ]
       },
       "variant_name": "CancelPending",
-      "ref_correction": "Cancel "
+      "ref_correction": "Cancel"
     },
     {
       "$ref": "../definitions.json#/CancelReject",

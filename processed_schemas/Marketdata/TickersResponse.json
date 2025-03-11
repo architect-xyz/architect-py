@@ -9,7 +9,7 @@
     "tickers": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/Ticker"
+        "$ref": "../Marketdata/Ticker.json/#"
       }
     }
   }

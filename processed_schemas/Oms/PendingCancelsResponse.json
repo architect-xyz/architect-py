@@ -9,7 +9,7 @@
     "pending_cancels": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/Cancel"
+        "$ref": "../Oms/Cancel.json/#"
       }
     }
   }
