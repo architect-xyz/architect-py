@@ -10,7 +10,7 @@ remove_OrderDir = re.compile(
 )
 
 # regex for fixing imports from other grpc classes
-import_fix = re.compile(r"^from\s+((?:\.+\w+))\s+import\s+(.+)$")
+import_fix = re.compile(r"^from\s+(\.+)(\w*)\s+import\s+(.+)$")
 
 # Regex to find enum class definitions.
 class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
@@ -60,13 +60,19 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
         if line != "from .. import definitions\n":
             m = import_fix.match(line)
             if m:
-                base = m.group(1)  # name of the service
-                names_str = m.group(2)  # name of the classes
-                names = [n.strip() for n in names_str.split(",")]
+                dots, module, imports = m.groups()  # e.g. for "from . import Ticker":
+                #   dots=".", module="" and imports="Ticker"
 
-                lines[i] = "\n".join(
-                    f"from {base}.{name} import {name}" for name in names
-                )
+                names = [name.strip() for name in imports.split(",")]
+
+                if module:
+                    lines[i] = "\n".join(
+                        f"from {dots}{module}.{name} import {name}" for name in names
+                    )
+                else:
+                    lines[i] = "\n".join(
+                        f"from {dots}{name} import {name}" for name in names
+                    )
 
     new_lines = []
     in_enum_class = False

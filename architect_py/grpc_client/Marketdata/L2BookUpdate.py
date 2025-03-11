@@ -8,7 +8,7 @@ from typing import Annotated, Union
 from msgspec import Meta
 
 from .. import definitions
-from . import L2BookSnapshot
+from .L2BookSnapshot import L2BookSnapshot
 
 L2BookUpdate = Annotated[
     Union[L2BookSnapshot, definitions.L2BookDiff],
