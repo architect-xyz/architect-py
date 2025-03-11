@@ -50,15 +50,9 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 TODO:
 - confirm get_historical_candles works and fix if it doesn't work
 
-add information and standardization to the rust enums
-
 - loosen the Order types via pre-processing
     - generally any flattened type with oneOf should be loosened and be put in the definitions file
     - add a __post_init__ to confirm the type is correct
-
-remove duplication of:
-    CancelAllOrdersRequest
-
 
 for decode, don't create your own decoder
 use the union types and tag values
