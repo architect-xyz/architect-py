@@ -4,9 +4,13 @@ import json
 
 import os
 
+# Regex for removing the OrderDir class definition from the file
+remove_OrderDir = re.compile(
+    r"^class\s+OrderDir\b.*?(?=^class\s+\w|\Z)", re.DOTALL | re.MULTILINE
+)
 
 # regex for fixing imports from other grpc classes
-pattern = re.compile(r"^from\s+((?:\.+\w+))\s+import\s+(\w+)$")
+import_fix = re.compile(r"^from\s+((?:\.+\w+))\s+import\s+(.+)$")
 
 # Regex to find enum class definitions.
 class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
@@ -17,7 +21,8 @@ member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
 
 def fix_enum_member_names(file_path: str, json_folder: str) -> None:
     """
-    This function reads a Python file and a corresponding JSON file that defines enums.
+    This function fixes the Python Enum values based on JSON file.
+
     For each enum class in the Python file (i.e. classes that inherit from Enum),
     it replaces the member names with the names defined in the JSON file under "x-enumNames".
 
@@ -53,7 +58,15 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
 
     for i, line in enumerate(lines):
         if line != "from .. import definitions\n":
-            lines[i] = pattern.sub(r"from \1.\2 import \2", line)
+            m = import_fix.match(line)
+            if m:
+                base = m.group(1)  # name of the service
+                names_str = m.group(2)  # name of the classes
+                names = [n.strip() for n in names_str.split(",")]
+
+                lines[i] = "\n".join(
+                    f"from {base}.{name} import {name}" for name in names
+                )
 
     new_lines = []
     in_enum_class = False
@@ -197,8 +210,7 @@ def fix_lines(file_path: str) -> None:
 
     # Removes the OrderDir class definition from the file
     # (originally it was the Dir class definition)
-    pattern = r"^class\s+OrderDir\b.*?(?=^class\s+\w|\Z)"
-    l = re.sub(pattern, "", l, flags=re.MULTILINE | re.DOTALL)
+    l = remove_OrderDir.sub("", l)
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.writelines(l)

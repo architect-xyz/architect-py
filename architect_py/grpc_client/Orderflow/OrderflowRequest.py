@@ -8,7 +8,9 @@ from typing import Annotated, Union
 
 from msgspec import Meta
 
-from ..Oms import CancelAllOrdersRequest, CancelOrderRequest, PlaceOrderRequest
+from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
+from ..Oms.CancelOrderRequest import CancelOrderRequest
+from ..Oms.PlaceOrderRequest import PlaceOrderRequest
 
 OrderflowRequest = Annotated[
     Union[PlaceOrderRequest, CancelOrderRequest, CancelAllOrdersRequest],

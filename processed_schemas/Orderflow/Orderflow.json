@@ -3,7 +3,7 @@
   "title": "Orderflow",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json",
+      "$ref": "../Oms/Order.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -70,7 +70,7 @@
       "variant_name": "OrderStale"
     },
     {
-      "$ref": "../Oms/Cancel.json",
+      "$ref": "../Oms/Cancel.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",

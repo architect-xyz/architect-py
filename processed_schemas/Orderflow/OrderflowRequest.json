@@ -3,7 +3,7 @@
   "title": "OrderflowRequest",
   "oneOf": [
     {
-      "$ref": "../Oms/PlaceOrderRequest.json",
+      "$ref": "../Oms/PlaceOrderRequest.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -15,7 +15,7 @@
       "ref_correction": "PlaceOrderRequest "
     },
     {
-      "$ref": "../Oms/CancelOrderRequest.json",
+      "$ref": "../Oms/CancelOrderRequest.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -27,7 +27,7 @@
       "ref_correction": "CancelOrderRequest "
     },
     {
-      "$ref": "../Oms/CancelAllOrdersRequest.json",
+      "$ref": "../Oms/CancelAllOrdersRequest.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",

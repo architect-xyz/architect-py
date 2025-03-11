@@ -8,7 +8,8 @@ from typing import Annotated, Union
 from msgspec import Meta
 
 from .. import definitions
-from ..Oms import Cancel, Order
+from ..Oms.Cancel import Cancel
+from ..Oms.Order import Order
 
 Orderflow = Annotated[
     Union[

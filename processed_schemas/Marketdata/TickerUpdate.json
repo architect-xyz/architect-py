@@ -3,7 +3,7 @@
   "title": "TickerUpdate",
   "oneOf": [
     {
-      "$ref": "../Marketdata/Ticker.json",
+      "$ref": "../Marketdata/Ticker.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",
@@ -15,7 +15,7 @@
       "ref_correction": "Ticker "
     },
     {
-      "$ref": "../Marketdata/Ticker.json",
+      "$ref": "../Marketdata/Ticker.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",

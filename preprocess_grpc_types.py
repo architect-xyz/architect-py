@@ -120,7 +120,7 @@ def correct_enums(
                 definitions[type_name] = item
 
             if type_name in type_to_json:
-                ref = f"../{type_to_json[type_name]}"
+                ref = f"../{type_to_json[type_name]}/#"
                 ref_correction = f"{type_name} "
             else:
                 ref = f"../definitions.json#/{type_name}"

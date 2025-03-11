@@ -3,7 +3,7 @@
   "title": "CptyResponse",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json",
+      "$ref": "../Oms/Order.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",

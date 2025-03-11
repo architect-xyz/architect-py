@@ -25,7 +25,7 @@
       "variant_name": "Logout"
     },
     {
-      "$ref": "../Oms/Order.json",
+      "$ref": "../Oms/Order.json/#",
       "tag": "t",
       "tag_field": {
         "type": "string",
