@@ -54,7 +54,7 @@ TODO:
     - generally any flattened type with oneOf should be loosened and be put in the definitions file
     - add a __post_init__ to confirm the type is correct
 
-- add tags via subclasses
+- add tags via subclasses for Variant
 
 -omit_defaults=True
 

@@ -19,6 +19,23 @@ class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
 member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
 
 
+def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> None:
+    json_fp = get_corresponding_json_file(file_path, json_folder)
+    with open(json_fp, "r", encoding="utf-8") as json_file:
+        json_data = json.load(json_file)
+
+    # this will be a file with a single class
+    enum_tag = json_data.get("enum_tag", None)
+    if enum_tag is None:
+        return
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 def fix_enum_member_names(file_path: str, json_folder: str) -> None:
     """
     This function fixes the Python Enum values based on JSON file.
@@ -140,7 +157,7 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
 
     # Write the updated content back to the Python file.
     with open(file_path, "w") as pf:
-        pf.write("\n".join(new_lines) + "\n")
+        pf.write("\n".join(new_lines))
 
 
 def get_corresponding_json_file(file_path: str, json_folder: str) -> str:
@@ -192,10 +209,6 @@ def generate_stub(file_path: str, json_folder: str) -> None:
             f.writelines(lines)
 
 
-def generate_subclass_with_tags(file_path: str, json_folder: str) -> None:
-    pass
-
-
 def fix_lines(file_path: str) -> None:
     """
     fixes types
@@ -224,14 +237,35 @@ def fix_lines(file_path: str) -> None:
         f.writelines(l)
 
 
+def check(file_path: str) -> None:
+    with open(file_path, "r", encoding="utf-8") as f:
+        lines = f.read()
+
+    class_count = lines.count("class")
+    if class_count == 1:
+        # 1 if there is single class
+        pass
+    elif class_count == 0:
+        # 0 if it is a variant (union) type
+        equals_count = lines.count("=")
+        assert equals_count >= 1
+    elif class_count == 2:
+        enum_count = lines.count("Enum")
+        assert enum_count == 2, f"File {file_path} has unexpected behavior."
+        # one for the import, one for the Enum class
+    else:
+        raise ValueError(
+            f"File {file_path} has {class_count} classes. It should have 1 or 0."
+        )
+
+
 def main(file_path: str, json_folder: str) -> None:
     fix_lines(file_path)
-    generate_stub(file_path, json_folder)
-
-    fix_enum_member_names(file_path, json_folder)
-
     if not file_path.endswith("definitions.py"):
-        generate_subclass_with_tags(file_path, json_folder)
+        check(file_path)
+        # add_post_processing_to_loosened_types(file_path, json_folder)
+        generate_stub(file_path, json_folder)
+    fix_enum_member_names(file_path, json_folder)
 
 
 if __name__ == "__main__":

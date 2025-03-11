@@ -170,7 +170,7 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
     schema["enum_tag_to_other_required_keys"] = enum_value_to_required
 
 
-def correct_enums(
+def correct_variant_types(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
     type_to_json_file: Dict[str, str],
@@ -257,7 +257,7 @@ def process_schema_definitions(
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
 
-    correct_enums(schema, definitions, type_to_json_file)
+    correct_variant_types(schema, definitions, type_to_json_file)
     correct_flattened_types(schema)
 
     new_defs: dict[str, Any] = schema.pop("definitions")
@@ -371,7 +371,13 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
     for service in services:
         process_service(service, output_dir, definitions, type_to_json_file)
 
+    # we look at the line level to fix definitions
     fixed_definitions = apply_type_fixes(definitions, True, type_to_json_file)
+    for t, definition in fixed_definitions.items():
+        if "enum_tag" in definition:
+            raise ValueError(
+                f"Enum tag found in definitions: {t}, please account for this in post-processing"
+            )
     definitions_path = os.path.join(output_dir, "definitions.json")
     write_json_file(fixed_definitions, definitions_path)
 
