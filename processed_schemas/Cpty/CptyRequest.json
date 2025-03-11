@@ -24,6 +24,8 @@
     {
       "tag": "t",
       "tag_field": "cancel_order",
+      "title": "CancelOrder",
+      "variant_name": "CancelOrder",
       "type": "object",
       "required": [
         "cancel"
@@ -42,8 +44,7 @@
             }
           ]
         }
-      },
-      "title": "CancelOrder"
+      }
     }
   ],
   "route": "/json.architect.Cpty/Cpty",

@@ -221,8 +221,9 @@ def correct_variant_types(
                 enum_ref["variant_name"] = f"Typed{title}"
                 enum_ref["$ref"] = f"../{type_to_json_file[type_name]}/#"
             else:
-                enum_ref.update(item)
                 enum_ref["title"] = title
+                enum_ref["variant_name"] = title
+                enum_ref.update(item)
         else:
             variant_name, type_name = title.split("|", 1)
             if type_name in definitions:
