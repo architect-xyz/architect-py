@@ -3,28 +3,18 @@
   "title": "TickerUpdate",
   "oneOf": [
     {
-      "$ref": "../Marketdata/Ticker.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "s"
-        ]
-      },
-      "variant_name": "Snapshot",
-      "ref_correction": "Ticker"
+      "tag_field": "s",
+      "ref_correction": "Ticker",
+      "$ref": "../Marketdata/Ticker.json/#",
+      "variant_name": "Snapshot"
     },
     {
-      "$ref": "../Marketdata/Ticker.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "d"
-        ]
-      },
-      "variant_name": "Diff",
-      "ref_correction": "Ticker"
+      "tag_field": "d",
+      "ref_correction": "Ticker",
+      "$ref": "../Marketdata/Ticker.json/#",
+      "variant_name": "Diff"
     }
   ]
 }

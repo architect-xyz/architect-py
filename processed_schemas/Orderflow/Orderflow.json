@@ -3,137 +3,77 @@
   "title": "Orderflow",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "w"
-        ]
-      },
-      "variant_name": "OrderPending",
-      "ref_correction": "Order"
+      "tag_field": "w",
+      "ref_correction": "Order",
+      "$ref": "../Oms/Order.json/#",
+      "variant_name": "OrderPending"
     },
     {
-      "$ref": "../definitions.json#/OrderAck",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "a"
-        ]
-      },
+      "tag_field": "a",
+      "$ref": "../definitions.json#/OrderAck",
       "variant_name": "OrderAck"
     },
     {
-      "$ref": "../definitions.json#/OrderReject",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "r"
-        ]
-      },
+      "tag_field": "r",
+      "$ref": "../definitions.json#/OrderReject",
       "variant_name": "OrderReject"
     },
     {
-      "$ref": "../definitions.json#/OrderOut",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "o"
-        ]
-      },
+      "tag_field": "o",
+      "$ref": "../definitions.json#/OrderOut",
       "variant_name": "OrderOut"
     },
     {
-      "$ref": "../definitions.json#/OrderOut",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "ox"
-        ]
-      },
+      "tag_field": "ox",
+      "$ref": "../definitions.json#/OrderOut",
       "variant_name": "OrderReconciledOut"
     },
     {
-      "$ref": "../definitions.json#/OrderStale",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "z"
-        ]
-      },
+      "tag_field": "z",
+      "$ref": "../definitions.json#/OrderStale",
       "variant_name": "OrderStale"
     },
     {
-      "$ref": "../Oms/Cancel.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "xc"
-        ]
-      },
-      "variant_name": "CancelPending",
-      "ref_correction": "Cancel"
+      "tag_field": "xc",
+      "ref_correction": "Cancel",
+      "$ref": "../Oms/Cancel.json/#",
+      "variant_name": "CancelPending"
     },
     {
-      "$ref": "../definitions.json#/CancelReject",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "xr"
-        ]
-      },
+      "tag_field": "xr",
+      "$ref": "../definitions.json#/CancelReject",
       "variant_name": "CancelReject"
     },
     {
-      "$ref": "../definitions.json#/OrderCanceling",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "xa"
-        ]
-      },
+      "tag_field": "xa",
+      "$ref": "../definitions.json#/OrderCanceling",
       "variant_name": "OrderCanceling"
     },
     {
-      "$ref": "../definitions.json#/OrderCanceled",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "xx"
-        ]
-      },
+      "tag_field": "xx",
+      "$ref": "../definitions.json#/OrderCanceled",
       "variant_name": "OrderCanceled"
     },
     {
-      "$ref": "../definitions.json#/Fill",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "f"
-        ]
-      },
+      "tag_field": "f",
+      "$ref": "../definitions.json#/Fill",
       "variant_name": "Fill"
     },
     {
-      "$ref": "../definitions.json#/AberrantFill",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "af"
-        ]
-      },
+      "tag_field": "af",
+      "$ref": "../definitions.json#/AberrantFill",
       "variant_name": "AberrantFill"
     }
   ]

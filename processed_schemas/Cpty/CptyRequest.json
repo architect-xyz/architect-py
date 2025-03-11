@@ -3,38 +3,47 @@
   "title": "CptyRequest",
   "oneOf": [
     {
-      "$ref": "../definitions.json#/CptyLoginRequest",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "login"
-        ]
-      },
+      "tag_field": "login",
+      "$ref": "../definitions.json#/CptyLoginRequest",
       "variant_name": "Login"
     },
     {
-      "$ref": "../definitions.json#/CptyLogoutRequest",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "logout"
-        ]
-      },
+      "tag_field": "logout",
+      "$ref": "../definitions.json#/CptyLogoutRequest",
       "variant_name": "Logout"
     },
     {
-      "$ref": "../Oms/Order.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "place_order"
-        ]
+      "tag_field": "place_order",
+      "ref_correction": "Order",
+      "$ref": "../Oms/Order.json/#",
+      "variant_name": "PlaceOrder"
+    },
+    {
+      "tag": "t",
+      "tag_field": "cancel_order",
+      "type": "object",
+      "required": [
+        "cancel"
+      ],
+      "properties": {
+        "cancel": {
+          "$ref": "../Oms/Cancel.json/#"
+        },
+        "original_order": {
+          "anyOf": [
+            {
+              "$ref": "../Oms/Order.json/#"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       },
-      "variant_name": "PlaceOrder",
-      "ref_correction": "Order"
+      "title": "CancelOrder"
     }
   ],
   "route": "/json.architect.Cpty/Cpty",

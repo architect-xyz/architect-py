@@ -54,9 +54,12 @@ TODO:
     - generally any flattened type with oneOf should be loosened and be put in the definitions file
     - add a __post_init__ to confirm the type is correct
 
-- add tags via subclasses for Variant
 
+- add tags via subclasses for Variant
+    - so this is if there is 
 -omit_defaults=True
+
+if request is variant type, still need the route type, route, response type
 
 for decode, don't create your own decoder
 use the union types and tag values

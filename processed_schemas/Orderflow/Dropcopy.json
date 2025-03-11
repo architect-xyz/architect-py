@@ -3,37 +3,22 @@
   "title": "Dropcopy",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "o"
-        ]
-      },
-      "variant_name": "Order",
-      "ref_correction": "Order"
+      "tag_field": "o",
+      "ref_correction": "Order",
+      "$ref": "../Oms/Order.json/#",
+      "variant_name": "Order"
     },
     {
-      "$ref": "../definitions.json#/Fill",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "f"
-        ]
-      },
+      "tag_field": "f",
+      "$ref": "../definitions.json#/Fill",
       "variant_name": "Fill"
     },
     {
-      "$ref": "../definitions.json#/AberrantFill",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "af"
-        ]
-      },
+      "tag_field": "af",
+      "$ref": "../definitions.json#/AberrantFill",
       "variant_name": "AberrantFill"
     }
   ]

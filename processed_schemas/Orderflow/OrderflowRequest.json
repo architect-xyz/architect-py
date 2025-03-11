@@ -3,40 +3,25 @@
   "title": "OrderflowRequest",
   "oneOf": [
     {
+      "tag": "t",
+      "tag_field": "p",
+      "ref_correction": "PlaceOrderRequest",
       "$ref": "../Oms/PlaceOrderRequest.json/#",
-      "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "p"
-        ]
-      },
-      "variant_name": "PlaceOrder",
-      "ref_correction": "PlaceOrderRequest"
+      "variant_name": "PlaceOrder"
     },
     {
+      "tag": "t",
+      "tag_field": "x",
+      "ref_correction": "CancelOrderRequest",
       "$ref": "../Oms/CancelOrderRequest.json/#",
-      "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "x"
-        ]
-      },
-      "variant_name": "CancelOrder",
-      "ref_correction": "CancelOrderRequest"
+      "variant_name": "CancelOrder"
     },
     {
-      "$ref": "../Oms/CancelAllOrdersRequest.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "xo"
-        ]
-      },
-      "variant_name": "CancelAllOrders",
-      "ref_correction": "CancelAllOrdersRequest"
+      "tag_field": "xo",
+      "ref_correction": "CancelAllOrdersRequest",
+      "$ref": "../Oms/CancelAllOrdersRequest.json/#",
+      "variant_name": "CancelAllOrders"
     }
   ],
   "route": "/json.architect.Orderflow/Orderflow",

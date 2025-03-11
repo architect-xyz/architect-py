@@ -3,16 +3,110 @@
   "title": "CptyResponse",
   "oneOf": [
     {
-      "$ref": "../Oms/Order.json/#",
       "tag": "t",
-      "tag_field": {
-        "type": "string",
-        "enum": [
-          "ro"
-        ]
+      "tag_field": "xs",
+      "type": "object",
+      "required": [],
+      "properties": {},
+      "title": "TradableProducts"
+    },
+    {
+      "tag": "t",
+      "tag_field": "ro",
+      "ref_correction": "Order",
+      "$ref": "../Oms/Order.json/#",
+      "variant_name": "ReconcileOrder"
+    },
+    {
+      "tag": "t",
+      "tag_field": "oo",
+      "type": "object",
+      "required": [
+        "orders"
+      ],
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "../Oms/Order.json/#"
+          }
+        },
+        "snapshot_for_account": {
+          "anyOf": [
+            {
+              "$ref": "../definitions.json#/AccountIdOrName"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       },
-      "variant_name": "ReconcileOrder",
-      "ref_correction": "Order"
+      "title": "ReconcileOpenOrder"
+    },
+    {
+      "tag": "t",
+      "tag_field": "as",
+      "type": "object",
+      "required": [
+        "account",
+        "is_snapshot",
+        "timestamp",
+        "timestamp_ns"
+      ],
+      "properties": {
+        "account": {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        "balances": {
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "number",
+            "format": "decimal"
+          }
+        },
+        "is_snapshot": {
+          "type": "boolean"
+        },
+        "positions": {
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "../definitions.json#/AccountPosition"
+            }
+          }
+        },
+        "statistics": {
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "../definitions.json#/AccountStatistics"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "timestamp_ns": {
+          "type": "integer",
+          "format": "default",
+          "minimum": 0.0
+        }
+      },
+      "title": "UpdateAccountSummary"
     }
   ]
 }

@@ -208,35 +208,39 @@ def correct_variant_types(
     new_one_of: List[Dict[str, Any]] = []
     for item in schema[one_of_key]:
         item["required"].remove(tag)
-        tag_field = item["properties"].pop(tag)
+        [tag_field] = item["properties"].pop(tag)["enum"]
         title = item.pop("title")
-        if "|" not in title:
-            continue
-
-        variant_name, type_name = title.split("|", 1)
-        if type_name in definitions:
-            if definitions[type_name] != item:
-                raise ValueError(f"Conflicting definitions for {type_name}.")
-        elif type_name in type_to_json_file:
-            pass
-        else:
-            definitions[type_name] = item
-
-        if type_name in type_to_json_file:
-            ref = f"../{type_to_json_file[type_name]}/#"
-            ref_correction = type_name
-        else:
-            ref = f"../definitions.json#/{type_name}"
-            ref_correction = None
 
         enum_ref = {
-            "$ref": ref,
             "tag": tag,
             "tag_field": tag_field,
-            "variant_name": variant_name,
         }
-        if ref_correction:
-            enum_ref["ref_correction"] = ref_correction
+        if "|" not in title:
+            type_name = title
+            if type_name in type_to_json_file:
+                enum_ref["variant_name"] = f"Typed{title}"
+                enum_ref["$ref"] = f"../{type_to_json_file[type_name]}/#"
+            else:
+                enum_ref.update(item)
+                enum_ref["title"] = title
+        else:
+            variant_name, type_name = title.split("|", 1)
+            if type_name in definitions:
+                if definitions[type_name] != item:
+                    raise ValueError(f"Conflicting definitions for {type_name}.")
+            elif type_name in type_to_json_file:
+                pass
+            else:
+                definitions[type_name] = item
+
+            if type_name in type_to_json_file:
+                ref = f"../{type_to_json_file[type_name]}/#"
+                enum_ref["ref_correction"] = type_name
+            else:
+                ref = f"../definitions.json#/{type_name}"
+            enum_ref["$ref"] = ref
+            enum_ref["variant_name"] = variant_name
+
         new_one_of.append(enum_ref)
 
     schema[one_of_key] = new_one_of

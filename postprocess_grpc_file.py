@@ -30,10 +30,10 @@ def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> N
         return
 
     with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+        lines = f.read()
 
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
+        f.write(lines)
 
 
 def fix_enum_member_names(file_path: str, json_folder: str) -> None:
@@ -237,33 +237,10 @@ def fix_lines(file_path: str) -> None:
         f.writelines(l)
 
 
-def check(file_path: str) -> None:
-    with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.read()
-
-    class_count = lines.count("class")
-    if class_count == 1:
-        # 1 if there is single class
-        pass
-    elif class_count == 0:
-        # 0 if it is a variant (union) type
-        equals_count = lines.count("=")
-        assert equals_count >= 1
-    elif class_count == 2:
-        enum_count = lines.count("Enum")
-        assert enum_count == 2, f"File {file_path} has unexpected behavior."
-        # one for the import, one for the Enum class
-    else:
-        raise ValueError(
-            f"File {file_path} has {class_count} classes. It should have 1 or 0."
-        )
-
-
 def main(file_path: str, json_folder: str) -> None:
     fix_lines(file_path)
     if not file_path.endswith("definitions.py"):
-        check(file_path)
-        # add_post_processing_to_loosened_types(file_path, json_folder)
+        add_post_processing_to_loosened_types(file_path, json_folder)
         generate_stub(file_path, json_folder)
     fix_enum_member_names(file_path, json_folder)
 

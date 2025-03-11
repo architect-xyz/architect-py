@@ -4,14 +4,23 @@
 from __future__ import annotations
 from architect_py.grpc_client.Cpty.CptyResponse import CptyResponse
 
-from typing import Annotated, Union
+from typing import Annotated, Optional, Union
 
-from msgspec import Meta
+from msgspec import Meta, Struct
 
 from .. import definitions
+from ..Oms.Cancel import Cancel
 from ..Oms.Order import Order
 
+
+class CancelOrder(Struct):
+    cancel: Cancel
+    original_order: Optional[Order] = None
+
+
 CptyRequest = Annotated[
-    Union[definitions.CptyLoginRequest, definitions.CptyLogoutRequest, Order],
+    Union[
+        definitions.CptyLoginRequest, definitions.CptyLogoutRequest, Order, CancelOrder
+    ],
     Meta(title="CptyRequest"),
 ]
