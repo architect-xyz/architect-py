@@ -3,22 +3,22 @@
   "title": "OrderflowRequest",
   "oneOf": [
     {
-      "tag": "t",
       "tag_field": "p",
+      "title": "PlaceOrderRequest",
       "ref_correction": "PlaceOrderRequest",
       "$ref": "../Oms/PlaceOrderRequest.json/#",
       "variant_name": "PlaceOrder"
     },
     {
-      "tag": "t",
       "tag_field": "x",
+      "title": "CancelOrderRequest",
       "ref_correction": "CancelOrderRequest",
       "$ref": "../Oms/CancelOrderRequest.json/#",
       "variant_name": "CancelOrder"
     },
     {
-      "tag": "t",
       "tag_field": "xo",
+      "title": "CancelAllOrdersRequest",
       "ref_correction": "CancelAllOrdersRequest",
       "$ref": "../Oms/CancelAllOrdersRequest.json/#",
       "variant_name": "CancelAllOrders"
@@ -28,5 +28,5 @@
   "unary_type": "duplex_stream",
   "service": "Orderflow",
   "response_type": "Orderflow",
-  "tagged": true
+  "tag": "t"
 }
