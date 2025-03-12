@@ -76,5 +76,6 @@
       "$ref": "../definitions.json#/AberrantFill",
       "variant_name": "AberrantFill"
     }
-  ]
+  ],
+  "tagged": true
 }

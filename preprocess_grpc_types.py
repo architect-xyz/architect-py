@@ -164,10 +164,8 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
 
     sets = [set(group["required"]) for group in one_of]
     common_keys: list[str] = list(set.intersection(*sets)) if sets else []
-    union_of_keys: list[str] = list(set.union(*sets)) if sets else []
 
     schema["required"].extend(common_keys)
-    schema["enum_tag_union"] = union_of_keys
 
     schema["properties"].update(additional_properties)
     schema["properties"][enum_tag] = enum_tag_property
@@ -250,6 +248,7 @@ def correct_variant_types(
         new_one_of.append(enum_ref)
 
     schema[one_of_key] = new_one_of
+    schema["tagged"] = True
 
 
 def process_schema_definitions(

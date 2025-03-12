@@ -169,3 +169,32 @@ class PlaceOrderRequest(Struct):
     @staticmethod
     def get_unary_type():
         return "unary"
+
+    def __post_init__(self):
+        if self.k == "LIMIT":
+            if not all(getattr(self, key) is not None for key in ["po"]):
+                raise ValueError(
+                    f"When field k (place_order_request_type) is of value LIMIT, class PlaceOrderRequest requires fields ['po']"
+                )
+            elif any(getattr(self, key) is not None for key in ["tp"]):
+                raise ValueError(
+                    f"When field k (place_order_request_type) is of value LIMIT, class PlaceOrderRequest should not have fields ['tp']"
+                )
+        elif self.k == "STOP_LOSS_LIMIT":
+            if not all(getattr(self, key) is not None for key in ["tp"]):
+                raise ValueError(
+                    f"When field k (place_order_request_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest requires fields ['tp']"
+                )
+            elif any(getattr(self, key) is not None for key in ["po"]):
+                raise ValueError(
+                    f"When field k (place_order_request_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest should not have fields ['po']"
+                )
+        elif self.k == "TAKE_PROFIT_LIMIT":
+            if not all(getattr(self, key) is not None for key in ["tp"]):
+                raise ValueError(
+                    f"When field k (place_order_request_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest requires fields ['tp']"
+                )
+            elif any(getattr(self, key) is not None for key in ["po"]):
+                raise ValueError(
+                    f"When field k (place_order_request_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest should not have fields ['po']"
+                )

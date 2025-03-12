@@ -50,13 +50,6 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 TODO:
 - confirm get_historical_candles works and fix if it doesn't work
 
-- loosen the flattened types (like order) via pre-processing
-    - add a __post_init__ to confirm the type is correct
-    - if I add a non-required field, from another enum field, does it still work?
-        if not, enforce via __post_init__
-
-
-
 - add tags via subclasses for Variant type
     - must have class that inherits from the normal type to add the tags
 -omit_defaults=True to every class

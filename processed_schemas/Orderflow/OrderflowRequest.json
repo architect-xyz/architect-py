@@ -27,5 +27,6 @@
   "route": "/json.architect.Orderflow/Orderflow",
   "unary_type": "duplex_stream",
   "service": "Orderflow",
-  "response_type": "Orderflow"
+  "response_type": "Orderflow",
+  "tagged": true
 }

@@ -19,21 +19,95 @@ class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
 member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
 
 
-def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> None:
+def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -> None:
+    """
+    this is for Variant types with a tag
+
+    This creates subtypes for the variant types to add the tag to the class
+    """
     json_fp = get_corresponding_json_file(file_path, json_folder)
     with open(json_fp, "r", encoding="utf-8") as json_file:
         json_data = json.load(json_file)
+
+    if not json_data.get("tagged", False):
+        return
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    if "Request" in file_path:
+        service = json_data["service"]
+        unary_type = json_data["unary_type"]
+        response_type = json_data["response_type"]
+        route = json_data["route"]
+        lines.insert(
+            4,
+            f"from architect_py.grpc_client.{service}.{response_type} import {response_type}\n",
+        )
+        lines.append(f"unary = {unary_type}\n")
+        lines.append(f"response_type = {response_type}\n")
+        lines.append(f"route = {route}\n")
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write("".join(lines))
+
+
+def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> None:
+    """
+    adds a __post_init__ method to the flattened types
+    """
+    json_fp = get_corresponding_json_file(file_path, json_folder)
+    with open(json_fp, "r", encoding="utf-8") as json_file:
+        json_data = json.load(json_file)
+
+    class_title = json_data["title"]
 
     # this will be a file with a single class
     enum_tag = json_data.get("enum_tag", None)
     if enum_tag is None:
         return
 
+    properties = json_data["properties"]
+
+    enum_tag_to_other_required_keys: dict[str, list[str]] = json_data[
+        "enum_tag_to_other_required_keys"
+    ]
+
     with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.read()
+        lines = f.readlines()
+
+    lines.append("\n    def __post_init__(self):\n")
+
+    common_keys: set[str] = set.intersection(
+        *map(set, enum_tag_to_other_required_keys.values())
+    )
+    union_keys = set.union(*map(set, enum_tag_to_other_required_keys.values()))
+
+    i = 0
+    for enum_value, required_keys in enum_tag_to_other_required_keys.items():
+        if i == 0:
+            conditional = "if"
+        else:
+            conditional = "elif"
+        title = properties[enum_tag]["title"]
+
+        req_keys_subset = [x for x in required_keys if x not in common_keys]
+
+        should_be_empty_keys = list(union_keys - set(required_keys))
+
+        s = (
+            f'        {conditional} self.{enum_tag} == "{enum_value}":\n'
+            f"            if not all(getattr(self, key) is not None for key in {req_keys_subset}):\n"
+            f'                raise ValueError(f"When field {enum_tag} ({title}) is of value {enum_value}, class {class_title} requires fields {req_keys_subset}")\n'
+            f"            elif any(getattr(self, key) is not None for key in {should_be_empty_keys}):\n"
+            f'                raise ValueError(f"When field {enum_tag} ({title}) is of value {enum_value}, class {class_title} should not have fields {should_be_empty_keys}")\n'
+        )
+        lines.append(s)
+
+        i += 1
 
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write(lines)
+        f.write("".join(lines))
 
 
 def fix_enum_member_names(file_path: str, json_folder: str) -> None:
@@ -243,6 +317,7 @@ def main(file_path: str, json_folder: str) -> None:
         add_post_processing_to_loosened_types(file_path, json_folder)
         generate_stub(file_path, json_folder)
     fix_enum_member_names(file_path, json_folder)
+    # create_tagged_subtypes_for_variant_types(file_path, json_folder)
 
 
 if __name__ == "__main__":

@@ -50,5 +50,6 @@
   "route": "/json.architect.Cpty/Cpty",
   "unary_type": "duplex_stream",
   "service": "Cpty",
-  "response_type": "CptyResponse"
+  "response_type": "CptyResponse",
+  "tagged": true
 }

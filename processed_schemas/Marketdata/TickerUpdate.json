@@ -16,5 +16,6 @@
       "$ref": "../Marketdata/Ticker.json/#",
       "variant_name": "Diff"
     }
-  ]
+  ],
+  "tagged": true
 }

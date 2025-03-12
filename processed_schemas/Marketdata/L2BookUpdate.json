@@ -16,5 +16,6 @@
       "$ref": "../definitions.json#/L2BookDiff",
       "variant_name": "Diff"
     }
-  ]
+  ],
+  "tagged": true
 }
