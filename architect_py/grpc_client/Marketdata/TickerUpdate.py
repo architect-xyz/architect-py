@@ -3,10 +3,19 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Union
 
 from msgspec import Meta
 
-from . import Ticker
+from .Ticker import Ticker
 
-TickerUpdate = Annotated[Ticker, Meta(title="TickerUpdate")]
+
+class Snapshot(Ticker, tag="t", tag_field="s"):
+    pass
+
+
+class Diff(Ticker, tag="t", tag_field="d"):
+    pass
+
+
+TickerUpdate = Annotated[Union[Snapshot, Diff], Meta(title="TickerUpdate")]

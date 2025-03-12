@@ -33,6 +33,7 @@ PROCESSED_DIR="processed_schemas"
 
 
 # Preprocess the grpc types
+printf "\nPreprocessing GRPC types into jsons\n"
 rm -rf "${PROCESSED_DIR:?}"/*
 find "$GRPC_CLIENT_DIR" -mindepth 1 -type d -exec rm -rf {} +
 python preprocess_grpc_types.py --architect_dir "$ARCHITECT_FOLDER_PATH" --output_dir "$PROCESSED_DIR"
@@ -44,6 +45,8 @@ if [[ ! -d "$PROCESSED_DIR" ]]; then
     exit 1
 fi
 
+
+printf "\nGenerating GRPC client code\n"
 
 datamodel-codegen \
     --input "$PROCESSED_DIR" \

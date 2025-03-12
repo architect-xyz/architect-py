@@ -8,21 +8,72 @@ from typing import Annotated, Union
 from msgspec import Meta
 
 from .. import definitions
-from ..Oms import Cancel, Order
+from ..Oms.Cancel import Cancel
+from ..Oms.Order import Order
+
+
+class OrderPending(Order, tag="t", tag_field="w"):
+    pass
+
+
+class TypedOrderAck(definitions.OrderAck, tag="t", tag_field="a"):
+    pass
+
+
+class TypedOrderReject(definitions.OrderReject, tag="t", tag_field="r"):
+    pass
+
+
+class TypedOrderOut(definitions.OrderOut, tag="t", tag_field="o"):
+    pass
+
+
+class OrderReconciledOut(definitions.OrderOut, tag="t", tag_field="ox"):
+    pass
+
+
+class TypedOrderStale(definitions.OrderStale, tag="t", tag_field="z"):
+    pass
+
+
+class CancelPending(Cancel, tag="t", tag_field="xc"):
+    pass
+
+
+class TypedCancelReject(definitions.CancelReject, tag="t", tag_field="xr"):
+    pass
+
+
+class TypedOrderCanceling(definitions.OrderCanceling, tag="t", tag_field="xa"):
+    pass
+
+
+class TypedOrderCanceled(definitions.OrderCanceled, tag="t", tag_field="xx"):
+    pass
+
+
+class TypedFill(definitions.Fill, tag="t", tag_field="f"):
+    pass
+
+
+class TypedAberrantFill(definitions.AberrantFill, tag="t", tag_field="af"):
+    pass
+
 
 Orderflow = Annotated[
     Union[
-        Order,
-        definitions.OrderAck,
-        definitions.OrderReject,
-        definitions.OrderOut,
-        definitions.OrderStale,
-        Cancel,
-        definitions.CancelReject,
-        definitions.OrderCanceling,
-        definitions.OrderCanceled,
-        definitions.Fill,
-        definitions.AberrantFill,
+        OrderPending,
+        TypedOrderAck,
+        TypedOrderReject,
+        TypedOrderOut,
+        OrderReconciledOut,
+        TypedOrderStale,
+        CancelPending,
+        TypedCancelReject,
+        TypedOrderCanceling,
+        TypedOrderCanceled,
+        TypedFill,
+        TypedAberrantFill,
     ],
     Meta(title="Orderflow"),
 ]

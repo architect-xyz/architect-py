@@ -2,23 +2,40 @@
 #   filename:  Cpty/CptyRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Cpty.CptyResponse import CptyResponse
+from architect_py.grpc_client.Cpty.CptyResponse import CptyResponse
 
 from typing import Annotated, Optional, Union
 
 from msgspec import Meta, Struct
 
 from .. import definitions
-from ..Oms import Cancel, Order
+from ..Oms.Cancel import Cancel
+from ..Oms.Order import Order
 
 
-class CancelOrder(Struct):
+class CancelOrder(Struct, tag="t", tag_field="cancel_order"):
     cancel: Cancel
     original_order: Optional[Order] = None
 
 
+class Login(definitions.CptyLoginRequest, tag="t", tag_field="login"):
+    pass
+
+
+class Logout(definitions.CptyLogoutRequest, tag="t", tag_field="logout"):
+    pass
+
+
+class PlaceOrder(Order, tag="t", tag_field="place_order"):
+    pass
+
+
 CptyRequest = Annotated[
-    Union[
-        definitions.CptyLoginRequest, definitions.CptyLogoutRequest, Order, CancelOrder
-    ],
-    Meta(title="CptyRequest"),
+    Union[Login, Logout, PlaceOrder, CancelOrder], Meta(title="CptyRequest")
 ]
+
+
+unary = "duplex_stream"
+response_type = CptyResponse
+route = "/json.architect.Cpty/Cpty"

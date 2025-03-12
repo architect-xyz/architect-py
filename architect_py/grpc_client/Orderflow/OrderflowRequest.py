@@ -2,14 +2,35 @@
 #   filename:  Orderflow/OrderflowRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 
 from typing import Annotated, Union
 
 from msgspec import Meta
 
-from ..Oms import CancelAllOrdersRequest, CancelOrderRequest, PlaceOrderRequest
+from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
+from ..Oms.CancelOrderRequest import CancelOrderRequest
+from ..Oms.PlaceOrderRequest import PlaceOrderRequest
+
+
+class PlaceOrder(PlaceOrderRequest, tag="t", tag_field="p"):
+    pass
+
+
+class CancelOrder(CancelOrderRequest, tag="t", tag_field="x"):
+    pass
+
+
+class CancelAllOrders(CancelAllOrdersRequest, tag="t", tag_field="xo"):
+    pass
+
 
 OrderflowRequest = Annotated[
-    Union[PlaceOrderRequest, CancelOrderRequest, CancelAllOrdersRequest],
-    Meta(title="OrderflowRequest"),
+    Union[PlaceOrder, CancelOrder, CancelAllOrders], Meta(title="OrderflowRequest")
 ]
+
+
+unary = "duplex_stream"
+response_type = Orderflow
+route = "/json.architect.Orderflow/Orderflow"
