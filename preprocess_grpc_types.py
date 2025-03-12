@@ -215,7 +215,6 @@ def correct_variant_types(
         title = item.pop("title")
 
         enum_ref = {
-            "tag": tag,
             "tag_field": tag_field,
         }
         if "|" not in title:
@@ -224,11 +223,12 @@ def correct_variant_types(
                 enum_ref["variant_name"] = f"Typed{title}"
                 enum_ref["$ref"] = f"../{type_to_json_file[type_name]}/#"
             else:
-                enum_ref["title"] = title
                 enum_ref["variant_name"] = title
                 enum_ref.update(item)
+            enum_ref["title"] = title
         else:
             variant_name, type_name = title.split("|", 1)
+            enum_ref["title"] = type_name
             if type_name in definitions:
                 if definitions[type_name] != item:
                     raise ValueError(f"Conflicting definitions for {type_name}.")
@@ -243,12 +243,14 @@ def correct_variant_types(
             else:
                 ref = f"../definitions.json#/{type_name}"
             enum_ref["$ref"] = ref
-            enum_ref["variant_name"] = variant_name
+            enum_ref["variant_name"] = (
+                f"Typed{variant_name}" if variant_name == type_name else variant_name
+            )
 
         new_one_of.append(enum_ref)
 
     schema[one_of_key] = new_one_of
-    schema["tagged"] = True
+    schema["tag"] = tag
 
 
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:

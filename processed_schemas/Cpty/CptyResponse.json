@@ -3,25 +3,22 @@
   "title": "CptyResponse",
   "oneOf": [
     {
-      "tag": "t",
       "tag_field": "xs",
-      "title": "TradableProducts",
       "variant_name": "TradableProducts",
       "type": "object",
       "required": [],
-      "properties": {}
+      "properties": {},
+      "title": "TradableProducts"
     },
     {
-      "tag": "t",
       "tag_field": "ro",
+      "title": "Order",
       "ref_correction": "Order",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "ReconcileOrder"
     },
     {
-      "tag": "t",
       "tag_field": "oo",
-      "title": "ReconcileOpenOrder",
       "variant_name": "ReconcileOpenOrder",
       "type": "object",
       "required": [
@@ -44,12 +41,11 @@
             }
           ]
         }
-      }
+      },
+      "title": "ReconcileOpenOrder"
     },
     {
-      "tag": "t",
       "tag_field": "as",
-      "title": "UpdateAccountSummary",
       "variant_name": "UpdateAccountSummary",
       "type": "object",
       "required": [
@@ -109,8 +105,9 @@
           "format": "default",
           "minimum": 0.0
         }
-      }
+      },
+      "title": "UpdateAccountSummary"
     }
   ],
-  "tagged": true
+  "tag": "t"
 }

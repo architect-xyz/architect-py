@@ -3,24 +3,24 @@
   "title": "Dropcopy",
   "oneOf": [
     {
-      "tag": "t",
       "tag_field": "o",
+      "title": "Order",
       "ref_correction": "Order",
       "$ref": "../Oms/Order.json/#",
-      "variant_name": "Order"
+      "variant_name": "TypedOrder"
     },
     {
-      "tag": "t",
       "tag_field": "f",
+      "title": "Fill",
       "$ref": "../definitions.json#/Fill",
-      "variant_name": "Fill"
+      "variant_name": "TypedFill"
     },
     {
-      "tag": "t",
       "tag_field": "af",
+      "title": "AberrantFill",
       "$ref": "../definitions.json#/AberrantFill",
-      "variant_name": "AberrantFill"
+      "variant_name": "TypedAberrantFill"
     }
   ],
-  "tagged": true
+  "tag": "t"
 }
