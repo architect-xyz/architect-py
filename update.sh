@@ -108,9 +108,9 @@ echo "from .grpc_client import *" >> architect_py/grpc_client/__init__.py
 # ariadne codegen
 # -----------------------------
 printf "\n\nGenerating GraphQL code\n"
-poetry run ariadne-codegen --config ariadne-codegen.toml
+poetry run ariadne-codegen --config ariadne-codegen.toml > /dev/null
 
-printf "\nGenerating client protocol"
+printf "\nGenerating client protocol\n"
 python generate_sync_client_protocol.py > architect_py/client_protocol.py
 
 # -----------------------------
