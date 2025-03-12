@@ -164,7 +164,7 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
 
     sets = [set(group["required"]) for group in one_of]
     common_keys: list[str] = list(set.intersection(*sets)) if sets else []
-
+    common_keys.sort()
     schema["required"].extend(common_keys)
 
     schema["properties"].update(additional_properties)
