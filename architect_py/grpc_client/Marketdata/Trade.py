@@ -2,6 +2,8 @@
 #   filename:  Marketdata/Trade.json
 
 from __future__ import annotations
+from architect_py.scalars import OrderDir
+from datetime import datetime, timezone
 
 from decimal import Decimal
 from typing import Annotated, Optional
@@ -12,12 +14,12 @@ from .. import definitions
 
 
 class Trade(Struct):
-    p: Annotated[Decimal, Meta(title='price')]
-    q: Annotated[Decimal, Meta(title='size')]
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
-    d: Optional[Annotated[Optional[definitions.Dir], Meta(title='direction')]] = None
+    p: Annotated[Decimal, Meta(title="price")]
+    q: Annotated[Decimal, Meta(title="size")]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
+    d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
 
     @property
     def price(self) -> Decimal:
@@ -68,9 +70,9 @@ class Trade(Struct):
         return datetime.fromtimestamp(self.ts)
 
     @property
-    def direction(self) -> Optional[definitions.Dir]:
+    def direction(self) -> Optional[OrderDir]:
         return self.d
 
     @direction.setter
-    def direction(self, value: Optional[definitions.Dir]) -> None:
+    def direction(self, value: Optional[OrderDir]) -> None:
         self.d = value

@@ -2,6 +2,9 @@
 #   filename:  Marketdata/HistoricalCandlesRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
+    HistoricalCandlesResponse,
+)
 
 from datetime import datetime
 
@@ -18,12 +21,12 @@ class HistoricalCandlesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:HistoricalCandlesRequest"
+        return HistoricalCandlesResponse
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:HistoricalCandlesRequest"
+        return "/json.architect.Marketdata/HistoricalCandles"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:HistoricalCandlesRequest"
+        return "unary"

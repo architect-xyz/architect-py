@@ -2,6 +2,7 @@
 #   filename:  Marketdata/SubscribeTradesRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Marketdata.Trade import Trade
 
 from typing import Annotated, Optional
 
@@ -12,7 +13,7 @@ class SubscribeTradesRequest(Struct):
     symbol: Optional[
         Annotated[
             Optional[str],
-            Meta(description='If None, subscribe from all symbols on the feed'),
+            Meta(description="If None, subscribe from all symbols on the feed"),
         ]
     ] = None
     """
@@ -22,12 +23,12 @@ class SubscribeTradesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:SubscribeTradesRequest"
+        return Trade
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:SubscribeTradesRequest"
+        return "/json.architect.Marketdata/SubscribeTrades"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:SubscribeTradesRequest"
+        return "stream"

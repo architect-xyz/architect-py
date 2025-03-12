@@ -7,7 +7,7 @@ from typing import List
 
 from msgspec import Struct
 
-from . import Ticker
+from .Ticker import Ticker
 
 
 class TickersResponse(Struct):

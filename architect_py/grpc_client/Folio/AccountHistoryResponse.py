@@ -7,7 +7,7 @@ from typing import List
 
 from msgspec import Struct
 
-from . import AccountSummary
+from .AccountSummary import AccountSummary
 
 
 class AccountHistoryResponse(Struct):

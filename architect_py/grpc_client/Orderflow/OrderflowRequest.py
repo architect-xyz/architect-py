@@ -11,5 +11,5 @@ from ..Oms import CancelAllOrdersRequest, CancelOrderRequest, PlaceOrderRequest
 
 OrderflowRequest = Annotated[
     Union[PlaceOrderRequest, CancelOrderRequest, CancelAllOrdersRequest],
-    Meta(title='OrderflowRequest'),
+    Meta(title="OrderflowRequest"),
 ]

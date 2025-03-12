@@ -24,5 +24,5 @@ Orderflow = Annotated[
         definitions.Fill,
         definitions.AberrantFill,
     ],
-    Meta(title='Orderflow'),
+    Meta(title="Orderflow"),
 ]

@@ -7,8 +7,8 @@ from typing import Annotated, List
 
 from msgspec import Meta
 
-from . import L1BookSnapshot
+from .L1BookSnapshot import L1BookSnapshot
 
 ArrayOfL1BookSnapshot = Annotated[
-    List[L1BookSnapshot], Meta(title='ArrayOfL1BookSnapshot')
+    List[L1BookSnapshot], Meta(title="ArrayOfL1BookSnapshot")
 ]

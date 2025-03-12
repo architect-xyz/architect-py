@@ -2,6 +2,7 @@
 #   filename:  Marketdata/Candle.json
 
 from __future__ import annotations
+from datetime import datetime, timezone
 
 from decimal import Decimal
 from typing import Annotated, Optional
@@ -12,29 +13,29 @@ from .. import definitions
 
 
 class Candle(Struct):
-    av: Annotated[Decimal, Meta(title='sell_volume')]
-    bv: Annotated[Decimal, Meta(title='buy_volume')]
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
-    v: Annotated[Decimal, Meta(title='volume')]
-    w: Annotated[definitions.CandleWidth, Meta(title='width')]
-    ac: Optional[Annotated[Optional[Decimal], Meta(title='ask_close')]] = None
-    ah: Optional[Annotated[Optional[Decimal], Meta(title='ask_high')]] = None
-    al: Optional[Annotated[Optional[Decimal], Meta(title='ask_low')]] = None
-    ao: Optional[Annotated[Optional[Decimal], Meta(title='ask_open')]] = None
-    bc: Optional[Annotated[Optional[Decimal], Meta(title='bid_close')]] = None
-    bh: Optional[Annotated[Optional[Decimal], Meta(title='bid_high')]] = None
-    bl: Optional[Annotated[Optional[Decimal], Meta(title='bid_low')]] = None
-    bo: Optional[Annotated[Optional[Decimal], Meta(title='bid_open')]] = None
-    c: Optional[Annotated[Optional[Decimal], Meta(title='close')]] = None
-    h: Optional[Annotated[Optional[Decimal], Meta(title='high')]] = None
-    l: Optional[Annotated[Optional[Decimal], Meta(title='low')]] = None
-    mc: Optional[Annotated[Optional[Decimal], Meta(title='mid_close')]] = None
-    mh: Optional[Annotated[Optional[Decimal], Meta(title='mid_high')]] = None
-    ml: Optional[Annotated[Optional[Decimal], Meta(title='mid_low')]] = None
-    mo: Optional[Annotated[Optional[Decimal], Meta(title='mid_open')]] = None
-    o: Optional[Annotated[Optional[Decimal], Meta(title='open')]] = None
+    av: Annotated[Decimal, Meta(title="sell_volume")]
+    bv: Annotated[Decimal, Meta(title="buy_volume")]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
+    v: Annotated[Decimal, Meta(title="volume")]
+    w: Annotated[definitions.CandleWidth, Meta(title="width")]
+    ac: Optional[Annotated[Optional[Decimal], Meta(title="ask_close")]] = None
+    ah: Optional[Annotated[Optional[Decimal], Meta(title="ask_high")]] = None
+    al: Optional[Annotated[Optional[Decimal], Meta(title="ask_low")]] = None
+    ao: Optional[Annotated[Optional[Decimal], Meta(title="ask_open")]] = None
+    bc: Optional[Annotated[Optional[Decimal], Meta(title="bid_close")]] = None
+    bh: Optional[Annotated[Optional[Decimal], Meta(title="bid_high")]] = None
+    bl: Optional[Annotated[Optional[Decimal], Meta(title="bid_low")]] = None
+    bo: Optional[Annotated[Optional[Decimal], Meta(title="bid_open")]] = None
+    c: Optional[Annotated[Optional[Decimal], Meta(title="close")]] = None
+    h: Optional[Annotated[Optional[Decimal], Meta(title="high")]] = None
+    l: Optional[Annotated[Optional[Decimal], Meta(title="low")]] = None
+    mc: Optional[Annotated[Optional[Decimal], Meta(title="mid_close")]] = None
+    mh: Optional[Annotated[Optional[Decimal], Meta(title="mid_high")]] = None
+    ml: Optional[Annotated[Optional[Decimal], Meta(title="mid_low")]] = None
+    mo: Optional[Annotated[Optional[Decimal], Meta(title="mid_open")]] = None
+    o: Optional[Annotated[Optional[Decimal], Meta(title="open")]] = None
 
     @property
     def sell_volume(self) -> Decimal:

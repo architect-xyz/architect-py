@@ -2,6 +2,7 @@
 #   filename:  Folio/AccountHistoryRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Folio.AccountHistoryResponse import AccountHistoryResponse
 
 from datetime import datetime
 from typing import Optional
@@ -18,12 +19,12 @@ class AccountHistoryRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:AccountHistoryRequest"
+        return AccountHistoryResponse
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:AccountHistoryRequest"
+        return "/json.architect.Folio/AccountHistory"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:AccountHistoryRequest"
+        return "unary"

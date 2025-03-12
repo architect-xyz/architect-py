@@ -9,4 +9,4 @@ from msgspec import Meta
 
 from . import Ticker
 
-TickerUpdate = Annotated[Ticker, Meta(title='TickerUpdate')]
+TickerUpdate = Annotated[Ticker, Meta(title="TickerUpdate")]

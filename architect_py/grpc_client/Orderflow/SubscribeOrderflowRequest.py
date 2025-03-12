@@ -2,6 +2,7 @@
 #   filename:  Orderflow/SubscribeOrderflowRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 
 from typing import Optional
 
@@ -21,12 +22,12 @@ class SubscribeOrderflowRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:SubscribeOrderflowRequest"
+        return Orderflow
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:SubscribeOrderflowRequest"
+        return "/json.architect.Orderflow/SubscribeOrderflow"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:SubscribeOrderflowRequest"
+        return "stream"

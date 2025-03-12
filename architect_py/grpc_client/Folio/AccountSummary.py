@@ -18,7 +18,7 @@ class AccountSummary(Struct):
     positions: Dict[str, List[definitions.AccountPosition]]
     timestamp: datetime
     cash_excess: Optional[
-        Annotated[Optional[Decimal], Meta(description='Cash available to withdraw.')]
+        Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
     ] = None
     """
     Cash available to withdraw.
@@ -27,7 +27,7 @@ class AccountSummary(Struct):
     position_margin: Optional[
         Annotated[
             Optional[Decimal],
-            Meta(description='Margin requirement based on current positions only.'),
+            Meta(description="Margin requirement based on current positions only."),
         ]
     ] = None
     """
@@ -39,7 +39,7 @@ class AccountSummary(Struct):
         Annotated[
             Optional[Decimal],
             Meta(
-                description='Margin requirement calculated for worst-case based on open positions and working orders.'
+                description="Margin requirement calculated for worst-case based on open positions and working orders."
             ),
         ]
     ] = None

@@ -2,6 +2,7 @@
 #   filename:  Marketdata/SubscribeLiquidationsRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Marketdata.Liquidation import Liquidation
 
 from typing import List, Optional
 
@@ -13,12 +14,12 @@ class SubscribeLiquidationsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:SubscribeLiquidationsRequest"
+        return Liquidation
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:SubscribeLiquidationsRequest"
+        return "/json.architect.Marketdata/SubscribeLiquidations"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:SubscribeLiquidationsRequest"
+        return "stream"

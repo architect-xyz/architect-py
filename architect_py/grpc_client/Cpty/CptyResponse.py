@@ -28,5 +28,5 @@ class ReconcileOpenOrder(Struct):
 
 CptyResponse = Annotated[
     Union[Dict[str, Any], Order, ReconcileOpenOrder, UpdateAccountSummary],
-    Meta(title='CptyResponse'),
+    Meta(title="CptyResponse"),
 ]

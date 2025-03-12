@@ -2,6 +2,8 @@
 #   filename:  Marketdata/Liquidation.json
 
 from __future__ import annotations
+from architect_py.scalars import OrderDir
+from datetime import datetime, timezone
 
 from decimal import Decimal
 from typing import Annotated
@@ -12,19 +14,19 @@ from .. import definitions
 
 
 class Liquidation(Struct):
-    d: Annotated[definitions.Dir, Meta(title='direction')]
-    p: Annotated[Decimal, Meta(title='price')]
-    q: Annotated[Decimal, Meta(title='size')]
-    s: Annotated[str, Meta(title='symbol')]
-    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
-    ts: Annotated[int, Meta(title='timestamp')]
+    d: Annotated[OrderDir, Meta(title="direction")]
+    p: Annotated[Decimal, Meta(title="price")]
+    q: Annotated[Decimal, Meta(title="size")]
+    s: Annotated[str, Meta(title="symbol")]
+    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
+    ts: Annotated[int, Meta(title="timestamp")]
 
     @property
-    def direction(self) -> definitions.Dir:
+    def direction(self) -> OrderDir:
         return self.d
 
     @direction.setter
-    def direction(self, value: definitions.Dir) -> None:
+    def direction(self, value: OrderDir) -> None:
         self.d = value
 
     @property

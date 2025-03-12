@@ -2,6 +2,7 @@
 #   filename:  Oms/CancelAllOrdersRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
 
 from typing import Optional
 
@@ -18,12 +19,12 @@ class CancelAllOrdersRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:CancelAllOrdersRequest"
+        return CancelAllOrdersResponse
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:CancelAllOrdersRequest"
+        return "/json.architect.Oms/CancelAllOrders"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:CancelAllOrdersRequest"
+        return "unary"

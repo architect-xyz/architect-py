@@ -20,5 +20,5 @@ CptyRequest = Annotated[
     Union[
         definitions.CptyLoginRequest, definitions.CptyLogoutRequest, Order, CancelOrder
     ],
-    Meta(title='CptyRequest'),
+    Meta(title="CptyRequest"),
 ]

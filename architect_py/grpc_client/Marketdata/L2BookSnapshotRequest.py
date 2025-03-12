@@ -2,6 +2,7 @@
 #   filename:  Marketdata/L2BookSnapshotRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 
 from typing import Optional
 
@@ -14,12 +15,12 @@ class L2BookSnapshotRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:L2BookSnapshotRequest"
+        return L2BookSnapshot
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:L2BookSnapshotRequest"
+        return "/json.architect.Marketdata/L2BookSnapshot"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:L2BookSnapshotRequest"
+        return "unary"

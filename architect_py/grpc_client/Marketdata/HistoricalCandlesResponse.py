@@ -7,7 +7,7 @@ from typing import List
 
 from msgspec import Struct
 
-from . import Candle
+from .Candle import Candle
 
 
 class HistoricalCandlesResponse(Struct):

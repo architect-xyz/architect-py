@@ -2,6 +2,7 @@
 #   filename:  Marketdata/SubscribeL2BookUpdatesRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Marketdata.L2BookUpdate import L2BookUpdate
 
 from typing import Optional
 
@@ -14,12 +15,12 @@ class SubscribeL2BookUpdatesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:SubscribeL2BookUpdatesRequest"
+        return L2BookUpdate
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:SubscribeL2BookUpdatesRequest"
+        return "/json.architect.Marketdata/SubscribeL2BookUpdates"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:SubscribeL2BookUpdatesRequest"
+        return "stream"

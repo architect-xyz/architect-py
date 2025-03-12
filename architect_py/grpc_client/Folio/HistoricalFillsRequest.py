@@ -2,6 +2,9 @@
 #   filename:  Folio/HistoricalFillsRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Folio.HistoricalFillsResponse import (
+    HistoricalFillsResponse,
+)
 
 from datetime import datetime
 from typing import Annotated, Optional
@@ -15,7 +18,7 @@ class HistoricalFillsRequest(Struct):
     account: Optional[definitions.AccountIdOrName] = None
     from_inclusive: Optional[datetime] = None
     limit: Optional[
-        Annotated[Optional[int], Meta(description='Default maximum is 1000.', ge=0)]
+        Annotated[Optional[int], Meta(description="Default maximum is 1000.", ge=0)]
     ] = None
     """
     Default maximum is 1000.
@@ -27,12 +30,12 @@ class HistoricalFillsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:HistoricalFillsRequest"
+        return HistoricalFillsResponse
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:HistoricalFillsRequest"
+        return "/json.architect.Folio/HistoricalFills"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:HistoricalFillsRequest"
+        return "unary"

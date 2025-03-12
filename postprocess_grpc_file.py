@@ -1,17 +1,17 @@
 import argparse
+from collections import defaultdict
 import re
 import json
 
-import sys
 import os
 
 # Regex for removing the OrderDir class definition from the file
-remove_OrderDir = re.compile(
+remove_OrderDir_re = re.compile(
     r"^class\s+OrderDir\b.*?(?=^class\s+\w|\Z)", re.DOTALL | re.MULTILINE
 )
 
 # regex for fixing imports from other grpc classes
-import_fix = re.compile(r"^from\s+(\.+)(\w*)\s+import\s+(.+)$")
+import_fix_re = re.compile(r"^from\s+(\.+)(\w*)\s+import\s+(.+)$")
 
 # Regex to find enum class definitions.
 class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
@@ -19,42 +19,15 @@ class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
 # Regex to find member assignments. It assumes the member value is an integer literal.
 member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
 
+# Regex to detect the type alias assignment using Annotated[...] with Meta(...)
+alias_pattern = re.compile(
+    r"^(?P<alias>\w+)\s*=\s*Annotated\[\s*(?P<inner>.*?)\s*,\s*Meta\((?P<meta>.*?)\)\s*,?\s*\]",
+    re.DOTALL | re.MULTILINE,
+)
 
-def modify_class_definition(
-    file_text: str, class_name: str, tag: str, tag_field: str
-) -> str:
-    """
-    Finds the class definition for `class_name` in file_text and
-    modifies its base list so that the first base "Struct" is replaced with
-    "Struct, tag="<tag>", tag_field="<tag_field>".
-    """
-    # regex to capture a class definition line like:
-    #   class ClassName(Base1, Base2):
-    # We look for the first occurrence of "Struct" within the parenthesized list.
-    pattern = re.compile(
-        rf"^(class\s+{re.escape(class_name)}\s*\((.*?)\))",
-        re.MULTILINE | re.DOTALL,
-    )
-
-    def repl(match):
-        whole_line = match.group(0)
-        bases = match.group(2)
-        # Replace first occurrence of "Struct" in the bases with the extended version.
-        new_bases, count = re.subn(
-            r"\bStruct\b",
-            f'Struct, tag="{tag}", tag_field="{tag_field}"',
-            bases,
-            count=1,
-        )
-        return whole_line.replace(bases, new_bases)
-
-    new_text, count = pattern.subn(repl, file_text)
-    if count == 0:
-        print(
-            f"Warning: class {class_name} definition not found or not modified.",
-            file=sys.stderr,
-        )
-    return new_text
+# --------------------------------------------------------------------
+# Create tagged subtypes for variant types
+# --------------------------------------------------------------------
 
 
 def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -> None:
@@ -67,23 +40,131 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
     with open(json_fp, "r", encoding="utf-8") as json_file:
         json_data = json.load(json_file)
 
-    if not json_data.get("tagged", False):
+    tag: str | None = json_data.get("tag", None)
+    if tag is None:
         return
 
+    import sys
+
+    sys.exit()
+
+    tag_field_map: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    one_of = json_data["oneOf"]
+
+    for property in one_of:
+        tag_field = property["tag_field"]
+        type_name = property["title"]
+        variant_name = property["variant_name"]
+        tag_field_map[type_name].append((variant_name, tag_field))
+
     with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+        lines = f.read()
 
     if "Request" in file_path:
-        service = json_data["service"]
         unary_type = json_data["unary_type"]
         response_type = json_data["response_type"]
         route = json_data["route"]
-        lines.append(f'\n\nunary = "{unary_type}"\n')
-        lines.append(f"response_type = {response_type}\n")
-        lines.append(f'route = "{route}"\n')
+        lines += f'\n\nunary = "{unary_type}"\n'
+        lines += f"response_type = {response_type}\n"
+        lines += f'route = "{route}"\n'
+
+    alias_match = alias_pattern.search(lines)
+    if not alias_match:
+        print("No type alias found in the file.")
+        return
+
+    alias = alias_match.group("alias")
+    inner = alias_match.group("inner")
+    meta = alias_match.group("meta")  # This may include a long multiline description.
+
+    # Detect the Union inside the Annotated[...] and extract its types.
+    union_pattern = re.compile(r"Union\[(.*?)\]")
+    union_match = union_pattern.search(inner)
+    if union_match:
+        types_list_str = union_match.group(1)
+        types = [t.strip() for t in types_list_str.split(",")]
+    else:
+        print("The alias is not a Union type; nothing to transform.")
+        return
+
+    new_union_types = []  # Collect new union member names.
+    additional_class_defs = ""  # Collect new subclass definitions.
+
+    # Process each type in the union list.
+    for base_type in types:
+        # Leave dict types unchanged.
+        if base_type.startswith("dict") or base_type.startswith("Dict"):
+            new_union_types.append(base_type)
+            continue
+
+        # Get the simple name (if qualified, e.g. definitions.Order -> Order)
+        simple_name = base_type.split(".")[-1]
+        if simple_name in tag_field_map:
+            for variant_name, tag_field in tag_field_map[simple_name]:
+                # Check if the variant class is already defined.
+                variant_class_pattern = re.compile(
+                    rf"class\s+{variant_name}\s*\((.*?)\):", re.MULTILINE
+                )
+                match = variant_class_pattern.search(lines)
+                if match:
+                    class_decl = match.group(0)
+                    if "tag=" not in class_decl:
+                        new_decl = re.sub(
+                            r"\):",
+                            f', tag="{tag}", tag_field="{tag_field}"):',
+                            class_decl,
+                        )
+                        lines = lines.replace(class_decl, new_decl)
+                else:
+                    new_class_def = (
+                        f'\n\nclass {variant_name}({base_type}, tag="{tag}", tag_field="{tag_field}"):\n'
+                        "    pass\n"
+                    )
+                    additional_class_defs += new_class_def
+                new_union_types.append(variant_name)
+        else:
+            new_union_types.append(base_type)
+
+    # Build the final union by removing original base types replaced by variants.
+    final_union = []
+    for base_type in types:
+        simple_name = base_type.split(".")[-1]
+        if simple_name in tag_field_map:
+            continue
+        else:
+            final_union.append(base_type)
+    final_union += new_union_types
+
+    # Remove duplicates while preserving order.
+    seen = set()
+    final_union_ordered = []
+    for t in final_union:
+        if t not in seen:
+            seen.add(t)
+            final_union_ordered.append(t)
+
+    new_union_str = "Union[" + ", ".join(final_union_ordered) + "]"
+    # Rebuild the alias definition WITHOUT a trailing comma after the Meta call.
+    new_alias = f"{alias} = Annotated[{new_union_str}, Meta({meta})]"
+
+    # Insert new subclass definitions BEFORE the alias definition.
+    alias_start_index = alias_match.start()
+    lines = (
+        lines[:alias_start_index]
+        + additional_class_defs
+        + "\n\n"
+        + lines[alias_start_index:]
+    )
+    # Replace the old alias with the new alias.
+    lines = alias_pattern.sub(new_alias, lines, count=1)
 
     with open(file_path, "w", encoding="utf-8") as f:
-        f.write("".join(lines))
+        f.write(lines)
+
+
+# --------------------------------------------------------------------
+# Add post processing to loosened types
+# --------------------------------------------------------------------
 
 
 def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> None:
@@ -185,7 +266,7 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
     # move to another function
     for i, line in enumerate(lines):
         if line != "from .. import definitions\n":
-            m = import_fix.match(line)
+            m = import_fix_re.match(line)
             if m:
                 dots, module, imports = m.groups()  # e.g. for "from . import Ticker":
                 #   dots=".", module="" and imports="Ticker"
@@ -263,7 +344,7 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
         else:
             new_lines.append(line_stripped)
 
-    # Write the updated content back to the Python file.
+    # Write the updated lines back to the Python file.
     with open(file_path, "w") as pf:
         pf.write("\n".join(new_lines))
 
@@ -340,14 +421,14 @@ def fix_lines(file_path: str) -> None:
 
     # Removes the OrderDir class definition from the file
     # (originally it was the Dir class definition)
-    l = remove_OrderDir.sub("", l)
+    l = remove_OrderDir_re.sub("", l)
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.writelines(l)
 
 
 def main(file_path: str, json_folder: str) -> None:
-    # create_tagged_subtypes_for_variant_types(file_path, json_folder)
+    create_tagged_subtypes_for_variant_types(file_path, json_folder)
 
     fix_lines(file_path)
     if not file_path.endswith("definitions.py"):

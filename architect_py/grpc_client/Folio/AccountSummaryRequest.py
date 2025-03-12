@@ -2,6 +2,7 @@
 #   filename:  Folio/AccountSummaryRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Folio.AccountSummary import AccountSummary
 
 from msgspec import Struct
 
@@ -13,12 +14,12 @@ class AccountSummaryRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:AccountSummaryRequest"
+        return AccountSummary
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:AccountSummaryRequest"
+        return "/json.architect.Folio/AccountSummary"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:AccountSummaryRequest"
+        return "unary"

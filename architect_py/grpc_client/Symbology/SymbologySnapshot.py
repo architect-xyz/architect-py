@@ -18,8 +18,8 @@ class SymbologySnapshot(Struct):
     execution_info: Dict[str, Dict[str, definitions.ExecutionInfo]]
     options_series: Dict[str, definitions.OptionsSeriesInfo]
     products: Dict[str, definitions.ProductInfo]
-    sid: Annotated[int, Meta(ge=0, title='sequence_id')]
-    sn: Annotated[int, Meta(ge=0, title='sequence_number')]
+    sid: Annotated[int, Meta(ge=0, title="sequence_id")]
+    sn: Annotated[int, Meta(ge=0, title="sequence_number")]
     product_aliases: Optional[Dict[str, Dict[str, str]]] = {}
 
     @property

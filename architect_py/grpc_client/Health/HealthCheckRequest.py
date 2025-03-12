@@ -2,6 +2,7 @@
 #   filename:  Health/HealthCheckRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Health.HealthCheckResponse import HealthCheckResponse
 
 from typing import Annotated, Optional
 
@@ -25,12 +26,12 @@ class HealthCheckRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:HealthCheckRequest"
+        return HealthCheckResponse
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:HealthCheckRequest"
+        return "/json.architect.Health/Check"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:HealthCheckRequest"
+        return "unary"

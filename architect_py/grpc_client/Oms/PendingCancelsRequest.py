@@ -2,6 +2,7 @@
 #   filename:  Oms/PendingCancelsRequest.json
 
 from __future__ import annotations
+from architect_py.grpc_client.Oms.PendingCancelsResponse import PendingCancelsResponse
 
 from typing import List, Optional
 
@@ -19,12 +20,12 @@ class PendingCancelsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return "&RESPONSE_TYPE:PendingCancelsRequest"
+        return PendingCancelsResponse
 
     @staticmethod
     def get_route() -> str:
-        return "&ROUTE:PendingCancelsRequest"
+        return "/json.architect.Oms/PendingCancels"
 
     @staticmethod
     def get_unary_type():
-        return "&UNARY_TYPE:PendingCancelsRequest"
+        return "unary"

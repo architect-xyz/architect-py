@@ -11,5 +11,5 @@ from .. import definitions
 from ..Oms import Order
 
 Dropcopy = Annotated[
-    Union[Order, definitions.Fill, definitions.AberrantFill], Meta(title='Dropcopy')
+    Union[Order, definitions.Fill, definitions.AberrantFill], Meta(title="Dropcopy")
 ]

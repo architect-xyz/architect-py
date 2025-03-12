@@ -7,7 +7,7 @@ from typing import List
 
 from msgspec import Struct
 
-from . import Cancel
+from .Cancel import Cancel
 
 
 class PendingCancelsResponse(Struct):
