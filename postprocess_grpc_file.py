@@ -2,6 +2,7 @@ import argparse
 import re
 import json
 
+import sys
 import os
 
 # Regex for removing the OrderDir class definition from the file
@@ -17,6 +18,43 @@ class_header_re = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
 
 # Regex to find member assignments. It assumes the member value is an integer literal.
 member_re = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
+
+
+def modify_class_definition(
+    file_text: str, class_name: str, tag: str, tag_field: str
+) -> str:
+    """
+    Finds the class definition for `class_name` in file_text and
+    modifies its base list so that the first base "Struct" is replaced with
+    "Struct, tag="<tag>", tag_field="<tag_field>".
+    """
+    # regex to capture a class definition line like:
+    #   class ClassName(Base1, Base2):
+    # We look for the first occurrence of "Struct" within the parenthesized list.
+    pattern = re.compile(
+        rf"^(class\s+{re.escape(class_name)}\s*\((.*?)\))",
+        re.MULTILINE | re.DOTALL,
+    )
+
+    def repl(match):
+        whole_line = match.group(0)
+        bases = match.group(2)
+        # Replace first occurrence of "Struct" in the bases with the extended version.
+        new_bases, count = re.subn(
+            r"\bStruct\b",
+            f'Struct, tag="{tag}", tag_field="{tag_field}"',
+            bases,
+            count=1,
+        )
+        return whole_line.replace(bases, new_bases)
+
+    new_text, count = pattern.subn(repl, file_text)
+    if count == 0:
+        print(
+            f"Warning: class {class_name} definition not found or not modified.",
+            file=sys.stderr,
+        )
+    return new_text
 
 
 def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -> None:
@@ -40,13 +78,9 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
         unary_type = json_data["unary_type"]
         response_type = json_data["response_type"]
         route = json_data["route"]
-        lines.insert(
-            4,
-            f"from architect_py.grpc_client.{service}.{response_type} import {response_type}\n",
-        )
-        lines.append(f"unary = {unary_type}\n")
+        lines.append(f'\n\nunary = "{unary_type}"\n')
         lines.append(f"response_type = {response_type}\n")
-        lines.append(f"route = {route}\n")
+        lines.append(f'route = "{route}"\n')
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write("".join(lines))
@@ -297,6 +331,7 @@ def fix_lines(file_path: str) -> None:
 
     lines = [line.replace("Dir", "OrderDir") for line in lines]
     lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
+    # lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
 
     if any("OrderDir" in line for line in lines):
         lines.insert(4, "from architect_py.scalars import OrderDir\n")

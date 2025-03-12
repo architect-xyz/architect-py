@@ -251,6 +251,49 @@ def correct_variant_types(
     schema["tagged"] = True
 
 
+def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
+    """
+    Process enums that have descriptions in the schema.
+
+    If a enum value has a description, the json gets separated
+
+    See TimeInForce for an example
+    """
+    if "definitions" not in schema:
+        return
+
+    definitions: dict[str, Any] = schema["definitions"]
+    for t, definition in definitions.items():
+        if "oneOf" not in definition:
+            continue
+        one_of: list[dict[str, Any]] = definition["oneOf"]
+
+        new_enum = {
+            "enum": [],
+            "type": "string",
+        }
+        new_one_of = []
+        for item in one_of:
+            if "enum" not in item:
+                new_one_of.append(item)
+                continue
+
+            if item["type"] != "string":
+                raise ValueError(
+                    f"Expected string type for enum in {t} in {schema['title']}"
+                )
+            new_enum["enum"].extend(item["enum"])
+
+        if len(new_enum["enum"]) > 0:
+            new_one_of.append(new_enum)
+
+        if len(new_one_of) == 1:
+            definition.pop("oneOf")
+            definition.update(new_one_of[0])
+        else:
+            definition["oneOf"] = new_one_of
+
+
 def process_schema_definitions(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
@@ -266,6 +309,7 @@ def process_schema_definitions(
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
 
+    correct_enums_with_descriptions(schema)
     correct_variant_types(schema, definitions, type_to_json_file)
     correct_flattened_types(schema)
 

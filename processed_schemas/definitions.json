@@ -86,29 +86,12 @@
     "format": "decimal"
   },
   "DerivativeKind": {
-    "oneOf": [
-      {
-        "description": "Normal futures",
-        "type": "string",
-        "enum": [
-          "Linear"
-        ]
-      },
-      {
-        "description": "Futures settled in the base currency",
-        "type": "string",
-        "enum": [
-          "Inverse"
-        ]
-      },
-      {
-        "description": "Quote currency different from settle currency",
-        "type": "string",
-        "enum": [
-          "Quanto"
-        ]
-      }
-    ]
+    "enum": [
+      "Linear",
+      "Inverse",
+      "Quanto"
+    ],
+    "type": "string"
   },
   "EventContractSeriesInstance": {
     "oneOf": [
@@ -648,6 +631,7 @@
   "TickSize": {
     "oneOf": [
       {
+        "title": "Simple|Decimal",
         "type": "object",
         "required": [
           "simple"
@@ -661,6 +645,7 @@
         "additionalProperties": false
       },
       {
+        "title": "Varying",
         "description": "List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.",
         "type": "object",
         "required": [
@@ -1754,16 +1739,6 @@
   "TimeInForce": {
     "oneOf": [
       {
-        "type": "string",
-        "enum": [
-          "GTC",
-          "IOC",
-          "FOK",
-          "ATO",
-          "ATC"
-        ]
-      },
-      {
         "type": "object",
         "required": [
           "GTD"
@@ -1777,11 +1752,15 @@
         "additionalProperties": false
       },
       {
-        "description": "Day order--the specific time which this expires will be dependent on the venue",
-        "type": "string",
         "enum": [
+          "GTC",
+          "IOC",
+          "FOK",
+          "ATO",
+          "ATC",
           "DAY"
-        ]
+        ],
+        "type": "string"
       }
     ]
   },

@@ -279,19 +279,20 @@ class SortTickersBy(str, Enum):
     ABS_CHANGE_DESC = "ABS_CHANGE_DESC"
 
 
-class TimeInForce1(str, Enum):
+class TimeInForce1(Struct):
+    GTD: datetime
+
+
+class TimeInForce2(str, Enum):
     GTC = "GTC"
     IOC = "IOC"
     FOK = "FOK"
     ATO = "ATO"
     ATC = "ATC"
+    DAY = "DAY"
 
 
-class TimeInForce2(Struct):
-    GTD: datetime
-
-
-TimeInForce = Union[TimeInForce1, TimeInForce2, Literal["DAY"]]
+TimeInForce = Union[TimeInForce1, TimeInForce2]
 
 
 TraderIdOrEmail = str
@@ -320,7 +321,10 @@ class AccountPermissions(Struct):
 AliasKind = Literal["CME_GLOBEX"]
 
 
-DerivativeKind = Union[Literal["Linear"], Literal["Inverse"], Literal["Quanto"]]
+class DerivativeKind(str, Enum):
+    Linear = "Linear"
+    Inverse = "Inverse"
+    Quanto = "Quanto"
 
 
 class FillKind(int, Enum):
@@ -409,26 +413,26 @@ SnapshotOrUpdateForStringAndString = Union[
 ]
 
 
-class TickSize1(Struct):
+class SimpleDecimal(Struct):
     simple: Decimal
 
 
 Threshold = List[Decimal]
 
 
-class Varying(Struct):
+class Varying1(Struct):
     thresholds: List[Threshold]
 
 
-class TickSize2(Struct):
+class Varying(Struct):
     """
     List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.
     """
 
-    varying: Varying
+    varying: Varying1
 
 
-TickSize = Union[TickSize1, TickSize2]
+TickSize = Union[SimpleDecimal, Varying]
 
 
 class TimeZone(str, Enum):
