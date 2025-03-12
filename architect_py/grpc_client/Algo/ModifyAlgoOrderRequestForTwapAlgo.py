@@ -9,7 +9,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class ModifyAlgoOrderRequestForTwapAlgo(Struct):
+class ModifyAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
     algo_order_id: definitions.OrderId
     params: definitions.TwapParams
 

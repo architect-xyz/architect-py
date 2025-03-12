@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class SubscribeCandlesRequest(Struct):
+class SubscribeCandlesRequest(Struct, omit_defaults=True):
     symbol: str
     candle_widths: Optional[
         Annotated[

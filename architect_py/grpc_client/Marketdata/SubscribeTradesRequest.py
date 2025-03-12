@@ -9,7 +9,7 @@ from typing import Annotated, Optional
 from msgspec import Meta, Struct
 
 
-class SubscribeTradesRequest(Struct):
+class SubscribeTradesRequest(Struct, omit_defaults=True):
     symbol: Optional[
         Annotated[
             Optional[str],

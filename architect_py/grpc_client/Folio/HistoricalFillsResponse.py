@@ -10,6 +10,6 @@ from msgspec import Struct
 from .. import definitions
 
 
-class HistoricalFillsResponse(Struct):
+class HistoricalFillsResponse(Struct, omit_defaults=True):
     aberrant_fills: List[definitions.AberrantFill]
     fills: List[definitions.Fill]

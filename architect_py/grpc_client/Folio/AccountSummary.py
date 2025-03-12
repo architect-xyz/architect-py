@@ -12,7 +12,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class AccountSummary(Struct):
+class AccountSummary(Struct, omit_defaults=True):
     account: str
     balances: Dict[str, Decimal]
     positions: Dict[str, List[definitions.AccountPosition]]

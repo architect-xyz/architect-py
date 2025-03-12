@@ -10,5 +10,5 @@ from msgspec import Struct
 from .Candle import Candle
 
 
-class HistoricalCandlesResponse(Struct):
+class HistoricalCandlesResponse(Struct, omit_defaults=True):
     candles: List[Candle]

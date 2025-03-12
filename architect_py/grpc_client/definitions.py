@@ -18,7 +18,7 @@ Model = Any
 AccountIdOrName = str
 
 
-class AccountPosition(Struct):
+class AccountPosition(Struct, omit_defaults=True):
     quantity: Decimal
     break_even_price: Optional[Decimal] = None
     cost_basis: Optional[
@@ -50,7 +50,7 @@ class AccountPosition(Struct):
     """
 
 
-class AccountStatistics(Struct):
+class AccountStatistics(Struct, omit_defaults=True):
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
     ] = None
@@ -106,7 +106,7 @@ class CandleWidth(int, Enum):
     OneDay = 32
 
 
-class CptyLogoutRequest(Struct):
+class CptyLogoutRequest(Struct, omit_defaults=True):
     pass
 
     @staticmethod
@@ -135,7 +135,7 @@ Ask = List[Decimal]
 Bid = List[Decimal]
 
 
-class L2BookDiff(Struct):
+class L2BookDiff(Struct, omit_defaults=True):
     """
     Unique sequence id and number.
     """
@@ -222,7 +222,7 @@ class L2BookDiff(Struct):
         return datetime.fromtimestamp(self.ts)
 
 
-class OrderId(Struct):
+class OrderId(Struct, omit_defaults=True):
     """
     System-unique, persistent order identifiers
     """
@@ -231,7 +231,7 @@ class OrderId(Struct):
     seqno: Annotated[int, Meta(ge=0)]
 
 
-class OrderOut(Struct):
+class OrderOut(Struct, omit_defaults=True):
     id: OrderId
 
 
@@ -256,7 +256,7 @@ class OrderSource(int, Enum):
     Other = 255
 
 
-class OrderStale(Struct):
+class OrderStale(Struct, omit_defaults=True):
     id: OrderId
 
 
@@ -279,7 +279,7 @@ class SortTickersBy(str, Enum):
     ABS_CHANGE_DESC = "ABS_CHANGE_DESC"
 
 
-class GoodTilDate(Struct):
+class GoodTilDate(Struct, omit_defaults=True):
     GTD: datetime
 
 
@@ -298,7 +298,7 @@ TimeInForce = Union[GoodTilDate, TimeInForce1]
 TraderIdOrEmail = str
 
 
-class TwapStatus(Struct):
+class TwapStatus(Struct, omit_defaults=True):
     quantity_filled: Decimal
     realized_twap: Optional[Decimal] = None
 
@@ -306,7 +306,7 @@ class TwapStatus(Struct):
 UserId = str
 
 
-class AccountPermissions(Struct):
+class AccountPermissions(Struct, omit_defaults=True):
     """
     Set of flags for account permissions
     """
@@ -336,11 +336,11 @@ class FillKind(int, Enum):
 HumanDuration = str
 
 
-class Base(Struct):
+class Base(Struct, omit_defaults=True):
     unit: Literal["base"]
 
 
-class Quote(Struct):
+class Quote(Struct, omit_defaults=True):
     unit: Literal["quote"]
 
 
@@ -356,27 +356,27 @@ class OptionsExerciseType(str, Enum):
 PriceDisplayFormat = str
 
 
-class Fiat(Struct):
+class Fiat(Struct, omit_defaults=True):
     product_type: Literal["Fiat"]
 
 
-class Commodity(Struct):
+class Commodity(Struct, omit_defaults=True):
     product_type: Literal["Commodity"]
 
 
-class Crypto(Struct):
+class Crypto(Struct, omit_defaults=True):
     product_type: Literal["Crypto"]
 
 
-class Equity(Struct):
+class Equity(Struct, omit_defaults=True):
     product_type: Literal["Equity"]
 
 
-class Index(Struct):
+class Index(Struct, omit_defaults=True):
     product_type: Literal["Index"]
 
 
-class Future(Struct):
+class Future(Struct, omit_defaults=True):
     derivative_kind: DerivativeKind
     expiration: datetime
     multiplier: Decimal
@@ -386,25 +386,25 @@ class Future(Struct):
     underlying: Optional[str] = None
 
 
-class Perpetual(Struct):
+class Perpetual(Struct, omit_defaults=True):
     derivative_kind: DerivativeKind
     multiplier: Decimal
     product_type: Literal["Perpetual"]
     underlying: Optional[str] = None
 
 
-class Unknown(Struct):
+class Unknown(Struct, omit_defaults=True):
     product_type: Literal["Unknown"]
 
 
-class SnapshotOrUpdateForStringAndString1(Struct):
+class SnapshotOrUpdateForStringAndString1(Struct, omit_defaults=True):
     snapshot: Dict[str, str]
 
 
 Update5 = List[Union[str, Optional[str]]]
 
 
-class SnapshotOrUpdateForStringAndString2(Struct):
+class SnapshotOrUpdateForStringAndString2(Struct, omit_defaults=True):
     updates: List[Update5]
 
 
@@ -413,18 +413,18 @@ SnapshotOrUpdateForStringAndString = Union[
 ]
 
 
-class SimpleDecimal(Struct):
+class SimpleDecimal(Struct, omit_defaults=True):
     simple: Decimal
 
 
 Threshold = List[Decimal]
 
 
-class Varying1(Struct):
+class Varying1(Struct, omit_defaults=True):
     thresholds: List[Threshold]
 
 
-class Varying(Struct):
+class Varying(Struct, omit_defaults=True):
     """
     List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.
     """
@@ -1037,16 +1037,16 @@ class TimeZone(str, Enum):
 AccountName = str
 
 
-class OptionLike(Struct):
+class OptionLike(Struct, omit_defaults=True):
     strike: Decimal
     expiration: Optional[datetime] = None
 
 
-class EventContractSeriesInstance2(Struct):
+class EventContractSeriesInstance2(Struct, omit_defaults=True):
     OptionLike: OptionLike
 
 
-class SpreadLeg(Struct):
+class SpreadLeg(Struct, omit_defaults=True):
     product: str
     quantity: Annotated[
         Decimal,
@@ -1059,7 +1059,7 @@ class SpreadLeg(Struct):
     """
 
 
-class Outcome(Struct):
+class Outcome(Struct, omit_defaults=True):
     name: str
 
 
@@ -1068,7 +1068,7 @@ class PutOrCall(str, Enum):
     C = "C"
 
 
-class AberrantFill(Struct):
+class AberrantFill(Struct, omit_defaults=True):
     """
     Fills which we received but couldn't parse fully, return details best effort
     """
@@ -1228,13 +1228,13 @@ class AberrantFill(Struct):
         self.xid = value
 
 
-class CancelReject(Struct):
+class CancelReject(Struct, omit_defaults=True):
     id: OrderId
     xid: str
     rm: Optional[str] = None
 
 
-class CptyLoginRequest(Struct):
+class CptyLoginRequest(Struct, omit_defaults=True):
     account: str
     trader: UserId
 
@@ -1251,7 +1251,7 @@ class CptyLoginRequest(Struct):
         return "&UNARY_TYPE:CptyLoginRequest"
 
 
-class ExecutionInfo(Struct):
+class ExecutionInfo(Struct, omit_defaults=True):
     """
     Information about a symbol related to its execution route.
     """
@@ -1277,7 +1277,7 @@ class ExecutionInfo(Struct):
     maintenance_margin: Optional[Decimal] = None
 
 
-class Fill(Struct):
+class Fill(Struct, omit_defaults=True):
     d: Annotated[OrderDir, Meta(title="direction")]
     id: Annotated[str, Meta(title="fill_id")]
     k: Annotated[FillKind, Meta(title="fill_kind")]
@@ -1470,7 +1470,7 @@ class Fill(Struct):
         self.xid = value
 
 
-class OptionsSeriesInfo(Struct):
+class OptionsSeriesInfo(Struct, omit_defaults=True):
     derivative_kind: DerivativeKind
     exercise_type: OptionsExerciseType
     expiration_time_of_day: time
@@ -1484,7 +1484,7 @@ class OptionsSeriesInfo(Struct):
     venue_discriminant: Optional[str] = None
 
 
-class OrderAck(Struct):
+class OrderAck(Struct, omit_defaults=True):
     id: Annotated[OrderId, Meta(title="order_id")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
 
@@ -1505,30 +1505,34 @@ class OrderAck(Struct):
         self.eid = value
 
 
-class OrderCanceled(Struct):
+class OrderCanceled(Struct, omit_defaults=True):
     id: OrderId
     xid: Optional[str] = None
 
 
-class OrderCanceling(Struct):
+class OrderCanceling(Struct, omit_defaults=True):
     id: OrderId
     xid: Optional[str] = None
 
 
-class OrderReject(Struct):
+class OrderReject(Struct, omit_defaults=True):
     id: OrderId
     r: OrderRejectReason
     rm: Optional[str] = None
 
 
-class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(Struct):
+class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
+    Struct, omit_defaults=True
+):
     snapshot: Dict[str, SnapshotOrUpdateForStringAndString]
 
 
 Update = List[Union[AliasKind, Optional[SnapshotOrUpdateForStringAndString]]]
 
 
-class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(Struct):
+class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(
+    Struct, omit_defaults=True
+):
     updates: List[Update]
 
 
@@ -1538,14 +1542,14 @@ SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString = Union[
 ]
 
 
-class SnapshotOrUpdateForStringAndOptionsSeriesInfo1(Struct):
+class SnapshotOrUpdateForStringAndOptionsSeriesInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, OptionsSeriesInfo]
 
 
 Update1 = List[Union[str, Optional[OptionsSeriesInfo]]]
 
 
-class SnapshotOrUpdateForStringAndOptionsSeriesInfo2(Struct):
+class SnapshotOrUpdateForStringAndOptionsSeriesInfo2(Struct, omit_defaults=True):
     updates: List[Update1]
 
 
@@ -1555,7 +1559,7 @@ SnapshotOrUpdateForStringAndOptionsSeriesInfo = Union[
 ]
 
 
-class TwapParams(Struct):
+class TwapParams(Struct, omit_defaults=True):
     dir: OrderDir
     end_time: datetime
     execution_venue: str
@@ -1566,24 +1570,24 @@ class TwapParams(Struct):
     take_through_frac: Optional[Decimal] = None
 
 
-class Account(Struct):
+class Account(Struct, omit_defaults=True):
     id: str
     name: AccountName
 
 
-class FutureSpread(Struct):
+class FutureSpread(Struct, omit_defaults=True):
     legs: List[SpreadLeg]
     product_type: Literal["FutureSpread"]
 
 
-class SnapshotOrUpdateForStringAndExecutionInfo1(Struct):
+class SnapshotOrUpdateForStringAndExecutionInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ExecutionInfo]
 
 
 Update4 = List[Union[str, Optional[ExecutionInfo]]]
 
 
-class SnapshotOrUpdateForStringAndExecutionInfo2(Struct):
+class SnapshotOrUpdateForStringAndExecutionInfo2(Struct, omit_defaults=True):
     updates: List[Update4]
 
 
@@ -1593,11 +1597,11 @@ SnapshotOrUpdateForStringAndExecutionInfo = Union[
 ]
 
 
-class Enumerated(Struct):
+class Enumerated(Struct, omit_defaults=True):
     outcome: Outcome
 
 
-class EventContractSeriesInstance1(Struct):
+class EventContractSeriesInstance1(Struct, omit_defaults=True):
     Enumerated: Enumerated
 
 
@@ -1606,7 +1610,7 @@ EventContractSeriesInstance = Union[
 ]
 
 
-class OptionsSeriesInstance(Struct):
+class OptionsSeriesInstance(Struct, omit_defaults=True):
     """
     A specific option from a series.
     """
@@ -1616,20 +1620,24 @@ class OptionsSeriesInstance(Struct):
     strike: Decimal
 
 
-class AccountWithPermissions(Struct):
+class AccountWithPermissions(Struct, omit_defaults=True):
     account: Account
     permissions: AccountPermissions
     trader: UserId
 
 
-class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(Struct):
+class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(
+    Struct, omit_defaults=True
+):
     snapshot: Dict[str, SnapshotOrUpdateForStringAndExecutionInfo]
 
 
 Update3 = List[Union[str, Optional[SnapshotOrUpdateForStringAndExecutionInfo]]]
 
 
-class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(Struct):
+class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(
+    Struct, omit_defaults=True
+):
     updates: List[Update3]
 
 
@@ -1639,13 +1647,13 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo = Union[
 ]
 
 
-class Option(Struct):
+class Option(Struct, omit_defaults=True):
     instance: OptionsSeriesInstance
     product_type: Literal["Option"]
     series: str
 
 
-class EventContract(Struct):
+class EventContract(Struct, omit_defaults=True):
     instance: EventContractSeriesInstance
     product_type: Literal["EventContract"]
     series: str
@@ -1666,20 +1674,20 @@ ProductType = Union[
 ]
 
 
-class ProductInfo(Struct):
+class ProductInfo(Struct, omit_defaults=True):
     product_type: ProductType
     price_display_format: Optional[PriceDisplayFormat] = None
     primary_venue: Optional[str] = None
 
 
-class SnapshotOrUpdateForStringAndProductInfo1(Struct):
+class SnapshotOrUpdateForStringAndProductInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ProductInfo]
 
 
 Update2 = List[Union[str, Optional[ProductInfo]]]
 
 
-class SnapshotOrUpdateForStringAndProductInfo2(Struct):
+class SnapshotOrUpdateForStringAndProductInfo2(Struct, omit_defaults=True):
     updates: List[Update2]
 
 

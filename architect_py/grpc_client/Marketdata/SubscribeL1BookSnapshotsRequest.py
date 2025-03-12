@@ -9,7 +9,7 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
-class SubscribeL1BookSnapshotsRequest(Struct):
+class SubscribeL1BookSnapshotsRequest(Struct, omit_defaults=True):
     symbols: Optional[
         Annotated[
             List[str],

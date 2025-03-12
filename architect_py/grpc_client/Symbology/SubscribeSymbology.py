@@ -6,5 +6,5 @@ from __future__ import annotations
 from msgspec import Struct
 
 
-class SubscribeSymbology(Struct):
+class SubscribeSymbology(Struct, omit_defaults=True):
     pass

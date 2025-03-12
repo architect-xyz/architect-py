@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class CreateAlgoOrderRequestForTwapAlgo(Struct):
+class CreateAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
     algo_name: str
     params: definitions.TwapParams
     account: Optional[str] = None

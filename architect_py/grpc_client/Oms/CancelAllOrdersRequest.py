@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class CancelAllOrdersRequest(Struct):
+class CancelAllOrdersRequest(Struct, omit_defaults=True):
     id: str
     account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None

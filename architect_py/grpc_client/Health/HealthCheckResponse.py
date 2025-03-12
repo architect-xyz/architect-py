@@ -8,5 +8,5 @@ from msgspec import Struct
 from .. import definitions
 
 
-class HealthCheckResponse(Struct):
+class HealthCheckResponse(Struct, omit_defaults=True):
     status: definitions.HealthStatus

@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class PendingCancelsRequest(Struct):
+class PendingCancelsRequest(Struct, omit_defaults=True):
     account: Optional[definitions.AccountIdOrName] = None
     cancel_ids: Optional[List[str]] = None
     symbol: Optional[str] = None

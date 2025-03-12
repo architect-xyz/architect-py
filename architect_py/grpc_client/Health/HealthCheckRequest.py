@@ -9,7 +9,7 @@ from typing import Annotated, Optional
 from msgspec import Meta, Struct
 
 
-class HealthCheckRequest(Struct):
+class HealthCheckRequest(Struct, omit_defaults=True):
     service: Optional[
         Annotated[
             Optional[str],

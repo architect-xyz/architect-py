@@ -6,5 +6,5 @@ from __future__ import annotations
 from msgspec import Struct
 
 
-class UploadSymbologyResponse(Struct):
+class UploadSymbologyResponse(Struct, omit_defaults=True):
     pass

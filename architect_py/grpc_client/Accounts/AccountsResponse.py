@@ -10,5 +10,5 @@ from msgspec import Struct
 from .. import definitions
 
 
-class AccountsResponse(Struct):
+class AccountsResponse(Struct, omit_defaults=True):
     accounts: List[definitions.AccountWithPermissions]

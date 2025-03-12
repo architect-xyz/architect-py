@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class SubscribeOrderflowRequest(Struct):
+class SubscribeOrderflowRequest(Struct, omit_defaults=True):
     """
     Subscribe/listen to orderflow events.
     """

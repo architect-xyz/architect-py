@@ -13,7 +13,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Trade(Struct):
+class Trade(Struct, omit_defaults=True):
     p: Annotated[Decimal, Meta(title="price")]
     q: Annotated[Decimal, Meta(title="size")]
     s: Annotated[str, Meta(title="symbol")]

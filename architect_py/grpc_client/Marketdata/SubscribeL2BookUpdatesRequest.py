@@ -9,7 +9,7 @@ from typing import Optional
 from msgspec import Struct
 
 
-class SubscribeL2BookUpdatesRequest(Struct):
+class SubscribeL2BookUpdatesRequest(Struct, omit_defaults=True):
     symbol: str
     venue: Optional[str] = None
 

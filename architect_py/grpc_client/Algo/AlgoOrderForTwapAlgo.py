@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class AlgoOrderForTwapAlgo(Struct):
+class AlgoOrderForTwapAlgo(Struct, omit_defaults=True):
     account: str
     algo_name: str
     algo_order_id: definitions.OrderId

@@ -10,5 +10,5 @@ from msgspec import Struct
 from .Cancel import Cancel
 
 
-class PendingCancelsResponse(Struct):
+class PendingCancelsResponse(Struct, omit_defaults=True):
     pending_cancels: List[Cancel]

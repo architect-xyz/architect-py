@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class SymbologySnapshot(Struct):
+class SymbologySnapshot(Struct, omit_defaults=True):
     """
     Unique sequence id and number.
     """

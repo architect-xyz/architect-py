@@ -20,7 +20,7 @@ class PlaceOrderRequestType(str, Enum):
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
 
 
-class PlaceOrderRequest(Struct):
+class PlaceOrderRequest(Struct, omit_defaults=True):
     d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]

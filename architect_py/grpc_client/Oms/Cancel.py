@@ -10,7 +10,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Cancel(Struct):
+class Cancel(Struct, omit_defaults=True):
     id: definitions.OrderId
     o: definitions.CancelStatus
     tn: Annotated[int, Meta(ge=0)]

@@ -11,7 +11,7 @@ from typing import List, Optional
 from msgspec import Struct
 
 
-class L1BookSnapshotsRequest(Struct):
+class L1BookSnapshotsRequest(Struct, omit_defaults=True):
     symbols: Optional[List[str]] = None
 
     @staticmethod

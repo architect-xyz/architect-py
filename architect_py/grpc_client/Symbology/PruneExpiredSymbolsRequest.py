@@ -11,7 +11,7 @@ from typing import Annotated, Optional
 from msgspec import Meta, Struct
 
 
-class PruneExpiredSymbolsRequest(Struct):
+class PruneExpiredSymbolsRequest(Struct, omit_defaults=True):
     cutoff: Optional[
         Annotated[
             Optional[int],

@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class TickersRequest(Struct):
+class TickersRequest(Struct, omit_defaults=True):
     i: Optional[int] = None
     k: Optional[definitions.SortTickersBy] = None
     n: Optional[int] = None

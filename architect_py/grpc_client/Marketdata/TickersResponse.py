@@ -10,5 +10,5 @@ from msgspec import Struct
 from .Ticker import Ticker
 
 
-class TickersResponse(Struct):
+class TickersResponse(Struct, omit_defaults=True):
     tickers: List[Ticker]

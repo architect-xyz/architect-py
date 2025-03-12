@@ -13,7 +13,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Liquidation(Struct):
+class Liquidation(Struct, omit_defaults=True):
     d: Annotated[OrderDir, Meta(title="direction")]
     p: Annotated[Decimal, Meta(title="price")]
     q: Annotated[Decimal, Meta(title="size")]

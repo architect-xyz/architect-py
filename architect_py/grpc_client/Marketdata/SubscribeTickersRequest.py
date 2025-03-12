@@ -9,7 +9,7 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
-class SubscribeTickersRequest(Struct):
+class SubscribeTickersRequest(Struct, omit_defaults=True):
     """
     Ticker updates are not strongly ordered because the data is considered more casual.  You may receive diffs or snapshots slightly out of order.
     """

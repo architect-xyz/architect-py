@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class AccountsRequest(Struct):
+class AccountsRequest(Struct, omit_defaults=True):
     trader: Optional[
         Annotated[
             Optional[definitions.TraderIdOrEmail],

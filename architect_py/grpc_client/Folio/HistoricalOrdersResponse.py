@@ -10,5 +10,5 @@ from msgspec import Struct
 from ..Oms.Order import Order
 
 
-class HistoricalOrdersResponse(Struct):
+class HistoricalOrdersResponse(Struct, omit_defaults=True):
     orders: List[Order]

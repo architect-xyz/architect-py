@@ -13,7 +13,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class UploadSymbologyRequest(Struct):
+class UploadSymbologyRequest(Struct, omit_defaults=True):
     execution_info: Optional[Dict[str, Dict[str, definitions.ExecutionInfo]]] = None
     options_series: Optional[Dict[str, definitions.OptionsSeriesInfo]] = None
     product_aliases: Optional[Dict[str, Dict[str, str]]] = None

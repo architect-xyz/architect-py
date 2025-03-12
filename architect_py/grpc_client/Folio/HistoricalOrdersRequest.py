@@ -14,7 +14,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class HistoricalOrdersRequest(Struct):
+class HistoricalOrdersRequest(Struct, omit_defaults=True):
     account: Optional[definitions.AccountIdOrName] = None
     from_inclusive: Optional[datetime] = None
     limit: Optional[

@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class CancelOrderRequest(Struct):
+class CancelOrderRequest(Struct, omit_defaults=True):
     id: Annotated[definitions.OrderId, Meta(title="order_id")]
     xid: Optional[
         Annotated[

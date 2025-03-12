@@ -7,7 +7,7 @@ from architect_py.grpc_client.Symbology.SymbolsResponse import SymbolsResponse
 from msgspec import Struct
 
 
-class SymbolsRequest(Struct):
+class SymbolsRequest(Struct, omit_defaults=True):
     """
     List all symbols
     """

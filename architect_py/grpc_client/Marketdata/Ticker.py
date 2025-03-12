@@ -11,7 +11,7 @@ from typing import Annotated, Optional
 from msgspec import Meta, Struct, field
 
 
-class Ticker(Struct):
+class Ticker(Struct, omit_defaults=True):
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]

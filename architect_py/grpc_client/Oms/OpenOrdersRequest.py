@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class OpenOrdersRequest(Struct):
+class OpenOrdersRequest(Struct, omit_defaults=True):
     account: Optional[definitions.AccountIdOrName] = None
     order_ids: Optional[List[definitions.OrderId]] = None
     parent_order_id: Optional[definitions.OrderId] = None

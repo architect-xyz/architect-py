@@ -6,5 +6,5 @@ from __future__ import annotations
 from msgspec import Struct
 
 
-class PruneExpiredSymbolsResponse(Struct):
+class PruneExpiredSymbolsResponse(Struct, omit_defaults=True):
     pass

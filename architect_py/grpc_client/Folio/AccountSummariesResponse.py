@@ -10,5 +10,5 @@ from msgspec import Struct
 from .AccountSummary import AccountSummary
 
 
-class AccountSummariesResponse(Struct):
+class AccountSummariesResponse(Struct, omit_defaults=True):
     account_summaries: List[AccountSummary]

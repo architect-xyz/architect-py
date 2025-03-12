@@ -7,7 +7,7 @@ from architect_py.grpc_client.Symbology.SymbologySnapshot import SymbologySnapsh
 from msgspec import Struct
 
 
-class SymbologyRequest(Struct):
+class SymbologyRequest(Struct, omit_defaults=True):
     pass
 
     @staticmethod

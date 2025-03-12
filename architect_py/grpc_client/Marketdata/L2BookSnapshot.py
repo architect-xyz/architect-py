@@ -15,7 +15,7 @@ Ask = List[Decimal]
 Bid = List[Decimal]
 
 
-class L2BookSnapshot(Struct):
+class L2BookSnapshot(Struct, omit_defaults=True):
     """
     Unique sequence id and number.
     """

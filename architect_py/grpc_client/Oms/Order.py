@@ -19,7 +19,7 @@ class OrderType(str, Enum):
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
 
 
-class Order(Struct):
+class Order(Struct, omit_defaults=True):
     a: Annotated[str, Meta(title="account")]
     d: Annotated[OrderDir, Meta(title="dir")]
     id: definitions.OrderId

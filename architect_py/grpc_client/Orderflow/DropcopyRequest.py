@@ -11,7 +11,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class DropcopyRequest(Struct):
+class DropcopyRequest(Struct, omit_defaults=True):
     aberrant_fills: Optional[bool] = False
     account: Optional[definitions.AccountIdOrName] = None
     execution_venue: Optional[str] = None

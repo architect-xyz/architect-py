@@ -513,7 +513,7 @@ def fix_lines(file_path: str) -> None:
 
     lines = [line.replace("Dir", "OrderDir") for line in lines]
     lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
-    # lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
+    lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
 
     if any("OrderDir" in line for line in lines):
         lines.insert(4, "from architect_py.scalars import OrderDir\n")

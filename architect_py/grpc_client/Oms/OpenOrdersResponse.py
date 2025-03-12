@@ -10,5 +10,5 @@ from msgspec import Struct
 from .Order import Order
 
 
-class OpenOrdersResponse(Struct):
+class OpenOrdersResponse(Struct, omit_defaults=True):
     open_orders: List[Order]

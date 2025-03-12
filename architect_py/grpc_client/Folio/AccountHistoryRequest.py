@@ -12,7 +12,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class AccountHistoryRequest(Struct):
+class AccountHistoryRequest(Struct, omit_defaults=True):
     account: definitions.AccountIdOrName
     from_inclusive: Optional[datetime] = None
     to_exclusive: Optional[datetime] = None

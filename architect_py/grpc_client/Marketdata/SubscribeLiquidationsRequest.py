@@ -9,7 +9,7 @@ from typing import List, Optional
 from msgspec import Struct
 
 
-class SubscribeLiquidationsRequest(Struct):
+class SubscribeLiquidationsRequest(Struct, omit_defaults=True):
     symbols: Optional[List[str]] = None
 
     @staticmethod

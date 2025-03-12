@@ -8,5 +8,5 @@ from typing import List
 from msgspec import Struct
 
 
-class SymbolsResponse(Struct):
+class SymbolsResponse(Struct, omit_defaults=True):
     symbols: List[str]

@@ -7,7 +7,7 @@ from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from msgspec import Struct
 
 
-class L1BookSnapshotRequest(Struct):
+class L1BookSnapshotRequest(Struct, omit_defaults=True):
     symbol: str
 
     @staticmethod

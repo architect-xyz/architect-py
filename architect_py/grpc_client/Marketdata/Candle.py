@@ -12,7 +12,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class Candle(Struct):
+class Candle(Struct, omit_defaults=True):
     av: Annotated[Decimal, Meta(title="sell_volume")]
     bv: Annotated[Decimal, Meta(title="buy_volume")]
     s: Annotated[str, Meta(title="symbol")]

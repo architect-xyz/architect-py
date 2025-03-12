@@ -9,7 +9,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class AccountSummaryRequest(Struct):
+class AccountSummaryRequest(Struct, omit_defaults=True):
     account: definitions.AccountIdOrName
 
     @staticmethod

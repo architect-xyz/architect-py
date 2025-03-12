@@ -13,7 +13,7 @@ from msgspec import Struct
 from .. import definitions
 
 
-class HistoricalCandlesRequest(Struct):
+class HistoricalCandlesRequest(Struct, omit_defaults=True):
     candle_width: definitions.CandleWidth
     end_date: datetime
     start_date: datetime

@@ -9,7 +9,7 @@ from typing import Optional
 from msgspec import Struct
 
 
-class TickerRequest(Struct):
+class TickerRequest(Struct, omit_defaults=True):
     symbol: str
     venue: Optional[str] = None
 

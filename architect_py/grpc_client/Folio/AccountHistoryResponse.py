@@ -10,5 +10,5 @@ from msgspec import Struct
 from .AccountSummary import AccountSummary
 
 
-class AccountHistoryResponse(Struct):
+class AccountHistoryResponse(Struct, omit_defaults=True):
     history: List[AccountSummary]

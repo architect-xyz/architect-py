@@ -10,7 +10,7 @@ from typing import Annotated, List, Optional
 from msgspec import Meta, Struct
 
 
-class L1BookSnapshot(Struct):
+class L1BookSnapshot(Struct, omit_defaults=True):
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]

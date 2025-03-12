@@ -13,7 +13,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class AccountSummariesRequest(Struct):
+class AccountSummariesRequest(Struct, omit_defaults=True):
     accounts: Optional[
         Annotated[
             List[definitions.AccountIdOrName],

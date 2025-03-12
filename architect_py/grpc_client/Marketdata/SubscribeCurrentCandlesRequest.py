@@ -11,7 +11,7 @@ from msgspec import Meta, Struct
 from .. import definitions
 
 
-class SubscribeCurrentCandlesRequest(Struct):
+class SubscribeCurrentCandlesRequest(Struct, omit_defaults=True):
     """
     Subscribe to the current candle.  This allows you to display the most recent/building candle live in a UI, for example.
     """
