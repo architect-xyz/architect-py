@@ -55,7 +55,6 @@ TODO:
 -omit_defaults=True to every class
     - this is for efficiency but also for the flattened types
 
-if request is variant type, still need the route type, route, response type
 
 for decode, don't create your own decoder
 use the union types and tag values

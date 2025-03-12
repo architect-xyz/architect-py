@@ -347,12 +347,13 @@ def fix_lines(file_path: str) -> None:
 
 
 def main(file_path: str, json_folder: str) -> None:
+    # create_tagged_subtypes_for_variant_types(file_path, json_folder)
+
     fix_lines(file_path)
     if not file_path.endswith("definitions.py"):
         add_post_processing_to_loosened_types(file_path, json_folder)
         generate_stub(file_path, json_folder)
     fix_enum_member_names(file_path, json_folder)
-    # create_tagged_subtypes_for_variant_types(file_path, json_folder)
 
 
 if __name__ == "__main__":
