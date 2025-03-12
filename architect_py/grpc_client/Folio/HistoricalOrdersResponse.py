@@ -7,7 +7,7 @@ from typing import List
 
 from msgspec import Struct
 
-from ..Oms.Order import Order
+from ..Oms import Order
 
 
 class HistoricalOrdersResponse(Struct):

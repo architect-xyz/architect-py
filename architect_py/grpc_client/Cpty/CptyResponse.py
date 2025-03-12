@@ -8,7 +8,7 @@ from typing import Annotated, Any, Dict, List, Optional, Union
 from msgspec import Meta, Struct
 
 from .. import definitions
-from ..Oms.Order import Order
+from ..Oms import Order
 
 
 class UpdateAccountSummary(Struct):
@@ -28,5 +28,5 @@ class ReconcileOpenOrder(Struct):
 
 CptyResponse = Annotated[
     Union[Dict[str, Any], Order, ReconcileOpenOrder, UpdateAccountSummary],
-    Meta(title="CptyResponse"),
+    Meta(title='CptyResponse'),
 ]

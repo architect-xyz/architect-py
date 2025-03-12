@@ -8,8 +8,8 @@ from typing import Annotated, Union
 from msgspec import Meta
 
 from .. import definitions
-from ..Oms.Order import Order
+from ..Oms import Order
 
 Dropcopy = Annotated[
-    Union[Order, definitions.Fill, definitions.AberrantFill], Meta(title="Dropcopy")
+    Union[Order, definitions.Fill, definitions.AberrantFill], Meta(title='Dropcopy')
 ]

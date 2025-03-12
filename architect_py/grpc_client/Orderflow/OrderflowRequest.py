@@ -2,17 +2,14 @@
 #   filename:  Orderflow/OrderflowRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 
 from typing import Annotated, Union
 
 from msgspec import Meta
 
-from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
-from ..Oms.CancelOrderRequest import CancelOrderRequest
-from ..Oms.PlaceOrderRequest import PlaceOrderRequest
+from ..Oms import CancelAllOrdersRequest, CancelOrderRequest, PlaceOrderRequest
 
 OrderflowRequest = Annotated[
     Union[PlaceOrderRequest, CancelOrderRequest, CancelAllOrdersRequest],
-    Meta(title="OrderflowRequest"),
+    Meta(title='OrderflowRequest'),
 ]

@@ -2,7 +2,6 @@
 #   filename:  Oms/OpenOrdersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.OpenOrdersResponse import OpenOrdersResponse
 
 from typing import List, Optional
 
@@ -21,12 +20,12 @@ class OpenOrdersRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return OpenOrdersResponse
+        return "&RESPONSE_TYPE:OpenOrdersRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Oms/OpenOrders"
+        return "&ROUTE:OpenOrdersRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:OpenOrdersRequest"

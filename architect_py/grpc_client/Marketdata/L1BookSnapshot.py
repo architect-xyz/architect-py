@@ -2,7 +2,6 @@
 #   filename:  Marketdata/L1BookSnapshot.json
 
 from __future__ import annotations
-from datetime import datetime, timezone
 
 from decimal import Decimal
 from typing import Annotated, List, Optional
@@ -11,11 +10,11 @@ from msgspec import Meta, Struct
 
 
 class L1BookSnapshot(Struct):
-    s: Annotated[str, Meta(title="symbol")]
-    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
-    a: Optional[Annotated[List[Decimal], Meta(title="best_ask")]] = None
-    b: Optional[Annotated[List[Decimal], Meta(title="best_bid")]] = None
+    s: Annotated[str, Meta(title='symbol')]
+    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
+    ts: Annotated[int, Meta(title='timestamp')]
+    a: Optional[Annotated[List[Decimal], Meta(title='best_ask')]] = None
+    b: Optional[Annotated[List[Decimal], Meta(title='best_bid')]] = None
 
     @property
     def symbol(self) -> str:

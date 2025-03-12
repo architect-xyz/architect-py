@@ -2,9 +2,6 @@
 #   filename:  Symbology/UploadSymbologyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Symbology.UploadSymbologyResponse import (
-    UploadSymbologyResponse,
-)
 
 from typing import Dict, Optional
 
@@ -21,12 +18,12 @@ class UploadSymbologyRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return UploadSymbologyResponse
+        return "&RESPONSE_TYPE:UploadSymbologyRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Symbology/UploadSymbology"
+        return "&ROUTE:UploadSymbologyRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:UploadSymbologyRequest"

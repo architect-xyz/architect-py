@@ -8,8 +8,7 @@ from typing import Annotated, Union
 from msgspec import Meta
 
 from .. import definitions
-from ..Oms.Cancel import Cancel
-from ..Oms.Order import Order
+from ..Oms import Cancel, Order
 
 Orderflow = Annotated[
     Union[
@@ -25,5 +24,5 @@ Orderflow = Annotated[
         definitions.Fill,
         definitions.AberrantFill,
     ],
-    Meta(title="Orderflow"),
+    Meta(title='Orderflow'),
 ]

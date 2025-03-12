@@ -2,7 +2,6 @@
 #   filename:  Marketdata/TickerRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Ticker import Ticker
 
 from typing import Optional
 
@@ -15,12 +14,12 @@ class TickerRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return Ticker
+        return "&RESPONSE_TYPE:TickerRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/Ticker"
+        return "&ROUTE:TickerRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:TickerRequest"

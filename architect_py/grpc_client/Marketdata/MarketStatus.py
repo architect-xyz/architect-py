@@ -9,7 +9,7 @@ from msgspec import Meta, Struct
 
 
 class MarketStatus(Struct):
-    s: Annotated[str, Meta(title="symbol")]
+    s: Annotated[str, Meta(title='symbol')]
     is_quoting: Optional[bool] = None
     is_trading: Optional[bool] = None
 

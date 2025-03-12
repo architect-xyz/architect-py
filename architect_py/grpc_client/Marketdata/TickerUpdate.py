@@ -7,6 +7,6 @@ from typing import Annotated
 
 from msgspec import Meta
 
-from .Ticker import Ticker
+from . import Ticker
 
-TickerUpdate = Annotated[Ticker, Meta(title="TickerUpdate")]
+TickerUpdate = Annotated[Ticker, Meta(title='TickerUpdate')]

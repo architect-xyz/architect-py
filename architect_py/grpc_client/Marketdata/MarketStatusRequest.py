@@ -2,7 +2,6 @@
 #   filename:  Marketdata/MarketStatusRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.MarketStatus import MarketStatus
 
 from typing import Optional
 
@@ -15,12 +14,12 @@ class MarketStatusRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return MarketStatus
+        return "&RESPONSE_TYPE:MarketStatusRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/MarketStatus"
+        return "&ROUTE:MarketStatusRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:MarketStatusRequest"

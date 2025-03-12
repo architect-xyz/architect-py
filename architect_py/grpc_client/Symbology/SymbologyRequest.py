@@ -2,7 +2,6 @@
 #   filename:  Symbology/SymbologyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Symbology.SymbologySnapshot import SymbologySnapshot
 
 from msgspec import Struct
 
@@ -12,12 +11,12 @@ class SymbologyRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return SymbologySnapshot
+        return "&RESPONSE_TYPE:SymbologyRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Symbology/Symbology"
+        return "&ROUTE:SymbologyRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:SymbologyRequest"

@@ -2,7 +2,6 @@
 #   filename:  Oms/Order.json
 
 from __future__ import annotations
-from architect_py.scalars import OrderDir
 
 from decimal import Decimal
 from enum import Enum
@@ -14,38 +13,38 @@ from .. import definitions
 
 
 class OrderType(str, Enum):
-    LIMIT = "LIMIT"
-    STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
-    TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
+    LIMIT = 'LIMIT'
+    STOP_LOSS_LIMIT = 'STOP_LOSS_LIMIT'
+    TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT'
 
 
 class Order(Struct):
-    a: Annotated[str, Meta(title="account")]
-    d: Annotated[OrderDir, Meta(title="dir")]
+    a: Annotated[str, Meta(title='account')]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
     id: definitions.OrderId
-    o: Annotated[definitions.OrderStatus, Meta(title="status")]
-    q: Annotated[Decimal, Meta(title="quantity")]
-    s: Annotated[str, Meta(title="symbol")]
-    src: Annotated[definitions.OrderSource, Meta(title="source")]
-    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
-    ts: Annotated[int, Meta(title="recv_time")]
-    u: Annotated[definitions.UserId, Meta(title="trader")]
-    ve: Annotated[str, Meta(title="execution_venue")]
-    xq: Annotated[Decimal, Meta(title="filled_quantity")]
-    p: Annotated[Decimal, Meta(title="limit_price")]
-    k: Annotated[OrderType, Meta(title="order_type")]
-    eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
+    o: Annotated[definitions.OrderStatus, Meta(title='status')]
+    q: Annotated[Decimal, Meta(title='quantity')]
+    s: Annotated[str, Meta(title='symbol')]
+    src: Annotated[definitions.OrderSource, Meta(title='source')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
+    tn: Annotated[int, Meta(ge=0, title='recv_time_ns')]
+    ts: Annotated[int, Meta(title='recv_time')]
+    u: Annotated[definitions.UserId, Meta(title='trader')]
+    ve: Annotated[str, Meta(title='execution_venue')]
+    xq: Annotated[Decimal, Meta(title='filled_quantity')]
+    p: Annotated[Decimal, Meta(title='limit_price')]
+    k: Annotated[OrderType, Meta(title='order_type')]
+    eid: Optional[Annotated[Optional[str], Meta(title='exchange_order_id')]] = None
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
     r: Optional[
-        Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
+        Annotated[Optional[definitions.OrderRejectReason], Meta(title='reject_reason')]
     ] = None
-    rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
-    xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
-    po: Optional[Annotated[bool, Meta(title="post_only")]] = None
-    tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
+    rm: Optional[Annotated[Optional[str], Meta(title='reject_message')]] = None
+    xp: Optional[Annotated[Optional[Decimal], Meta(title='average_fill_price')]] = None
+    po: Optional[Annotated[bool, Meta(title='post_only')]] = None
+    tp: Optional[Annotated[Decimal, Meta(title='trigger_price')]] = None
 
     @property
     def account(self) -> str:
@@ -56,11 +55,11 @@ class Order(Struct):
         self.a = value
 
     @property
-    def dir(self) -> OrderDir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: OrderDir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
@@ -214,32 +213,3 @@ class Order(Struct):
     @trigger_price.setter
     def trigger_price(self, value: Optional[Decimal]) -> None:
         self.tp = value
-
-    def __post_init__(self):
-        if self.k == "LIMIT":
-            if not all(getattr(self, key) is not None for key in ["po"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value LIMIT, class Order requires fields ['po']"
-                )
-            elif any(getattr(self, key) is not None for key in ["tp"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value LIMIT, class Order should not have fields ['tp']"
-                )
-        elif self.k == "STOP_LOSS_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class Order requires fields ['tp']"
-                )
-            elif any(getattr(self, key) is not None for key in ["po"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class Order should not have fields ['po']"
-                )
-        elif self.k == "TAKE_PROFIT_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class Order requires fields ['tp']"
-                )
-            elif any(getattr(self, key) is not None for key in ["po"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class Order should not have fields ['po']"
-                )

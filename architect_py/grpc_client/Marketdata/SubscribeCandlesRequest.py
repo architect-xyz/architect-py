@@ -2,7 +2,6 @@
 #   filename:  Marketdata/SubscribeCandlesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Candle import Candle
 
 from typing import Annotated, List, Optional
 
@@ -16,7 +15,7 @@ class SubscribeCandlesRequest(Struct):
     candle_widths: Optional[
         Annotated[
             List[definitions.CandleWidth],
-            Meta(description="If None, subscribe from all candle widths on the feed"),
+            Meta(description='If None, subscribe from all candle widths on the feed'),
         ]
     ] = None
     """
@@ -26,12 +25,12 @@ class SubscribeCandlesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return Candle
+        return "&RESPONSE_TYPE:SubscribeCandlesRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/SubscribeCandles"
+        return "&ROUTE:SubscribeCandlesRequest"
 
     @staticmethod
     def get_unary_type():
-        return "stream"
+        return "&UNARY_TYPE:SubscribeCandlesRequest"

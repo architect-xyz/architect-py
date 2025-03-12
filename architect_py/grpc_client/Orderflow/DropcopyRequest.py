@@ -2,7 +2,6 @@
 #   filename:  Orderflow/DropcopyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Dropcopy import Dropcopy
 
 from typing import Optional
 
@@ -21,12 +20,12 @@ class DropcopyRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return Dropcopy
+        return "&RESPONSE_TYPE:DropcopyRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Orderflow/Dropcopy"
+        return "&ROUTE:DropcopyRequest"
 
     @staticmethod
     def get_unary_type():
-        return "stream"
+        return "&UNARY_TYPE:DropcopyRequest"

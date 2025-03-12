@@ -2,15 +2,13 @@
 #   filename:  Cpty/CptyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Cpty.CptyResponse import CptyResponse
 
 from typing import Annotated, Optional, Union
 
 from msgspec import Meta, Struct
 
 from .. import definitions
-from ..Oms.Cancel import Cancel
-from ..Oms.Order import Order
+from ..Oms import Cancel, Order
 
 
 class CancelOrder(Struct):
@@ -22,5 +20,5 @@ CptyRequest = Annotated[
     Union[
         definitions.CptyLoginRequest, definitions.CptyLogoutRequest, Order, CancelOrder
     ],
-    Meta(title="CptyRequest"),
+    Meta(title='CptyRequest'),
 ]

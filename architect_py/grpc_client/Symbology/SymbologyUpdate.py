@@ -15,8 +15,8 @@ class SymbologyUpdate(Struct):
     Unique sequence id and number.
     """
 
-    sid: Annotated[int, Meta(ge=0, title="sequence_id")]
-    sn: Annotated[int, Meta(ge=0, title="sequence_number")]
+    sid: Annotated[int, Meta(ge=0, title='sequence_id')]
+    sn: Annotated[int, Meta(ge=0, title='sequence_number')]
     execution_info: Optional[
         definitions.SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo
     ] = None

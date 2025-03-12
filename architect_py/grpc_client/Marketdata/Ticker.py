@@ -2,7 +2,6 @@
 #   filename:  Marketdata/Ticker.json
 
 from __future__ import annotations
-from datetime import datetime, timezone
 
 from datetime import datetime
 from decimal import Decimal
@@ -12,41 +11,41 @@ from msgspec import Meta, Struct, field
 
 
 class Ticker(Struct):
-    s: Annotated[str, Meta(title="symbol")]
-    tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
-    ve: Annotated[str, Meta(title="venue")]
-    ap: Optional[Annotated[Optional[Decimal], Meta(title="ask_price")]] = None
-    as_: Optional[Annotated[Optional[Decimal], Meta(title="ask_size")]] = field(
-        name="as", default=None
+    s: Annotated[str, Meta(title='symbol')]
+    tn: Annotated[int, Meta(ge=0, title='timestamp_ns')]
+    ts: Annotated[int, Meta(title='timestamp')]
+    ve: Annotated[str, Meta(title='venue')]
+    ap: Optional[Annotated[Optional[Decimal], Meta(title='ask_price')]] = None
+    as_: Optional[Annotated[Optional[Decimal], Meta(title='ask_size')]] = field(
+        name='as', default=None
     )
-    bp: Optional[Annotated[Optional[Decimal], Meta(title="bid_price")]] = None
-    bs: Optional[Annotated[Optional[Decimal], Meta(title="bid_size")]] = None
+    bp: Optional[Annotated[Optional[Decimal], Meta(title='bid_price')]] = None
+    bs: Optional[Annotated[Optional[Decimal], Meta(title='bid_size')]] = None
     dividend: Optional[Decimal] = None
     dividend_yield: Optional[Decimal] = None
     eps_adj: Optional[Decimal] = None
-    fr: Optional[Annotated[Optional[Decimal], Meta(title="funding_rate")]] = None
-    ft: Optional[Annotated[Optional[datetime], Meta(title="next_funding_time")]] = None
-    h: Optional[Annotated[Optional[Decimal], Meta(title="high_24h")]] = None
-    ip: Optional[Annotated[Optional[Decimal], Meta(title="index_price")]] = None
-    l: Optional[Annotated[Optional[Decimal], Meta(title="low_24h")]] = None
+    fr: Optional[Annotated[Optional[Decimal], Meta(title='funding_rate')]] = None
+    ft: Optional[Annotated[Optional[datetime], Meta(title='next_funding_time')]] = None
+    h: Optional[Annotated[Optional[Decimal], Meta(title='high_24h')]] = None
+    ip: Optional[Annotated[Optional[Decimal], Meta(title='index_price')]] = None
+    l: Optional[Annotated[Optional[Decimal], Meta(title='low_24h')]] = None
     market_cap: Optional[Decimal] = None
-    mp: Optional[Annotated[Optional[Decimal], Meta(title="mark_price")]] = None
-    o: Optional[Annotated[Optional[Decimal], Meta(title="open_24h")]] = None
-    oi: Optional[Annotated[Optional[Decimal], Meta(title="open_interest")]] = None
-    p: Optional[Annotated[Optional[Decimal], Meta(title="last_price")]] = None
+    mp: Optional[Annotated[Optional[Decimal], Meta(title='mark_price')]] = None
+    o: Optional[Annotated[Optional[Decimal], Meta(title='open_24h')]] = None
+    oi: Optional[Annotated[Optional[Decimal], Meta(title='open_interest')]] = None
+    p: Optional[Annotated[Optional[Decimal], Meta(title='last_price')]] = None
     price_to_earnings: Optional[Decimal] = None
-    q: Optional[Annotated[Optional[Decimal], Meta(title="last_size")]] = None
+    q: Optional[Annotated[Optional[Decimal], Meta(title='last_size')]] = None
     shares_outstanding_weighted_adj: Optional[Decimal] = None
-    sp: Optional[Annotated[Optional[Decimal], Meta(title="last_settlement_price")]] = (
+    sp: Optional[Annotated[Optional[Decimal], Meta(title='last_settlement_price')]] = (
         None
     )
-    v: Optional[Annotated[Optional[Decimal], Meta(title="volume_24h")]] = None
-    vm: Optional[Annotated[Optional[Decimal], Meta(title="volume_30d")]] = None
-    xh: Optional[Annotated[Optional[Decimal], Meta(title="session_high")]] = None
-    xl: Optional[Annotated[Optional[Decimal], Meta(title="session_low")]] = None
-    xo: Optional[Annotated[Optional[Decimal], Meta(title="session_open")]] = None
-    xv: Optional[Annotated[Optional[Decimal], Meta(title="session_volume")]] = None
+    v: Optional[Annotated[Optional[Decimal], Meta(title='volume_24h')]] = None
+    vm: Optional[Annotated[Optional[Decimal], Meta(title='volume_30d')]] = None
+    xh: Optional[Annotated[Optional[Decimal], Meta(title='session_high')]] = None
+    xl: Optional[Annotated[Optional[Decimal], Meta(title='session_low')]] = None
+    xo: Optional[Annotated[Optional[Decimal], Meta(title='session_open')]] = None
+    xv: Optional[Annotated[Optional[Decimal], Meta(title='session_volume')]] = None
 
     @property
     def symbol(self) -> str:

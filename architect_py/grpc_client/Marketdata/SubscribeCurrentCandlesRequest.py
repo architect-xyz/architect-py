@@ -2,7 +2,6 @@
 #   filename:  Marketdata/SubscribeCurrentCandlesRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.Candle import Candle
 
 from typing import Annotated, Optional
 
@@ -22,7 +21,7 @@ class SubscribeCurrentCandlesRequest(Struct):
         Annotated[
             Optional[int],
             Meta(
-                description="If None, send the current candle on every trade or candle tick. Otherwise, send a candle every `tick_period_ms`.",
+                description='If None, send the current candle on every trade or candle tick. Otherwise, send a candle every `tick_period_ms`.',
                 ge=0,
             ),
         ]
@@ -34,12 +33,12 @@ class SubscribeCurrentCandlesRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return Candle
+        return "&RESPONSE_TYPE:SubscribeCurrentCandlesRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/SubscribeCurrentCandles"
+        return "&ROUTE:SubscribeCurrentCandlesRequest"
 
     @staticmethod
     def get_unary_type():
-        return "stream"
+        return "&UNARY_TYPE:SubscribeCurrentCandlesRequest"

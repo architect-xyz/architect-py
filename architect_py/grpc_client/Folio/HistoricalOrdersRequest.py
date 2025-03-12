@@ -2,9 +2,6 @@
 #   filename:  Folio/HistoricalOrdersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Folio.HistoricalOrdersResponse import (
-    HistoricalOrdersResponse,
-)
 
 from datetime import datetime
 from typing import Annotated, List, Optional
@@ -18,7 +15,7 @@ class HistoricalOrdersRequest(Struct):
     account: Optional[definitions.AccountIdOrName] = None
     from_inclusive: Optional[datetime] = None
     limit: Optional[
-        Annotated[Optional[int], Meta(description="Default maximum is 1000.", ge=0)]
+        Annotated[Optional[int], Meta(description='Default maximum is 1000.', ge=0)]
     ] = None
     """
     Default maximum is 1000.
@@ -26,7 +23,7 @@ class HistoricalOrdersRequest(Struct):
     order_ids: Optional[
         Annotated[
             List[definitions.OrderId],
-            Meta(description="if order_ids is not empty, the limit field is ignored"),
+            Meta(description='if order_ids is not empty, the limit field is ignored'),
         ]
     ] = None
     """
@@ -39,12 +36,12 @@ class HistoricalOrdersRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return HistoricalOrdersResponse
+        return "&RESPONSE_TYPE:HistoricalOrdersRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Folio/HistoricalOrders"
+        return "&ROUTE:HistoricalOrdersRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:HistoricalOrdersRequest"

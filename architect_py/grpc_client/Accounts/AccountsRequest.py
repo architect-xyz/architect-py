@@ -2,7 +2,6 @@
 #   filename:  Accounts/AccountsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Accounts.AccountsResponse import AccountsResponse
 
 from typing import Annotated, Optional
 
@@ -16,7 +15,7 @@ class AccountsRequest(Struct):
         Annotated[
             Optional[definitions.TraderIdOrEmail],
             Meta(
-                description="Request accounts from the perspective of this trader; if not specified, defaults to the caller user."
+                description='Request accounts from the perspective of this trader; if not specified, defaults to the caller user.'
             ),
         ]
     ] = None
@@ -26,12 +25,12 @@ class AccountsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return AccountsResponse
+        return "&RESPONSE_TYPE:AccountsRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Accounts/Accounts"
+        return "&ROUTE:AccountsRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:AccountsRequest"

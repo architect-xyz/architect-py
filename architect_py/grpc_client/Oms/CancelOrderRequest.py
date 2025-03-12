@@ -2,7 +2,6 @@
 #   filename:  Oms/CancelOrderRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.Cancel import Cancel
 
 from typing import Annotated, Optional
 
@@ -12,13 +11,13 @@ from .. import definitions
 
 
 class CancelOrderRequest(Struct):
-    id: Annotated[definitions.OrderId, Meta(title="order_id")]
+    id: Annotated[definitions.OrderId, Meta(title='order_id')]
     xid: Optional[
         Annotated[
             Optional[str],
             Meta(
                 description="If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
-                title="cancel_id",
+                title='cancel_id',
             ),
         ]
     ] = None
@@ -44,12 +43,12 @@ class CancelOrderRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return Cancel
+        return "&RESPONSE_TYPE:CancelOrderRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Oms/CancelOrder"
+        return "&ROUTE:CancelOrderRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:CancelOrderRequest"

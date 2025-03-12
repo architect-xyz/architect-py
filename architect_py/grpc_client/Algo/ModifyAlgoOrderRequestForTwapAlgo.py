@@ -2,7 +2,6 @@
 #   filename:  Algo/ModifyAlgoOrderRequestForTwapAlgo.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Algo.AlgoOrderForTwapAlgo import AlgoOrderForTwapAlgo
 
 from msgspec import Struct
 
@@ -15,12 +14,12 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct):
 
     @staticmethod
     def get_response_type():
-        return AlgoOrderForTwapAlgo
+        return "&RESPONSE_TYPE:ModifyAlgoOrderRequestForTwapAlgo"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Algo/ModifyTwapAlgoOrder"
+        return "&ROUTE:ModifyAlgoOrderRequestForTwapAlgo"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:ModifyAlgoOrderRequestForTwapAlgo"

@@ -7,7 +7,7 @@ from typing import List
 
 from msgspec import Struct
 
-from .Order import Order
+from . import Order
 
 
 class OpenOrdersResponse(Struct):

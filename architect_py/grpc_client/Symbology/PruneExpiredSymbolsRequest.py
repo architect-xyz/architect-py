@@ -2,9 +2,6 @@
 #   filename:  Symbology/PruneExpiredSymbolsRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Symbology.PruneExpiredSymbolsResponse import (
-    PruneExpiredSymbolsResponse,
-)
 
 from typing import Annotated, Optional
 
@@ -16,7 +13,7 @@ class PruneExpiredSymbolsRequest(Struct):
         Annotated[
             Optional[int],
             Meta(
-                description="If None then it will just use server current time; otherwise, specify a unix timestamp in seconds"
+                description='If None then it will just use server current time; otherwise, specify a unix timestamp in seconds'
             ),
         ]
     ] = None
@@ -26,12 +23,12 @@ class PruneExpiredSymbolsRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return PruneExpiredSymbolsResponse
+        return "&RESPONSE_TYPE:PruneExpiredSymbolsRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Symbology/PruneExpiredSymbols"
+        return "&ROUTE:PruneExpiredSymbolsRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
+        return "&UNARY_TYPE:PruneExpiredSymbolsRequest"

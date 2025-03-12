@@ -2,8 +2,6 @@
 #   filename:  Oms/PlaceOrderRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Oms.Order import Order
-from architect_py.scalars import OrderDir
 
 from decimal import Decimal
 from enum import Enum
@@ -15,20 +13,20 @@ from .. import definitions
 
 
 class PlaceOrderRequestType(str, Enum):
-    LIMIT = "LIMIT"
-    STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
-    TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
+    LIMIT = 'LIMIT'
+    STOP_LOSS_LIMIT = 'STOP_LOSS_LIMIT'
+    TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT'
 
 
 class PlaceOrderRequest(Struct):
-    d: Annotated[OrderDir, Meta(title="dir")]
-    q: Annotated[Decimal, Meta(title="quantity")]
-    s: Annotated[str, Meta(title="symbol")]
-    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    p: Annotated[Decimal, Meta(title="limit_price")]
-    k: Annotated[PlaceOrderRequestType, Meta(title="place_order_request_type")]
+    d: Annotated[definitions.Dir, Meta(title='dir')]
+    q: Annotated[Decimal, Meta(title='quantity')]
+    s: Annotated[str, Meta(title='symbol')]
+    tif: Annotated[definitions.TimeInForce, Meta(title='time_in_force')]
+    p: Annotated[Decimal, Meta(title='limit_price')]
+    k: Annotated[PlaceOrderRequestType, Meta(title='place_order_request_type')]
     a: Optional[
-        Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
+        Annotated[Optional[definitions.AccountIdOrName], Meta(title='account')]
     ] = None
     id: Optional[
         Annotated[
@@ -41,25 +39,25 @@ class PlaceOrderRequest(Struct):
     """
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
-    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
+    pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title='parent_id')]] = (
         None
     )
     src: Optional[
-        Annotated[Optional[definitions.OrderSource], Meta(title="source")]
+        Annotated[Optional[definitions.OrderSource], Meta(title='source')]
     ] = None
     u: Optional[
-        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
+        Annotated[Optional[definitions.TraderIdOrEmail], Meta(title='trader')]
     ] = None
-    x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
-    po: Optional[Annotated[bool, Meta(title="post_only")]] = None
-    tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
+    x: Optional[Annotated[Optional[str], Meta(title='execution_venue')]] = None
+    po: Optional[Annotated[bool, Meta(title='post_only')]] = None
+    tp: Optional[Annotated[Decimal, Meta(title='trigger_price')]] = None
 
     @property
-    def dir(self) -> OrderDir:
+    def dir(self) -> definitions.Dir:
         return self.d
 
     @dir.setter
-    def dir(self, value: OrderDir) -> None:
+    def dir(self, value: definitions.Dir) -> None:
         self.d = value
 
     @property
@@ -160,41 +158,12 @@ class PlaceOrderRequest(Struct):
 
     @staticmethod
     def get_response_type():
-        return Order
+        return "&RESPONSE_TYPE:PlaceOrderRequest"
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Oms/PlaceOrder"
+        return "&ROUTE:PlaceOrderRequest"
 
     @staticmethod
     def get_unary_type():
-        return "unary"
-
-    def __post_init__(self):
-        if self.k == "LIMIT":
-            if not all(getattr(self, key) is not None for key in ["po"]):
-                raise ValueError(
-                    f"When field k (place_order_request_type) is of value LIMIT, class PlaceOrderRequest requires fields ['po']"
-                )
-            elif any(getattr(self, key) is not None for key in ["tp"]):
-                raise ValueError(
-                    f"When field k (place_order_request_type) is of value LIMIT, class PlaceOrderRequest should not have fields ['tp']"
-                )
-        elif self.k == "STOP_LOSS_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
-                raise ValueError(
-                    f"When field k (place_order_request_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest requires fields ['tp']"
-                )
-            elif any(getattr(self, key) is not None for key in ["po"]):
-                raise ValueError(
-                    f"When field k (place_order_request_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest should not have fields ['po']"
-                )
-        elif self.k == "TAKE_PROFIT_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
-                raise ValueError(
-                    f"When field k (place_order_request_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest requires fields ['tp']"
-                )
-            elif any(getattr(self, key) is not None for key in ["po"]):
-                raise ValueError(
-                    f"When field k (place_order_request_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest should not have fields ['po']"
-                )
+        return "&UNARY_TYPE:PlaceOrderRequest"
