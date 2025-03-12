@@ -11,20 +11,20 @@ from .. import definitions
 from ..Oms.Order import Order
 
 
-class TypedOrder(Order, omit_defaults=True, tag_field="t", tag="o"):
+class TaggedOrder(Order, omit_defaults=True, tag_field="t", tag="o"):
     pass
 
 
-class TypedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
+class TaggedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
     pass
 
 
-class TypedAberrantFill(
+class TaggedAberrantFill(
     definitions.AberrantFill, omit_defaults=True, tag_field="t", tag="af"
 ):
     pass
 
 
 Dropcopy = Annotated[
-    Union[TypedOrder, TypedFill, TypedAberrantFill], Meta(title="Dropcopy")
+    Union[TaggedOrder, TaggedFill, TaggedAberrantFill], Meta(title="Dropcopy")
 ]

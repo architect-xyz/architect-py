@@ -13,19 +13,19 @@
       "tag_value": "a",
       "title": "OrderAck",
       "$ref": "../definitions.json#/OrderAck",
-      "variant_name": "TypedOrderAck"
+      "variant_name": "TaggedOrderAck"
     },
     {
       "tag_value": "r",
       "title": "OrderReject",
       "$ref": "../definitions.json#/OrderReject",
-      "variant_name": "TypedOrderReject"
+      "variant_name": "TaggedOrderReject"
     },
     {
       "tag_value": "o",
       "title": "OrderOut",
       "$ref": "../definitions.json#/OrderOut",
-      "variant_name": "TypedOrderOut"
+      "variant_name": "TaggedOrderOut"
     },
     {
       "tag_value": "ox",
@@ -37,7 +37,7 @@
       "tag_value": "z",
       "title": "OrderStale",
       "$ref": "../definitions.json#/OrderStale",
-      "variant_name": "TypedOrderStale"
+      "variant_name": "TaggedOrderStale"
     },
     {
       "tag_value": "xc",
@@ -50,31 +50,31 @@
       "tag_value": "xr",
       "title": "CancelReject",
       "$ref": "../definitions.json#/CancelReject",
-      "variant_name": "TypedCancelReject"
+      "variant_name": "TaggedCancelReject"
     },
     {
       "tag_value": "xa",
       "title": "OrderCanceling",
       "$ref": "../definitions.json#/OrderCanceling",
-      "variant_name": "TypedOrderCanceling"
+      "variant_name": "TaggedOrderCanceling"
     },
     {
       "tag_value": "xx",
       "title": "OrderCanceled",
       "$ref": "../definitions.json#/OrderCanceled",
-      "variant_name": "TypedOrderCanceled"
+      "variant_name": "TaggedOrderCanceled"
     },
     {
       "tag_value": "f",
       "title": "Fill",
       "$ref": "../definitions.json#/Fill",
-      "variant_name": "TypedFill"
+      "variant_name": "TaggedFill"
     },
     {
       "tag_value": "af",
       "title": "AberrantFill",
       "$ref": "../definitions.json#/AberrantFill",
-      "variant_name": "TypedAberrantFill"
+      "variant_name": "TaggedAberrantFill"
     }
   ],
   "tag_field": "t"

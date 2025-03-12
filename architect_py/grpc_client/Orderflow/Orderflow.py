@@ -16,17 +16,17 @@ class OrderPending(Order, omit_defaults=True, tag_field="t", tag="w"):
     pass
 
 
-class TypedOrderAck(definitions.OrderAck, omit_defaults=True, tag_field="t", tag="a"):
+class TaggedOrderAck(definitions.OrderAck, omit_defaults=True, tag_field="t", tag="a"):
     pass
 
 
-class TypedOrderReject(
+class TaggedOrderReject(
     definitions.OrderReject, omit_defaults=True, tag_field="t", tag="r"
 ):
     pass
 
 
-class TypedOrderOut(definitions.OrderOut, omit_defaults=True, tag_field="t", tag="o"):
+class TaggedOrderOut(definitions.OrderOut, omit_defaults=True, tag_field="t", tag="o"):
     pass
 
 
@@ -36,7 +36,7 @@ class OrderReconciledOut(
     pass
 
 
-class TypedOrderStale(
+class TaggedOrderStale(
     definitions.OrderStale, omit_defaults=True, tag_field="t", tag="z"
 ):
     pass
@@ -46,29 +46,29 @@ class CancelPending(Cancel, omit_defaults=True, tag_field="t", tag="xc"):
     pass
 
 
-class TypedCancelReject(
+class TaggedCancelReject(
     definitions.CancelReject, omit_defaults=True, tag_field="t", tag="xr"
 ):
     pass
 
 
-class TypedOrderCanceling(
+class TaggedOrderCanceling(
     definitions.OrderCanceling, omit_defaults=True, tag_field="t", tag="xa"
 ):
     pass
 
 
-class TypedOrderCanceled(
+class TaggedOrderCanceled(
     definitions.OrderCanceled, omit_defaults=True, tag_field="t", tag="xx"
 ):
     pass
 
 
-class TypedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
+class TaggedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
     pass
 
 
-class TypedAberrantFill(
+class TaggedAberrantFill(
     definitions.AberrantFill, omit_defaults=True, tag_field="t", tag="af"
 ):
     pass
@@ -77,17 +77,17 @@ class TypedAberrantFill(
 Orderflow = Annotated[
     Union[
         OrderPending,
-        TypedOrderAck,
-        TypedOrderReject,
-        TypedOrderOut,
+        TaggedOrderAck,
+        TaggedOrderReject,
+        TaggedOrderOut,
         OrderReconciledOut,
-        TypedOrderStale,
+        TaggedOrderStale,
         CancelPending,
-        TypedCancelReject,
-        TypedOrderCanceling,
-        TypedOrderCanceled,
-        TypedFill,
-        TypedAberrantFill,
+        TaggedCancelReject,
+        TaggedOrderCanceling,
+        TaggedOrderCanceled,
+        TaggedFill,
+        TaggedAberrantFill,
     ],
     Meta(title="Orderflow"),
 ]
