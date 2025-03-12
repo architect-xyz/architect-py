@@ -14,20 +14,24 @@ from ..Oms.Cancel import Cancel
 from ..Oms.Order import Order
 
 
-class CancelOrder(Struct, omit_defaults=True, tag="t", tag_field="cancel_order"):
+class CancelOrder(Struct, omit_defaults=True, tag_field="t", tag="cancel_order"):
     cancel: Cancel
     original_order: Optional[Order] = None
 
 
-class Login(definitions.CptyLoginRequest, tag="t", tag_field="login"):
+class Login(
+    definitions.CptyLoginRequest, omit_defaults=True, tag_field="t", tag="login"
+):
     pass
 
 
-class Logout(definitions.CptyLogoutRequest, tag="t", tag_field="logout"):
+class Logout(
+    definitions.CptyLogoutRequest, omit_defaults=True, tag_field="t", tag="logout"
+):
     pass
 
 
-class PlaceOrder(Order, tag="t", tag_field="place_order"):
+class PlaceOrder(Order, omit_defaults=True, tag_field="t", tag="place_order"):
     pass
 
 

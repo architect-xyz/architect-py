@@ -3,26 +3,26 @@
   "title": "CptyRequest",
   "oneOf": [
     {
-      "tag_field": "login",
+      "tag_value": "login",
       "title": "CptyLoginRequest",
       "$ref": "../definitions.json#/CptyLoginRequest",
       "variant_name": "Login"
     },
     {
-      "tag_field": "logout",
+      "tag_value": "logout",
       "title": "CptyLogoutRequest",
       "$ref": "../definitions.json#/CptyLogoutRequest",
       "variant_name": "Logout"
     },
     {
-      "tag_field": "place_order",
+      "tag_value": "place_order",
       "title": "Order",
       "ref_correction": "Order",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "PlaceOrder"
     },
     {
-      "tag_field": "cancel_order",
+      "tag_value": "cancel_order",
       "variant_name": "CancelOrder",
       "type": "object",
       "required": [
@@ -50,5 +50,5 @@
   "unary_type": "duplex_stream",
   "service": "Cpty",
   "response_type": "CptyResponse",
-  "tag": "t"
+  "tag_field": "t"
 }

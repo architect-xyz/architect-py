@@ -11,15 +11,17 @@ from .. import definitions
 from ..Oms.Order import Order
 
 
-class TypedOrder(Order, tag="t", tag_field="o"):
+class TypedOrder(Order, omit_defaults=True, tag_field="t", tag="o"):
     pass
 
 
-class TypedFill(definitions.Fill, tag="t", tag_field="f"):
+class TypedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
     pass
 
 
-class TypedAberrantFill(definitions.AberrantFill, tag="t", tag_field="af"):
+class TypedAberrantFill(
+    definitions.AberrantFill, omit_defaults=True, tag_field="t", tag="af"
+):
     pass
 
 

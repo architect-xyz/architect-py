@@ -11,11 +11,11 @@ from .. import definitions
 from .L2BookSnapshot import L2BookSnapshot
 
 
-class Snapshot(L2BookSnapshot, tag="t", tag_field="s"):
+class Snapshot(L2BookSnapshot, omit_defaults=True, tag_field="t", tag="s"):
     pass
 
 
-class Diff(definitions.L2BookDiff, tag="t", tag_field="d"):
+class Diff(definitions.L2BookDiff, omit_defaults=True, tag_field="t", tag="d"):
     pass
 
 

@@ -207,15 +207,15 @@ def correct_variant_types(
     else:
         schema.pop("description", None)
 
-    tag = metadata["tag"]
+    tag_field = metadata["tag"]
     new_one_of: List[Dict[str, Any]] = []
     for item in schema[one_of_key]:
-        item["required"].remove(tag)
-        [tag_field] = item["properties"].pop(tag)["enum"]
+        item["required"].remove(tag_field)
+        [tag_value] = item["properties"].pop(tag_field)["enum"]
         title = item.pop("title")
 
         enum_ref = {
-            "tag_field": tag_field,
+            "tag_value": tag_value,
         }
         if "|" not in title:
             type_name = title
@@ -250,7 +250,7 @@ def correct_variant_types(
         new_one_of.append(enum_ref)
 
     schema[one_of_key] = new_one_of
-    schema["tag"] = tag
+    schema["tag_field"] = tag_field
 
 
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:

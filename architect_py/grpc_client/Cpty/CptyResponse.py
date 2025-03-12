@@ -11,7 +11,7 @@ from .. import definitions
 from ..Oms.Order import Order
 
 
-class UpdateAccountSummary(Struct, omit_defaults=True, tag="t", tag_field="as"):
+class UpdateAccountSummary(Struct, omit_defaults=True, tag_field="t", tag="as"):
     account: definitions.AccountIdOrName
     is_snapshot: bool
     timestamp: int
@@ -21,12 +21,12 @@ class UpdateAccountSummary(Struct, omit_defaults=True, tag="t", tag_field="as"):
     statistics: Optional[definitions.AccountStatistics] = None
 
 
-class ReconcileOpenOrder(Struct, omit_defaults=True, tag="t", tag_field="oo"):
+class ReconcileOpenOrder(Struct, omit_defaults=True, tag_field="t", tag="oo"):
     orders: List[Order]
     snapshot_for_account: Optional[definitions.AccountIdOrName] = None
 
 
-class ReconcileOrder(Order, tag="t", tag_field="ro"):
+class ReconcileOrder(Order, omit_defaults=True, tag_field="t", tag="ro"):
     pass
 
 

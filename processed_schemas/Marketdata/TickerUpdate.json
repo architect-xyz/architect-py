@@ -3,19 +3,19 @@
   "title": "TickerUpdate",
   "oneOf": [
     {
-      "tag_field": "s",
+      "tag_value": "s",
       "title": "Ticker",
       "ref_correction": "Ticker",
       "$ref": "../Marketdata/Ticker.json/#",
       "variant_name": "Snapshot"
     },
     {
-      "tag_field": "d",
+      "tag_value": "d",
       "title": "Ticker",
       "ref_correction": "Ticker",
       "$ref": "../Marketdata/Ticker.json/#",
       "variant_name": "Diff"
     }
   ],
-  "tag": "t"
+  "tag_field": "t"
 }

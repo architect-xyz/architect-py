@@ -116,17 +116,17 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
     with open(json_fp, "r", encoding="utf-8") as json_file:
         json_data = json.load(json_file)
 
-    tag: str | None = json_data.get("tag", None)
-    if tag is None:
+    tag_field: str | None = json_data.get("tag_field", None)
+    if tag_field is None:
         return
 
     tag_field_map: dict[str, list[tuple[str, str]]] = defaultdict(list)
     one_of = json_data["oneOf"]
     for p in one_of:
-        tag_field = p["tag_field"]
+        tag_value = p["tag_value"]
         type_name = p["title"]
         variant_name = p["variant_name"]
-        tag_field_map[type_name].append((variant_name, tag_field))
+        tag_field_map[type_name].append((variant_name, tag_value))
 
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.read()
@@ -179,7 +179,7 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
         # Get the simple name (if qualified, e.g. definitions.Ticker -> Ticker)
         simple_name = base_type.split(".")[-1]
         if simple_name in tag_field_map:
-            for variant_name, tag_field in tag_field_map[simple_name]:
+            for variant_name, tag_value in tag_field_map[simple_name]:
                 # Use an improved regex to insert the tag metadata inside the parentheses.
                 pattern = re.compile(
                     rf"^(class\s+{variant_name}\s*\()(?P<inheritance>[^)]*)(\))(\s*:)",
@@ -194,14 +194,14 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
                     # If already tagged, leave unchanged.
                     if "tag=" in inheritance:
                         return m.group(0)
-                    return f'{header_prefix}{inheritance}, omit_defaults=True, tag="{tag}", tag_field="{tag_field}"{closing_paren}{colon}'
+                    return f'{header_prefix}{inheritance}, omit_defaults=True, tag_field="{tag_field}", tag="{tag_value}"{closing_paren}{colon}'
 
                 # Replace class header if already present.
                 lines, count = pattern.subn(repl, lines)
                 # If the class wasn't found at all, create it.
                 if count == 0:
                     new_class_def = (
-                        f'\n\nclass {variant_name}({base_type}, tag="{tag}", tag_field="{tag_field}"):\n'
+                        f'\n\nclass {variant_name}({base_type}, omit_defaults=True, tag_field="{tag_field}", tag="{tag_value}"):\n'
                         "    pass\n"
                     )
                     additional_class_defs += new_class_def

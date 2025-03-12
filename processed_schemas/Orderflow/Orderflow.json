@@ -3,79 +3,79 @@
   "title": "Orderflow",
   "oneOf": [
     {
-      "tag_field": "w",
+      "tag_value": "w",
       "title": "Order",
       "ref_correction": "Order",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "OrderPending"
     },
     {
-      "tag_field": "a",
+      "tag_value": "a",
       "title": "OrderAck",
       "$ref": "../definitions.json#/OrderAck",
       "variant_name": "TypedOrderAck"
     },
     {
-      "tag_field": "r",
+      "tag_value": "r",
       "title": "OrderReject",
       "$ref": "../definitions.json#/OrderReject",
       "variant_name": "TypedOrderReject"
     },
     {
-      "tag_field": "o",
+      "tag_value": "o",
       "title": "OrderOut",
       "$ref": "../definitions.json#/OrderOut",
       "variant_name": "TypedOrderOut"
     },
     {
-      "tag_field": "ox",
+      "tag_value": "ox",
       "title": "OrderOut",
       "$ref": "../definitions.json#/OrderOut",
       "variant_name": "OrderReconciledOut"
     },
     {
-      "tag_field": "z",
+      "tag_value": "z",
       "title": "OrderStale",
       "$ref": "../definitions.json#/OrderStale",
       "variant_name": "TypedOrderStale"
     },
     {
-      "tag_field": "xc",
+      "tag_value": "xc",
       "title": "Cancel",
       "ref_correction": "Cancel",
       "$ref": "../Oms/Cancel.json/#",
       "variant_name": "CancelPending"
     },
     {
-      "tag_field": "xr",
+      "tag_value": "xr",
       "title": "CancelReject",
       "$ref": "../definitions.json#/CancelReject",
       "variant_name": "TypedCancelReject"
     },
     {
-      "tag_field": "xa",
+      "tag_value": "xa",
       "title": "OrderCanceling",
       "$ref": "../definitions.json#/OrderCanceling",
       "variant_name": "TypedOrderCanceling"
     },
     {
-      "tag_field": "xx",
+      "tag_value": "xx",
       "title": "OrderCanceled",
       "$ref": "../definitions.json#/OrderCanceled",
       "variant_name": "TypedOrderCanceled"
     },
     {
-      "tag_field": "f",
+      "tag_value": "f",
       "title": "Fill",
       "$ref": "../definitions.json#/Fill",
       "variant_name": "TypedFill"
     },
     {
-      "tag_field": "af",
+      "tag_value": "af",
       "title": "AberrantFill",
       "$ref": "../definitions.json#/AberrantFill",
       "variant_name": "TypedAberrantFill"
     }
   ],
-  "tag": "t"
+  "tag_field": "t"
 }

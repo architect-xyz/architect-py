@@ -10,11 +10,11 @@ from msgspec import Meta
 from .Ticker import Ticker
 
 
-class Snapshot(Ticker, tag="t", tag_field="s"):
+class Snapshot(Ticker, omit_defaults=True, tag_field="t", tag="s"):
     pass
 
 
-class Diff(Ticker, tag="t", tag_field="d"):
+class Diff(Ticker, omit_defaults=True, tag_field="t", tag="d"):
     pass
 
 
