@@ -125,8 +125,6 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
         return
 
     one_of: List[Dict[str, Any]] = schema.pop("oneOf")
-    sets = [set(group) for group in one_of]
-    common_keys: list[str] = list(set().intersection(*sets))
     additional_properties: Dict[str, Any] = {}
 
     enum_tag: str = ""
@@ -163,7 +161,14 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
 
     if not enum_tag:
         raise ValueError(f"Enum value not found in {schema['title']}")
+
+    sets = [set(group["required"]) for group in one_of]
+    common_keys: list[str] = list(set.intersection(*sets)) if sets else []
+    union_of_keys: list[str] = list(set.union(*sets)) if sets else []
+
     schema["required"].extend(common_keys)
+    schema["enum_tag_union"] = union_of_keys
+
     schema["properties"].update(additional_properties)
     schema["properties"][enum_tag] = enum_tag_property
     schema["enum_tag"] = enum_tag

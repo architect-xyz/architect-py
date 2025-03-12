@@ -33,6 +33,8 @@ class Order(Struct):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]
+    p: Annotated[Decimal, Meta(title="limit_price")]
+    k: Annotated[OrderType, Meta(title="order_type")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
@@ -42,10 +44,8 @@ class Order(Struct):
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
-    p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
-    k: Optional[Annotated[OrderType, Meta(title="order_type")]] = None
 
     @property
     def account(self) -> str:
@@ -144,6 +144,22 @@ class Order(Struct):
         self.xq = value
 
     @property
+    def limit_price(self) -> Decimal:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Decimal) -> None:
+        self.p = value
+
+    @property
+    def order_type(self) -> OrderType:
+        return self.k
+
+    @order_type.setter
+    def order_type(self, value: OrderType) -> None:
+        self.k = value
+
+    @property
     def exchange_order_id(self) -> Optional[str]:
         return self.eid
 
@@ -184,14 +200,6 @@ class Order(Struct):
         self.xp = value
 
     @property
-    def limit_price(self) -> Optional[Decimal]:
-        return self.p
-
-    @limit_price.setter
-    def limit_price(self, value: Optional[Decimal]) -> None:
-        self.p = value
-
-    @property
     def post_only(self) -> Optional[bool]:
         return self.po
 
@@ -206,11 +214,3 @@ class Order(Struct):
     @trigger_price.setter
     def trigger_price(self, value: Optional[Decimal]) -> None:
         self.tp = value
-
-    @property
-    def order_type(self) -> Optional[OrderType]:
-        return self.k
-
-    @order_type.setter
-    def order_type(self, value: Optional[OrderType]) -> None:
-        self.k = value

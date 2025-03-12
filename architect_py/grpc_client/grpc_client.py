@@ -50,14 +50,17 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 TODO:
 - confirm get_historical_candles works and fix if it doesn't work
 
-- loosen the Order types via pre-processing
-    - generally any flattened type with oneOf should be loosened and be put in the definitions file
+- loosen the flattened types (like order) via pre-processing
     - add a __post_init__ to confirm the type is correct
+    - if I add a non-required field, from another enum field, does it still work?
+        if not, enforce via __post_init__
 
 
-- add tags via subclasses for Variant
-    - so this is if there is 
--omit_defaults=True
+
+- add tags via subclasses for Variant type
+    - must have class that inherits from the normal type to add the tags
+-omit_defaults=True to every class
+    - this is for efficiency but also for the flattened types
 
 if request is variant type, still need the route type, route, response type
 

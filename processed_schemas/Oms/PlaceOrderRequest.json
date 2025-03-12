@@ -6,7 +6,9 @@
     "d",
     "q",
     "s",
-    "tif"
+    "tif",
+    "k",
+    "p"
   ],
   "properties": {
     "a": {
@@ -128,6 +130,12 @@
   "unary_type": "unary",
   "service": "Oms",
   "response_type": "Order",
+  "enum_tag_union": [
+    "po",
+    "p",
+    "k",
+    "tp"
+  ],
   "enum_tag": "k",
   "enum_tag_to_other_required_keys": {
     "LIMIT": [
