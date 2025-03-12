@@ -194,7 +194,7 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
                     # If already tagged, leave unchanged.
                     if "tag=" in inheritance:
                         return m.group(0)
-                    return f'{header_prefix}{inheritance}, tag="{tag}", tag_field="{tag_field}"{closing_paren}{colon}'
+                    return f'{header_prefix}{inheritance}, omit_defaults=True, tag="{tag}", tag_field="{tag_field}"{closing_paren}{colon}'
 
                 # Replace class header if already present.
                 lines, count = pattern.subn(repl, lines)

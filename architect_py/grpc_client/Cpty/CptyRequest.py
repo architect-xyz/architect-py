@@ -14,7 +14,7 @@ from ..Oms.Cancel import Cancel
 from ..Oms.Order import Order
 
 
-class CancelOrder(Struct, tag="t", tag_field="cancel_order"):
+class CancelOrder(Struct, omit_defaults=True, tag="t", tag_field="cancel_order"):
     cancel: Cancel
     original_order: Optional[Order] = None
 
