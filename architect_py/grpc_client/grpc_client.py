@@ -50,12 +50,6 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 TODO:
 - confirm get_historical_candles works and fix if it doesn't work
 
-- add tags via subclasses for Variant type
-    - must have class that inherits from the normal type to add the tags
--omit_defaults=True to every class
-    - this is for efficiency but also for the flattened types
-
-
 for decode, don't create your own decoder
 use the union types and tag values
 
