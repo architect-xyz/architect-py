@@ -211,6 +211,7 @@
   "MinOrderQuantityUnit": {
     "oneOf": [
       {
+        "title": "Base",
         "type": "object",
         "required": [
           "unit"
@@ -225,6 +226,7 @@
         }
       },
       {
+        "title": "Quote",
         "type": "object",
         "required": [
           "unit"
@@ -377,6 +379,7 @@
   "ProductType": {
     "oneOf": [
       {
+        "title": "Fiat",
         "type": "object",
         "required": [
           "product_type"
@@ -391,6 +394,7 @@
         }
       },
       {
+        "title": "Commodity",
         "type": "object",
         "required": [
           "product_type"
@@ -405,6 +409,7 @@
         }
       },
       {
+        "title": "Crypto",
         "type": "object",
         "required": [
           "product_type"
@@ -419,6 +424,7 @@
         }
       },
       {
+        "title": "Equity",
         "type": "object",
         "required": [
           "product_type"
@@ -433,6 +439,7 @@
         }
       },
       {
+        "title": "Index",
         "type": "object",
         "required": [
           "product_type"
@@ -447,6 +454,7 @@
         }
       },
       {
+        "title": "Future",
         "type": "object",
         "required": [
           "derivative_kind",
@@ -495,6 +503,7 @@
         }
       },
       {
+        "title": "FutureSpread",
         "type": "object",
         "required": [
           "legs",
@@ -516,6 +525,7 @@
         }
       },
       {
+        "title": "Perpetual",
         "type": "object",
         "required": [
           "derivative_kind",
@@ -545,6 +555,7 @@
         }
       },
       {
+        "title": "Option",
         "type": "object",
         "required": [
           "instance",
@@ -567,6 +578,7 @@
         }
       },
       {
+        "title": "EventContract",
         "type": "object",
         "required": [
           "instance",
@@ -589,6 +601,7 @@
         }
       },
       {
+        "title": "Unknown",
         "type": "object",
         "required": [
           "product_type"
@@ -1739,6 +1752,7 @@
   "TimeInForce": {
     "oneOf": [
       {
+        "title": "GoodTilDate",
         "type": "object",
         "required": [
           "GTD"
@@ -1754,11 +1768,11 @@
       {
         "enum": [
           "GTC",
+          "DAY",
           "IOC",
           "FOK",
           "ATO",
-          "ATC",
-          "DAY"
+          "ATC"
         ],
         "type": "string"
       }

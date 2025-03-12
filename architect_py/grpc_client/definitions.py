@@ -279,20 +279,20 @@ class SortTickersBy(str, Enum):
     ABS_CHANGE_DESC = "ABS_CHANGE_DESC"
 
 
-class TimeInForce1(Struct):
+class GoodTilDate(Struct):
     GTD: datetime
 
 
-class TimeInForce2(str, Enum):
+class TimeInForce1(str, Enum):
     GTC = "GTC"
+    DAY = "DAY"
     IOC = "IOC"
     FOK = "FOK"
     ATO = "ATO"
     ATC = "ATC"
-    DAY = "DAY"
 
 
-TimeInForce = Union[TimeInForce1, TimeInForce2]
+TimeInForce = Union[GoodTilDate, TimeInForce1]
 
 
 TraderIdOrEmail = str
@@ -336,15 +336,15 @@ class FillKind(int, Enum):
 HumanDuration = str
 
 
-class MinOrderQuantityUnit1(Struct):
+class Base(Struct):
     unit: Literal["base"]
 
 
-class MinOrderQuantityUnit2(Struct):
+class Quote(Struct):
     unit: Literal["quote"]
 
 
-MinOrderQuantityUnit = Union[MinOrderQuantityUnit1, MinOrderQuantityUnit2]
+MinOrderQuantityUnit = Union[Base, Quote]
 
 
 class OptionsExerciseType(str, Enum):
@@ -356,27 +356,27 @@ class OptionsExerciseType(str, Enum):
 PriceDisplayFormat = str
 
 
-class ProductType1(Struct):
+class Fiat(Struct):
     product_type: Literal["Fiat"]
 
 
-class ProductType2(Struct):
+class Commodity(Struct):
     product_type: Literal["Commodity"]
 
 
-class ProductType3(Struct):
+class Crypto(Struct):
     product_type: Literal["Crypto"]
 
 
-class ProductType4(Struct):
+class Equity(Struct):
     product_type: Literal["Equity"]
 
 
-class ProductType5(Struct):
+class Index(Struct):
     product_type: Literal["Index"]
 
 
-class ProductType6(Struct):
+class Future(Struct):
     derivative_kind: DerivativeKind
     expiration: datetime
     multiplier: Decimal
@@ -386,14 +386,14 @@ class ProductType6(Struct):
     underlying: Optional[str] = None
 
 
-class ProductType8(Struct):
+class Perpetual(Struct):
     derivative_kind: DerivativeKind
     multiplier: Decimal
     product_type: Literal["Perpetual"]
     underlying: Optional[str] = None
 
 
-class ProductType11(Struct):
+class Unknown(Struct):
     product_type: Literal["Unknown"]
 
 
@@ -1571,7 +1571,7 @@ class Account(Struct):
     name: AccountName
 
 
-class ProductType7(Struct):
+class FutureSpread(Struct):
     legs: List[SpreadLeg]
     product_type: Literal["FutureSpread"]
 
@@ -1639,30 +1639,30 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo = Union[
 ]
 
 
-class ProductType9(Struct):
+class Option(Struct):
     instance: OptionsSeriesInstance
     product_type: Literal["Option"]
     series: str
 
 
-class ProductType10(Struct):
+class EventContract(Struct):
     instance: EventContractSeriesInstance
     product_type: Literal["EventContract"]
     series: str
 
 
 ProductType = Union[
-    ProductType1,
-    ProductType2,
-    ProductType3,
-    ProductType4,
-    ProductType5,
-    ProductType6,
-    ProductType7,
-    ProductType8,
-    ProductType9,
-    ProductType10,
-    ProductType11,
+    Fiat,
+    Commodity,
+    Crypto,
+    Equity,
+    Index,
+    Future,
+    FutureSpread,
+    Perpetual,
+    Option,
+    EventContract,
+    Unknown,
 ]
 
 
