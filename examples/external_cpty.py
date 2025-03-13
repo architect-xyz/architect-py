@@ -19,6 +19,12 @@ class SimpleExternalCpty(WebSocket):
         self.sendMessage(data)
 
     def handleMessage(self):
+        if self.data is None:
+            return
+
+        if not (isinstance(self.data, str) or isinstance(self.data, bytearray)):
+            return
+
         print(f"< {self.data}")  # debug print the incoming message
         m = json.loads(self.data)
         try:

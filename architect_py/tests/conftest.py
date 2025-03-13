@@ -50,7 +50,7 @@ async def async_client() -> AsyncClient:
             "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
         )
 
-    return await AsyncClient.create(
+    return await AsyncClient.connect(
         host=host,
         _port=port,
         api_key=api_key,
