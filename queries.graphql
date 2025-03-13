@@ -8,6 +8,14 @@ fragment ProductInfoFields on ProductInfo {
   firstNoticeDate
   primaryVenue
   priceDisplayFormat
+  spreadLegs {
+    ...SpreadLegFields
+  }
+}
+
+fragment SpreadLegFields on SpreadLeg {
+  product
+  quantity
 }
 
 fragment ExecutionInfoFields on ExecutionInfo {
@@ -164,7 +172,7 @@ query GetProductInfoQuery($symbol: String!) {
   }
 }
 
-query GetProductInfosQuery($symbols: [String!]!) {
+query GetProductInfosQuery($symbols: [String!]) {
   symbology {
     productInfos(symbols: $symbols) {
       ...ProductInfoFields
@@ -190,6 +198,14 @@ query GetFutureSeriesQuery($seriesSymbol: String!) {
 query GetExecutionInfoQuery($symbol: TradableProduct!, $executionVenue: ExecutionVenue!) {
   symbology {
     executionInfo(symbol: $symbol, executionVenue: $executionVenue) {
+      ...ExecutionInfoFields
+    }
+  }
+}
+
+query GetExecutionInfosQuery($symbols: [TradableProduct!], $executionVenue: ExecutionVenue) {
+  symbology {
+    executionInfos(symbols: $symbols, executionVenue: $executionVenue) {
       ...ExecutionInfoFields
     }
   }
@@ -268,6 +284,15 @@ query GetAccountSummariesQuery($trader: String, $accounts: [String!]) {
     }
   }
 }
+
+query GetAccountHistoryQuery($account: String!, $fromInclusive: DateTime, $toExclusive: DateTime) {
+  folio {
+    accountHistory(account: $account, fromInclusive: $fromInclusive, toExclusive: $toExclusive) {
+      ...AccountSummaryFields
+    }
+  }
+}
+
 
 query GetOpenOrdersQuery($venue: ExecutionVenue, $account: String, $trader: String, $symbol: String, $parentOrderId: OrderId, $orderIds: [OrderId!]) {
   oms {

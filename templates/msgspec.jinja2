@@ -1,0 +1,74 @@
+{% for decorator in decorators -%}
+{{ decorator }}
+{% endfor -%}
+{%- if base_class %}
+class {{ class_name }}({{ base_class }}{%- for key, value in (base_class_kwargs|default({})).items() -%}
+, {{ key }}={{ value }}
+{%- endfor -%}):
+{%- else %}
+class {{ class_name }}:
+{%- endif %}
+{%- if description %}
+    """
+    {{ description | indent(4) }}
+    """
+{%- endif %}
+{%- if not fields and not description %}
+    pass
+{%- endif %}
+{%- for field in fields -%}
+    {%- if not field.annotated and field.field %}
+    {{ field.name }}: {{ field.type_hint }} = {{ field.field }}
+    {%- else %}
+    {%- if field.annotated and not field.field %}
+    {{ field.name }}: {{ field.annotated }}
+    {%- elif field.annotated and field.field %}
+    {{ field.name }}: {{ field.annotated }} = {{ field.field }}
+    {%- else %}
+    {{ field.name }}: {{ field.type_hint }}
+    {%- endif %}
+    {%- if not field.field and (not field.required or field.data_type.is_optional or field.nullable)
+            %} = {{ field.represented_default }}
+    {%- endif -%}
+    {%- endif %}
+
+    {%- if field.docstring %}
+    """
+    {{ field.docstring | indent(4) }}
+    """
+    {%- endif %}
+{%- endfor -%}
+
+{# Generate getter/setter properties for fields that have a metadata title #}
+{%- for field in fields if field.extras and field.extras.title %}
+    @property
+    def {{ field.extras.title }}(self) -> {{ field.type_hint }}:
+        return self.{{ field.name }}
+
+    @{{ field.extras.title }}.setter
+    def {{ field.extras.title }}(self, value: {{ field.type_hint }}) -> None:
+        self.{{ field.name }} = value
+
+    {%- if field.extras.title == "timestamp" %}
+    @property
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.{{ field.name }}, tz=timezone.utc)
+    @property
+    def datetime_local(self) -> datetime:
+        return datetime.fromtimestamp(self.{{ field.name }})
+    {%- endif %}
+{%- endfor %}
+
+{%- if "Request" in class_name %}
+    @staticmethod
+    def get_response_type():
+        return "&RESPONSE_TYPE:{{ class_name }}"
+    
+    @staticmethod
+    def get_route() -> str:
+        return "&ROUTE:{{ class_name }}"
+    
+    @staticmethod
+    def get_unary_type():
+        return "&UNARY_TYPE:{{ class_name }}"
+{%- endif %}

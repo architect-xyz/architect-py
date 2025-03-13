@@ -1,0 +1,346 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ticker",
+  "type": "object",
+  "required": [
+    "s",
+    "tn",
+    "ts",
+    "ve"
+  ],
+  "properties": {
+    "ap": {
+      "title": "ask_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "as": {
+      "title": "ask_size",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bp": {
+      "title": "bid_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bs": {
+      "title": "bid_size",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dividend": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dividend_yield": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eps_adj": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fr": {
+      "title": "funding_rate",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ft": {
+      "title": "next_funding_time",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "h": {
+      "title": "high_24h",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ip": {
+      "title": "index_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "l": {
+      "title": "low_24h",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "market_cap": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mp": {
+      "title": "mark_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "o": {
+      "title": "open_24h",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "oi": {
+      "title": "open_interest",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "p": {
+      "title": "last_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "price_to_earnings": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "q": {
+      "title": "last_size",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    },
+    "shares_outstanding_weighted_adj": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sp": {
+      "title": "last_settlement_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "tn": {
+      "title": "timestamp_ns",
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "ts": {
+      "title": "timestamp",
+      "type": "integer",
+      "format": "int64"
+    },
+    "v": {
+      "title": "volume_24h",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ve": {
+      "title": "venue",
+      "type": "string"
+    },
+    "vm": {
+      "title": "volume_30d",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "xh": {
+      "title": "session_high",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "xl": {
+      "title": "session_low",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "xo": {
+      "title": "session_open",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "xv": {
+      "title": "session_volume",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

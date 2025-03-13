@@ -1,0 +1,246 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Candle",
+  "type": "object",
+  "required": [
+    "av",
+    "bv",
+    "s",
+    "tn",
+    "ts",
+    "v",
+    "w"
+  ],
+  "properties": {
+    "ac": {
+      "title": "ask_close",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ah": {
+      "title": "ask_high",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "al": {
+      "title": "ask_low",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ao": {
+      "title": "ask_open",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "av": {
+      "title": "sell_volume",
+      "type": "number",
+      "format": "decimal"
+    },
+    "bc": {
+      "title": "bid_close",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bh": {
+      "title": "bid_high",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bl": {
+      "title": "bid_low",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bo": {
+      "title": "bid_open",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bv": {
+      "title": "buy_volume",
+      "type": "number",
+      "format": "decimal"
+    },
+    "c": {
+      "title": "close",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "h": {
+      "title": "high",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "l": {
+      "title": "low",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mc": {
+      "title": "mid_close",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mh": {
+      "title": "mid_high",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ml": {
+      "title": "mid_low",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mo": {
+      "title": "mid_open",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "o": {
+      "title": "open",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    },
+    "tn": {
+      "title": "timestamp_ns",
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "ts": {
+      "title": "timestamp",
+      "type": "integer",
+      "format": "int64"
+    },
+    "v": {
+      "title": "volume",
+      "type": "number",
+      "format": "decimal"
+    },
+    "w": {
+      "title": "width",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/CandleWidth"
+        }
+      ]
+    }
+  }
+}

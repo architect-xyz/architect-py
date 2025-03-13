@@ -2,6 +2,7 @@ import asyncio
 import os
 from uuid import UUID
 from architect_py.async_client import AsyncClient
+from architect_py.scalars import TradableProduct
 from .common import create_async_client
 
 buy_columns = "{:>15} {:>15}"
@@ -11,43 +12,29 @@ red = "\033[31m"
 normal = "\033[0m"
 
 
-async def watch_l2_book(c: AsyncClient, endpoint: str, market_id: str):
-    async for seq_id, seq_num in c.watch_l2_book(
-        endpoint,
-        market_id
-    ):
-        print(f"seq_id: {seq_id}, seq_num: {seq_num}")
-
-
-async def print_l2_book(c: AsyncClient, market_id: str):
+async def print_l2_book(c: AsyncClient, symbol: TradableProduct, venue: str):
+    book = await c.subscribe_l2_book(symbol, venue)
     while True:
-        if market_id in c.l2_books:
-            book = c.l2_books[market_id].snapshot()
-            print(f"book timestamp: {book.timestamp()}")
+        print(f"book timestamp: {book.timestamp}")
+        print((buy_columns + " " + sell_columns).format("Size", "Bid", "Ask", "Size"))
+        for i in range(min(20, len(book.bids), len(book.asks))):
+            b = book.bids[i]
+            s = book.asks[i]
             print(
-                (buy_columns + " " + sell_columns).format(
-                    "Size", "Bid", "Ask", "Size"
-                )
+                (green + buy_columns).format(b[1], b[0]),
+                (red + sell_columns).format(s[0], s[1]),
             )
-            for i in range(min(20, len(book.bids), len(book.asks))):
-                b = book.bids[i]
-                s = book.asks[i]
-                print(
-                    (green + buy_columns).format(b[1], b[0]),
-                    (red + sell_columns).format(s[0], s[1]),
-                )
-            print(normal)
-        await asyncio.sleep(2)
+        print(normal)
+        await asyncio.sleep(1)
 
 
 async def main():
-    c: AsyncClient = create_async_client()
-    endpoint = "https://coinbase.marketdata.architect.co"
-    market_id = "BTC Crypto/USD*COINBASE/DIRECT"
-    await asyncio.gather(
-        watch_l2_book(c, endpoint, market_id),
-        print_l2_book(c, market_id)
-    )
+    c: AsyncClient = await create_async_client()
+    endpoint = "coinbase.marketdata.architect.co"
+    await c.grpc_client.change_channel(endpoint)
+    market_symbol = TradableProduct("BTC Crypto/USD")
+    venue = "COINBASE"
+    await print_l2_book(c, market_symbol, venue=venue)
 
 
 asyncio.run(main())

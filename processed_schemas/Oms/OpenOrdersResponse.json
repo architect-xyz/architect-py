@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenOrdersResponse",
+  "type": "object",
+  "required": [
+    "open_orders"
+  ],
+  "properties": {
+    "open_orders": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Order.json/#"
+      }
+    }
+  }
+}

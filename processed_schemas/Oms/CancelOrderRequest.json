@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CancelOrderRequest",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "id": {
+      "title": "order_id",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        }
+      ]
+    },
+    "xid": {
+      "title": "cancel_id",
+      "description": "If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    }
+  },
+  "route": "/json.architect.Oms/CancelOrder",
+  "unary_type": "unary",
+  "service": "Oms",
+  "response_type": "Cancel"
+}

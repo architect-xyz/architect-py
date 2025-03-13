@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cancel",
+  "type": "object",
+  "required": [
+    "id",
+    "o",
+    "tn",
+    "ts",
+    "xid"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "../definitions.json#/OrderId"
+    },
+    "o": {
+      "$ref": "../definitions.json#/CancelStatus"
+    },
+    "r": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tn": {
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "ts": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "xid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  }
+}

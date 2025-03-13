@@ -48,7 +48,9 @@ enum OrderStatus {
   OUT
   CANCELING
   CANCELED
+  RECONCILED_OUT
   STALE
+  UNKNOWN
 }
 
 enum OrderType {
@@ -70,6 +72,8 @@ enum TimeInForce {
   DAY
   IOC
   FOK
+  ATO
+  ATC
 }
 
 scalar AccountName
@@ -326,7 +330,7 @@ type Fill {
 type FolioQueryRoot {
   accountSummary(account: String!): AccountSummary!
   accountSummaries(trader: String, accounts: [String!]): [AccountSummary!]!
-  accountHistory(venue: ExecutionVenue, account: String!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
+  accountHistory(account: String!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
   historicalFills(venue: ExecutionVenue, account: String, trader: String, orderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): HistoricalFillsResponse!
   historicalOrders(orderIds: [OrderId!], venue: ExecutionVenue, account: String, trader: String, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): [Order!]!
 }
@@ -411,6 +415,7 @@ type Order {
 
 type OrderAck {
   orderId: OrderId!
+  exchangeOrderId: String
 }
 
 type OrderCanceled {
@@ -441,6 +446,7 @@ type ProductInfo {
   firstNoticeDate: Date
   primaryVenue: String
   priceDisplayFormat: String
+  spreadLegs: [SpreadLeg!]
 }
 
 type QueryRoot {
@@ -452,6 +458,15 @@ type QueryRoot {
   marketdata: MarketdataQueryRoot!
   oms: OmsQueryRoot!
   folio: FolioQueryRoot!
+}
+
+type SpreadLeg {
+  product: Product!
+  """
+    Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C;
+    We would represent that with quantities in the legs: 1, -2, 1
+  """
+  quantity: Decimal!
 }
 
 type SubscriptionRoot {
@@ -534,4 +549,3 @@ type UserQueryRoot {
 }
 
 union Orderflow = Order | OrderAck | GqlOrderReject | OrderOut | OrderStale | Cancel | CancelReject | OrderCanceling | OrderCanceled | Fill | AberrantFill
-

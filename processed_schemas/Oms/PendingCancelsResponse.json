@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PendingCancelsResponse",
+  "type": "object",
+  "required": [
+    "pending_cancels"
+  ],
+  "properties": {
+    "pending_cancels": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Cancel.json/#"
+      }
+    }
+  }
+}

@@ -20,32 +20,64 @@ def serialize(value) -> str:
 
 
 class TradableProduct(str):
-    def __new__(cls, value: str) -> "TradableProduct":
+    """
+    Example instantiations:
+        TradableProduct("ES 20250321 CME Future", "USD")
+        TradableProduct("ES 20250321 CME Future/USD")
+        (these are equivalent)
+
+    This type exists to enforce the
+    {base}/{quote} format for strings
+
+    A base is the product that is being priced in terms of the quote.
+    For example,
+    "ES 20250321 CME Future/USD" means that the ES 20250321 CME Future is priced in USD.
+    "ES 20250321 CME Future/EUR" means that the ES 20250321 CME Future is priced in EUR.
+    "ES 20250321 CME Future/BTC" means that the ES 20250321 CME Future is priced in BTC
+        (such a product does not exist on any exchange though).
+
+    For example in a currency pair, the base is the first currency and the quote is the second currency.
+    In the currency pair USD/EUR, USD is the base and EUR is the quote.
+    USD/EUR = 1.1234 means that 1 USD = 1.1234 EUR
+    EUR/USD = 0.8901 means that 1 EUR = 0.8901 USD
+    """
+
+    def __new__(
+        cls, base_or_value: str, quote: Optional[str] = None
+    ) -> "TradableProduct":
+        """
+        These are equivalent:
+            TradableProduct("ES 20250321 CME Future", "USD")
+            TradableProduct("ES 20250321 CME Future/USD")
+        """
+        if quote is None:
+            value = base_or_value
+        else:
+            value = f"{base_or_value}/{quote}"
+
         assert (
             "/" in value
-        ), f"TradableProduct must be in the form of 'base/quote'. Got: {value}"
+        ), f"TradableProduct must be in the form of 'base/quote'. Got: {base_or_value}"
         return super().__new__(cls, value)
 
-    @staticmethod
-    def base_quote(tp: "TradableProduct") -> list[str]:
-        return tp.split("/")
+    def base_quote(self) -> list[str]:
+        return self.split("/")
 
-    @staticmethod
-    def base(tp: "TradableProduct") -> str:
-        return tp.split("/", 1)[0]
+    def base(self) -> str:
+        return self.split("/", 1)[0]
 
-    @staticmethod
-    def quote(tp: "TradableProduct") -> str:
-        return tp.split("/", 1)[1]
+    def quote(self) -> str:
+        return self.split("/", 1)[1]
 
 
 def parse_tradable_product(value: str) -> TradableProduct:
+    # for ariadne
     return TradableProduct(value)
 
 
-class OrderDir(Enum):
-    BUY = "buy"
-    SELL = "sell"
+class OrderDir(str, Enum):
+    BUY = "BUY"
+    SELL = "SELL"
 
     def __int__(self):
         if self == OrderDir.BUY:
@@ -66,27 +98,12 @@ class OrderDir(Enum):
         else:
             raise ValueError(f"Unknown Dir: {self}")
 
-    @classmethod
-    def parse(cls, value: str) -> "OrderDir":
-        if value == "buy":
-            return cls.BUY
-        elif value == "sell":
-            return cls.SELL
-        else:
-            raise ValueError(f"Unknown Dir: {value}")
-
-    def serialize(self) -> str:
-        return self.value
-
     def __str__(self) -> str:
-        return f"Dir.{self.name}"
-
-    def __repr__(self) -> str:
-        return f"Dir.{self.name}"
-
-    def __eq__(self, other) -> bool:
-        return self.value == other.value
-
+        return self.value
+    
+    def lower(self) -> str:
+        return self.value.lower()
+    
     @classmethod
     def from_string(cls, value: str) -> "OrderDir":
         lower = value.lower()
@@ -122,6 +139,17 @@ class OrderDir(Enum):
             return cls.SELL
         else:
             raise ValueError(f"Unknown Dir: {value}")
+
+
+def graphql_serialize_order_dir(value: OrderDir) -> str:
+    return value.lower()
+
+def graphql_parse_order_dir(value: str) -> OrderDir:
+    if value == "buy":
+        return OrderDir.BUY
+    else:
+        return OrderDir.SELL
+
 
 
 def convert_datetime_to_utc_str(dt: "Optional[datetime] | UnsetType") -> Optional[str]:

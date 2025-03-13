@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalCandlesResponse",
+  "type": "object",
+  "required": [
+    "candles"
+  ],
+  "properties": {
+    "candles": {
+      "type": "array",
+      "items": {
+        "$ref": "../Marketdata/Candle.json/#"
+      }
+    }
+  }
+}

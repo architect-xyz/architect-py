@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Orderflow",
+  "oneOf": [
+    {
+      "tag_value": "w",
+      "title": "Order",
+      "ref_correction": "Order",
+      "$ref": "../Oms/Order.json/#",
+      "variant_name": "OrderPending"
+    },
+    {
+      "tag_value": "a",
+      "title": "OrderAck",
+      "$ref": "../definitions.json#/OrderAck",
+      "variant_name": "TaggedOrderAck"
+    },
+    {
+      "tag_value": "r",
+      "title": "OrderReject",
+      "$ref": "../definitions.json#/OrderReject",
+      "variant_name": "TaggedOrderReject"
+    },
+    {
+      "tag_value": "o",
+      "title": "OrderOut",
+      "$ref": "../definitions.json#/OrderOut",
+      "variant_name": "TaggedOrderOut"
+    },
+    {
+      "tag_value": "ox",
+      "title": "OrderOut",
+      "$ref": "../definitions.json#/OrderOut",
+      "variant_name": "OrderReconciledOut"
+    },
+    {
+      "tag_value": "z",
+      "title": "OrderStale",
+      "$ref": "../definitions.json#/OrderStale",
+      "variant_name": "TaggedOrderStale"
+    },
+    {
+      "tag_value": "xc",
+      "title": "Cancel",
+      "ref_correction": "Cancel",
+      "$ref": "../Oms/Cancel.json/#",
+      "variant_name": "CancelPending"
+    },
+    {
+      "tag_value": "xr",
+      "title": "CancelReject",
+      "$ref": "../definitions.json#/CancelReject",
+      "variant_name": "TaggedCancelReject"
+    },
+    {
+      "tag_value": "xa",
+      "title": "OrderCanceling",
+      "$ref": "../definitions.json#/OrderCanceling",
+      "variant_name": "TaggedOrderCanceling"
+    },
+    {
+      "tag_value": "xx",
+      "title": "OrderCanceled",
+      "$ref": "../definitions.json#/OrderCanceled",
+      "variant_name": "TaggedOrderCanceled"
+    },
+    {
+      "tag_value": "f",
+      "title": "Fill",
+      "$ref": "../definitions.json#/Fill",
+      "variant_name": "TaggedFill"
+    },
+    {
+      "tag_value": "af",
+      "title": "AberrantFill",
+      "$ref": "../definitions.json#/AberrantFill",
+      "variant_name": "TaggedAberrantFill"
+    }
+  ],
+  "tag_field": "t"
+}

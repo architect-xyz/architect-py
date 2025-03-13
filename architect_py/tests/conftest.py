@@ -9,80 +9,94 @@ from dotenv import load_dotenv
 from architect_py.async_client import AsyncClient
 
 
+"""
+if you have a file named ".env" in your working directory with:
+
+ARCHITECT_API_KEY=your_key
+ARCHITECT_API_SECRET=your_secret
+PAPER_TRADING=False
+"""
+
+
 def is_truthy(value: str | None) -> bool:
     return value is not None and value.lower() in ("1", "true", "yes")
 
 
 @pytest_asyncio.fixture
-async def async_client():
+async def async_client() -> AsyncClient:
     load_dotenv()
 
     host = os.getenv("ARCHITECT_HOST") or "localhost"
-    port = int(os.getenv("ARCHITECT_PORT") or 4567)
+    port = os.getenv(key="ARCHITECT_PORT")
+    if port is not None:
+        port = int(port)
+
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
-    # test_account = os.getenv("ARCHITECT_TEST_ACCOUNT")
+    paper_trading = os.getenv("ARCHITECT_PAPER_TRADING")
+    if paper_trading is None:
+        paper_trading = True
+    else:
+        paper_trading = is_truthy(paper_trading)
+
     dangerous_allow_app_architect_co = os.getenv("DANGEROUS_ALLOW_APP_ARCHITECT_CO")
 
     if host == "app.architect.co" and not is_truthy(dangerous_allow_app_architect_co):
         raise ValueError(
             "You have set the HOST to the production server. Please change it to the sandbox server."
         )
+    if api_key is None or api_secret is None:
+        raise ValueError(
+            "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
+        )
 
-    # if ACCOUNT is not None and "PAPER" in ACCOUNT:
-    #     PORT = 6789
-    # else:
-    #     PORT = 4567
-
-    async with AsyncClient(
-        host=host, port=port, api_key=api_key, api_secret=api_secret
-    ) as client:
-        yield client
+    return await AsyncClient.create(
+        host=host,
+        _port=port,
+        api_key=api_key,
+        api_secret=api_secret,
+        paper_trading=paper_trading,
+    )
 
 
-def test_sync_client(async_client: AsyncClient):
-    # this test should not have any market orders or any other side effects
-
+@pytest.fixture
+def sync_client():
+    load_dotenv()
     host = os.getenv("ARCHITECT_HOST") or "localhost"
-    port = int(os.getenv("ARCHITECT_PORT") or 4567)
+    port = os.getenv(key="ARCHITECT_PORT")
+    if port is not None:
+        port = int(port)
+
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
 
-    client = Client(host=host, api_key=api_key, api_secret=api_secret, port=port)
+    paper_trading = os.getenv("ARCHITECT_PAPER_TRADING")
+    if paper_trading is None:
+        paper_trading = True
+    else:
+        paper_trading = is_truthy(paper_trading)
 
-    sync_result = client.search_markets(max_results=5, venue="CME")
-    assert len(sync_result) == 5
+    dangerous_allow_app_architect_co = os.getenv("DANGEROUS_ALLOW_APP_ARCHITECT_CO")
 
-    sync_result = client.search_markets(glob="ES*", venue="CME")
-    assert sync_result is not None
-
-    ES_future = sync_result[0]
-
-    sync_result = client.get_market(ES_future.id)
-
-    assert sync_result is not None
-
-
-def pytest_addoption(parser):
-    parser.addoption(
-        "--live_orderflow",
-        action="store_true",
-        default=False,
-        help="Run orderflow tests",
+    if host == "app.architect.co" and not is_truthy(dangerous_allow_app_architect_co):
+        raise ValueError(
+            "You have set the HOST to the production server. Please change it to the sandbox server."
+        )
+    if api_key is None or api_secret is None:
+        raise ValueError(
+            "You must set ARCHITECT_API_KEY and ARCHITECT_API_SECRET to run tests"
+        )
+    return Client(
+        host=host,
+        api_key=api_key,
+        api_secret=api_secret,
+        _port=port,
+        paper_trading=paper_trading,
     )
 
 
-def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "live_orderflow: runs live orders against Binance and other cptys"
-    )
+@pytest_asyncio.fixture
+async def front_ES_future(async_client: AsyncClient) -> str:
+    series = await async_client.get_cme_futures_series("ES CME Futures")
 
-
-def pytest_collection_modifyitems(config, items):
-    if config.getoption("--live_orderflow"):
-        # --runslow given in cli: do not skip slow tests
-        return
-    skip_liveorderflow = pytest.mark.skip(reason="need --live_orderflow option to run")
-    for item in items:
-        if "live_orderflow" in item.keywords:
-            item.add_marker(skip_liveorderflow)
+    return series[0][1]

@@ -1,3 +1,25 @@
+3.2.0
+Breaking:
+  - Changed the way AsyncClient is instantiated, from normal __init__ to create
+    - Can just change AsyncClient(args) -> AsyncClient.create(args)
+    - the port argument was removed, please remove it as an arg
+  - changed the values of OrderDir to match Rust type
+    class OrderDir(str, Enum):
+      BUY = "buy"
+      SELL = "sell"
+
+    class OrderDir(str, Enum):
+      BUY = "BUY"
+      SELL = "SELL"
+
+
+Features
+  - Added get_account_history query
+  - Added get_execution_infos (plural) query
+  - Added gRPC client + subscription functions to AsynClient
+  - Added docs for each function
+  - OrderDir is now also a string
+
 3.1.11
 Features:
   - Added the who_am_i function to get userid + email

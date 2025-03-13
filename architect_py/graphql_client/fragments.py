@@ -8,7 +8,12 @@ from uuid import UUID
 
 from pydantic import BeforeValidator, Field
 
-from architect_py.scalars import OrderDir, TradableProduct, parse_tradable_product
+from architect_py.scalars import (
+    OrderDir,
+    TradableProduct,
+    graphql_parse_order_dir,
+    parse_tradable_product,
+)
 
 from .base_model import BaseModel
 from .enums import (
@@ -146,7 +151,7 @@ class OrderFields(BaseModel):
     symbol: str
     trader: str
     account: UUID
-    dir: OrderDir
+    dir: Annotated[OrderDir, BeforeValidator(graphql_parse_order_dir)]
     quantity: Decimal
     filled_quantity: Decimal = Field(alias="filledQuantity")
     average_fill_price: Optional[Decimal] = Field(alias="averageFillPrice")
@@ -160,6 +165,11 @@ class OrderFields(BaseModel):
     execution_venue: str = Field(alias="executionVenue")
 
 
+class SpreadLegFields(BaseModel):
+    product: str
+    quantity: Decimal
+
+
 class ProductInfoFields(BaseModel):
     typename__: str = Field(alias="__typename")
     symbol: str
@@ -170,6 +180,13 @@ class ProductInfoFields(BaseModel):
     first_notice_date: Optional[date] = Field(alias="firstNoticeDate")
     primary_venue: Optional[str] = Field(alias="primaryVenue")
     price_display_format: Optional[str] = Field(alias="priceDisplayFormat")
+    spread_legs: Optional[List["ProductInfoFieldsSpreadLegs"]] = Field(
+        alias="spreadLegs"
+    )
+
+
+class ProductInfoFieldsSpreadLegs(SpreadLegFields):
+    pass
 
 
 AccountSummaryFields.model_rebuild()
@@ -182,4 +199,5 @@ L2BookFields.model_rebuild()
 MarketStatusFields.model_rebuild()
 MarketTickerFields.model_rebuild()
 OrderFields.model_rebuild()
+SpreadLegFields.model_rebuild()
 ProductInfoFields.model_rebuild()

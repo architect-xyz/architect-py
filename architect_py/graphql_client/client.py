@@ -6,7 +6,12 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from architect_py.scalars import OrderDir, TradableProduct, convert_datetime_to_utc_str
+from architect_py.scalars import (
+    OrderDir,
+    TradableProduct,
+    convert_datetime_to_utc_str,
+    graphql_serialize_order_dir,
+)
 
 from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient
@@ -17,11 +22,13 @@ if TYPE_CHECKING:
     from .cancel_order_mutation import CancelOrderMutationOms
     from .create_jwt import CreateJwtUser
     from .enums import CandleWidth, OrderType, TimeInForce
+    from .get_account_history_query import GetAccountHistoryQueryFolio
     from .get_account_query import GetAccountQueryUser
     from .get_account_summaries_query import GetAccountSummariesQueryFolio
     from .get_account_summary_query import GetAccountSummaryQueryFolio
     from .get_candle_snapshot_query import GetCandleSnapshotQueryMarketdata
     from .get_execution_info_query import GetExecutionInfoQuerySymbology
+    from .get_execution_infos_query import GetExecutionInfosQuerySymbology
     from .get_fills_query import GetFillsQueryFolio
     from .get_first_notice_date_query import GetFirstNoticeDateQuerySymbology
     from .get_future_series_query import GetFutureSeriesQuerySymbology
@@ -162,6 +169,14 @@ class GraphQLClient(JuniperBaseClient):
               firstNoticeDate
               primaryVenue
               priceDisplayFormat
+              spreadLegs {
+                ...SpreadLegFields
+              }
+            }
+
+            fragment SpreadLegFields on SpreadLeg {
+              product
+              quantity
             }
             """
         )
@@ -176,13 +191,13 @@ class GraphQLClient(JuniperBaseClient):
         return GetProductInfoQuery.model_validate(data).symbology
 
     async def get_product_infos_query(
-        self, symbols: List[str], **kwargs: Any
+        self, symbols: Union[Optional[List[str]], "UnsetType"] = UNSET, **kwargs: Any
     ) -> "GetProductInfosQuerySymbology":
         from .get_product_infos_query import GetProductInfosQuery
 
         query = gql(
             """
-            query GetProductInfosQuery($symbols: [String!]!) {
+            query GetProductInfosQuery($symbols: [String!]) {
               symbology {
                 productInfos(symbols: $symbols) {
                   ...ProductInfoFields
@@ -200,6 +215,14 @@ class GraphQLClient(JuniperBaseClient):
               firstNoticeDate
               primaryVenue
               priceDisplayFormat
+              spreadLegs {
+                ...SpreadLegFields
+              }
+            }
+
+            fragment SpreadLegFields on SpreadLeg {
+              product
+              quantity
             }
             """
         )
@@ -303,6 +326,50 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetExecutionInfoQuery.model_validate(data).symbology
+
+    async def get_execution_infos_query(
+        self,
+        symbols: Union[Optional[List[TradableProduct]], "UnsetType"] = UNSET,
+        execution_venue: Union[Optional[str], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetExecutionInfosQuerySymbology":
+        from .get_execution_infos_query import GetExecutionInfosQuery
+
+        query = gql(
+            """
+            query GetExecutionInfosQuery($symbols: [TradableProduct!], $executionVenue: ExecutionVenue) {
+              symbology {
+                executionInfos(symbols: $symbols, executionVenue: $executionVenue) {
+                  ...ExecutionInfoFields
+                }
+              }
+            }
+
+            fragment ExecutionInfoFields on ExecutionInfo {
+              symbol
+              executionVenue
+              tickSize
+              stepSize
+              minOrderQuantity
+              minOrderQuantityUnit
+              isDelisted
+              initialMargin
+              maintenanceMargin
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "symbols": symbols,
+            "executionVenue": execution_venue,
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetExecutionInfosQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetExecutionInfosQuery.model_validate(data).symbology
 
     async def get_candle_snapshot_query(
         self,
@@ -701,6 +768,69 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return GetAccountSummariesQuery.model_validate(data).folio
+
+    async def get_account_history_query(
+        self,
+        account: str,
+        from_inclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
+        to_exclusive: Union[Optional[datetime], "UnsetType"] = UNSET,
+        **kwargs: Any
+    ) -> "GetAccountHistoryQueryFolio":
+        from .get_account_history_query import GetAccountHistoryQuery
+
+        query = gql(
+            """
+            query GetAccountHistoryQuery($account: String!, $fromInclusive: DateTime, $toExclusive: DateTime) {
+              folio {
+                accountHistory(
+                  account: $account
+                  fromInclusive: $fromInclusive
+                  toExclusive: $toExclusive
+                ) {
+                  ...AccountSummaryFields
+                }
+              }
+            }
+
+            fragment AccountSummaryFields on AccountSummary {
+              account
+              timestamp
+              balances {
+                product
+                balance
+              }
+              positions {
+                symbol
+                quantity
+                tradeTime
+                costBasis
+                breakEvenPrice
+                liquidationPrice
+              }
+              unrealizedPnl
+              realizedPnl
+              equity
+              yesterdayEquity
+              cashExcess
+              purchasingPower
+              totalMargin
+              positionMargin
+            }
+            """
+        )
+        variables: Dict[str, object] = {
+            "account": account,
+            "fromInclusive": convert_datetime_to_utc_str(from_inclusive),
+            "toExclusive": convert_datetime_to_utc_str(to_exclusive),
+        }
+        response = await self.execute(
+            query=query,
+            operation_name="GetAccountHistoryQuery",
+            variables=variables,
+            **kwargs
+        )
+        data = self.get_data(response)
+        return GetAccountHistoryQuery.model_validate(data).folio
 
     async def get_open_orders_query(
         self,
@@ -1107,7 +1237,7 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {
             "id": id,
             "symbol": symbol,
-            "dir": dir,
+            "dir": graphql_serialize_order_dir(dir),
             "quantity": quantity,
             "trader": trader,
             "account": account,

@@ -50,9 +50,9 @@ def create_client():
     return c
 
 
-def create_async_client():
+async def create_async_client():
     config = load_config()
-    c = AsyncClient(
+    c = await AsyncClient.create(
         host=config.host,
         api_key=config.api_key,
         api_secret=config.api_secret,

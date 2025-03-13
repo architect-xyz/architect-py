@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AccountHistoryResponse",
+  "type": "object",
+  "required": [
+    "history"
+  ],
+  "properties": {
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "../Folio/AccountSummary.json/#"
+      }
+    }
+  }
+}

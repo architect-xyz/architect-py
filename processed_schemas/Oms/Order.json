@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Order",
+  "type": "object",
+  "required": [
+    "a",
+    "d",
+    "id",
+    "o",
+    "q",
+    "s",
+    "src",
+    "tif",
+    "tn",
+    "ts",
+    "u",
+    "ve",
+    "xq",
+    "k",
+    "p"
+  ],
+  "properties": {
+    "a": {
+      "title": "account",
+      "type": "string",
+      "format": "uuid"
+    },
+    "d": {
+      "title": "dir",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/Dir"
+        }
+      ]
+    },
+    "eid": {
+      "title": "exchange_order_id",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "id": {
+      "$ref": "../definitions.json#/OrderId"
+    },
+    "o": {
+      "title": "status",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/OrderStatus"
+        }
+      ]
+    },
+    "pid": {
+      "title": "parent_id",
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "q": {
+      "title": "quantity",
+      "type": "number",
+      "format": "decimal"
+    },
+    "r": {
+      "title": "reject_reason",
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderRejectReason"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rm": {
+      "title": "reject_message",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    },
+    "src": {
+      "title": "source",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/OrderSource"
+        }
+      ]
+    },
+    "tif": {
+      "title": "time_in_force",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/TimeInForce"
+        }
+      ]
+    },
+    "tn": {
+      "title": "recv_time_ns",
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "ts": {
+      "title": "recv_time",
+      "type": "integer",
+      "format": "int64"
+    },
+    "u": {
+      "title": "trader",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/UserId"
+        }
+      ]
+    },
+    "ve": {
+      "title": "execution_venue",
+      "type": "string"
+    },
+    "xp": {
+      "title": "average_fill_price",
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "decimal"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "xq": {
+      "title": "filled_quantity",
+      "type": "number",
+      "format": "decimal"
+    },
+    "p": {
+      "title": "limit_price",
+      "type": "number",
+      "format": "decimal"
+    },
+    "po": {
+      "title": "post_only",
+      "type": "boolean"
+    },
+    "tp": {
+      "title": "trigger_price",
+      "type": "number",
+      "format": "decimal"
+    },
+    "k": {
+      "type": "string",
+      "title": "order_type",
+      "enum": [
+        "LIMIT",
+        "STOP_LOSS_LIMIT",
+        "TAKE_PROFIT_LIMIT"
+      ]
+    }
+  },
+  "enum_tag": "k",
+  "enum_tag_to_other_required_keys": {
+    "LIMIT": [
+      "k",
+      "p",
+      "po"
+    ],
+    "STOP_LOSS_LIMIT": [
+      "k",
+      "p",
+      "tp"
+    ],
+    "TAKE_PROFIT_LIMIT": [
+      "k",
+      "p",
+      "tp"
+    ]
+  }
+}

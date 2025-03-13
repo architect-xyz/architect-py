@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalOrdersResponse",
+  "type": "object",
+  "required": [
+    "orders"
+  ],
+  "properties": {
+    "orders": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Order.json/#"
+      }
+    }
+  }
+}

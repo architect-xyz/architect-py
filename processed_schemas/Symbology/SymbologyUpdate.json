@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SymbologyUpdate",
+  "description": "Unique sequence id and number.",
+  "type": "object",
+  "required": [
+    "sid",
+    "sn"
+  ],
+  "properties": {
+    "execution_info": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/SnapshotOrUpdate_for_String_and_SnapshotOrUpdate_for_String_and_ExecutionInfo"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "options_series": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/SnapshotOrUpdate_for_String_and_OptionsSeriesInfo"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "product_aliases": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/SnapshotOrUpdate_for_AliasKind_and_SnapshotOrUpdate_for_String_and_String"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "products": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/SnapshotOrUpdate_for_String_and_ProductInfo"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sid": {
+      "title": "sequence_id",
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "sn": {
+      "title": "sequence_number",
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    }
+  }
+}

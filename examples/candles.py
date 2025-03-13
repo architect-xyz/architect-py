@@ -1,21 +1,24 @@
 import asyncio
 
 from architect_py.async_client import AsyncClient
-from architect_py.graphql_client.enums import CandleWidth
+from architect_py.grpc_client.definitions import CandleWidth
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
+from architect_py.scalars import TradableProduct
 
 from .common import create_async_client
 
 
 async def main():
-    c: AsyncClient = create_async_client()
+    c: AsyncClient = await create_async_client()
     symbol = "ES 20250321 CME Future"
     quote = "USD"
-    tradable_product = f"{symbol}/{quote}"
+    tradable_product = TradableProduct(symbol, quote)
     venue = "CME"
     try:
-        stream = c.subscribe_candles(
-            venue, tradable_product, width=CandleWidth.ONE_MINUTE, ping_interval=None
+        stream = c.subscribe_candles_stream(
+            tradable_product,
+            venue,
+            candle_widths=[CandleWidth.OneHour],
         )
         async for candle in stream:
             print(candle)

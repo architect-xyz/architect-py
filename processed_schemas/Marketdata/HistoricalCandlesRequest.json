@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalCandlesRequest",
+  "type": "object",
+  "required": [
+    "candle_width",
+    "end_date",
+    "start_date",
+    "symbol"
+  ],
+  "properties": {
+    "candle_width": {
+      "$ref": "../definitions.json#/CandleWidth"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "symbol": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Marketdata/HistoricalCandles",
+  "unary_type": "unary",
+  "service": "Marketdata",
+  "response_type": "HistoricalCandlesResponse"
+}

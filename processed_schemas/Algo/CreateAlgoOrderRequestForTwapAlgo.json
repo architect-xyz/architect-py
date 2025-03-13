@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CreateAlgoOrderRequestForTwapAlgo",
+  "type": "object",
+  "required": [
+    "algo_name",
+    "params"
+  ],
+  "properties": {
+    "account": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "algo_name": {
+      "type": "string"
+    },
+    "algo_order_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "params": {
+      "$ref": "../definitions.json#/TwapParams"
+    },
+    "parent_order_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/UserId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "route": "/json.architect.Algo/CreateTwapAlgoOrder",
+  "unary_type": "unary",
+  "service": "Algo",
+  "response_type": "AlgoOrderForTwapAlgo"
+}

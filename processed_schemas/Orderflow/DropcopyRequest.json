@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DropcopyRequest",
+  "type": "object",
+  "properties": {
+    "aberrant_fills": {
+      "default": false,
+      "type": "boolean"
+    },
+    "account": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "execution_venue": {
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fills": {
+      "default": true,
+      "type": "boolean"
+    },
+    "orders": {
+      "default": false,
+      "type": "boolean"
+    },
+    "trader": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "route": "/json.architect.Orderflow/Dropcopy",
+  "unary_type": "stream",
+  "service": "Orderflow",
+  "response_type": "Dropcopy"
+}

@@ -3,12 +3,12 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Annotated, List, Optional
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import BeforeValidator, Field
 
-from architect_py.scalars import OrderDir
+from architect_py.scalars import OrderDir, graphql_parse_order_dir
 
 from .base_model import BaseModel
 from .enums import FillKind
@@ -40,7 +40,7 @@ class GetFillsQueryFolioHistoricalFillsFills(BaseModel):
     trader: Optional[str]
     account: Optional[UUID]
     symbol: str
-    dir: OrderDir
+    dir: Annotated[OrderDir, BeforeValidator(graphql_parse_order_dir)]
     quantity: Decimal
     price: Decimal
     recv_time: Optional[datetime] = Field(alias="recvTime")
@@ -56,7 +56,7 @@ class GetFillsQueryFolioHistoricalFillsAberrantFills(BaseModel):
     trader: Optional[str]
     account: Optional[UUID]
     symbol: Optional[str]
-    dir: Optional[OrderDir]
+    dir: Optional[Annotated[OrderDir, BeforeValidator(graphql_parse_order_dir)]]
     quantity: Optional[Decimal]
     price: Optional[Decimal]
     recv_time: Optional[datetime] = Field(alias="recvTime")

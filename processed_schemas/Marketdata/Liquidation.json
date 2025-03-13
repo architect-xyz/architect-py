@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Liquidation",
+  "type": "object",
+  "required": [
+    "d",
+    "p",
+    "q",
+    "s",
+    "tn",
+    "ts"
+  ],
+  "properties": {
+    "d": {
+      "title": "direction",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/Dir"
+        }
+      ]
+    },
+    "p": {
+      "title": "price",
+      "type": "number",
+      "format": "decimal"
+    },
+    "q": {
+      "title": "size",
+      "type": "number",
+      "format": "decimal"
+    },
+    "s": {
+      "title": "symbol",
+      "type": "string"
+    },
+    "tn": {
+      "title": "timestamp_ns",
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "ts": {
+      "title": "timestamp",
+      "type": "integer",
+      "format": "int64"
+    }
+  }
+}

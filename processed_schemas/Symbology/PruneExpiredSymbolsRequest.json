@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PruneExpiredSymbolsRequest",
+  "type": "object",
+  "properties": {
+    "cutoff": {
+      "description": "If None then it will just use server current time; otherwise, specify a unix timestamp in seconds",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int64"
+    }
+  },
+  "route": "/json.architect.Symbology/PruneExpiredSymbols",
+  "unary_type": "unary",
+  "service": "Symbology",
+  "response_type": "PruneExpiredSymbolsResponse"
+}

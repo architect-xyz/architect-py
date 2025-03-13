@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenOrdersRequest",
+  "type": "object",
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order_ids": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "../definitions.json#/OrderId"
+      }
+    },
+    "parent_order_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "symbol": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "route": "/json.architect.Oms/OpenOrders",
+  "unary_type": "unary",
+  "service": "Oms",
+  "response_type": "OpenOrdersResponse"
+}

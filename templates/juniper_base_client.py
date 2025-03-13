@@ -25,7 +25,7 @@ from websockets.typing import (  # type: ignore[import-not-found,unused-ignore]
     Subprotocol,
 )
 
-from .base_model import UNSET, Upload
+from architect_py.graphql_client.base_model import UNSET, Upload
 from .exceptions import (
     GraphQLClientGraphQLMultiError,
     GraphQLClientHttpError,

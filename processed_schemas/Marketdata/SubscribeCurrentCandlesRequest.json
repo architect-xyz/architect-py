@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SubscribeCurrentCandlesRequest",
+  "description": "Subscribe to the current candle.  This allows you to display the most recent/building candle live in a UI, for example.",
+  "type": "object",
+  "required": [
+    "candle_width",
+    "symbol"
+  ],
+  "properties": {
+    "candle_width": {
+      "$ref": "../definitions.json#/CandleWidth"
+    },
+    "symbol": {
+      "type": "string"
+    },
+    "tick_period_ms": {
+      "description": "If None, send the current candle on every trade or candle tick. Otherwise, send a candle every `tick_period_ms`.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "default",
+      "minimum": 0.0
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "route": "/json.architect.Marketdata/SubscribeCurrentCandles",
+  "unary_type": "stream",
+  "service": "Marketdata",
+  "response_type": "Candle"
+}

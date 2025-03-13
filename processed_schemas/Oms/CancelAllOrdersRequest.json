@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CancelAllOrdersRequest",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "execution_venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "route": "/json.architect.Oms/CancelAllOrders",
+  "unary_type": "unary",
+  "service": "Oms",
+  "response_type": "CancelAllOrdersResponse"
+}

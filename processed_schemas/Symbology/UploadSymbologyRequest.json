@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UploadSymbologyRequest",
+  "type": "object",
+  "properties": {
+    "execution_info": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "../definitions.json#/ExecutionInfo"
+        }
+      }
+    },
+    "options_series": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../definitions.json#/OptionsSeriesInfo"
+      }
+    },
+    "product_aliases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "products": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../definitions.json#/ProductInfo"
+      }
+    }
+  },
+  "route": "/json.architect.Symbology/UploadSymbology",
+  "unary_type": "unary",
+  "service": "Symbology",
+  "response_type": "UploadSymbologyResponse"
+}

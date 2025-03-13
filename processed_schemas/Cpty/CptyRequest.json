@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CptyRequest",
+  "oneOf": [
+    {
+      "tag_value": "login",
+      "title": "CptyLoginRequest",
+      "$ref": "../definitions.json#/CptyLoginRequest",
+      "variant_name": "Login"
+    },
+    {
+      "tag_value": "logout",
+      "title": "CptyLogoutRequest",
+      "$ref": "../definitions.json#/CptyLogoutRequest",
+      "variant_name": "Logout"
+    },
+    {
+      "tag_value": "place_order",
+      "title": "Order",
+      "ref_correction": "Order",
+      "$ref": "../Oms/Order.json/#",
+      "variant_name": "PlaceOrder"
+    },
+    {
+      "tag_value": "cancel_order",
+      "variant_name": "CancelOrder",
+      "type": "object",
+      "required": [
+        "cancel"
+      ],
+      "properties": {
+        "cancel": {
+          "$ref": "../Oms/Cancel.json/#"
+        },
+        "original_order": {
+          "anyOf": [
+            {
+              "$ref": "../Oms/Order.json/#"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "title": "CancelOrder"
+    }
+  ],
+  "route": "/json.architect.Cpty/Cpty",
+  "unary_type": "duplex_stream",
+  "service": "Cpty",
+  "response_type": "CptyResponse",
+  "tag_field": "t"
+}

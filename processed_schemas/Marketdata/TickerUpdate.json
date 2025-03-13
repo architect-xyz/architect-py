@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TickerUpdate",
+  "oneOf": [
+    {
+      "tag_value": "s",
+      "title": "Ticker",
+      "ref_correction": "Ticker",
+      "$ref": "../Marketdata/Ticker.json/#",
+      "variant_name": "Snapshot"
+    },
+    {
+      "tag_value": "d",
+      "title": "Ticker",
+      "ref_correction": "Ticker",
+      "$ref": "../Marketdata/Ticker.json/#",
+      "variant_name": "Diff"
+    }
+  ],
+  "tag_field": "t"
+}

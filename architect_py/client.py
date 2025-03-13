@@ -7,7 +7,7 @@ from functools import partial
 from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
 
 from architect_py.async_client import AsyncClient
-from architect_py.protocol.client_protocol import AsyncClientProtocol
+from .client_protocol import AsyncClientProtocol
 
 
 T = TypeVar("T")
@@ -38,8 +38,27 @@ class Client(AsyncClientProtocol):
     client: AsyncClient
     _loop: AbstractEventLoop
 
-    def __init__(self, loop: Optional[AbstractEventLoop] = None, *args, **kwargs):
-        super().__setattr__("client", AsyncClient(*args, **kwargs))
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        api_secret: str,
+        host: str = "app.architect.co",
+        paper_trading: bool = True,
+        loop: Optional[AbstractEventLoop] = None,
+        **kwargs,
+    ):
+        super().__setattr__(
+            "client",
+            AsyncClient(
+                api_key=api_key,
+                api_secret=api_secret,
+                host=host,
+                paper_trading=paper_trading,
+                _i_know_what_i_am_doing=True,
+                **kwargs,
+            ),
+        )
 
         if loop is None:
             try:
