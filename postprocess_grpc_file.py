@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
 This script processes Python gRPC types definition files along with corresponding JSON files.
-This script is run after the auto-generation of the Python files from the JSON schema files.
+It is run after auto-generation of the Python files from JSON schema files.
 It further processes the Python files to add metadata to variant types, fix enum member names,
-
-It updates variant type aliases, fixes enum member names, adjusts imports, and generates stubs.
+update variant type aliases, adjust imports, and generate stubs.
 """
 
 import argparse
@@ -39,32 +38,18 @@ ALIAS_PATTERN_SINGLE = re.compile(
 # Utility Functions
 # --------------------------------------------------------------------
 
-
 def read_file(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as f:
         return f.read()
-
 
 def write_file(file_path: str, content: str) -> None:
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-
-def read_lines(file_path: str) -> List[str]:
-    with open(file_path, "r", encoding="utf-8") as f:
-        return f.readlines()
-
-
-def write_lines(file_path: str, lines: List[str]) -> None:
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write("".join(lines))
-
-
 def get_corresponding_json_file(file_path: str, json_folder: str) -> str:
     base_name = os.path.basename(file_path)
     name, _ = os.path.splitext(base_name)
     return os.path.join(json_folder, f"{name}.json")
-
 
 def add_to_typing_import(file_str: str, type_to_add: str) -> str:
     """
@@ -95,7 +80,6 @@ def add_to_typing_import(file_str: str, type_to_add: str) -> str:
 
     return new_file_str
 
-
 def split_top_level(s: str, delimiter: str = ",") -> List[str]:
     """
     Splits string `s` at top-level (non-nested) occurrences of `delimiter`.
@@ -118,15 +102,13 @@ def split_top_level(s: str, delimiter: str = ",") -> List[str]:
         parts.append("".join(current).strip())
     return [part for part in parts if part]
 
-
 # --------------------------------------------------------------------
-# Core Processing Functions
+# Core Processing Functions (Refactored to work with content strings)
 # --------------------------------------------------------------------
 
-
-def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -> None:
+def create_tagged_subtypes_for_variant_types(content: str, file_path: str, json_folder: str) -> str:
     """
-    Processes the Python file for variant types with a tag.
+    Processes the file content for variant types with a tag.
     Creates or updates subtype classes with tag metadata and rebuilds
     the type alias so that the Union is replaced by the variant classes.
     """
@@ -136,14 +118,12 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
 
     tag_field = json_data.get("tag_field")
     if tag_field is None:
-        return
+        return content
 
     # Build a mapping from base type name to its variants.
     tag_field_map: dict[str, List[Tuple[str, str]]] = defaultdict(list)
     for p in json_data["oneOf"]:
         tag_field_map[p["title"]].append((p["variant_name"], p["tag_value"]))
-
-    content = read_file(file_path)
 
     # If this is a Request file, append additional gRPC info.
     if "Request" in file_path:
@@ -155,11 +135,10 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
         content += f"response_type = {response_type}\n"
         content += f'route = "{route}"\n'
 
-        lines = content.split("\n")
-        lines.insert(
-            4,
-            f"from architect_py.grpc_client.{service}.{response_type} import {response_type}",
-        )
+        lines = content.splitlines()
+        # Insert import after the 4th line (or at start if file is short)
+        insert_index = 4 if len(lines) >= 4 else 0
+        lines.insert(insert_index, f"from architect_py.grpc_client.{service}.{response_type} import {response_type}")
         content = "\n".join(lines)
 
     # Match the type alias (Union or single type)
@@ -172,7 +151,7 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
         alias_match = ALIAS_PATTERN_SINGLE.search(content)
         if not alias_match:
             print(f"No type alias found in the file {file_path}.")
-            return
+            return content
         types = [alias_match.group("single_type")]
         meta = alias_match.group("meta")
         content = add_to_typing_import(content, "Union")
@@ -225,14 +204,10 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
         new_union_str = "Union[" + ", ".join(new_union_types) + "]"
 
     # Reassemble the alias definition.
-    alias_match = ALIAS_PATTERN_UNION.search(content) or ALIAS_PATTERN_SINGLE.search(
-        content
-    )
+    alias_match = ALIAS_PATTERN_UNION.search(content) or ALIAS_PATTERN_SINGLE.search(content)
     if not alias_match:
-        print(
-            f"No type alias found in the file {file_path} when reinserting subclass definitions."
-        )
-        return
+        print(f"No type alias found in the file {file_path} when reinserting subclass definitions.")
+        return content
 
     alias_name = alias_match.group("alias")
     new_alias_text = f"{alias_name} = Annotated[{new_union_str}, Meta({meta})]"
@@ -243,13 +218,31 @@ def create_tagged_subtypes_for_variant_types(file_path: str, json_folder: str) -
         + additional_class_defs
         + "\n\n"
         + new_alias_text
-        + content[alias_match.end() :]
+        + content[alias_match.end():]
     )
+    return content
 
-    write_file(file_path, content)
+def fix_lines(content: str, file_path: str) -> str:
+    """
+    Fixes type annotations and adds necessary imports.
+    """
+    lines = content.splitlines(keepends=True)
 
+    if any("def timestamp(self) -> int:" in line for line in lines):
+        lines.insert(4, "from datetime import datetime, timezone\n")
 
-def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> None:
+    lines = [line.replace("Dir", "OrderDir") for line in lines]
+    lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
+    lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
+
+    if any("OrderDir" in line for line in lines):
+        lines.insert(4, "from architect_py.scalars import OrderDir\n")
+
+    content = "".join(lines)
+    content = REMOVE_ORDERDIR_RE.sub("", content)
+    return content
+
+def add_post_processing_to_loosened_types(content: str, file_path: str, json_folder: str) -> str:
     """
     Adds a __post_init__ method to the flattened types to enforce field requirements.
     """
@@ -260,22 +253,19 @@ def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> N
     class_title = json_data["title"]
     enum_tag = json_data.get("enum_tag")
     if enum_tag is None:
-        return
+        return content
 
     properties = json_data["properties"]
-    enum_tag_to_other_required_keys: dict[str, List[str]] = json_data[
-        "enum_tag_to_other_required_keys"
-    ]
+    enum_tag_to_other_required_keys: dict[str, List[str]] = json_data["enum_tag_to_other_required_keys"]
 
-    lines = read_lines(file_path)
+    lines = content.splitlines(keepends=True)
+    # Append __post_init__ method at the end
     lines.append("\n    def __post_init__(self):\n")
 
     common_keys = set.intersection(*map(set, enum_tag_to_other_required_keys.values()))
     union_keys = set.union(*map(set, enum_tag_to_other_required_keys.values()))
 
-    for i, (enum_value, required_keys) in enumerate(
-        enum_tag_to_other_required_keys.items()
-    ):
+    for i, (enum_value, required_keys) in enumerate(enum_tag_to_other_required_keys.items()):
         conditional = "if" if i == 0 else "elif"
         title = properties[enum_tag]["title"]
         req_keys_subset = [key for key in required_keys if key not in common_keys]
@@ -290,21 +280,48 @@ def add_post_processing_to_loosened_types(file_path: str, json_folder: str) -> N
             f'class {class_title} should not have fields {should_be_empty_keys}")\n'
         )
 
-    write_file(file_path, "".join(lines))
+    return "".join(lines)
 
+def generate_stub(content: str, file_path: str, json_folder: str) -> str:
+    """
+    Generates stub code for Request files linking Request type to Response type, service, and route.
+    """
+    if "Request" not in file_path:
+        return content
 
-def fix_enum_member_names(file_path: str, json_folder: str) -> None:
+    json_fp = get_corresponding_json_file(file_path, json_folder)
+    with open(json_fp, "r", encoding="utf-8") as json_file:
+        json_data = json.load(json_file)
+
+    service = json_data["service"]
+    unary_type = json_data["unary_type"]
+    response_type = json_data["response_type"]
+    route = json_data["route"]
+    request_type_name = json_data["title"]
+
+    lines = content.splitlines(keepends=True)
+    for i, line in enumerate(lines):
+        if line == f'        return "&RESPONSE_TYPE:{request_type_name}"\n':
+            lines[i] = f"        return {response_type}\n"
+        elif line == f'        return "&ROUTE:{request_type_name}"\n':
+            lines[i] = f'        return "{route}"\n'
+        elif line == f'        return "&UNARY_TYPE:{request_type_name}"\n':
+            lines[i] = f'        return "{unary_type}"\n'
+
+    lines.insert(4, f"from architect_py.grpc_client.{service}.{response_type} import {response_type}\n")
+    return "".join(lines)
+
+def fix_enum_member_names(content: str, file_path: str, json_folder: str) -> str:
     """
     Fixes enum member names based on JSON definitions.
-
-        For each enum class in the Python file (i.e. classes that inherit from Enum),
+    For each enum class (classes that inherit from Enum),
     it replaces the member names with the names defined in the JSON file under "x-enumNames".
     """
     json_fp = get_corresponding_json_file(file_path, json_folder)
     with open(json_fp, "r", encoding="utf-8") as jf:
         json_data = json.load(jf)
 
-    lines = read_lines(file_path)
+    lines = content.splitlines()
     # Fix import statements from grpc classes.
     for i, line in enumerate(lines):
         if line.strip() != "from .. import definitions":
@@ -313,18 +330,9 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
                 dots, module, imports = m.groups()
                 names = [name.strip() for name in imports.split(",")]
                 if module:
-                    lines[i] = (
-                        "\n".join(
-                            f"from {dots}{module}.{name} import {name}"
-                            for name in names
-                        )
-                        + "\n"
-                    )
+                    lines[i] = "\n".join(f"from {dots}{module}.{name} import {name}" for name in names)
                 else:
-                    lines[i] = (
-                        "\n".join(f"from {dots}{name} import {name}" for name in names)
-                        + "\n"
-                    )
+                    lines[i] = "\n".join(f"from {dots}{name} import {name}" for name in names)
 
     new_lines = []
     in_enum_class = False
@@ -362,91 +370,32 @@ def fix_enum_member_names(file_path: str, json_folder: str) -> None:
                     continue
                 if value_int in enum_values:
                     index = enum_values.index(value_int)
-                    new_line = (
-                        f"{member_indent}{enum_names[index]} = {member_value}{rest}"
-                    )
+                    new_line = f"{member_indent}{enum_names[index]} = {member_value}{rest}"
                     new_lines.append(new_line)
                 else:
                     new_lines.append(stripped_line)
             else:
-                if stripped_line.strip() and not stripped_line.startswith(
-                    " " * (len(enum_class_indent) + 1)
-                ):
+                if stripped_line.strip() and not stripped_line.startswith(" " * (len(enum_class_indent) + 1)):
                     in_enum_class = False
                 new_lines.append(stripped_line)
         else:
             new_lines.append(stripped_line)
 
-    write_file(file_path, "\n".join(new_lines))
-
-
-def generate_stub(file_path: str, json_folder: str) -> None:
-    """
-    Generates stub code for Request files linking Request type to Response type, service, and route.
-    """
-    if "Request" not in file_path:
-        return
-
-    json_fp = get_corresponding_json_file(file_path, json_folder)
-    with open(json_fp, "r", encoding="utf-8") as json_file:
-        json_data = json.load(json_file)
-
-    service = json_data["service"]
-    unary_type = json_data["unary_type"]
-    response_type = json_data["response_type"]
-    route = json_data["route"]
-    request_type_name = json_data["title"]
-
-    lines = read_lines(file_path)
-    for i, line in enumerate(lines):
-        if line == f'        return "&RESPONSE_TYPE:{request_type_name}"\n':
-            lines[i] = f"        return {response_type}\n"
-        elif line == f'        return "&ROUTE:{request_type_name}"\n':
-            lines[i] = f'        return "{route}"\n'
-        elif line == f'        return "&UNARY_TYPE:{request_type_name}"\n':
-            lines[i] = f'        return "{unary_type}"\n'
-
-    lines.insert(
-        4,
-        f"from architect_py.grpc_client.{service}.{response_type} import {response_type}\n",
-    )
-    write_lines(file_path, lines)
-
-
-def fix_lines(file_path: str) -> None:
-    """
-    Fixes type annotations and adds necessary imports.
-    """
-    lines = read_lines(file_path)
-
-    if any("def timestamp(self) -> int:" in line for line in lines):
-        lines.insert(4, "from datetime import datetime, timezone\n")
-
-    lines = [line.replace("Dir", "OrderDir") for line in lines]
-    lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
-    lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
-
-    if any("OrderDir" in line for line in lines):
-        lines.insert(4, "from architect_py.scalars import OrderDir\n")
-
-    content = "".join(lines)
-    content = REMOVE_ORDERDIR_RE.sub("", content)
-    write_file(file_path, content)
-
+    return "\n".join(new_lines)
 
 # --------------------------------------------------------------------
-# Main Entry Point
+# Main Entry Point (Processing Pipeline)
 # --------------------------------------------------------------------
-
 
 def main(file_path: str, json_folder: str) -> None:
-    create_tagged_subtypes_for_variant_types(file_path, json_folder)
-    fix_lines(file_path)
+    content = read_file(file_path)
+    content = create_tagged_subtypes_for_variant_types(content, file_path, json_folder)
+    content = fix_lines(content, file_path)
     if not file_path.endswith("definitions.py"):
-        add_post_processing_to_loosened_types(file_path, json_folder)
-        generate_stub(file_path, json_folder)
-    fix_enum_member_names(file_path, json_folder)
-
+        content = add_post_processing_to_loosened_types(content, file_path, json_folder)
+        content = generate_stub(content, file_path, json_folder)
+    content = fix_enum_member_names(content, file_path, json_folder)
+    write_file(file_path, content)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process gRPC service definitions")
