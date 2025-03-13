@@ -14,7 +14,7 @@ from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import TickRoundMethod
 
-from .common import create_async_client
+from .common import connect_async_client
 
 
 venue = "BINANCE-FUTURES-USD-M"
@@ -121,7 +121,7 @@ async def print_info(c: AsyncClient):
 
 
 async def main():
-    c = await create_async_client()
+    c = await connect_async_client()
     await asyncio.gather(
         step_to_target_position(c),
         print_info(c),

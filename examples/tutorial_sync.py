@@ -6,10 +6,10 @@ from architect_py.graphql_client.enums import OrderStatus
 from architect_py.scalars import OrderDir
 from architect_py.utils.nearest_tick import TickRoundMethod
 
-from .common import confirm, create_client, print_book, print_open_orders
+from .common import confirm, connect_client, print_book, print_open_orders
 
 
-c = create_client()
+c = connect_client()
 
 venue = "CME"
 

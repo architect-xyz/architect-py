@@ -19,6 +19,13 @@ from enum import Enum, member
 
 class TickRoundMethod(Enum):
     """
+    ENUM VALUES:
+        ROUND
+        CEIL
+        FLOOR
+        TOWARD_ZERO
+        AWAY_FROM_ZERO
+
     Enum that stores functions for rounding a given value to the nearest tick size based on the specified rounding method.
 
     Function Parameters:

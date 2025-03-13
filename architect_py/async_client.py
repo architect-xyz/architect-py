@@ -87,7 +87,7 @@ class AsyncClient:
     grpc_client: GRPCClient
 
     @staticmethod
-    async def create(
+    async def connect(
         *,
         api_key: str,
         api_secret: str,
@@ -119,7 +119,7 @@ class AsyncClient:
         If you get a "GraphQLClientHttpError: HTTP status code: 400", please contact support so we can fix the function.
 
         If you get an AttributeError on the grpc_client, it means that the GRPC client has not been initialized
-        likely due to the client not being instantiated with the create method
+        likely due to the client not being instantiated with the connect method
         """
         async_client = AsyncClient(
             api_key=api_key,
@@ -152,12 +152,12 @@ class AsyncClient:
         Users should not be using this constructor directly, unless they do not want to use any subscription methods
         Use the create method instead.
 
-        See create for arg explanations
+        See self.connect for arg explanations
         """
 
         if not _i_know_what_i_am_doing:
             raise ValueError(
-                "Please use the create method to create an AsyncClient object."
+                "Please use the connect method to create an AsyncClient object."
             )
 
         if not api_key.isalnum():

@@ -3,7 +3,7 @@ import os
 from uuid import UUID
 from architect_py.async_client import AsyncClient
 from architect_py.scalars import TradableProduct
-from .common import create_async_client
+from .common import connect_async_client
 
 buy_columns = "{:>15} {:>15}"
 sell_columns = "{:<15} {:<15}"
@@ -29,7 +29,7 @@ async def print_l2_book(c: AsyncClient, symbol: TradableProduct, venue: str):
 
 
 async def main():
-    c: AsyncClient = await create_async_client()
+    c: AsyncClient = await connect_async_client()
     endpoint = "coinbase.marketdata.architect.co"
     await c.grpc_client.change_channel(endpoint)
     market_symbol = TradableProduct("BTC Crypto/USD")

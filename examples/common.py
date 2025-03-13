@@ -38,7 +38,7 @@ def load_config() -> Config:
     return Config(host, api_key, api_secret, use_tls)
 
 
-def create_client():
+def connect_client():
     config = load_config()
 
     c = Client(
@@ -50,9 +50,9 @@ def create_client():
     return c
 
 
-async def create_async_client():
+async def connect_async_client():
     config = load_config()
-    c = await AsyncClient.create(
+    c = await AsyncClient.connect(
         host=config.host,
         api_key=config.api_key,
         api_secret=config.api_secret,

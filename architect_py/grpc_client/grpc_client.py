@@ -41,6 +41,7 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
+from architect_py.grpc_client.Marketdata.TickersRequest import TickersRequest
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
 from architect_py.utils.grpc_root_certificates import grpc_root_certificates
@@ -49,6 +50,12 @@ from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 """
 TODO:
 - confirm get_historical_candles works and fix if it doesn't work
+
+
+implement subscribe_orderflow
+get_account_summaries_for_cpty
+subscribe_exchange_specific
+
 
 for decode, don't create your own decoder
 use the union types and tag values
@@ -180,7 +187,7 @@ class GRPCClient:
         return self.jwt
 
     async def request_l2_book_snapshot(
-        self, venue: Optional[str], symbol: str
+        self, venue: Optional[str], symbol: TradableProduct
     ) -> L2BookSnapshot:
         return await self.request(L2BookSnapshotRequest, venue=venue, symbol=symbol)
 
