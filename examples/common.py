@@ -56,6 +56,7 @@ async def connect_async_client():
         host=config.host,
         api_key=config.api_key,
         api_secret=config.api_secret,
+        paper_trading=True,
         use_tls=config.use_tls,
     )
     return c
