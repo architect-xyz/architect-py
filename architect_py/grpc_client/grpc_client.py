@@ -1,4 +1,5 @@
 from asyncio.log import logger
+from types import UnionType
 from typing import (
     Any,
     AsyncIterator,
@@ -28,6 +29,9 @@ from architect_py.graphql_client.client import GraphQLClient
 
 
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
+from architect_py.grpc_client.Marketdata.L1BookSnapshotRequest import (
+    L1BookSnapshotRequest,
+)
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshotRequest import (
     L2BookSnapshotRequest,
@@ -41,10 +45,8 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
-from architect_py.grpc_client.Marketdata.TickersRequest import TickersRequest
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
-from architect_py.utils.grpc_root_certificates import grpc_root_certificates
 
 
 """
@@ -55,6 +57,9 @@ TODO:
 implement subscribe_orderflow
 get_account_summaries_for_cpty
 subscribe_exchange_specific
+
+
+ticker timestamp is from last trade
 
 
 for decode, don't create your own decoder
@@ -71,13 +76,13 @@ def enc_hook(obj: Any) -> Any:
 
 
 encoder = msgspec.json.Encoder(enc_hook=enc_hook)
-TRes = TypeVar("TRes", covariant=True)
-P = ParamSpec("P")
+ResponseTypeGeneric = TypeVar("ResponseTypeGeneric", covariant=True)
+RequestTypeParameters = ParamSpec("RequestTypeParameters")
 
 
-class RequestType(Protocol[P, TRes]):
+class RequestType(Protocol[RequestTypeParameters, ResponseTypeGeneric]):
     @staticmethod
-    def get_response_type() -> Type[TRes]: ...
+    def get_response_type() -> Type[ResponseTypeGeneric]: ...
 
     @staticmethod
     def get_route() -> str: ...
@@ -85,7 +90,9 @@ class RequestType(Protocol[P, TRes]):
     @staticmethod
     def get_unary_type() -> Any: ...
 
-    def __init__(self, *args: P.args, **kwargs: P.kwargs) -> None: ...
+    def __init__(
+        self, *args: RequestTypeParameters.args, **kwargs: RequestTypeParameters.kwargs
+    ) -> None: ...
 
 
 class GRPCClient:
@@ -96,6 +103,7 @@ class GRPCClient:
     l1_books: dict[TradableProduct, L1BookSnapshot]
     l2_books: dict[TradableProduct, L2BookSnapshot]
     channel: grpc.aio.Channel
+    _decoders: dict[type | UnionType, msgspec.json.Decoder]
 
     def __init__(
         self,
@@ -129,6 +137,8 @@ class GRPCClient:
         self.l1_books: dict[TradableProduct, L1BookSnapshot] = {}
         self.l2_books: dict[TradableProduct, L2BookSnapshot] = {}
         self.endpoint = endpoint
+
+        self._decoders: dict[type | UnionType, msgspec.json.Decoder] = {}
 
     async def initialize(self) -> Optional[str]:
         """
@@ -165,9 +175,7 @@ class GRPCClient:
 
         connect_str = f"{record.target}:{record.port}"
         if is_https:
-            credentials = grpc.ssl_channel_credentials(
-                root_certificates=grpc_root_certificates
-            )
+            credentials = grpc.ssl_channel_credentials()
             options = (("grpc.ssl_target_name_override", "service.architect.xyz"),)
             return grpc.aio.secure_channel(connect_str, credentials, options=options)
         else:
@@ -185,6 +193,22 @@ class GRPCClient:
             except Exception as e:
                 logger.error("Failed to refresh gRPC credentials: %s", e)
         return self.jwt
+
+    def get_decoder(
+        self,
+        response_type: type[ResponseTypeGeneric] | UnionType,
+    ) -> msgspec.json.Decoder:
+        try:
+            return self._decoders[response_type]
+        except KeyError:
+            # we use a try / except because we sacrifice first time query
+            # to optimize for repeated lookups
+            decoder = msgspec.json.Decoder(type=response_type)
+            self._decoders[response_type] = decoder
+            return decoder
+
+    async def request_l1_book_snapshot(self, symbol: TradableProduct) -> L1BookSnapshot:
+        return await self.request(L1BookSnapshotRequest, symbol=symbol)
 
     async def request_l2_book_snapshot(
         self, venue: Optional[str], symbol: TradableProduct
@@ -240,6 +264,9 @@ class GRPCClient:
     async def subscribe_l2_books_stream(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
+        decoder = self.get_decoder(
+            SubscribeL2BookUpdatesRequest.get_response_type_unannotated()
+        )
         decode_function: Callable[[bytes], L2BookUpdate] = (
             lambda buf: msgspec.json.decode(
                 buf, type=SubscribeL2BookUpdatesRequest.get_response_type()
@@ -280,12 +307,17 @@ class GRPCClient:
 
     async def subscribe(
         self,
-        request_type: Type[RequestType[P, TRes]],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> AsyncIterator[TRes]:
-        decode_function: Callable[[bytes], TRes] = lambda buf: msgspec.json.decode(
-            buf, type=request_type.get_response_type()
+        request_type: Type[RequestType[RequestTypeParameters, ResponseTypeGeneric]],
+        *args: RequestTypeParameters.args,
+        **kwargs: RequestTypeParameters.kwargs,
+    ) -> AsyncIterator[ResponseTypeGeneric]:
+        """
+        Generic function for subscribing to a stream of updates from the gRPC server
+
+        request_type and ResponseTypeGeneric *cannot* be union types
+        """
+        decode_function: Callable[[bytes], ResponseTypeGeneric] = (
+            lambda buf: msgspec.json.decode(buf, type=request_type.get_response_type())
         )
         stub = self.channel.unary_stream(
             request_type.get_route(),
@@ -300,12 +332,17 @@ class GRPCClient:
 
     async def request(
         self,
-        request_type: Type[RequestType[P, TRes]],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> TRes:
-        decode_function: Callable[[bytes], TRes] = lambda buf: msgspec.json.decode(
-            buf, type=request_type.get_response_type()
+        request_type: Type[RequestType[RequestTypeParameters, ResponseTypeGeneric]],
+        *args: RequestTypeParameters.args,
+        **kwargs: RequestTypeParameters.kwargs,
+    ) -> ResponseTypeGeneric:
+        """
+        Generic function for making a unary request to the gRPC server
+
+        request_type and ResponseTypeGeneric *cannot* be union types
+        """
+        decode_function: Callable[[bytes], ResponseTypeGeneric] = (
+            lambda buf: msgspec.json.decode(buf, type=request_type.get_response_type())
         )
         stub = self.channel.unary_unary(
             request_type.get_route(),
