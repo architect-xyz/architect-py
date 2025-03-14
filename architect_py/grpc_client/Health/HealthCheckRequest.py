@@ -29,6 +29,10 @@ class HealthCheckRequest(Struct, omit_defaults=True):
         return HealthCheckResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return HealthCheckResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Health/Check"
 

@@ -22,6 +22,10 @@ class AccountHistoryRequest(Struct, omit_defaults=True):
         return AccountHistoryResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return AccountHistoryResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Folio/AccountHistory"
 

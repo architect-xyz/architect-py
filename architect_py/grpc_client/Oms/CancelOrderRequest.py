@@ -47,6 +47,10 @@ class CancelOrderRequest(Struct, omit_defaults=True):
         return Cancel
 
     @staticmethod
+    def get_unannotated_response_type():
+        return Cancel
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Oms/CancelOrder"
 

@@ -2,7 +2,11 @@
 #   filename:  Marketdata/SubscribeTickersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Marketdata.TickerUpdate import TickerUpdate
+from architect_py.grpc_client.Marketdata.TickerUpdate import (
+    TickerUpdate,
+    Snapshot,
+    Diff,
+)
 
 from typing import Annotated, List, Optional
 
@@ -27,6 +31,10 @@ class SubscribeTickersRequest(Struct, omit_defaults=True):
     @staticmethod
     def get_response_type():
         return TickerUpdate
+
+    @staticmethod
+    def get_unannotated_response_type():
+        return Snapshot | Diff
 
     @staticmethod
     def get_route() -> str:

@@ -26,6 +26,10 @@ class SubscribeTradesRequest(Struct, omit_defaults=True):
         return Trade
 
     @staticmethod
+    def get_unannotated_response_type():
+        return Trade
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Marketdata/SubscribeTrades"
 

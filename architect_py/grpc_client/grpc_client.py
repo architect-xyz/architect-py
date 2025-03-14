@@ -264,7 +264,7 @@ class GRPCClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
         decoder = self.get_decoder(
-            SubscribeL2BookUpdatesRequest.get_response_type_unannotated()
+            SubscribeL2BookUpdatesRequest.get_unannotated_response_type()
         )
         decode_function: Callable[[bytes], L2BookUpdate] = (
             lambda buf: msgspec.json.decode(

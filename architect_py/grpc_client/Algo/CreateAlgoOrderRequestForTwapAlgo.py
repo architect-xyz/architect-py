@@ -24,6 +24,10 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
         return AlgoOrderForTwapAlgo
 
     @staticmethod
+    def get_unannotated_response_type():
+        return AlgoOrderForTwapAlgo
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Algo/CreateTwapAlgoOrder"
 

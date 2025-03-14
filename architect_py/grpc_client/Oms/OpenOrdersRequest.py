@@ -24,6 +24,10 @@ class OpenOrdersRequest(Struct, omit_defaults=True):
         return OpenOrdersResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return OpenOrdersResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Oms/OpenOrders"
 

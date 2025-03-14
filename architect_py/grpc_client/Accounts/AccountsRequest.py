@@ -29,6 +29,10 @@ class AccountsRequest(Struct, omit_defaults=True):
         return AccountsResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return AccountsResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Accounts/Accounts"
 

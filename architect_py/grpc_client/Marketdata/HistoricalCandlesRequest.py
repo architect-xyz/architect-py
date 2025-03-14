@@ -24,6 +24,10 @@ class HistoricalCandlesRequest(Struct, omit_defaults=True):
         return HistoricalCandlesResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return HistoricalCandlesResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Marketdata/HistoricalCandles"
 

@@ -11,8 +11,9 @@ import json
 import os
 import re
 from collections import defaultdict
-from pathlib import Path
-from typing import List, Tuple
+import importlib
+from typing import Annotated, List, Tuple, Union, get_args, get_origin
+import multiprocessing
 
 # --------------------------------------------------------------------
 # Regular Expressions (Constants)
@@ -38,18 +39,38 @@ ALIAS_PATTERN_SINGLE = re.compile(
 # Utility Functions
 # --------------------------------------------------------------------
 
+
 def read_file(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as f:
         return f.read()
+
 
 def write_file(file_path: str, content: str) -> None:
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-def get_corresponding_json_file(file_path: str, json_folder: str) -> str:
-    base_name = os.path.basename(file_path)
-    name, _ = os.path.splitext(base_name)
-    return os.path.join(json_folder, f"{name}.json")
+
+def get_py_file_json_pairs(py_folder: str, json_folder: str) -> List[Tuple[str, dict]]:
+    """
+    Traverse json_folder recursively and yield pairs (py_file, json_data)
+    where py_file is the corresponding Python file in py_folder and json_data is
+    the JSON content loaded from the JSON file in json_folder.
+    """
+    pairs = []
+    for root, dirs, files in os.walk(json_folder):
+        for file in files:
+            json_file_path = os.path.join(root, file)
+            rel_path = os.path.relpath(json_file_path, json_folder)
+            py_rel_path = f"{os.path.splitext(rel_path)[0]}.py"
+            py_file = os.path.join(py_folder, py_rel_path)
+
+            with open(json_file_path, "r", encoding="utf-8") as f:
+                json_data: dict = json.load(f)
+
+            # print(f"{json_file_path}: {py_file}")
+            pairs.append((py_file, json_data))
+    return pairs
+
 
 def add_to_typing_import(file_str: str, type_to_add: str) -> str:
     """
@@ -80,6 +101,7 @@ def add_to_typing_import(file_str: str, type_to_add: str) -> str:
 
     return new_file_str
 
+
 def split_top_level(s: str, delimiter: str = ",") -> List[str]:
     """
     Splits string `s` at top-level (non-nested) occurrences of `delimiter`.
@@ -102,19 +124,84 @@ def split_top_level(s: str, delimiter: str = ",") -> List[str]:
         parts.append("".join(current).strip())
     return [part for part in parts if part]
 
+
+def get_unannotated_type(t: type) -> type:
+    origin = get_origin(t)
+    if origin is Annotated:
+        t = get_args(t)[0]
+
+    origin = get_origin(t)
+    args = get_args(t)
+    if origin is not None and args:
+        # Rebuild the generic using the built-in generic type.
+        return origin[args]
+
+    return t
+
+
+def get_type_str(t: type) -> str:
+    origin = get_origin(t)
+    if origin is Annotated:
+        t = get_unannotated_type(t)
+        origin = get_origin(t)
+
+    if origin is Union:
+        return " | ".join(get_type_str(arg) for arg in get_args(t))
+
+    if origin is not None:
+        args = get_args(t)
+        if args:
+            arg_str = ", ".join(get_type_str(arg) for arg in args)
+            return f"{origin.__name__}[{arg_str}]"
+        else:
+            # If no arguments are found, just return the name of the origin
+            return origin.__name__
+
+    return t.__name__
+
+
+def built_in_type(t: type) -> bool:
+    return getattr(t, "__module__", None) == "builtins"
+
+
+def get_import_str(t: type) -> str:
+    origin = get_origin(t)
+    if origin is Annotated:
+        t = get_unannotated_type(t)
+        origin = get_origin(t)
+
+    if origin is Union:
+        args = get_args(t)
+        args = [arg for arg in args if not built_in_type(arg)]
+        return ",  ".join(get_import_str(arg) for arg in args)
+
+    if origin is not None:
+        args = get_args(t)
+        args = [arg for arg in args if not built_in_type(arg)]
+        if args:
+            return ", ".join(get_import_str(arg) for arg in args)
+        else:
+            # If no arguments are found, just return the name of the origin
+            return origin.__name__
+
+    name = t.__name__
+    if "." in name:
+        return name.split(".")[-1]
+    else:
+        return name
+
+
 # --------------------------------------------------------------------
 # Core Processing Functions (Refactored to work with content strings)
 # --------------------------------------------------------------------
 
-def create_tagged_subtypes_for_variant_types(content: str, file_path: str, json_folder: str) -> str:
+
+def create_tagged_subtypes_for_variant_types(content: str, json_data: dict) -> str:
     """
     Processes the file content for variant types with a tag.
     Creates or updates subtype classes with tag metadata and rebuilds
     the type alias so that the Union is replaced by the variant classes.
     """
-    json_fp = get_corresponding_json_file(file_path, json_folder)
-    with open(json_fp, "r", encoding="utf-8") as json_file:
-        json_data = json.load(json_file)
 
     tag_field = json_data.get("tag_field")
     if tag_field is None:
@@ -125,22 +212,6 @@ def create_tagged_subtypes_for_variant_types(content: str, file_path: str, json_
     for p in json_data["oneOf"]:
         tag_field_map[p["title"]].append((p["variant_name"], p["tag_value"]))
 
-    # If this is a Request file, append additional gRPC info.
-    if "Request" in file_path:
-        service = json_data["service"]
-        unary_type = json_data["unary_type"]
-        response_type = json_data["response_type"]
-        route = json_data["route"]
-        content += f'\n\nunary = "{unary_type}"\n'
-        content += f"response_type = {response_type}\n"
-        content += f'route = "{route}"\n'
-
-        lines = content.splitlines()
-        # Insert import after the 4th line (or at start if file is short)
-        insert_index = 4 if len(lines) >= 4 else 0
-        lines.insert(insert_index, f"from architect_py.grpc_client.{service}.{response_type} import {response_type}")
-        content = "\n".join(lines)
-
     # Match the type alias (Union or single type)
     alias_match = ALIAS_PATTERN_UNION.search(content)
     if alias_match:
@@ -150,7 +221,7 @@ def create_tagged_subtypes_for_variant_types(content: str, file_path: str, json_
     else:
         alias_match = ALIAS_PATTERN_SINGLE.search(content)
         if not alias_match:
-            print(f"No type alias found in the file {file_path}.")
+            print(f"No type alias found in the file {json_data['title']}.")
             return content
         types = [alias_match.group("single_type")]
         meta = alias_match.group("meta")
@@ -204,9 +275,13 @@ def create_tagged_subtypes_for_variant_types(content: str, file_path: str, json_
         new_union_str = "Union[" + ", ".join(new_union_types) + "]"
 
     # Reassemble the alias definition.
-    alias_match = ALIAS_PATTERN_UNION.search(content) or ALIAS_PATTERN_SINGLE.search(content)
+    alias_match = ALIAS_PATTERN_UNION.search(content) or ALIAS_PATTERN_SINGLE.search(
+        content
+    )
     if not alias_match:
-        print(f"No type alias found in the file {file_path} when reinserting subclass definitions.")
+        print(
+            f"No type alias found for {json_data['title']} when reinserting subclass definitions."
+        )
         return content
 
     alias_name = alias_match.group("alias")
@@ -218,11 +293,12 @@ def create_tagged_subtypes_for_variant_types(content: str, file_path: str, json_
         + additional_class_defs
         + "\n\n"
         + new_alias_text
-        + content[alias_match.end():]
+        + content[alias_match.end() :]
     )
     return content
 
-def fix_lines(content: str, file_path: str) -> str:
+
+def fix_lines(content: str) -> str:
     """
     Fixes type annotations and adds necessary imports.
     """
@@ -242,21 +318,21 @@ def fix_lines(content: str, file_path: str) -> str:
     content = REMOVE_ORDERDIR_RE.sub("", content)
     return content
 
-def add_post_processing_to_loosened_types(content: str, file_path: str, json_folder: str) -> str:
+
+def add_post_processing_to_loosened_types(content: str, json_data: dict) -> str:
     """
     Adds a __post_init__ method to the flattened types to enforce field requirements.
     """
-    json_fp = get_corresponding_json_file(file_path, json_folder)
-    with open(json_fp, "r", encoding="utf-8") as json_file:
-        json_data = json.load(json_file)
-
-    class_title = json_data["title"]
     enum_tag = json_data.get("enum_tag")
     if enum_tag is None:
         return content
 
+    class_title = json_data["title"]
+
     properties = json_data["properties"]
-    enum_tag_to_other_required_keys: dict[str, List[str]] = json_data["enum_tag_to_other_required_keys"]
+    enum_tag_to_other_required_keys: dict[str, List[str]] = json_data[
+        "enum_tag_to_other_required_keys"
+    ]
 
     lines = content.splitlines(keepends=True)
     # Append __post_init__ method at the end
@@ -265,7 +341,9 @@ def add_post_processing_to_loosened_types(content: str, file_path: str, json_fol
     common_keys = set.intersection(*map(set, enum_tag_to_other_required_keys.values()))
     union_keys = set.union(*map(set, enum_tag_to_other_required_keys.values()))
 
-    for i, (enum_value, required_keys) in enumerate(enum_tag_to_other_required_keys.items()):
+    for i, (enum_value, required_keys) in enumerate(
+        enum_tag_to_other_required_keys.items()
+    ):
         conditional = "if" if i == 0 else "elif"
         title = properties[enum_tag]["title"]
         req_keys_subset = [key for key in required_keys if key not in common_keys]
@@ -282,44 +360,82 @@ def add_post_processing_to_loosened_types(content: str, file_path: str, json_fol
 
     return "".join(lines)
 
-def generate_stub(content: str, file_path: str, json_folder: str) -> str:
+
+def generate_stub(content: str, json_data: dict) -> str:
     """
     Generates stub code for Request files linking Request type to Response type, service, and route.
     """
-    if "Request" not in file_path:
+    request_type_name: str | None = json_data.get("title")
+    if request_type_name is None or "Request" not in request_type_name:
         return content
-
-    json_fp = get_corresponding_json_file(file_path, json_folder)
-    with open(json_fp, "r", encoding="utf-8") as json_file:
-        json_data = json.load(json_file)
 
     service = json_data["service"]
     unary_type = json_data["unary_type"]
-    response_type = json_data["response_type"]
+    response_type_name = json_data["response_type"]
     route = json_data["route"]
-    request_type_name = json_data["title"]
+
+    response_type_module = importlib.import_module(
+        f"architect_py.grpc_client.{service}.{response_type_name}"
+    )
+    ResponseType = getattr(response_type_module, response_type_name)
+    UnAnnotatedResponseType = get_unannotated_type(ResponseType)
+    unannotated_response_type_str = get_type_str(UnAnnotatedResponseType)
+    union_type_import_str = get_import_str(UnAnnotatedResponseType)
+
+    if get_origin(UnAnnotatedResponseType) is Union:
+        response_import_str = f"from architect_py.grpc_client.{service}.{response_type_name} import {response_type_name}, {union_type_import_str}\n"
+    elif get_origin(UnAnnotatedResponseType) is not None:
+        response_import_str = f"from architect_py.grpc_client.{service}.{response_type_name} import {response_type_name}, {union_type_import_str}\n"
+    else:
+        response_import_str = f"from architect_py.grpc_client.{service}.{response_type_name} import {response_type_name}\n"
 
     lines = content.splitlines(keepends=True)
     for i, line in enumerate(lines):
-        if line == f'        return "&RESPONSE_TYPE:{request_type_name}"\n':
-            lines[i] = f"        return {response_type}\n"
-        elif line == f'        return "&ROUTE:{request_type_name}"\n':
-            lines[i] = f'        return "{route}"\n'
-        elif line == f'        return "&UNARY_TYPE:{request_type_name}"\n':
-            lines[i] = f'        return "{unary_type}"\n'
+        if line.startswith('"SENTINAL_VALUE"'):
+            lines[
+                i
+            ] = f"""
+    @staticmethod
+    def get_response_type():
+        return {response_type_name}
 
-    lines.insert(4, f"from architect_py.grpc_client.{service}.{response_type} import {response_type}\n")
+    @staticmethod
+    def get_unannotated_response_type():
+        return {unannotated_response_type_str}
+
+    @staticmethod
+    def get_route() -> str:
+        return "{route}"
+    
+    @staticmethod
+    def get_unary_type():
+        return "{unary_type}"
+"""
+
+    # If this is a Request file, append additional gRPC info.
+    if json_data.get("tag_field") is not None:
+        service = json_data["service"]
+        unary_type = json_data["unary_type"]
+        response_type = json_data["response_type"]
+        route = json_data["route"]
+
+        lines.append(f'\n\n{request_type_name}_unary = "{unary_type}"\n')
+        lines.append(f"{request_type_name}ResponseType = {response_type}\n")
+        lines.append(
+            f"{request_type_name}UnannotatedResponseType = {unannotated_response_type_str}\n"
+        )
+        lines.append(f'{request_type_name}_route = "{route}"\n')
+
+    lines.insert(4, response_import_str)
     return "".join(lines)
 
-def fix_enum_member_names(content: str, file_path: str, json_folder: str) -> str:
+
+def fix_enum_member_names(content: str, json_data: dict) -> str:
     """
     Fixes enum member names based on JSON definitions.
     For each enum class (classes that inherit from Enum),
     it replaces the member names with the names defined in the JSON file under "x-enumNames".
     """
-    json_fp = get_corresponding_json_file(file_path, json_folder)
-    with open(json_fp, "r", encoding="utf-8") as jf:
-        json_data = json.load(jf)
 
     lines = content.splitlines()
     # Fix import statements from grpc classes.
@@ -330,9 +446,13 @@ def fix_enum_member_names(content: str, file_path: str, json_folder: str) -> str
                 dots, module, imports = m.groups()
                 names = [name.strip() for name in imports.split(",")]
                 if module:
-                    lines[i] = "\n".join(f"from {dots}{module}.{name} import {name}" for name in names)
+                    lines[i] = "\n".join(
+                        f"from {dots}{module}.{name} import {name}" for name in names
+                    )
                 else:
-                    lines[i] = "\n".join(f"from {dots}{name} import {name}" for name in names)
+                    lines[i] = "\n".join(
+                        f"from {dots}{name} import {name}" for name in names
+                    )
 
     new_lines = []
     in_enum_class = False
@@ -370,12 +490,16 @@ def fix_enum_member_names(content: str, file_path: str, json_folder: str) -> str
                     continue
                 if value_int in enum_values:
                     index = enum_values.index(value_int)
-                    new_line = f"{member_indent}{enum_names[index]} = {member_value}{rest}"
+                    new_line = (
+                        f"{member_indent}{enum_names[index]} = {member_value}{rest}"
+                    )
                     new_lines.append(new_line)
                 else:
                     new_lines.append(stripped_line)
             else:
-                if stripped_line.strip() and not stripped_line.startswith(" " * (len(enum_class_indent) + 1)):
+                if stripped_line.strip() and not stripped_line.startswith(
+                    " " * (len(enum_class_indent) + 1)
+                ):
                     in_enum_class = False
                 new_lines.append(stripped_line)
         else:
@@ -383,19 +507,55 @@ def fix_enum_member_names(content: str, file_path: str, json_folder: str) -> str
 
     return "\n".join(new_lines)
 
+
 # --------------------------------------------------------------------
 # Main Entry Point (Processing Pipeline)
 # --------------------------------------------------------------------
 
-def main(file_path: str, json_folder: str) -> None:
-    content = read_file(file_path)
-    content = create_tagged_subtypes_for_variant_types(content, file_path, json_folder)
-    content = fix_lines(content, file_path)
-    if not file_path.endswith("definitions.py"):
-        content = add_post_processing_to_loosened_types(content, file_path, json_folder)
-        content = generate_stub(content, file_path, json_folder)
-    content = fix_enum_member_names(content, file_path, json_folder)
-    write_file(file_path, content)
+
+def main(py_file_path: str, json_folder: str) -> None:
+    num_cores = max(multiprocessing.cpu_count() - 1, 1)
+
+    py_fp_json_pairs: list[tuple[str, dict]] = get_py_file_json_pairs(
+        py_file_path, json_folder
+    )
+
+    print(f"Postprocessing part 1:")
+    with multiprocessing.Pool(processes=num_cores) as pool:
+        results = pool.starmap(part_1, py_fp_json_pairs)
+
+    print(f"Postprocessing part 2:")
+    for py_fp, json_data in py_fp_json_pairs:
+        part_2(py_fp, json_data)
+
+    print(f"Complete")
+
+
+def part_1(py_file_path: str, json_data: dict) -> None:
+    content = read_file(py_file_path)
+
+    content = create_tagged_subtypes_for_variant_types(content, json_data)
+    content = fix_lines(content)
+    if not py_file_path.endswith("definitions.py"):
+        content = add_post_processing_to_loosened_types(content, json_data)
+
+    content = fix_enum_member_names(content, json_data)
+
+    write_file(py_file_path, content)
+
+
+def part_2(py_file_path: str, json_data: dict) -> None:
+    content = read_file(py_file_path)
+    if not py_file_path.endswith("definitions.py"):
+        """
+        we write and then read the same file because we need to update the content for when we do the import for the variant types
+        """
+        content = generate_stub(content, json_data)
+    else:
+        content = content.replace('"SENTINAL_VALUE"', "")
+
+    write_file(py_file_path, content)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process gRPC service definitions")
@@ -403,7 +563,7 @@ if __name__ == "__main__":
         "--file_path",
         type=str,
         default="architect_py/grpc_client",
-        help="Path to the Python file with the gRPC service definitions",
+        help="Path to the Python folder with the gRPC service definitions",
     )
     parser.add_argument(
         "--json_folder",

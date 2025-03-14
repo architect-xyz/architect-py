@@ -163,6 +163,10 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         return Order
 
     @staticmethod
+    def get_unannotated_response_type():
+        return Order
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Oms/PlaceOrder"
 

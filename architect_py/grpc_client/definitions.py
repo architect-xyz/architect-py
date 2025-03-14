@@ -109,18 +109,6 @@ class CandleWidth(int, Enum):
 class CptyLogoutRequest(Struct, omit_defaults=True):
     pass
 
-    @staticmethod
-    def get_response_type():
-        return "&RESPONSE_TYPE:CptyLogoutRequest"
-
-    @staticmethod
-    def get_route() -> str:
-        return "&ROUTE:CptyLogoutRequest"
-
-    @staticmethod
-    def get_unary_type():
-        return "&UNARY_TYPE:CptyLogoutRequest"
-
 
 class HealthStatus(str, Enum):
     UNKNOWN = "UNKNOWN"
@@ -1237,18 +1225,6 @@ class CancelReject(Struct, omit_defaults=True):
 class CptyLoginRequest(Struct, omit_defaults=True):
     account: str
     trader: UserId
-
-    @staticmethod
-    def get_response_type():
-        return "&RESPONSE_TYPE:CptyLoginRequest"
-
-    @staticmethod
-    def get_route() -> str:
-        return "&ROUTE:CptyLoginRequest"
-
-    @staticmethod
-    def get_unary_type():
-        return "&UNARY_TYPE:CptyLoginRequest"
 
 
 class ExecutionInfo(Struct, omit_defaults=True):

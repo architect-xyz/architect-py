@@ -25,6 +25,10 @@ class SubscribeL1BookSnapshotsRequest(Struct, omit_defaults=True):
         return L1BookSnapshot
 
     @staticmethod
+    def get_unannotated_response_type():
+        return L1BookSnapshot
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Marketdata/SubscribeL1BookSnapshots"
 

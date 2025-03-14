@@ -17,6 +17,10 @@ class SubscribeLiquidationsRequest(Struct, omit_defaults=True):
         return Liquidation
 
     @staticmethod
+    def get_unannotated_response_type():
+        return Liquidation
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Marketdata/SubscribeLiquidations"
 

@@ -29,6 +29,10 @@ class PruneExpiredSymbolsRequest(Struct, omit_defaults=True):
         return PruneExpiredSymbolsResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return PruneExpiredSymbolsResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Symbology/PruneExpiredSymbols"
 

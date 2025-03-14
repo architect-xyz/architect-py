@@ -2,7 +2,12 @@
 #   filename:  Orderflow/DropcopyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Dropcopy import Dropcopy
+from architect_py.grpc_client.Orderflow.Dropcopy import (
+    Dropcopy,
+    TaggedOrder,
+    TaggedFill,
+    TaggedAberrantFill,
+)
 
 from typing import Optional
 
@@ -22,6 +27,10 @@ class DropcopyRequest(Struct, omit_defaults=True):
     @staticmethod
     def get_response_type():
         return Dropcopy
+
+    @staticmethod
+    def get_unannotated_response_type():
+        return TaggedOrder | TaggedFill | TaggedAberrantFill
 
     @staticmethod
     def get_route() -> str:

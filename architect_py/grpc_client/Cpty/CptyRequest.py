@@ -2,8 +2,13 @@
 #   filename:  Cpty/CptyRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Cpty.CptyResponse import CptyResponse
-from architect_py.grpc_client.Cpty.CptyResponse import CptyResponse
+from architect_py.grpc_client.Cpty.CptyResponse import (
+    CptyResponse,
+    Any,
+    ReconcileOrder,
+    ReconcileOpenOrder,
+    UpdateAccountSummary,
+)
 
 from typing import Annotated, Optional, Union
 
@@ -39,7 +44,9 @@ CptyRequest = Annotated[
     Union[Login, Logout, PlaceOrder, CancelOrder], Meta(title="CptyRequest")
 ]
 
-
-unary = "duplex_stream"
-response_type = CptyResponse
-route = "/json.architect.Cpty/Cpty"
+CptyRequest_unary = "duplex_stream"
+CptyRequestResponseType = CptyResponse
+CptyRequestUnannotatedResponseType = (
+    dict[str, Any] | ReconcileOrder | ReconcileOpenOrder | UpdateAccountSummary
+)
+CptyRequest_route = "/json.architect.Cpty/Cpty"

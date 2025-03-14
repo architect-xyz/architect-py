@@ -15,6 +15,10 @@ class SymbologyRequest(Struct, omit_defaults=True):
         return SymbologySnapshot
 
     @staticmethod
+    def get_unannotated_response_type():
+        return SymbologySnapshot
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Symbology/Symbology"
 

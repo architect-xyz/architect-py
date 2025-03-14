@@ -17,6 +17,10 @@ class AccountSummaryRequest(Struct, omit_defaults=True):
         return AccountSummary
 
     @staticmethod
+    def get_unannotated_response_type():
+        return AccountSummary
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Folio/AccountSummary"
 

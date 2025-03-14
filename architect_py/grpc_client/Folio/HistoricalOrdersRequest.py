@@ -42,6 +42,10 @@ class HistoricalOrdersRequest(Struct, omit_defaults=True):
         return HistoricalOrdersResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return HistoricalOrdersResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Folio/HistoricalOrders"
 

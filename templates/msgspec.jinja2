@@ -60,15 +60,6 @@ class {{ class_name }}:
 {%- endfor %}
 
 {%- if "Request" in class_name %}
-    @staticmethod
-    def get_response_type():
-        return "&RESPONSE_TYPE:{{ class_name }}"
-    
-    @staticmethod
-    def get_route() -> str:
-        return "&ROUTE:{{ class_name }}"
-    
-    @staticmethod
-    def get_unary_type():
-        return "&UNARY_TYPE:{{ class_name }}"
+"SENTINAL_VALUE"
+
 {%- endif %}

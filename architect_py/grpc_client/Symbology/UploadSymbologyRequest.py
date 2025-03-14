@@ -24,6 +24,10 @@ class UploadSymbologyRequest(Struct, omit_defaults=True):
         return UploadSymbologyResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return UploadSymbologyResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Symbology/UploadSymbology"
 
