@@ -176,8 +176,7 @@ class GRPCClient:
         connect_str = f"{record.target}:{record.port}"
         if is_https:
             credentials = grpc.ssl_channel_credentials()
-            options = (("grpc.ssl_target_name_override", "service.architect.xyz"),)
-            return grpc.aio.secure_channel(connect_str, credentials, options=options)
+            return grpc.aio.secure_channel(connect_str, credentials)
         else:
             return grpc.aio.insecure_channel(connect_str)
 
