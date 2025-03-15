@@ -47,11 +47,9 @@ from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
 )
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 from architect_py.grpc_client.Orderflow.OrderflowRequest import (
-    CancelAllOrders,
-    CancelOrder,
     OrderflowRequest,
+    OrderflowRequest_route,
     OrderflowRequestUnannotatedResponseType,
-    PlaceOrder,
 )
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
@@ -61,11 +59,8 @@ from architect_py.scalars import TradableProduct
 TODO:
 - confirm get_historical_candles works and fix if it doesn't work
 
-
-implement subscribe_orderflow
 get_account_summaries_for_cpty
 subscribe_exchange_specific
-
 
 ticker timestamp is from last trade
 
@@ -310,10 +305,18 @@ class GRPCClient:
                 update_struct(book, up)
 
     async def subscribe_orderflow(
-        self, request: OrderflowRequest
+        self, request_iterator: AsyncIterator[OrderflowRequest]
     ) -> AsyncIterator[Orderflow]:
         decoder = self.get_decoder(OrderflowRequestUnannotatedResponseType)
-        pass
+        stub = self.channel.stream_stream(
+            OrderflowRequest_route,
+            request_serializer=encoder.encode,
+            response_deserializer=decoder.decode,
+        )
+        jwt = await self.refresh_grpc_credentials()
+        call = stub(request_iterator, metadata=(("authorization", f"Bearer {jwt}"),))
+        async for update in call:
+            yield update
 
     async def subscribe(
         self,
