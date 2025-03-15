@@ -23,9 +23,13 @@ class PendingCancelsRequest(Struct, omit_defaults=True):
         return PendingCancelsResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return PendingCancelsResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Oms/PendingCancels"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

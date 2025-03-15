@@ -2,8 +2,21 @@
 #   filename:  Orderflow/OrderflowRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
-from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.Orderflow.Orderflow import (
+    Orderflow,
+    OrderPending,
+    TaggedOrderAck,
+    TaggedOrderReject,
+    TaggedOrderOut,
+    OrderReconciledOut,
+    TaggedOrderStale,
+    CancelPending,
+    TaggedCancelReject,
+    TaggedOrderCanceling,
+    TaggedOrderCanceled,
+    TaggedFill,
+    TaggedAberrantFill,
+)
 
 from typing import Annotated, Union
 
@@ -32,7 +45,20 @@ OrderflowRequest = Annotated[
     Union[PlaceOrder, CancelOrder, CancelAllOrders], Meta(title="OrderflowRequest")
 ]
 
-
-unary = "duplex_stream"
-response_type = Orderflow
-route = "/json.architect.Orderflow/Orderflow"
+OrderflowRequest_rpc_method = "duplex_stream"
+OrderflowRequestResponseType = Orderflow
+OrderflowRequestUnannotatedResponseType = (
+    OrderPending
+    | TaggedOrderAck
+    | TaggedOrderReject
+    | TaggedOrderOut
+    | OrderReconciledOut
+    | TaggedOrderStale
+    | CancelPending
+    | TaggedCancelReject
+    | TaggedOrderCanceling
+    | TaggedOrderCanceled
+    | TaggedFill
+    | TaggedAberrantFill
+)
+OrderflowRequest_route = "/json.architect.Orderflow/Orderflow"

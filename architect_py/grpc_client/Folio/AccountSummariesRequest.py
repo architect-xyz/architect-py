@@ -32,9 +32,13 @@ class AccountSummariesRequest(Struct, omit_defaults=True):
         return AccountSummariesResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return AccountSummariesResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Folio/AccountSummaries"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

@@ -3,7 +3,7 @@
   "title": "SubscribeSymbology",
   "type": "object",
   "route": "/json.architect.Symbology/SubscribeSymbology",
-  "unary_type": "stream",
+  "rpc_method": "stream",
   "service": "Symbology",
   "response_type": "SymbologyUpdate"
 }

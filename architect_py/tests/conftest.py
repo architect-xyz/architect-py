@@ -100,3 +100,10 @@ async def front_ES_future(async_client: AsyncClient) -> str:
     series = await async_client.get_cme_futures_series("ES CME Futures")
 
     return series[0][1]
+
+
+@pytest_asyncio.fixture
+async def front_ES_future_tp(async_client: AsyncClient) -> str:
+    series = await async_client.get_cme_futures_series("ES CME Futures")
+
+    return f"{series[0][1]}/USD"

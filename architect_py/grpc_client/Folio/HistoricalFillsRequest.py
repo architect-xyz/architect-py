@@ -33,9 +33,13 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
         return HistoricalFillsResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return HistoricalFillsResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Folio/HistoricalFills"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

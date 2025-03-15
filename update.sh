@@ -64,42 +64,8 @@ datamodel-codegen \
 # do not use --reuse-model flag as it will not generate the correct code, even with template modification
 
 
-post_process_file() {
-    local filepath="$1"
-    local folder service_name filename out_dir output_file
-
-    folder=$(dirname "$filepath")
-    service_name=$(basename "$folder")
-    filename=$(basename "$filepath" .json)
-    out_dir="${GRPC_CLIENT_DIR}/${service_name}"
-    output_file="${out_dir}/${filename}.py"
-
-    python postprocess_grpc_file.py --file_path "$output_file" --json_folder "$folder"
-    black -q "$output_file"
-}
-
-export -f post_process_file
-export GRPC_CLIENT_DIR
-
-# Capture list of JSON files to process
-json_files=()
-while IFS= read -r file; do
-    json_files+=("$file")
-done < <(find "$PROCESSED_DIR" -mindepth 2 -name '*.json')
-
-# Post processing
-printf "\nPost processing files\n"
-if command -v parallel &> /dev/null; then
-    printf "Running in parallel mode\n"
-    printf "%s\n" "${json_files[@]}" | parallel post_process_file
-else
-    printf "GNU parallel not found. Running sequentially\n"
-    for file in "${json_files[@]}"; do
-        post_process_file "$file"
-    done
-fi
-python postprocess_grpc_file.py --file_path "$GRPC_CLIENT_DIR/definitions.py" --json_folder "$PROCESSED_DIR"
-black -q "$GRPC_CLIENT_DIR/definitions.py"
+python postprocess_grpc_file.py --file_path "$GRPC_CLIENT_DIR" --json_folder "$PROCESSED_DIR"
+black -q "$GRPC_CLIENT_DIR"
 
 
 # the __init__.py file is overwritten by datamodel-code-generator so we need to re-import the files

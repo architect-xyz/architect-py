@@ -22,9 +22,13 @@ class CancelAllOrdersRequest(Struct, omit_defaults=True):
         return CancelAllOrdersResponse
 
     @staticmethod
+    def get_unannotated_response_type():
+        return CancelAllOrdersResponse
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Oms/CancelAllOrders"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

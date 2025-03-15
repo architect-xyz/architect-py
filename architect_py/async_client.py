@@ -91,8 +91,8 @@ class AsyncClient:
         *,
         api_key: str,
         api_secret: str,
+        paper_trading: bool,
         host: str = "app.architect.co",
-        paper_trading: bool = True,
         grpc_endpoint: str = "cme.marketdata.architect.co",
         _port: Optional[int] = None,
         **kwargs: Any,
@@ -121,6 +121,11 @@ class AsyncClient:
         If you get an AttributeError on the grpc_client, it means that the GRPC client has not been initialized
         likely due to the client not being instantiated with the connect method
         """
+        if paper_trading:
+            logger.critical(
+                "You are using the paper trading environment. Please make sure to switch to the live environment when you are ready."
+            )
+
         async_client = AsyncClient(
             api_key=api_key,
             api_secret=api_secret,
@@ -187,15 +192,9 @@ class AsyncClient:
             api_key=api_key, api_secret=api_secret, host=host, port=_port, **kwargs
         )
 
-    async def who_am_i(self) -> tuple[str, str]:
-        """
-        Returns:
-            (user_id, user_email)
-        """
-        user_id = await self.graphql_client.user_id_query()
-        email = await self.graphql_client.user_email_query()
-
-        return user_id.user_id, email.user_email
+    # ------------------------------------------------------------
+    # Symbology
+    # ------------------------------------------------------------
 
     async def search_symbols(
         self,
@@ -383,6 +382,20 @@ class AsyncClient:
 
         return market
 
+    # ------------------------------------------------------------
+    # Account Management
+    # ------------------------------------------------------------
+
+    async def who_am_i(self) -> tuple[str, str]:
+        """
+        Returns:
+            (user_id, user_email)
+        """
+        user_id = await self.graphql_client.user_id_query()
+        email = await self.graphql_client.user_email_query()
+
+        return user_id.user_id, email.user_email
+
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
         """
         Returns:
@@ -438,6 +451,10 @@ class AsyncClient:
             account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
         )
         return history.account_history
+
+    # ------------------------------------------------------------
+    # Order Management
+    # ------------------------------------------------------------
 
     async def get_open_orders(
         self,
@@ -601,6 +618,10 @@ class AsyncClient:
             venue, account, order_id, from_inclusive, to_exclusive
         )
         return fills.historical_fills
+
+    # ------------------------------------------------------------
+    # Market Data
+    # ------------------------------------------------------------
 
     async def get_market_status(
         self, symbol: TradableProduct, venue: str
@@ -846,6 +867,10 @@ class AsyncClient:
             venue=venue,
             candle_widths=candle_widths,
         )
+
+    # ------------------------------------------------------------
+    # Order Entry and Cancellation
+    # ------------------------------------------------------------
 
     async def send_limit_order(
         self,

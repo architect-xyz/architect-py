@@ -1,4 +1,6 @@
 """
+For when python version is 3.11 or higher.
+
 Example Usage:
 
 tick_size = get_tick_size(market_id, client)

@@ -15,7 +15,7 @@
     }
   },
   "route": "/json.architect.Algo/ModifyTwapAlgoOrder",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Algo",
   "response_type": "AlgoOrderForTwapAlgo"
 }

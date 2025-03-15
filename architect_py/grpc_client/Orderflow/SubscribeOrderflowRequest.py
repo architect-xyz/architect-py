@@ -2,7 +2,21 @@
 #   filename:  Orderflow/SubscribeOrderflowRequest.json
 
 from __future__ import annotations
-from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.Orderflow.Orderflow import (
+    Orderflow,
+    OrderPending,
+    TaggedOrderAck,
+    TaggedOrderReject,
+    TaggedOrderOut,
+    OrderReconciledOut,
+    TaggedOrderStale,
+    CancelPending,
+    TaggedCancelReject,
+    TaggedOrderCanceling,
+    TaggedOrderCanceled,
+    TaggedFill,
+    TaggedAberrantFill,
+)
 
 from typing import Optional
 
@@ -25,9 +39,26 @@ class SubscribeOrderflowRequest(Struct, omit_defaults=True):
         return Orderflow
 
     @staticmethod
+    def get_unannotated_response_type():
+        return (
+            OrderPending
+            | TaggedOrderAck
+            | TaggedOrderReject
+            | TaggedOrderOut
+            | OrderReconciledOut
+            | TaggedOrderStale
+            | CancelPending
+            | TaggedCancelReject
+            | TaggedOrderCanceling
+            | TaggedOrderCanceled
+            | TaggedFill
+            | TaggedAberrantFill
+        )
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Orderflow/SubscribeOrderflow"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "stream"

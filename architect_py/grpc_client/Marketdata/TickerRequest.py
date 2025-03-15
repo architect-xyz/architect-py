@@ -18,9 +18,13 @@ class TickerRequest(Struct, omit_defaults=True):
         return Ticker
 
     @staticmethod
+    def get_unannotated_response_type():
+        return Ticker
+
+    @staticmethod
     def get_route() -> str:
         return "/json.architect.Marketdata/Ticker"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

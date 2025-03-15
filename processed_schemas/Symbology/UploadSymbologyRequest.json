@@ -35,7 +35,7 @@
     }
   },
   "route": "/json.architect.Symbology/UploadSymbology",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "UploadSymbologyResponse"
 }

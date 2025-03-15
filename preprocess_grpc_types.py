@@ -346,7 +346,7 @@ def add_info_to_schema(services: List[Dict[str, Any]]) -> Dict[str, str]:
 
             # Add service-specific metadata.
             req_schema["route"] = rpc["route"]
-            req_schema["unary_type"] = rpc["type"]
+            req_schema["rpc_method"] = rpc["type"]
             req_schema["service"] = service_name
 
             # Standardize titles.

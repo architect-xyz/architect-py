@@ -4,7 +4,7 @@
   "description": "List all symbols",
   "type": "object",
   "route": "/json.architect.Symbology/Symbols",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "SymbolsResponse"
 }

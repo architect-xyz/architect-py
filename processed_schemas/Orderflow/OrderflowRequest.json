@@ -25,7 +25,7 @@
     }
   ],
   "route": "/json.architect.Orderflow/Orderflow",
-  "unary_type": "duplex_stream",
+  "rpc_method": "duplex_stream",
   "service": "Orderflow",
   "response_type": "Orderflow",
   "tag_field": "t"

@@ -17,7 +17,7 @@
     }
   },
   "route": "/json.architect.Marketdata/SubscribeL2BookUpdates",
-  "unary_type": "stream",
+  "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "L2BookUpdate"
 }

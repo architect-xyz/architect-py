@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from architect_py.async_client import AsyncClient
 from architect_py.client import Client
