@@ -11,15 +11,15 @@ from pytest_lazy_fixtures import lf
 @pytest.mark.parametrize(
     "endpoint,symbol,venue",
     [
-        ("cme.marketdata.architect.co", lf("front_ES_future"), "CME"),
+        ("cme.marketdata.architect.co", lf("front_ES_future_tp"), "CME"),
         # (
-        #     "binance-futures-usd-m.marketdata.architect.co",
-        #     "BTC-USDT BINANCE Perpetual/USDT Crypto*BINANCE-FUTURES-USD-M/DIRECT",
+        #     "https://usdm.binance.marketdata.architect.co",
+        #     "BTC-USDT BINANCE Perpetual/USDT Crypto",
         #     "BINANCE",
         # ),
         # (
-        #     "bybit.marketdata.architect.co",
-        #     "BTC-USDT BYBIT Perpetual/USDT Crypto*BYBIT/DIRECT",
+        #     "https://bybit.marketdata.architect.co",
+        #     "BTC-USDT BYBIT Perpetual/USDT Crypto",
         #     "BYBIT",
         # ),
     ],
@@ -31,7 +31,7 @@ async def test_subscribe_l1_stream(
     symbol: str,
     venue: str,
 ):
-    tp = TradableProduct(symbol, "USD")
+    tp = TradableProduct(symbol)
 
     await async_client.grpc_client.change_channel(endpoint)
 
@@ -59,9 +59,28 @@ async def test_subscribe_l1_stream(
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3)
-async def test_subscribe_l2_stream(async_client: AsyncClient, front_ES_future: str):
-    venue = "CME"
-    tp = TradableProduct(front_ES_future, "USD")
+@pytest.mark.parametrize(
+    "endpoint,symbol,venue",
+    [
+        ("cme.marketdata.architect.co", lf("front_ES_future_tp"), "CME"),
+        # (
+        #     "https://usdm.binance.marketdata.architect.co",
+        #     "BTC-USDT BINANCE Perpetual/USDT Crypto",
+        #     "BINANCE",
+        # ),
+        # (
+        #     "https://bybit.marketdata.architect.co",
+        #     "BTC-USDT BYBIT Perpetual/USDT Crypto",
+        #     "BYBIT",
+        # ),
+    ],
+)
+@pytest.mark.asyncio
+@pytest.mark.timeout(3)
+async def test_subscribe_l2_stream(
+    async_client: AsyncClient, endpoint: str, symbol: str, venue: str
+):
+    tp = TradableProduct(symbol)
 
     market_status = await async_client.get_market_status(tp, venue)
     if not market_status.is_trading:

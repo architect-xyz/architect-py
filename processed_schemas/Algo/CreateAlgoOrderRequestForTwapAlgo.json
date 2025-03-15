@@ -52,7 +52,7 @@
     }
   },
   "route": "/json.architect.Algo/CreateTwapAlgoOrder",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Algo",
   "response_type": "AlgoOrderForTwapAlgo"
 }

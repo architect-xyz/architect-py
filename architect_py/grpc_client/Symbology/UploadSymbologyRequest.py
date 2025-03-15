@@ -32,5 +32,5 @@ class UploadSymbologyRequest(Struct, omit_defaults=True):
         return "/json.architect.Symbology/UploadSymbology"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

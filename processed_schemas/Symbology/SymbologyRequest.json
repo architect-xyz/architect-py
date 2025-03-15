@@ -3,7 +3,7 @@
   "title": "SymbologyRequest",
   "type": "object",
   "route": "/json.architect.Symbology/Symbology",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "SymbologySnapshot"
 }

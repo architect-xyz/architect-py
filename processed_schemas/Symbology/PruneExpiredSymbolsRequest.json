@@ -13,7 +13,7 @@
     }
   },
   "route": "/json.architect.Symbology/PruneExpiredSymbols",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "PruneExpiredSymbolsResponse"
 }

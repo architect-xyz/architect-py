@@ -44,7 +44,7 @@ CptyRequest = Annotated[
     Union[Login, Logout, PlaceOrder, CancelOrder], Meta(title="CptyRequest")
 ]
 
-CptyRequest_unary = "duplex_stream"
+CptyRequest_rpc_method = "duplex_stream"
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
     dict[str, Any] | ReconcileOrder | ReconcileOpenOrder | UpdateAccountSummary

@@ -18,7 +18,7 @@
     }
   },
   "route": "/json.architect.Marketdata/SubscribeTrades",
-  "unary_type": "stream",
+  "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "Trade"
 }

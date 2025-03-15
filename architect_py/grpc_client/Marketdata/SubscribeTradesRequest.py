@@ -34,5 +34,5 @@ class SubscribeTradesRequest(Struct, omit_defaults=True):
         return "/json.architect.Marketdata/SubscribeTrades"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "stream"

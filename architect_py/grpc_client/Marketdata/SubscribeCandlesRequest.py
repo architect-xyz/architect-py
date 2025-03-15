@@ -37,5 +37,5 @@ class SubscribeCandlesRequest(Struct, omit_defaults=True):
         return "/json.architect.Marketdata/SubscribeCandles"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "stream"

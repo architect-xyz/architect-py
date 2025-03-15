@@ -74,7 +74,7 @@
     }
   },
   "route": "/json.architect.Folio/HistoricalOrders",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Folio",
   "response_type": "HistoricalOrdersResponse"
 }

@@ -127,7 +127,7 @@
     }
   },
   "route": "/json.architect.Oms/PlaceOrder",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Oms",
   "response_type": "Order",
   "enum_tag": "k",

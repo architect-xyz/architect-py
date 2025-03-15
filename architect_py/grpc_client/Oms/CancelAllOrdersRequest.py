@@ -30,5 +30,5 @@ class CancelAllOrdersRequest(Struct, omit_defaults=True):
         return "/json.architect.Oms/CancelAllOrders"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

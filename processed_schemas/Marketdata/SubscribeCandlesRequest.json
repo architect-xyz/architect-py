@@ -27,7 +27,7 @@
     }
   },
   "route": "/json.architect.Marketdata/SubscribeCandles",
-  "unary_type": "stream",
+  "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "Candle"
 }

@@ -45,7 +45,7 @@ OrderflowRequest = Annotated[
     Union[PlaceOrder, CancelOrder, CancelAllOrders], Meta(title="OrderflowRequest")
 ]
 
-OrderflowRequest_unary = "duplex_stream"
+OrderflowRequest_rpc_method = "duplex_stream"
 OrderflowRequestResponseType = Orderflow
 OrderflowRequestUnannotatedResponseType = (
     OrderPending

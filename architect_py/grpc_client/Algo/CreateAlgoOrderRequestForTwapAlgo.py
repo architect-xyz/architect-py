@@ -32,5 +32,5 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
         return "/json.architect.Algo/CreateTwapAlgoOrder"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

@@ -47,7 +47,7 @@
     }
   ],
   "route": "/json.architect.Cpty/Cpty",
-  "unary_type": "duplex_stream",
+  "rpc_method": "duplex_stream",
   "service": "Cpty",
   "response_type": "CptyResponse",
   "tag_field": "t"

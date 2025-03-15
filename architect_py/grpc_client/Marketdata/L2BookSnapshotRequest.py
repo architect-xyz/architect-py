@@ -26,5 +26,5 @@ class L2BookSnapshotRequest(Struct, omit_defaults=True):
         return "/json.architect.Marketdata/L2BookSnapshot"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

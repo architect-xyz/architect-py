@@ -45,6 +45,14 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.Orderflow.OrderflowRequest import (
+    CancelAllOrders,
+    CancelOrder,
+    OrderflowRequest,
+    OrderflowRequestUnannotatedResponseType,
+    PlaceOrder,
+)
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
 
@@ -82,13 +90,16 @@ RequestTypeParameters = ParamSpec("RequestTypeParameters")
 
 class RequestType(Protocol[RequestTypeParameters, ResponseTypeGeneric]):
     @staticmethod
+    def get_unannotated_response_type() -> Type[ResponseTypeGeneric]: ...
+
+    @staticmethod
     def get_response_type() -> Type[ResponseTypeGeneric]: ...
 
     @staticmethod
     def get_route() -> str: ...
 
     @staticmethod
-    def get_unary_type() -> Any: ...
+    def get_rpc_method() -> Any: ...
 
     def __init__(
         self, *args: RequestTypeParameters.args, **kwargs: RequestTypeParameters.kwargs
@@ -117,8 +128,7 @@ class GRPCClient:
         await grpc_client.initialize()
 
 
-        Brave users may create their own requests using the RequestUnary and RequestStream classes
-        with the subscribe and request methods.
+        Brave users may create their own requests using the subscribe and request methods.
         The types are correct so if a typechecker such as PyLance is throwing errors,
         it's likely a bug in user code.
 
@@ -263,18 +273,13 @@ class GRPCClient:
     async def subscribe_l2_books_stream(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
-        decoder = self.get_decoder(
+        decoder: msgspec.json.Decoder[L2BookUpdate] = self.get_decoder(
             SubscribeL2BookUpdatesRequest.get_unannotated_response_type()
-        )
-        decode_function: Callable[[bytes], L2BookUpdate] = (
-            lambda buf: msgspec.json.decode(
-                buf, type=SubscribeL2BookUpdatesRequest.get_response_type()
-            )
         )
         stub = self.channel.unary_stream(
             SubscribeL2BookUpdatesRequest.get_route(),
             request_serializer=encoder.encode,
-            response_deserializer=decode_function,
+            response_deserializer=decoder.decode,
         )
         req = SubscribeL2BookUpdatesRequest(symbol=symbol, venue=venue)
         jwt = await self.refresh_grpc_credentials()
@@ -304,6 +309,12 @@ class GRPCClient:
                 book = self.l2_books[symbol]
                 update_struct(book, up)
 
+    async def subscribe_orderflow(
+        self, request: OrderflowRequest
+    ) -> AsyncIterator[Orderflow]:
+        decoder = self.get_decoder(OrderflowRequestUnannotatedResponseType)
+        pass
+
     async def subscribe(
         self,
         request_type: Type[RequestType[RequestTypeParameters, ResponseTypeGeneric]],
@@ -315,13 +326,13 @@ class GRPCClient:
 
         request_type and ResponseTypeGeneric *cannot* be union types
         """
-        decode_function: Callable[[bytes], ResponseTypeGeneric] = (
-            lambda buf: msgspec.json.decode(buf, type=request_type.get_response_type())
+        decoder: msgspec.json.Decoder[ResponseTypeGeneric] = self.get_decoder(
+            request_type.get_unannotated_response_type()
         )
         stub = self.channel.unary_stream(
             request_type.get_route(),
             request_serializer=encoder.encode,
-            response_deserializer=decode_function,
+            response_deserializer=decoder.decode,
         )
         req = request_type(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()
@@ -340,13 +351,13 @@ class GRPCClient:
 
         request_type and ResponseTypeGeneric *cannot* be union types
         """
-        decode_function: Callable[[bytes], ResponseTypeGeneric] = (
-            lambda buf: msgspec.json.decode(buf, type=request_type.get_response_type())
+        decoder: msgspec.json.Decoder[ResponseTypeGeneric] = self.get_decoder(
+            request_type.get_unannotated_response_type()
         )
         stub = self.channel.unary_unary(
             request_type.get_route(),
             request_serializer=encoder.encode,
-            response_deserializer=decode_function,
+            response_deserializer=decoder.decode,
         )
         req = request_type(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()

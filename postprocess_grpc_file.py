@@ -370,7 +370,7 @@ def generate_stub(content: str, json_data: dict) -> str:
         return content
 
     service = json_data["service"]
-    unary_type = json_data["unary_type"]
+    rpc_method = json_data["rpc_method"]
     response_type_name = json_data["response_type"]
     route = json_data["route"]
 
@@ -408,18 +408,18 @@ def generate_stub(content: str, json_data: dict) -> str:
         return "{route}"
     
     @staticmethod
-    def get_unary_type():
-        return "{unary_type}"
+    def get_rpc_method():
+        return "{rpc_method}"
 """
 
     # If this is a Request file, append additional gRPC info.
     if json_data.get("tag_field") is not None:
         service = json_data["service"]
-        unary_type = json_data["unary_type"]
+        rpc_method = json_data["rpc_method"]
         response_type = json_data["response_type"]
         route = json_data["route"]
 
-        lines.append(f'\n\n{request_type_name}_unary = "{unary_type}"\n')
+        lines.append(f'\n\n{request_type_name}_rpc_method = "{rpc_method}"\n')
         lines.append(f"{request_type_name}ResponseType = {response_type}\n")
         lines.append(
             f"{request_type_name}UnannotatedResponseType = {unannotated_response_type_str}\n"

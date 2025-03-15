@@ -25,5 +25,5 @@ class SymbolsRequest(Struct, omit_defaults=True):
         return "/json.architect.Symbology/Symbols"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"

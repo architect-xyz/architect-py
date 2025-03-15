@@ -12,7 +12,7 @@
     }
   },
   "route": "/json.architect.Health/Check",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Health",
   "response_type": "HealthCheckResponse"
 }

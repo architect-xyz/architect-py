@@ -17,7 +17,7 @@
     }
   },
   "route": "/json.architect.Marketdata/MarketStatus",
-  "unary_type": "unary",
+  "rpc_method": "unary",
   "service": "Marketdata",
   "response_type": "MarketStatus"
 }

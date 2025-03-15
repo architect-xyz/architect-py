@@ -37,5 +37,5 @@ class HealthCheckRequest(Struct, omit_defaults=True):
         return "/json.architect.Health/Check"
 
     @staticmethod
-    def get_unary_type():
+    def get_rpc_method():
         return "unary"
