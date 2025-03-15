@@ -151,6 +151,7 @@ class GRPCClient:
         Must call this method before using the gRPC client.
         """
         # "binance-futures-usd-m.marketdata.architect.co",
+        # "https://usdm.binance.marketdata.architect.co"
         # "bybit.marketdata.architect.co",
         # "binance.marketdata.architect.co",
         # "cme.marketdata.architect.co",
@@ -304,7 +305,7 @@ class GRPCClient:
                 book = self.l2_books[symbol]
                 update_struct(book, up)
 
-    async def subscribe_orderflow(
+    async def subscribe_orderflow_stream(
         self, request_iterator: AsyncIterator[OrderflowRequest]
     ) -> AsyncIterator[Orderflow]:
         decoder = self.get_decoder(OrderflowRequestUnannotatedResponseType)
