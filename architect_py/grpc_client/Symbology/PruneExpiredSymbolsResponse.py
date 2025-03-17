@@ -8,3 +8,11 @@ from msgspec import Struct
 
 class PruneExpiredSymbolsResponse(Struct, omit_defaults=True):
     pass
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new() -> "PruneExpiredSymbolsResponse":
+        return PruneExpiredSymbolsResponse()
+
+    def __str__(self) -> str:
+        return f"PruneExpiredSymbolsResponse()"

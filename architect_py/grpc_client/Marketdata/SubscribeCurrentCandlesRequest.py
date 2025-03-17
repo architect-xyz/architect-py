@@ -32,6 +32,24 @@ class SubscribeCurrentCandlesRequest(Struct, omit_defaults=True):
     """
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        candle_width: definitions.CandleWidth,
+        symbol: str,
+        tick_period_ms: Optional[int] = None,
+        venue: Optional[str] = None,
+    ) -> "SubscribeCurrentCandlesRequest":
+        return SubscribeCurrentCandlesRequest(
+            candle_width,
+            symbol,
+            tick_period_ms,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"SubscribeCurrentCandlesRequest(candle_width={self.candle_width},symbol={self.symbol},tick_period_ms={self.tick_period_ms},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return Candle

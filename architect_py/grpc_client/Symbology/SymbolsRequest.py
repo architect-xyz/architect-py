@@ -12,6 +12,14 @@ class SymbolsRequest(Struct, omit_defaults=True):
     List all symbols
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new() -> "SymbolsRequest":
+        return SymbolsRequest()
+
+    def __str__(self) -> str:
+        return f"SymbolsRequest()"
+
     @staticmethod
     def get_response_type():
         return SymbolsResponse

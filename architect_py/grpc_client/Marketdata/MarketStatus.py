@@ -13,6 +13,22 @@ class MarketStatus(Struct, omit_defaults=True):
     is_quoting: Optional[bool] = None
     is_trading: Optional[bool] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+        is_quoting: Optional[bool] = None,
+        is_trading: Optional[bool] = None,
+    ) -> "MarketStatus":
+        return MarketStatus(
+            symbol,
+            is_quoting,
+            is_trading,
+        )
+
+    def __str__(self) -> str:
+        return f"MarketStatus(symbol={self.s},is_quoting={self.is_quoting},is_trading={self.is_trading})"
+
     @property
     def symbol(self) -> str:
         return self.s

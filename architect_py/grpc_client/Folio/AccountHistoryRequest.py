@@ -17,6 +17,22 @@ class AccountHistoryRequest(Struct, omit_defaults=True):
     from_inclusive: Optional[datetime] = None
     to_exclusive: Optional[datetime] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: definitions.AccountIdOrName,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
+    ) -> "AccountHistoryRequest":
+        return AccountHistoryRequest(
+            account,
+            from_inclusive,
+            to_exclusive,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountHistoryRequest(account={self.account},from_inclusive={self.from_inclusive},to_exclusive={self.to_exclusive})"
+
     @staticmethod
     def get_response_type():
         return AccountHistoryResponse

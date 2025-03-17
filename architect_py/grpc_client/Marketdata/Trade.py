@@ -21,6 +21,28 @@ class Trade(Struct, omit_defaults=True):
     ts: Annotated[int, Meta(title="timestamp")]
     d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        price: Decimal,
+        size: Decimal,
+        symbol: str,
+        timestamp_ns: int,
+        timestamp: int,
+        direction: Optional[OrderDir] = None,
+    ) -> "Trade":
+        return Trade(
+            price,
+            size,
+            symbol,
+            timestamp_ns,
+            timestamp,
+            direction,
+        )
+
+    def __str__(self) -> str:
+        return f"Trade(price={self.p},size={self.q},symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},direction={self.d})"
+
     @property
     def price(self) -> Decimal:
         return self.p

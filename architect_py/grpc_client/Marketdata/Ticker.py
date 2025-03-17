@@ -48,6 +48,78 @@ class Ticker(Struct, omit_defaults=True):
     xo: Optional[Annotated[Optional[Decimal], Meta(title="session_open")]] = None
     xv: Optional[Annotated[Optional[Decimal], Meta(title="session_volume")]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+        timestamp_ns: int,
+        timestamp: int,
+        venue: str,
+        ask_price: Optional[Decimal] = None,
+        ask_size: Optional[Decimal] = field(name="as", default=None),
+        bid_price: Optional[Decimal] = None,
+        bid_size: Optional[Decimal] = None,
+        dividend: Optional[Decimal] = None,
+        dividend_yield: Optional[Decimal] = None,
+        eps_adj: Optional[Decimal] = None,
+        funding_rate: Optional[Decimal] = None,
+        next_funding_time: Optional[datetime] = None,
+        high_24h: Optional[Decimal] = None,
+        index_price: Optional[Decimal] = None,
+        low_24h: Optional[Decimal] = None,
+        market_cap: Optional[Decimal] = None,
+        mark_price: Optional[Decimal] = None,
+        open_24h: Optional[Decimal] = None,
+        open_interest: Optional[Decimal] = None,
+        last_price: Optional[Decimal] = None,
+        price_to_earnings: Optional[Decimal] = None,
+        last_size: Optional[Decimal] = None,
+        shares_outstanding_weighted_adj: Optional[Decimal] = None,
+        last_settlement_price: Optional[Decimal] = None,
+        volume_24h: Optional[Decimal] = None,
+        volume_30d: Optional[Decimal] = None,
+        session_high: Optional[Decimal] = None,
+        session_low: Optional[Decimal] = None,
+        session_open: Optional[Decimal] = None,
+        session_volume: Optional[Decimal] = None,
+    ) -> "Ticker":
+        return Ticker(
+            symbol,
+            timestamp_ns,
+            timestamp,
+            venue,
+            ask_price,
+            ask_size,
+            bid_price,
+            bid_size,
+            dividend,
+            dividend_yield,
+            eps_adj,
+            funding_rate,
+            next_funding_time,
+            high_24h,
+            index_price,
+            low_24h,
+            market_cap,
+            mark_price,
+            open_24h,
+            open_interest,
+            last_price,
+            price_to_earnings,
+            last_size,
+            shares_outstanding_weighted_adj,
+            last_settlement_price,
+            volume_24h,
+            volume_30d,
+            session_high,
+            session_low,
+            session_open,
+            session_volume,
+        )
+
+    def __str__(self) -> str:
+        return f"Ticker(symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},venue={self.ve},ask_price={self.ap},ask_size={self.as_},bid_price={self.bp},bid_size={self.bs},dividend={self.dividend},dividend_yield={self.dividend_yield},eps_adj={self.eps_adj},funding_rate={self.fr},next_funding_time={self.ft},high_24h={self.h},index_price={self.ip},low_24h={self.l},market_cap={self.market_cap},mark_price={self.mp},open_24h={self.o},open_interest={self.oi},last_price={self.p},price_to_earnings={self.price_to_earnings},last_size={self.q},shares_outstanding_weighted_adj={self.shares_outstanding_weighted_adj},last_settlement_price={self.sp},volume_24h={self.v},volume_30d={self.vm},session_high={self.xh},session_low={self.xl},session_open={self.xo},session_volume={self.xv})"
+
     @property
     def symbol(self) -> str:
         return self.s

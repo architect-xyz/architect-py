@@ -24,6 +24,18 @@ class AccountsRequest(Struct, omit_defaults=True):
     Request accounts from the perspective of this trader; if not specified, defaults to the caller user.
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+    ) -> "AccountsRequest":
+        return AccountsRequest(
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountsRequest(trader={self.trader})"
+
     @staticmethod
     def get_response_type():
         return AccountsResponse

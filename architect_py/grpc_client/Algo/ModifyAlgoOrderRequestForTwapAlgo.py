@@ -13,6 +13,20 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
     algo_order_id: definitions.OrderId
     params: definitions.TwapParams
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        algo_order_id: definitions.OrderId,
+        params: definitions.TwapParams,
+    ) -> "ModifyAlgoOrderRequestForTwapAlgo":
+        return ModifyAlgoOrderRequestForTwapAlgo(
+            algo_order_id,
+            params,
+        )
+
+    def __str__(self) -> str:
+        return f"ModifyAlgoOrderRequestForTwapAlgo(algo_order_id={self.algo_order_id},params={self.params})"
+
     @staticmethod
     def get_response_type():
         return AlgoOrderForTwapAlgo

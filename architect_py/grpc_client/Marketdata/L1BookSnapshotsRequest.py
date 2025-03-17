@@ -15,6 +15,18 @@ from msgspec import Struct
 class L1BookSnapshotsRequest(Struct, omit_defaults=True):
     symbols: Optional[List[str]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbols: Optional[List[str]] = None,
+    ) -> "L1BookSnapshotsRequest":
+        return L1BookSnapshotsRequest(
+            symbols,
+        )
+
+    def __str__(self) -> str:
+        return f"L1BookSnapshotsRequest(symbols={self.symbols})"
+
     @staticmethod
     def get_response_type():
         return ArrayOfL1BookSnapshot

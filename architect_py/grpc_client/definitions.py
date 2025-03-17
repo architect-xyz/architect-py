@@ -49,6 +49,28 @@ class AccountPosition(Struct, omit_defaults=True):
     Unrealized PNL of the position, if known.
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        quantity: Decimal,
+        break_even_price: Optional[Decimal] = None,
+        cost_basis: Optional[Decimal] = None,
+        liquidation_price: Optional[Decimal] = None,
+        trade_time: Optional[datetime] = None,
+        unrealized_pnl: Optional[Decimal] = None,
+    ) -> "AccountPosition":
+        return AccountPosition(
+            quantity,
+            break_even_price,
+            cost_basis,
+            liquidation_price,
+            trade_time,
+            unrealized_pnl,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountPosition(quantity={self.quantity},break_even_price={self.break_even_price},cost_basis={self.cost_basis},liquidation_price={self.liquidation_price},trade_time={self.trade_time},unrealized_pnl={self.unrealized_pnl})"
+
 
 class AccountStatistics(Struct, omit_defaults=True):
     cash_excess: Optional[
@@ -83,6 +105,32 @@ class AccountStatistics(Struct, omit_defaults=True):
     unrealized_pnl: Optional[Decimal] = None
     yesterday_equity: Optional[Decimal] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        cash_excess: Optional[Decimal] = None,
+        equity: Optional[Decimal] = None,
+        position_margin: Optional[Decimal] = None,
+        purchasing_power: Optional[Decimal] = None,
+        realized_pnl: Optional[Decimal] = None,
+        total_margin: Optional[Decimal] = None,
+        unrealized_pnl: Optional[Decimal] = None,
+        yesterday_equity: Optional[Decimal] = None,
+    ) -> "AccountStatistics":
+        return AccountStatistics(
+            cash_excess,
+            equity,
+            position_margin,
+            purchasing_power,
+            realized_pnl,
+            total_margin,
+            unrealized_pnl,
+            yesterday_equity,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountStatistics(cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
+
 
 class AlgoState(str, Enum):
     Pending = "Pending"
@@ -108,6 +156,14 @@ class CandleWidth(int, Enum):
 
 class CptyLogoutRequest(Struct, omit_defaults=True):
     pass
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new() -> "CptyLogoutRequest":
+        return CptyLogoutRequest()
+
+    def __str__(self) -> str:
+        return f"CptyLogoutRequest()"
 
 
 class HealthStatus(str, Enum):
@@ -152,6 +208,28 @@ class L2BookDiff(Struct, omit_defaults=True):
     sn: Annotated[int, Meta(ge=0, title="sequence_number")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        asks: List[Ask],
+        bids: List[Bid],
+        sequence_id: int,
+        sequence_number: int,
+        timestamp_ns: int,
+        timestamp: int,
+    ) -> "L2BookDiff":
+        return L2BookDiff(
+            asks,
+            bids,
+            sequence_id,
+            sequence_number,
+            timestamp_ns,
+            timestamp,
+        )
+
+    def __str__(self) -> str:
+        return f"L2BookDiff(asks={self.a},bids={self.b},sequence_id={self.sid},sequence_number={self.sn},timestamp_ns={self.tn},timestamp={self.ts})"
 
     @property
     def asks(self) -> List[Ask]:
@@ -218,9 +296,35 @@ class OrderId(Struct, omit_defaults=True):
     seqid: str
     seqno: Annotated[int, Meta(ge=0)]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        seqid: str,
+        seqno: int,
+    ) -> "OrderId":
+        return OrderId(
+            seqid,
+            seqno,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderId(seqid={self.seqid},seqno={self.seqno})"
+
 
 class OrderOut(Struct, omit_defaults=True):
     id: OrderId
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: OrderId,
+    ) -> "OrderOut":
+        return OrderOut(
+            id,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderOut(id={self.id})"
 
 
 class OrderRejectReason(str, Enum):
@@ -247,6 +351,18 @@ class OrderSource(int, Enum):
 class OrderStale(Struct, omit_defaults=True):
     id: OrderId
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: OrderId,
+    ) -> "OrderStale":
+        return OrderStale(
+            id,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderStale(id={self.id})"
+
 
 class OrderStatus(int, Enum):
     Pending = 0
@@ -270,6 +386,18 @@ class SortTickersBy(str, Enum):
 class GoodTilDate(Struct, omit_defaults=True):
     GTD: datetime
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        GTD: datetime,
+    ) -> "GoodTilDate":
+        return GoodTilDate(
+            GTD,
+        )
+
+    def __str__(self) -> str:
+        return f"GoodTilDate(GTD={self.GTD})"
+
 
 class TimeInForce1(str, Enum):
     GTC = "GTC"
@@ -290,6 +418,20 @@ class TwapStatus(Struct, omit_defaults=True):
     quantity_filled: Decimal
     realized_twap: Optional[Decimal] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        quantity_filled: Decimal,
+        realized_twap: Optional[Decimal] = None,
+    ) -> "TwapStatus":
+        return TwapStatus(
+            quantity_filled,
+            realized_twap,
+        )
+
+    def __str__(self) -> str:
+        return f"TwapStatus(quantity_filled={self.quantity_filled},realized_twap={self.realized_twap})"
+
 
 UserId = str
 
@@ -304,6 +446,26 @@ class AccountPermissions(Struct, omit_defaults=True):
     set_limits: bool
     trade: bool
     view: bool
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        list: bool,
+        reduce_or_close: bool,
+        set_limits: bool,
+        trade: bool,
+        view: bool,
+    ) -> "AccountPermissions":
+        return AccountPermissions(
+            list,
+            reduce_or_close,
+            set_limits,
+            trade,
+            view,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountPermissions(list={self.list},reduce_or_close={self.reduce_or_close},set_limits={self.set_limits},trade={self.trade},view={self.view})"
 
 
 AliasKind = Literal["CME_GLOBEX"]
@@ -327,9 +489,33 @@ HumanDuration = str
 class Base(Struct, omit_defaults=True):
     unit: Literal["base"]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        unit: Literal["base"],
+    ) -> "Base":
+        return Base(
+            unit,
+        )
+
+    def __str__(self) -> str:
+        return f"Base(unit={self.unit})"
+
 
 class Quote(Struct, omit_defaults=True):
     unit: Literal["quote"]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        unit: Literal["quote"],
+    ) -> "Quote":
+        return Quote(
+            unit,
+        )
+
+    def __str__(self) -> str:
+        return f"Quote(unit={self.unit})"
 
 
 MinOrderQuantityUnit = Union[Base, Quote]
@@ -347,21 +533,81 @@ PriceDisplayFormat = str
 class Fiat(Struct, omit_defaults=True):
     product_type: Literal["Fiat"]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: Literal["Fiat"],
+    ) -> "Fiat":
+        return Fiat(
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"Fiat(product_type={self.product_type})"
+
 
 class Commodity(Struct, omit_defaults=True):
     product_type: Literal["Commodity"]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: Literal["Commodity"],
+    ) -> "Commodity":
+        return Commodity(
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"Commodity(product_type={self.product_type})"
 
 
 class Crypto(Struct, omit_defaults=True):
     product_type: Literal["Crypto"]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: Literal["Crypto"],
+    ) -> "Crypto":
+        return Crypto(
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"Crypto(product_type={self.product_type})"
+
 
 class Equity(Struct, omit_defaults=True):
     product_type: Literal["Equity"]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: Literal["Equity"],
+    ) -> "Equity":
+        return Equity(
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"Equity(product_type={self.product_type})"
+
 
 class Index(Struct, omit_defaults=True):
     product_type: Literal["Index"]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: Literal["Index"],
+    ) -> "Index":
+        return Index(
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"Index(product_type={self.product_type})"
 
 
 class Future(Struct, omit_defaults=True):
@@ -373,6 +619,30 @@ class Future(Struct, omit_defaults=True):
     series: Optional[str] = None
     underlying: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        derivative_kind: DerivativeKind,
+        expiration: datetime,
+        multiplier: Decimal,
+        product_type: Literal["Future"],
+        first_notice_date: Optional[date] = None,
+        series: Optional[str] = None,
+        underlying: Optional[str] = None,
+    ) -> "Future":
+        return Future(
+            derivative_kind,
+            expiration,
+            multiplier,
+            product_type,
+            first_notice_date,
+            series,
+            underlying,
+        )
+
+    def __str__(self) -> str:
+        return f"Future(derivative_kind={self.derivative_kind},expiration={self.expiration},multiplier={self.multiplier},product_type={self.product_type},first_notice_date={self.first_notice_date},series={self.series},underlying={self.underlying})"
+
 
 class Perpetual(Struct, omit_defaults=True):
     derivative_kind: DerivativeKind
@@ -380,13 +650,55 @@ class Perpetual(Struct, omit_defaults=True):
     product_type: Literal["Perpetual"]
     underlying: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        derivative_kind: DerivativeKind,
+        multiplier: Decimal,
+        product_type: Literal["Perpetual"],
+        underlying: Optional[str] = None,
+    ) -> "Perpetual":
+        return Perpetual(
+            derivative_kind,
+            multiplier,
+            product_type,
+            underlying,
+        )
+
+    def __str__(self) -> str:
+        return f"Perpetual(derivative_kind={self.derivative_kind},multiplier={self.multiplier},product_type={self.product_type},underlying={self.underlying})"
+
 
 class Unknown(Struct, omit_defaults=True):
     product_type: Literal["Unknown"]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: Literal["Unknown"],
+    ) -> "Unknown":
+        return Unknown(
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"Unknown(product_type={self.product_type})"
+
 
 class SnapshotOrUpdateForStringAndString1(Struct, omit_defaults=True):
     snapshot: Dict[str, str]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        snapshot: Dict[str, str],
+    ) -> "SnapshotOrUpdateForStringAndString1":
+        return SnapshotOrUpdateForStringAndString1(
+            snapshot,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndString1(snapshot={self.snapshot})"
 
 
 Update5 = List[Union[str, Optional[str]]]
@@ -394,6 +706,18 @@ Update5 = List[Union[str, Optional[str]]]
 
 class SnapshotOrUpdateForStringAndString2(Struct, omit_defaults=True):
     updates: List[Update5]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        updates: List[Update5],
+    ) -> "SnapshotOrUpdateForStringAndString2":
+        return SnapshotOrUpdateForStringAndString2(
+            updates,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndString2(updates={self.updates})"
 
 
 SnapshotOrUpdateForStringAndString = Union[
@@ -404,12 +728,36 @@ SnapshotOrUpdateForStringAndString = Union[
 class SimpleDecimal(Struct, omit_defaults=True):
     simple: Decimal
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        simple: Decimal,
+    ) -> "SimpleDecimal":
+        return SimpleDecimal(
+            simple,
+        )
+
+    def __str__(self) -> str:
+        return f"SimpleDecimal(simple={self.simple})"
+
 
 Threshold = List[Decimal]
 
 
 class Varying1(Struct, omit_defaults=True):
     thresholds: List[Threshold]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        thresholds: List[Threshold],
+    ) -> "Varying1":
+        return Varying1(
+            thresholds,
+        )
+
+    def __str__(self) -> str:
+        return f"Varying1(thresholds={self.thresholds})"
 
 
 class Varying(Struct, omit_defaults=True):
@@ -418,6 +766,18 @@ class Varying(Struct, omit_defaults=True):
     """
 
     varying: Varying1
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        varying: Varying1,
+    ) -> "Varying":
+        return Varying(
+            varying,
+        )
+
+    def __str__(self) -> str:
+        return f"Varying(varying={self.varying})"
 
 
 TickSize = Union[SimpleDecimal, Varying]
@@ -1029,9 +1389,35 @@ class OptionLike(Struct, omit_defaults=True):
     strike: Decimal
     expiration: Optional[datetime] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        strike: Decimal,
+        expiration: Optional[datetime] = None,
+    ) -> "OptionLike":
+        return OptionLike(
+            strike,
+            expiration,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionLike(strike={self.strike},expiration={self.expiration})"
+
 
 class EventContractSeriesInstance2(Struct, omit_defaults=True):
     OptionLike: OptionLike
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        OptionLike: OptionLike,
+    ) -> "EventContractSeriesInstance2":
+        return EventContractSeriesInstance2(
+            OptionLike,
+        )
+
+    def __str__(self) -> str:
+        return f"EventContractSeriesInstance2(OptionLike={self.OptionLike})"
 
 
 class SpreadLeg(Struct, omit_defaults=True):
@@ -1046,9 +1432,35 @@ class SpreadLeg(Struct, omit_defaults=True):
     Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product: str,
+        quantity: Decimal,
+    ) -> "SpreadLeg":
+        return SpreadLeg(
+            product,
+            quantity,
+        )
+
+    def __str__(self) -> str:
+        return f"SpreadLeg(product={self.product},quantity={self.quantity})"
+
 
 class Outcome(Struct, omit_defaults=True):
     name: str
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        name: str,
+    ) -> "Outcome":
+        return Outcome(
+            name,
+        )
+
+    def __str__(self) -> str:
+        return f"Outcome(name={self.name})"
 
 
 class PutOrCall(str, Enum):
@@ -1078,6 +1490,50 @@ class AberrantFill(Struct, omit_defaults=True):
     ts: Optional[Annotated[Optional[int], Meta(title="trade_time")]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title="trader")]] = None
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        fill_id: str,
+        execution_venue: str,
+        account: Optional[str] = None,
+        recv_time_ns: Optional[int] = None,
+        recv_time: Optional[int] = None,
+        direction: Optional[OrderDir] = None,
+        fee: Optional[Decimal] = None,
+        fee_currency: Optional[str] = None,
+        fill_kind: Optional[FillKind] = None,
+        order_id: Optional[OrderId] = None,
+        price: Optional[Decimal] = None,
+        quantity: Optional[Decimal] = None,
+        symbol: Optional[str] = None,
+        trade_time_ns: Optional[int] = None,
+        trade_time: Optional[int] = None,
+        trader: Optional[UserId] = None,
+        exchange_fill_id: Optional[str] = None,
+    ) -> "AberrantFill":
+        return AberrantFill(
+            fill_id,
+            execution_venue,
+            account,
+            recv_time_ns,
+            recv_time,
+            direction,
+            fee,
+            fee_currency,
+            fill_kind,
+            order_id,
+            price,
+            quantity,
+            symbol,
+            trade_time_ns,
+            trade_time,
+            trader,
+            exchange_fill_id,
+        )
+
+    def __str__(self) -> str:
+        return f"AberrantFill(fill_id={self.id},execution_venue={self.x},account={self.a},recv_time_ns={self.atn},recv_time={self.ats},direction={self.d},fee={self.f},fee_currency={self.fu},fill_kind={self.k},order_id={self.oid},price={self.p},quantity={self.q},symbol={self.s},trade_time_ns={self.tn},trade_time={self.ts},trader={self.u},exchange_fill_id={self.xid})"
 
     @property
     def fill_id(self) -> str:
@@ -1221,10 +1677,40 @@ class CancelReject(Struct, omit_defaults=True):
     xid: str
     rm: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: OrderId,
+        xid: str,
+        rm: Optional[str] = None,
+    ) -> "CancelReject":
+        return CancelReject(
+            id,
+            xid,
+            rm,
+        )
+
+    def __str__(self) -> str:
+        return f"CancelReject(id={self.id},xid={self.xid},rm={self.rm})"
+
 
 class CptyLoginRequest(Struct, omit_defaults=True):
     account: str
     trader: UserId
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: str,
+        trader: UserId,
+    ) -> "CptyLoginRequest":
+        return CptyLoginRequest(
+            account,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"CptyLoginRequest(account={self.account},trader={self.trader})"
 
 
 class ExecutionInfo(Struct, omit_defaults=True):
@@ -1251,6 +1737,34 @@ class ExecutionInfo(Struct, omit_defaults=True):
     """
     initial_margin: Optional[Decimal] = None
     maintenance_margin: Optional[Decimal] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        execution_venue: str,
+        is_delisted: bool,
+        min_order_quantity: Decimal,
+        min_order_quantity_unit: MinOrderQuantityUnit,
+        step_size: Decimal,
+        tick_size: TickSize,
+        exchange_symbol: Optional[str] = None,
+        initial_margin: Optional[Decimal] = None,
+        maintenance_margin: Optional[Decimal] = None,
+    ) -> "ExecutionInfo":
+        return ExecutionInfo(
+            execution_venue,
+            is_delisted,
+            min_order_quantity,
+            min_order_quantity_unit,
+            step_size,
+            tick_size,
+            exchange_symbol,
+            initial_margin,
+            maintenance_margin,
+        )
+
+    def __str__(self) -> str:
+        return f"ExecutionInfo(execution_venue={self.execution_venue},is_delisted={self.is_delisted},min_order_quantity={self.min_order_quantity},min_order_quantity_unit={self.min_order_quantity_unit},step_size={self.step_size},tick_size={self.tick_size},exchange_symbol={self.exchange_symbol},initial_margin={self.initial_margin},maintenance_margin={self.maintenance_margin})"
 
 
 class Fill(Struct, omit_defaults=True):
@@ -1300,6 +1814,52 @@ class Fill(Struct, omit_defaults=True):
     oid: Optional[Annotated[Optional[OrderId], Meta(title="order_id")]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title="trader")]] = None
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        direction: OrderDir,
+        fill_id: str,
+        fill_kind: FillKind,
+        price: Decimal,
+        quantity: Decimal,
+        symbol: str,
+        trade_time_ns: int,
+        trade_time: int,
+        execution_venue: str,
+        account: Optional[str] = None,
+        is_taker: Optional[int] = None,
+        recv_time_ns: Optional[int] = None,
+        recv_time: Optional[int] = None,
+        fee: Optional[Decimal] = None,
+        fee_currency: Optional[str] = None,
+        order_id: Optional[OrderId] = None,
+        trader: Optional[UserId] = None,
+        exchange_fill_id: Optional[str] = None,
+    ) -> "Fill":
+        return Fill(
+            direction,
+            fill_id,
+            fill_kind,
+            price,
+            quantity,
+            symbol,
+            trade_time_ns,
+            trade_time,
+            execution_venue,
+            account,
+            is_taker,
+            recv_time_ns,
+            recv_time,
+            fee,
+            fee_currency,
+            order_id,
+            trader,
+            exchange_fill_id,
+        )
+
+    def __str__(self) -> str:
+        return f"Fill(direction={self.d},fill_id={self.id},fill_kind={self.k},price={self.p},quantity={self.q},symbol={self.s},trade_time_ns={self.tn},trade_time={self.ts},execution_venue={self.x},account={self.a},is_taker={self.agg},recv_time_ns={self.atn},recv_time={self.ats},fee={self.f},fee_currency={self.fu},order_id={self.oid},trader={self.u},exchange_fill_id={self.xid})"
 
     @property
     def direction(self) -> OrderDir:
@@ -1459,10 +2019,56 @@ class OptionsSeriesInfo(Struct, omit_defaults=True):
     underlying: str
     venue_discriminant: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        derivative_kind: DerivativeKind,
+        exercise_type: OptionsExerciseType,
+        expiration_time_of_day: time,
+        expiration_time_zone: TimeZone,
+        is_cash_settled: bool,
+        multiplier: Decimal,
+        options_series: str,
+        quote_symbol: str,
+        strikes_by_expiration: Dict[str, List[Decimal]],
+        underlying: str,
+        venue_discriminant: Optional[str] = None,
+    ) -> "OptionsSeriesInfo":
+        return OptionsSeriesInfo(
+            derivative_kind,
+            exercise_type,
+            expiration_time_of_day,
+            expiration_time_zone,
+            is_cash_settled,
+            multiplier,
+            options_series,
+            quote_symbol,
+            strikes_by_expiration,
+            underlying,
+            venue_discriminant,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionsSeriesInfo(derivative_kind={self.derivative_kind},exercise_type={self.exercise_type},expiration_time_of_day={self.expiration_time_of_day},expiration_time_zone={self.expiration_time_zone},is_cash_settled={self.is_cash_settled},multiplier={self.multiplier},options_series={self.options_series},quote_symbol={self.quote_symbol},strikes_by_expiration={self.strikes_by_expiration},underlying={self.underlying},venue_discriminant={self.venue_discriminant})"
+
 
 class OrderAck(Struct, omit_defaults=True):
     id: Annotated[OrderId, Meta(title="order_id")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        order_id: OrderId,
+        exchange_order_id: Optional[str] = None,
+    ) -> "OrderAck":
+        return OrderAck(
+            order_id,
+            exchange_order_id,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderAck(order_id={self.id},exchange_order_id={self.eid})"
 
     @property
     def order_id(self) -> OrderId:
@@ -1485,10 +2091,38 @@ class OrderCanceled(Struct, omit_defaults=True):
     id: OrderId
     xid: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: OrderId,
+        xid: Optional[str] = None,
+    ) -> "OrderCanceled":
+        return OrderCanceled(
+            id,
+            xid,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderCanceled(id={self.id},xid={self.xid})"
+
 
 class OrderCanceling(Struct, omit_defaults=True):
     id: OrderId
     xid: Optional[str] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: OrderId,
+        xid: Optional[str] = None,
+    ) -> "OrderCanceling":
+        return OrderCanceling(
+            id,
+            xid,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderCanceling(id={self.id},xid={self.xid})"
 
 
 class OrderReject(Struct, omit_defaults=True):
@@ -1496,11 +2130,39 @@ class OrderReject(Struct, omit_defaults=True):
     r: OrderRejectReason
     rm: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: OrderId,
+        r: OrderRejectReason,
+        rm: Optional[str] = None,
+    ) -> "OrderReject":
+        return OrderReject(
+            id,
+            r,
+            rm,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderReject(id={self.id},r={self.r},rm={self.rm})"
+
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
     Struct, omit_defaults=True
 ):
     snapshot: Dict[str, SnapshotOrUpdateForStringAndString]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        snapshot: Dict[str, SnapshotOrUpdateForStringAndString],
+    ) -> "SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1":
+        return SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
+            snapshot,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(snapshot={self.snapshot})"
 
 
 Update = List[Union[AliasKind, Optional[SnapshotOrUpdateForStringAndString]]]
@@ -1510,6 +2172,18 @@ class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(
     Struct, omit_defaults=True
 ):
     updates: List[Update]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        updates: List[Update],
+    ) -> "SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2":
+        return SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(
+            updates,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(updates={self.updates})"
 
 
 SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString = Union[
@@ -1521,12 +2195,38 @@ SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString = Union[
 class SnapshotOrUpdateForStringAndOptionsSeriesInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, OptionsSeriesInfo]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        snapshot: Dict[str, OptionsSeriesInfo],
+    ) -> "SnapshotOrUpdateForStringAndOptionsSeriesInfo1":
+        return SnapshotOrUpdateForStringAndOptionsSeriesInfo1(
+            snapshot,
+        )
+
+    def __str__(self) -> str:
+        return (
+            f"SnapshotOrUpdateForStringAndOptionsSeriesInfo1(snapshot={self.snapshot})"
+        )
+
 
 Update1 = List[Union[str, Optional[OptionsSeriesInfo]]]
 
 
 class SnapshotOrUpdateForStringAndOptionsSeriesInfo2(Struct, omit_defaults=True):
     updates: List[Update1]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        updates: List[Update1],
+    ) -> "SnapshotOrUpdateForStringAndOptionsSeriesInfo2":
+        return SnapshotOrUpdateForStringAndOptionsSeriesInfo2(
+            updates,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndOptionsSeriesInfo2(updates={self.updates})"
 
 
 SnapshotOrUpdateForStringAndOptionsSeriesInfo = Union[
@@ -1545,19 +2245,85 @@ class TwapParams(Struct, omit_defaults=True):
     symbol: str
     take_through_frac: Optional[Decimal] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        dir: OrderDir,
+        end_time: datetime,
+        execution_venue: str,
+        interval: HumanDuration,
+        quantity: Decimal,
+        reject_lockout: HumanDuration,
+        symbol: str,
+        take_through_frac: Optional[Decimal] = None,
+    ) -> "TwapParams":
+        return TwapParams(
+            dir,
+            end_time,
+            execution_venue,
+            interval,
+            quantity,
+            reject_lockout,
+            symbol,
+            take_through_frac,
+        )
+
+    def __str__(self) -> str:
+        return f"TwapParams(dir={self.dir},end_time={self.end_time},execution_venue={self.execution_venue},interval={self.interval},quantity={self.quantity},reject_lockout={self.reject_lockout},symbol={self.symbol},take_through_frac={self.take_through_frac})"
+
 
 class Account(Struct, omit_defaults=True):
     id: str
     name: AccountName
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: str,
+        name: AccountName,
+    ) -> "Account":
+        return Account(
+            id,
+            name,
+        )
+
+    def __str__(self) -> str:
+        return f"Account(id={self.id},name={self.name})"
 
 
 class FutureSpread(Struct, omit_defaults=True):
     legs: List[SpreadLeg]
     product_type: Literal["FutureSpread"]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        legs: List[SpreadLeg],
+        product_type: Literal["FutureSpread"],
+    ) -> "FutureSpread":
+        return FutureSpread(
+            legs,
+            product_type,
+        )
+
+    def __str__(self) -> str:
+        return f"FutureSpread(legs={self.legs},product_type={self.product_type})"
+
 
 class SnapshotOrUpdateForStringAndExecutionInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ExecutionInfo]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        snapshot: Dict[str, ExecutionInfo],
+    ) -> "SnapshotOrUpdateForStringAndExecutionInfo1":
+        return SnapshotOrUpdateForStringAndExecutionInfo1(
+            snapshot,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndExecutionInfo1(snapshot={self.snapshot})"
 
 
 Update4 = List[Union[str, Optional[ExecutionInfo]]]
@@ -1565,6 +2331,18 @@ Update4 = List[Union[str, Optional[ExecutionInfo]]]
 
 class SnapshotOrUpdateForStringAndExecutionInfo2(Struct, omit_defaults=True):
     updates: List[Update4]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        updates: List[Update4],
+    ) -> "SnapshotOrUpdateForStringAndExecutionInfo2":
+        return SnapshotOrUpdateForStringAndExecutionInfo2(
+            updates,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndExecutionInfo2(updates={self.updates})"
 
 
 SnapshotOrUpdateForStringAndExecutionInfo = Union[
@@ -1576,9 +2354,33 @@ SnapshotOrUpdateForStringAndExecutionInfo = Union[
 class Enumerated(Struct, omit_defaults=True):
     outcome: Outcome
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        outcome: Outcome,
+    ) -> "Enumerated":
+        return Enumerated(
+            outcome,
+        )
+
+    def __str__(self) -> str:
+        return f"Enumerated(outcome={self.outcome})"
+
 
 class EventContractSeriesInstance1(Struct, omit_defaults=True):
     Enumerated: Enumerated
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        Enumerated: Enumerated,
+    ) -> "EventContractSeriesInstance1":
+        return EventContractSeriesInstance1(
+            Enumerated,
+        )
+
+    def __str__(self) -> str:
+        return f"EventContractSeriesInstance1(Enumerated={self.Enumerated})"
 
 
 EventContractSeriesInstance = Union[
@@ -1595,17 +2397,61 @@ class OptionsSeriesInstance(Struct, omit_defaults=True):
     put_or_call: PutOrCall
     strike: Decimal
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        expiration: datetime,
+        put_or_call: PutOrCall,
+        strike: Decimal,
+    ) -> "OptionsSeriesInstance":
+        return OptionsSeriesInstance(
+            expiration,
+            put_or_call,
+            strike,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionsSeriesInstance(expiration={self.expiration},put_or_call={self.put_or_call},strike={self.strike})"
+
 
 class AccountWithPermissions(Struct, omit_defaults=True):
     account: Account
     permissions: AccountPermissions
     trader: UserId
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: Account,
+        permissions: AccountPermissions,
+        trader: UserId,
+    ) -> "AccountWithPermissions":
+        return AccountWithPermissions(
+            account,
+            permissions,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader})"
+
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(
     Struct, omit_defaults=True
 ):
     snapshot: Dict[str, SnapshotOrUpdateForStringAndExecutionInfo]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        snapshot: Dict[str, SnapshotOrUpdateForStringAndExecutionInfo],
+    ) -> "SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1":
+        return SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(
+            snapshot,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(snapshot={self.snapshot})"
 
 
 Update3 = List[Union[str, Optional[SnapshotOrUpdateForStringAndExecutionInfo]]]
@@ -1615,6 +2461,18 @@ class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(
     Struct, omit_defaults=True
 ):
     updates: List[Update3]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        updates: List[Update3],
+    ) -> "SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2":
+        return SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(
+            updates,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(updates={self.updates})"
 
 
 SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo = Union[
@@ -1628,11 +2486,43 @@ class Option(Struct, omit_defaults=True):
     product_type: Literal["Option"]
     series: str
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        instance: OptionsSeriesInstance,
+        product_type: Literal["Option"],
+        series: str,
+    ) -> "Option":
+        return Option(
+            instance,
+            product_type,
+            series,
+        )
+
+    def __str__(self) -> str:
+        return f"Option(instance={self.instance},product_type={self.product_type},series={self.series})"
+
 
 class EventContract(Struct, omit_defaults=True):
     instance: EventContractSeriesInstance
     product_type: Literal["EventContract"]
     series: str
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        instance: EventContractSeriesInstance,
+        product_type: Literal["EventContract"],
+        series: str,
+    ) -> "EventContract":
+        return EventContract(
+            instance,
+            product_type,
+            series,
+        )
+
+    def __str__(self) -> str:
+        return f"EventContract(instance={self.instance},product_type={self.product_type},series={self.series})"
 
 
 ProductType = Union[
@@ -1655,9 +2545,37 @@ class ProductInfo(Struct, omit_defaults=True):
     price_display_format: Optional[PriceDisplayFormat] = None
     primary_venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        product_type: ProductType,
+        price_display_format: Optional[PriceDisplayFormat] = None,
+        primary_venue: Optional[str] = None,
+    ) -> "ProductInfo":
+        return ProductInfo(
+            product_type,
+            price_display_format,
+            primary_venue,
+        )
+
+    def __str__(self) -> str:
+        return f"ProductInfo(product_type={self.product_type},price_display_format={self.price_display_format},primary_venue={self.primary_venue})"
+
 
 class SnapshotOrUpdateForStringAndProductInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ProductInfo]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        snapshot: Dict[str, ProductInfo],
+    ) -> "SnapshotOrUpdateForStringAndProductInfo1":
+        return SnapshotOrUpdateForStringAndProductInfo1(
+            snapshot,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndProductInfo1(snapshot={self.snapshot})"
 
 
 Update2 = List[Union[str, Optional[ProductInfo]]]
@@ -1665,6 +2583,18 @@ Update2 = List[Union[str, Optional[ProductInfo]]]
 
 class SnapshotOrUpdateForStringAndProductInfo2(Struct, omit_defaults=True):
     updates: List[Update2]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        updates: List[Update2],
+    ) -> "SnapshotOrUpdateForStringAndProductInfo2":
+        return SnapshotOrUpdateForStringAndProductInfo2(
+            updates,
+        )
+
+    def __str__(self) -> str:
+        return f"SnapshotOrUpdateForStringAndProductInfo2(updates={self.updates})"
 
 
 SnapshotOrUpdateForStringAndProductInfo = Union[

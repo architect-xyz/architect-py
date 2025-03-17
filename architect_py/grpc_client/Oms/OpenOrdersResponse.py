@@ -12,3 +12,15 @@ from .Order import Order
 
 class OpenOrdersResponse(Struct, omit_defaults=True):
     open_orders: List[Order]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        open_orders: List[Order],
+    ) -> "OpenOrdersResponse":
+        return OpenOrdersResponse(
+            open_orders,
+        )
+
+    def __str__(self) -> str:
+        return f"OpenOrdersResponse(open_orders={self.open_orders})"

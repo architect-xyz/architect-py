@@ -12,3 +12,15 @@ from .Ticker import Ticker
 
 class TickersResponse(Struct, omit_defaults=True):
     tickers: List[Ticker]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        tickers: List[Ticker],
+    ) -> "TickersResponse":
+        return TickersResponse(
+            tickers,
+        )
+
+    def __str__(self) -> str:
+        return f"TickersResponse(tickers={self.tickers})"

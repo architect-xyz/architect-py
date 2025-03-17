@@ -27,6 +27,28 @@ class L2BookSnapshot(Struct, omit_defaults=True):
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        asks: List[Ask],
+        bids: List[Bid],
+        sequence_id: int,
+        sequence_number: int,
+        timestamp_ns: int,
+        timestamp: int,
+    ) -> "L2BookSnapshot":
+        return L2BookSnapshot(
+            asks,
+            bids,
+            sequence_id,
+            sequence_number,
+            timestamp_ns,
+            timestamp,
+        )
+
+    def __str__(self) -> str:
+        return f"L2BookSnapshot(asks={self.a},bids={self.b},sequence_id={self.sid},sequence_number={self.sn},timestamp_ns={self.tn},timestamp={self.ts})"
+
     @property
     def asks(self) -> List[Ask]:
         return self.a

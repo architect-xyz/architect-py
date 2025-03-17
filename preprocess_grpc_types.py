@@ -239,7 +239,6 @@ def correct_variant_types(
 
             if type_name in type_to_json_file:
                 ref = f"../{type_to_json_file[type_name]}/#"
-                enum_ref["ref_correction"] = type_name
             else:
                 ref = f"../definitions.json#/{type_name}"
             enum_ref["$ref"] = ref

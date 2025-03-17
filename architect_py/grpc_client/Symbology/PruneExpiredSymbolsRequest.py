@@ -24,6 +24,18 @@ class PruneExpiredSymbolsRequest(Struct, omit_defaults=True):
     If None then it will just use server current time; otherwise, specify a unix timestamp in seconds
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        cutoff: Optional[int] = None,
+    ) -> "PruneExpiredSymbolsRequest":
+        return PruneExpiredSymbolsRequest(
+            cutoff,
+        )
+
+    def __str__(self) -> str:
+        return f"PruneExpiredSymbolsRequest(cutoff={self.cutoff})"
+
     @staticmethod
     def get_response_type():
         return PruneExpiredSymbolsResponse

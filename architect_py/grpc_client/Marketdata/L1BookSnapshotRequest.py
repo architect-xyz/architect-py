@@ -10,6 +10,18 @@ from msgspec import Struct
 class L1BookSnapshotRequest(Struct, omit_defaults=True):
     symbol: str
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+    ) -> "L1BookSnapshotRequest":
+        return L1BookSnapshotRequest(
+            symbol,
+        )
+
+    def __str__(self) -> str:
+        return f"L1BookSnapshotRequest(symbol={self.symbol})"
+
     @staticmethod
     def get_response_type():
         return L1BookSnapshot

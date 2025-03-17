@@ -12,3 +12,15 @@ from .AccountSummary import AccountSummary
 
 class AccountSummariesResponse(Struct, omit_defaults=True):
     account_summaries: List[AccountSummary]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account_summaries: List[AccountSummary],
+    ) -> "AccountSummariesResponse":
+        return AccountSummariesResponse(
+            account_summaries,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountSummariesResponse(account_summaries={self.account_summaries})"

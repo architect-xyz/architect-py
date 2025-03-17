@@ -17,6 +17,26 @@ class L1BookSnapshot(Struct, omit_defaults=True):
     a: Optional[Annotated[List[Decimal], Meta(title="best_ask")]] = None
     b: Optional[Annotated[List[Decimal], Meta(title="best_bid")]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+        timestamp_ns: int,
+        timestamp: int,
+        best_ask: Optional[List[Decimal]] = None,
+        best_bid: Optional[List[Decimal]] = None,
+    ) -> "L1BookSnapshot":
+        return L1BookSnapshot(
+            symbol,
+            timestamp_ns,
+            timestamp,
+            best_ask,
+            best_bid,
+        )
+
+    def __str__(self) -> str:
+        return f"L1BookSnapshot(symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},best_ask={self.a},best_bid={self.b})"
+
     @property
     def symbol(self) -> str:
         return self.s

@@ -10,3 +10,15 @@ from .. import definitions
 
 class HealthCheckResponse(Struct, omit_defaults=True):
     status: definitions.HealthStatus
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        status: definitions.HealthStatus,
+    ) -> "HealthCheckResponse":
+        return HealthCheckResponse(
+            status,
+        )
+
+    def __str__(self) -> str:
+        return f"HealthCheckResponse(status={self.status})"

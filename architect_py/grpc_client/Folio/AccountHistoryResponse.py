@@ -12,3 +12,15 @@ from .AccountSummary import AccountSummary
 
 class AccountHistoryResponse(Struct, omit_defaults=True):
     history: List[AccountSummary]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        history: List[AccountSummary],
+    ) -> "AccountHistoryResponse":
+        return AccountHistoryResponse(
+            history,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountHistoryResponse(history={self.history})"

@@ -45,11 +45,13 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
+from architect_py.grpc_client.Oms import PlaceOrderRequest
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 from architect_py.grpc_client.Orderflow.OrderflowRequest import (
     OrderflowRequest,
     OrderflowRequest_route,
     OrderflowRequestUnannotatedResponseType,
+    PlaceOrder,
 )
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
@@ -308,6 +310,10 @@ class GRPCClient:
     async def subscribe_orderflow_stream(
         self, request_iterator: AsyncIterator[OrderflowRequest]
     ) -> AsyncIterator[Orderflow]:
+        """
+        subscribe_orderflow_stream is a duplex_stream meaning that it is a stream that can be read from and written to.
+        This is a stream that will be used to send orders to the Architect and receive order updates from the Architect.
+        """
         decoder = self.get_decoder(OrderflowRequestUnannotatedResponseType)
         stub = self.channel.stream_stream(
             OrderflowRequest_route,

@@ -19,6 +19,28 @@ class OpenOrdersRequest(Struct, omit_defaults=True):
     trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: Optional[definitions.AccountIdOrName] = None,
+        order_ids: Optional[List[definitions.OrderId]] = None,
+        parent_order_id: Optional[definitions.OrderId] = None,
+        symbol: Optional[str] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+        venue: Optional[str] = None,
+    ) -> "OpenOrdersRequest":
+        return OpenOrdersRequest(
+            account,
+            order_ids,
+            parent_order_id,
+            symbol,
+            trader,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"OpenOrdersRequest(account={self.account},order_ids={self.order_ids},parent_order_id={self.parent_order_id},symbol={self.symbol},trader={self.trader},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return OpenOrdersResponse

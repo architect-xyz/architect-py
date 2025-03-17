@@ -13,6 +13,20 @@ class MarketStatusRequest(Struct, omit_defaults=True):
     symbol: str
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+        venue: Optional[str] = None,
+    ) -> "MarketStatusRequest":
+        return MarketStatusRequest(
+            symbol,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"MarketStatusRequest(symbol={self.symbol},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return MarketStatus

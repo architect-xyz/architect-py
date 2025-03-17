@@ -48,3 +48,37 @@ class AccountSummary(Struct, omit_defaults=True):
     """
     unrealized_pnl: Optional[Decimal] = None
     yesterday_equity: Optional[Decimal] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: str,
+        balances: Dict[str, Decimal],
+        positions: Dict[str, List[definitions.AccountPosition]],
+        timestamp: datetime,
+        cash_excess: Optional[Decimal] = None,
+        equity: Optional[Decimal] = None,
+        position_margin: Optional[Decimal] = None,
+        purchasing_power: Optional[Decimal] = None,
+        realized_pnl: Optional[Decimal] = None,
+        total_margin: Optional[Decimal] = None,
+        unrealized_pnl: Optional[Decimal] = None,
+        yesterday_equity: Optional[Decimal] = None,
+    ) -> "AccountSummary":
+        return AccountSummary(
+            account,
+            balances,
+            positions,
+            timestamp,
+            cash_excess,
+            equity,
+            position_margin,
+            purchasing_power,
+            realized_pnl,
+            total_margin,
+            unrealized_pnl,
+            yesterday_equity,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountSummary(account={self.account},balances={self.balances},positions={self.positions},timestamp={self.timestamp},cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"

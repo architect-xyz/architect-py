@@ -18,6 +18,26 @@ class TickersRequest(Struct, omit_defaults=True):
     symbols: Optional[List[str]] = None
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        i: Optional[int] = None,
+        k: Optional[definitions.SortTickersBy] = None,
+        n: Optional[int] = None,
+        symbols: Optional[List[str]] = None,
+        venue: Optional[str] = None,
+    ) -> "TickersRequest":
+        return TickersRequest(
+            i,
+            k,
+            n,
+            symbols,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"TickersRequest(i={self.i},k={self.k},n={self.n},symbols={self.symbols},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return TickersResponse

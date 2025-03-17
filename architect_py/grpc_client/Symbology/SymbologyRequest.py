@@ -10,6 +10,14 @@ from msgspec import Struct
 class SymbologyRequest(Struct, omit_defaults=True):
     pass
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new() -> "SymbologyRequest":
+        return SymbologyRequest()
+
+    def __str__(self) -> str:
+        return f"SymbologyRequest()"
+
     @staticmethod
     def get_response_type():
         return SymbologySnapshot

@@ -13,6 +13,20 @@ class TickerRequest(Struct, omit_defaults=True):
     symbol: str
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+        venue: Optional[str] = None,
+    ) -> "TickerRequest":
+        return TickerRequest(
+            symbol,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"TickerRequest(symbol={self.symbol},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return Ticker

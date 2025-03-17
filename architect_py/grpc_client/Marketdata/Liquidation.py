@@ -21,6 +21,28 @@ class Liquidation(Struct, omit_defaults=True):
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        direction: OrderDir,
+        price: Decimal,
+        size: Decimal,
+        symbol: str,
+        timestamp_ns: int,
+        timestamp: int,
+    ) -> "Liquidation":
+        return Liquidation(
+            direction,
+            price,
+            size,
+            symbol,
+            timestamp_ns,
+            timestamp,
+        )
+
+    def __str__(self) -> str:
+        return f"Liquidation(direction={self.d},price={self.p},size={self.q},symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts})"
+
     @property
     def direction(self) -> OrderDir:
         return self.d

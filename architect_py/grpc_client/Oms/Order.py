@@ -47,6 +47,60 @@ class Order(Struct, omit_defaults=True):
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: str,
+        dir: OrderDir,
+        id: definitions.OrderId,
+        status: definitions.OrderStatus,
+        quantity: Decimal,
+        symbol: str,
+        source: definitions.OrderSource,
+        time_in_force: definitions.TimeInForce,
+        recv_time_ns: int,
+        recv_time: int,
+        trader: definitions.UserId,
+        execution_venue: str,
+        filled_quantity: Decimal,
+        limit_price: Decimal,
+        order_type: OrderType,
+        exchange_order_id: Optional[str] = None,
+        parent_id: Optional[definitions.OrderId] = None,
+        reject_reason: Optional[definitions.OrderRejectReason] = None,
+        reject_message: Optional[str] = None,
+        average_fill_price: Optional[Decimal] = None,
+        post_only: Optional[bool] = None,
+        trigger_price: Optional[Decimal] = None,
+    ) -> "Order":
+        return Order(
+            account,
+            dir,
+            id,
+            status,
+            quantity,
+            symbol,
+            source,
+            time_in_force,
+            recv_time_ns,
+            recv_time,
+            trader,
+            execution_venue,
+            filled_quantity,
+            limit_price,
+            order_type,
+            exchange_order_id,
+            parent_id,
+            reject_reason,
+            reject_message,
+            average_fill_price,
+            post_only,
+            trigger_price,
+        )
+
+    def __str__(self) -> str:
+        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},limit_price={self.p},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},average_fill_price={self.xp},post_only={self.po},trigger_price={self.tp})"
+
     @property
     def account(self) -> str:
         return self.a

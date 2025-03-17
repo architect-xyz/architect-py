@@ -19,6 +19,24 @@ class HistoricalCandlesRequest(Struct, omit_defaults=True):
     start_date: datetime
     symbol: str
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        candle_width: definitions.CandleWidth,
+        end_date: datetime,
+        start_date: datetime,
+        symbol: str,
+    ) -> "HistoricalCandlesRequest":
+        return HistoricalCandlesRequest(
+            candle_width,
+            end_date,
+            start_date,
+            symbol,
+        )
+
+    def __str__(self) -> str:
+        return f"HistoricalCandlesRequest(candle_width={self.candle_width},end_date={self.end_date},start_date={self.start_date},symbol={self.symbol})"
+
     @staticmethod
     def get_response_type():
         return HistoricalCandlesResponse

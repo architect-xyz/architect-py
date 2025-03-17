@@ -34,6 +34,22 @@ class SubscribeOrderflowRequest(Struct, omit_defaults=True):
     execution_venue: Optional[str] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: Optional[definitions.AccountIdOrName] = None,
+        execution_venue: Optional[str] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+    ) -> "SubscribeOrderflowRequest":
+        return SubscribeOrderflowRequest(
+            account,
+            execution_venue,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"SubscribeOrderflowRequest(account={self.account},execution_venue={self.execution_venue},trader={self.trader})"
+
     @staticmethod
     def get_response_type():
         return Orderflow

@@ -22,6 +22,28 @@ class SymbologySnapshot(Struct, omit_defaults=True):
     sn: Annotated[int, Meta(ge=0, title="sequence_number")]
     product_aliases: Optional[Dict[str, Dict[str, str]]] = {}
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        execution_info: Dict[str, Dict[str, definitions.ExecutionInfo]],
+        options_series: Dict[str, definitions.OptionsSeriesInfo],
+        products: Dict[str, definitions.ProductInfo],
+        sequence_id: int,
+        sequence_number: int,
+        product_aliases: Optional[Dict[str, Dict[str, str]]] = {},
+    ) -> "SymbologySnapshot":
+        return SymbologySnapshot(
+            execution_info,
+            options_series,
+            products,
+            sequence_id,
+            sequence_number,
+            product_aliases,
+        )
+
+    def __str__(self) -> str:
+        return f"SymbologySnapshot(execution_info={self.execution_info},options_series={self.options_series},products={self.products},sequence_id={self.sid},sequence_number={self.sn},product_aliases={self.product_aliases})"
+
     @property
     def sequence_id(self) -> int:
         return self.sid

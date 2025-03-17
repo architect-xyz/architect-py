@@ -27,6 +27,20 @@ class AccountSummariesRequest(Struct, omit_defaults=True):
     """
     trader: Optional[definitions.TraderIdOrEmail] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        accounts: Optional[List[definitions.AccountIdOrName]] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+    ) -> "AccountSummariesRequest":
+        return AccountSummariesRequest(
+            accounts,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountSummariesRequest(accounts={self.accounts},trader={self.trader})"
+
     @staticmethod
     def get_response_type():
         return AccountSummariesResponse

@@ -18,6 +18,26 @@ class PendingCancelsRequest(Struct, omit_defaults=True):
     trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: Optional[definitions.AccountIdOrName] = None,
+        cancel_ids: Optional[List[str]] = None,
+        symbol: Optional[str] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+        venue: Optional[str] = None,
+    ) -> "PendingCancelsRequest":
+        return PendingCancelsRequest(
+            account,
+            cancel_ids,
+            symbol,
+            trader,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"PendingCancelsRequest(account={self.account},cancel_ids={self.cancel_ids},symbol={self.symbol},trader={self.trader},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return PendingCancelsResponse

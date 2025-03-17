@@ -28,6 +28,34 @@ class SymbologyUpdate(Struct, omit_defaults=True):
     ] = None
     products: Optional[definitions.SnapshotOrUpdateForStringAndProductInfo] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        sequence_id: int,
+        sequence_number: int,
+        execution_info: Optional[
+            definitions.SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo
+        ] = None,
+        options_series: Optional[
+            definitions.SnapshotOrUpdateForStringAndOptionsSeriesInfo
+        ] = None,
+        product_aliases: Optional[
+            definitions.SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString
+        ] = None,
+        products: Optional[definitions.SnapshotOrUpdateForStringAndProductInfo] = None,
+    ) -> "SymbologyUpdate":
+        return SymbologyUpdate(
+            sequence_id,
+            sequence_number,
+            execution_info,
+            options_series,
+            product_aliases,
+            products,
+        )
+
+    def __str__(self) -> str:
+        return f"SymbologyUpdate(sequence_id={self.sid},sequence_number={self.sn},execution_info={self.execution_info},options_series={self.options_series},product_aliases={self.product_aliases},products={self.products})"
+
     @property
     def sequence_id(self) -> int:
         return self.sid

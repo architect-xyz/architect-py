@@ -28,6 +28,18 @@ class SubscribeTickersRequest(Struct, omit_defaults=True):
     If None, subscribe from all symbols on the feed
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbols: Optional[List[str]] = None,
+    ) -> "SubscribeTickersRequest":
+        return SubscribeTickersRequest(
+            symbols,
+        )
+
+    def __str__(self) -> str:
+        return f"SubscribeTickersRequest(symbols={self.symbols})"
+
     @staticmethod
     def get_response_type():
         return TickerUpdate

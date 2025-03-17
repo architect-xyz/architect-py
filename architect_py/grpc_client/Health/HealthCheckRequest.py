@@ -24,6 +24,18 @@ class HealthCheckRequest(Struct, omit_defaults=True):
     Generally, this will only be set when querying the API gateway.  It's not recommended to rely on internal subservice names being stable.
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        service: Optional[str] = None,
+    ) -> "HealthCheckRequest":
+        return HealthCheckRequest(
+            service,
+        )
+
+    def __str__(self) -> str:
+        return f"HealthCheckRequest(service={self.service})"
+
     @staticmethod
     def get_response_type():
         return HealthCheckResponse

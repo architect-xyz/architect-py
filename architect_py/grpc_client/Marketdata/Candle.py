@@ -37,6 +37,62 @@ class Candle(Struct, omit_defaults=True):
     mo: Optional[Annotated[Optional[Decimal], Meta(title="mid_open")]] = None
     o: Optional[Annotated[Optional[Decimal], Meta(title="open")]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        sell_volume: Decimal,
+        buy_volume: Decimal,
+        symbol: str,
+        timestamp_ns: int,
+        timestamp: int,
+        volume: Decimal,
+        width: definitions.CandleWidth,
+        ask_close: Optional[Decimal] = None,
+        ask_high: Optional[Decimal] = None,
+        ask_low: Optional[Decimal] = None,
+        ask_open: Optional[Decimal] = None,
+        bid_close: Optional[Decimal] = None,
+        bid_high: Optional[Decimal] = None,
+        bid_low: Optional[Decimal] = None,
+        bid_open: Optional[Decimal] = None,
+        close: Optional[Decimal] = None,
+        high: Optional[Decimal] = None,
+        low: Optional[Decimal] = None,
+        mid_close: Optional[Decimal] = None,
+        mid_high: Optional[Decimal] = None,
+        mid_low: Optional[Decimal] = None,
+        mid_open: Optional[Decimal] = None,
+        open: Optional[Decimal] = None,
+    ) -> "Candle":
+        return Candle(
+            sell_volume,
+            buy_volume,
+            symbol,
+            timestamp_ns,
+            timestamp,
+            volume,
+            width,
+            ask_close,
+            ask_high,
+            ask_low,
+            ask_open,
+            bid_close,
+            bid_high,
+            bid_low,
+            bid_open,
+            close,
+            high,
+            low,
+            mid_close,
+            mid_high,
+            mid_low,
+            mid_open,
+            open,
+        )
+
+    def __str__(self) -> str:
+        return f"Candle(sell_volume={self.av},buy_volume={self.bv},symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},volume={self.v},width={self.w},ask_close={self.ac},ask_high={self.ah},ask_low={self.al},ask_open={self.ao},bid_close={self.bc},bid_high={self.bh},bid_low={self.bl},bid_open={self.bo},close={self.c},high={self.h},low={self.l},mid_close={self.mc},mid_high={self.mh},mid_low={self.ml},mid_open={self.mo},open={self.o})"
+
     @property
     def sell_volume(self) -> Decimal:
         return self.av

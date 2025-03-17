@@ -19,6 +19,28 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
     parent_order_id: Optional[definitions.OrderId] = None
     trader: Optional[definitions.UserId] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        algo_name: str,
+        params: definitions.TwapParams,
+        account: Optional[str] = None,
+        algo_order_id: Optional[definitions.OrderId] = None,
+        parent_order_id: Optional[definitions.OrderId] = None,
+        trader: Optional[definitions.UserId] = None,
+    ) -> "CreateAlgoOrderRequestForTwapAlgo":
+        return CreateAlgoOrderRequestForTwapAlgo(
+            algo_name,
+            params,
+            account,
+            algo_order_id,
+            parent_order_id,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"CreateAlgoOrderRequestForTwapAlgo(algo_name={self.algo_name},params={self.params},account={self.account},algo_order_id={self.algo_order_id},parent_order_id={self.parent_order_id},trader={self.trader})"
+
     @staticmethod
     def get_response_type():
         return AlgoOrderForTwapAlgo

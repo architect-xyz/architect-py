@@ -12,6 +12,18 @@ from .. import definitions
 class AccountSummaryRequest(Struct, omit_defaults=True):
     account: definitions.AccountIdOrName
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: definitions.AccountIdOrName,
+    ) -> "AccountSummaryRequest":
+        return AccountSummaryRequest(
+            account,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountSummaryRequest(account={self.account})"
+
     @staticmethod
     def get_response_type():
         return AccountSummary

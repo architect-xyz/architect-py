@@ -20,6 +20,18 @@ class SubscribeL1BookSnapshotsRequest(Struct, omit_defaults=True):
     If None, subscribe from all symbols on the feed
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbols: Optional[List[str]] = None,
+    ) -> "SubscribeL1BookSnapshotsRequest":
+        return SubscribeL1BookSnapshotsRequest(
+            symbols,
+        )
+
+    def __str__(self) -> str:
+        return f"SubscribeL1BookSnapshotsRequest(symbols={self.symbols})"
+
     @staticmethod
     def get_response_type():
         return L1BookSnapshot

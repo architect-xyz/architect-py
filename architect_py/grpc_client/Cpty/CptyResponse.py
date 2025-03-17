@@ -20,10 +20,48 @@ class UpdateAccountSummary(Struct, omit_defaults=True, tag_field="t", tag="as"):
     positions: Optional[Dict[str, Any]] = None
     statistics: Optional[definitions.AccountStatistics] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: definitions.AccountIdOrName,
+        is_snapshot: bool,
+        timestamp: int,
+        timestamp_ns: int,
+        balances: Optional[Dict[str, Any]] = None,
+        positions: Optional[Dict[str, Any]] = None,
+        statistics: Optional[definitions.AccountStatistics] = None,
+    ) -> "UpdateAccountSummary":
+        return UpdateAccountSummary(
+            account,
+            is_snapshot,
+            timestamp,
+            timestamp_ns,
+            balances,
+            positions,
+            statistics,
+        )
+
+    def __str__(self) -> str:
+        return f"UpdateAccountSummary(account={self.account},is_snapshot={self.is_snapshot},timestamp={self.timestamp},timestamp_ns={self.timestamp_ns},balances={self.balances},positions={self.positions},statistics={self.statistics})"
+
 
 class ReconcileOpenOrder(Struct, omit_defaults=True, tag_field="t", tag="oo"):
     orders: List[Order]
     snapshot_for_account: Optional[definitions.AccountIdOrName] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        orders: List[Order],
+        snapshot_for_account: Optional[definitions.AccountIdOrName] = None,
+    ) -> "ReconcileOpenOrder":
+        return ReconcileOpenOrder(
+            orders,
+            snapshot_for_account,
+        )
+
+    def __str__(self) -> str:
+        return f"ReconcileOpenOrder(orders={self.orders},snapshot_for_account={self.snapshot_for_account})"
 
 
 class ReconcileOrder(Order, omit_defaults=True, tag_field="t", tag="ro"):

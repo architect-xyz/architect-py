@@ -17,3 +17,25 @@ class Cancel(Struct, omit_defaults=True):
     ts: int
     xid: str
     r: Optional[str] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        id: definitions.OrderId,
+        o: definitions.CancelStatus,
+        tn: int,
+        ts: int,
+        xid: str,
+        r: Optional[str] = None,
+    ) -> "Cancel":
+        return Cancel(
+            id,
+            o,
+            tn,
+            ts,
+            xid,
+            r,
+        )
+
+    def __str__(self) -> str:
+        return f"Cancel(id={self.id},o={self.o},tn={self.tn},ts={self.ts},xid={self.xid},r={self.r})"

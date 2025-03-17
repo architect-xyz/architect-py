@@ -21,6 +21,20 @@ class SubscribeTradesRequest(Struct, omit_defaults=True):
     """
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: Optional[str] = None,
+        venue: Optional[str] = None,
+    ) -> "SubscribeTradesRequest":
+        return SubscribeTradesRequest(
+            symbol,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"SubscribeTradesRequest(symbol={self.symbol},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return Trade

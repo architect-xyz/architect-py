@@ -26,6 +26,20 @@ class CancelOrderRequest(Struct, omit_defaults=True):
     If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.
     """
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        order_id: definitions.OrderId,
+        cancel_id: Optional[str] = None,
+    ) -> "CancelOrderRequest":
+        return CancelOrderRequest(
+            order_id,
+            cancel_id,
+        )
+
+    def __str__(self) -> str:
+        return f"CancelOrderRequest(order_id={self.id},cancel_id={self.xid})"
+
     @property
     def order_id(self) -> definitions.OrderId:
         return self.id

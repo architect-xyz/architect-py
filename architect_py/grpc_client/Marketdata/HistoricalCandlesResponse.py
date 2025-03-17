@@ -12,3 +12,15 @@ from .Candle import Candle
 
 class HistoricalCandlesResponse(Struct, omit_defaults=True):
     candles: List[Candle]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        candles: List[Candle],
+    ) -> "HistoricalCandlesResponse":
+        return HistoricalCandlesResponse(
+            candles,
+        )
+
+    def __str__(self) -> str:
+        return f"HistoricalCandlesResponse(candles={self.candles})"

@@ -54,6 +54,44 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        dir: OrderDir,
+        quantity: Decimal,
+        symbol: str,
+        time_in_force: definitions.TimeInForce,
+        limit_price: Decimal,
+        place_order_request_type: PlaceOrderRequestType,
+        account: Optional[definitions.AccountIdOrName] = None,
+        id: Optional[definitions.OrderId] = None,
+        parent_id: Optional[definitions.OrderId] = None,
+        source: Optional[definitions.OrderSource] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+        execution_venue: Optional[str] = None,
+        post_only: Optional[bool] = None,
+        trigger_price: Optional[Decimal] = None,
+    ) -> "PlaceOrderRequest":
+        return PlaceOrderRequest(
+            dir,
+            quantity,
+            symbol,
+            time_in_force,
+            limit_price,
+            place_order_request_type,
+            account,
+            id,
+            parent_id,
+            source,
+            trader,
+            execution_venue,
+            post_only,
+            trigger_price,
+        )
+
+    def __str__(self) -> str:
+        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},limit_price={self.p},place_order_request_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},trader={self.u},execution_venue={self.x},post_only={self.po},trigger_price={self.tp})"
+
     @property
     def dir(self) -> OrderDir:
         return self.d

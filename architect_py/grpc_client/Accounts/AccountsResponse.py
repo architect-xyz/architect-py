@@ -12,3 +12,15 @@ from .. import definitions
 
 class AccountsResponse(Struct, omit_defaults=True):
     accounts: List[definitions.AccountWithPermissions]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        accounts: List[definitions.AccountWithPermissions],
+    ) -> "AccountsResponse":
+        return AccountsResponse(
+            accounts,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountsResponse(accounts={self.accounts})"

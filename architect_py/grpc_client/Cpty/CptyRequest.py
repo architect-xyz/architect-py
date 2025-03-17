@@ -23,6 +23,20 @@ class CancelOrder(Struct, omit_defaults=True, tag_field="t", tag="cancel_order")
     cancel: Cancel
     original_order: Optional[Order] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        cancel: Cancel,
+        original_order: Optional[Order] = None,
+    ) -> "CancelOrder":
+        return CancelOrder(
+            cancel,
+            original_order,
+        )
+
+    def __str__(self) -> str:
+        return f"CancelOrder(cancel={self.cancel},original_order={self.original_order})"
+
 
 class Login(
     definitions.CptyLoginRequest, omit_defaults=True, tag_field="t", tag="login"

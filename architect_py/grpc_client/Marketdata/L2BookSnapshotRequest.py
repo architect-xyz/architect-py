@@ -13,6 +13,20 @@ class L2BookSnapshotRequest(Struct, omit_defaults=True):
     symbol: str
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbol: str,
+        venue: Optional[str] = None,
+    ) -> "L2BookSnapshotRequest":
+        return L2BookSnapshotRequest(
+            symbol,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"L2BookSnapshotRequest(symbol={self.symbol},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return L2BookSnapshot

@@ -12,6 +12,18 @@ from msgspec import Struct
 class SubscribeLiquidationsRequest(Struct, omit_defaults=True):
     symbols: Optional[List[str]] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        symbols: Optional[List[str]] = None,
+    ) -> "SubscribeLiquidationsRequest":
+        return SubscribeLiquidationsRequest(
+            symbols,
+        )
+
+    def __str__(self) -> str:
+        return f"SubscribeLiquidationsRequest(symbols={self.symbols})"
+
     @staticmethod
     def get_response_type():
         return Liquidation

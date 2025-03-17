@@ -37,6 +37,32 @@ class HistoricalOrdersRequest(Struct, omit_defaults=True):
     trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: Optional[definitions.AccountIdOrName] = None,
+        from_inclusive: Optional[datetime] = None,
+        limit: Optional[int] = None,
+        order_ids: Optional[List[definitions.OrderId]] = None,
+        parent_order_id: Optional[definitions.OrderId] = None,
+        to_exclusive: Optional[datetime] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+        venue: Optional[str] = None,
+    ) -> "HistoricalOrdersRequest":
+        return HistoricalOrdersRequest(
+            account,
+            from_inclusive,
+            limit,
+            order_ids,
+            parent_order_id,
+            to_exclusive,
+            trader,
+            venue,
+        )
+
+    def __str__(self) -> str:
+        return f"HistoricalOrdersRequest(account={self.account},from_inclusive={self.from_inclusive},limit={self.limit},order_ids={self.order_ids},parent_order_id={self.parent_order_id},to_exclusive={self.to_exclusive},trader={self.trader},venue={self.venue})"
+
     @staticmethod
     def get_response_type():
         return HistoricalOrdersResponse

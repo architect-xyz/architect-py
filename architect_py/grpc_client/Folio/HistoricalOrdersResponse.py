@@ -12,3 +12,15 @@ from ..Oms.Order import Order
 
 class HistoricalOrdersResponse(Struct, omit_defaults=True):
     orders: List[Order]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        orders: List[Order],
+    ) -> "HistoricalOrdersResponse":
+        return HistoricalOrdersResponse(
+            orders,
+        )
+
+    def __str__(self) -> str:
+        return f"HistoricalOrdersResponse(orders={self.orders})"

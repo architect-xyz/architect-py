@@ -24,3 +24,37 @@ class AlgoOrderForTwapAlgo(Struct, omit_defaults=True):
     last_error: Optional[str] = None
     last_error_time: Optional[datetime] = None
     parent_order_id: Optional[definitions.OrderId] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        account: str,
+        algo_name: str,
+        algo_order_id: definitions.OrderId,
+        create_time: datetime,
+        params: definitions.TwapParams,
+        state: definitions.AlgoState,
+        status: definitions.TwapStatus,
+        trader: definitions.UserId,
+        display_symbols: Optional[List[str]] = None,
+        last_error: Optional[str] = None,
+        last_error_time: Optional[datetime] = None,
+        parent_order_id: Optional[definitions.OrderId] = None,
+    ) -> "AlgoOrderForTwapAlgo":
+        return AlgoOrderForTwapAlgo(
+            account,
+            algo_name,
+            algo_order_id,
+            create_time,
+            params,
+            state,
+            status,
+            trader,
+            display_symbols,
+            last_error,
+            last_error_time,
+            parent_order_id,
+        )
+
+    def __str__(self) -> str:
+        return f"AlgoOrderForTwapAlgo(account={self.account},algo_name={self.algo_name},algo_order_id={self.algo_order_id},create_time={self.create_time},params={self.params},state={self.state},status={self.status},trader={self.trader},display_symbols={self.display_symbols},last_error={self.last_error},last_error_time={self.last_error_time},parent_order_id={self.parent_order_id})"

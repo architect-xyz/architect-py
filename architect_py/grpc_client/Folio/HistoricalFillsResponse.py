@@ -13,3 +13,17 @@ from .. import definitions
 class HistoricalFillsResponse(Struct, omit_defaults=True):
     aberrant_fills: List[definitions.AberrantFill]
     fills: List[definitions.Fill]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+        aberrant_fills: List[definitions.AberrantFill],
+        fills: List[definitions.Fill],
+    ) -> "HistoricalFillsResponse":
+        return HistoricalFillsResponse(
+            aberrant_fills,
+            fills,
+        )
+
+    def __str__(self) -> str:
+        return f"HistoricalFillsResponse(aberrant_fills={self.aberrant_fills},fills={self.fills})"

@@ -8,3 +8,11 @@ from msgspec import Struct
 
 class CancelAllOrdersResponse(Struct, omit_defaults=True):
     pass
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new() -> "CancelAllOrdersResponse":
+        return CancelAllOrdersResponse()
+
+    def __str__(self) -> str:
+        return f"CancelAllOrdersResponse()"
