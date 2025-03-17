@@ -39,6 +39,49 @@ class {{ class_name }}:
     {%- endif %}
 {%- endfor -%}
 
+
+{# Generate a constructor that takes all field titles (if available) as arguments #}
+    # below is a constructor that takes all field titles as arguments for convenience
+    @staticmethod
+    def new(
+{%- for field in fields -%}
+    {%- if field.extras and field.extras.title %}
+    {{ field.extras.title }}: {{ field.type_hint }}
+    {%- else %}
+    {{ field.name }}: {{ field.type_hint }}
+    {%- endif %}
+
+    {%- if field.field %}
+    = {{ field.field }}
+    {%- elif not field.required or field.data_type.is_optional or field.nullable
+            %} = {{ field.represented_default }}
+    {%- endif -%}
+    ,
+{%- endfor -%}
+    ) -> "{{ class_name }}":
+        return {{ class_name }}(
+{%- for field in fields -%}
+    {%- if field.extras and field.extras.title %}
+    {{ field.extras.title }}
+    {%- else %}
+    {{ field.name }}
+    {%- endif %}
+    ,
+{%- endfor -%}
+        )
+
+{# __str__ #}
+    def __str__(self) -> str:
+        return f"{{ class_name }}(
+{%- for field in fields-%}
+{%- if field.extras and field.extras.title %}{{ field.extras.title }}
+{%- else %}{{ field.name }}
+{%- endif %}={self.{{ field.name }}}
+{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+)"
+
+
 {# Generate getter/setter properties for fields that have a metadata title #}
 {%- for field in fields if field.extras and field.extras.title %}
     @property
