@@ -206,12 +206,14 @@ class AsyncClient:
         self,
         search_string: Optional[str] = None,
         execution_venue: Optional[str] = None,
+        offset: int = 0,
+        limit: int = 20,
     ) -> List[TradableProduct]:
         """
         Search for symbols in the Architect database.
 
         Args:
-            search_string: a string to search for in the symbol
+            search_string: a string to search for in the symbol. Can be "*" for wild card search.
                 Examples: "ES", "NQ", "GC"
             execution_venue: the execution venue to search in
                 Examples: "CME"
@@ -220,7 +222,10 @@ class AsyncClient:
         """
         markets = (
             await self.graphql_client.search_symbols_query(
-                search_string=search_string, execution_venue=execution_venue
+                search_string=search_string,
+                execution_venue=execution_venue,
+                offset=0,
+                limit=20,
             )
         ).search_symbols
 
