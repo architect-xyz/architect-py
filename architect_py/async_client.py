@@ -224,8 +224,8 @@ class AsyncClient:
             await self.graphql_client.search_symbols_query(
                 search_string=search_string,
                 execution_venue=execution_venue,
-                offset=0,
-                limit=20,
+                offset=offset,
+                limit=limit,
             )
         ).search_symbols
 
