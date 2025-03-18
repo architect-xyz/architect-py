@@ -317,7 +317,7 @@ class GRPCClient:
         **kwargs: RequestTypeParameters.kwargs,
     ) -> AsyncIterator[ResponseTypeGeneric]:
         """
-        Generic function for subscribing to a stream of updates from the gRPC server
+        Generic function for subscribing to a stream of updates from the gRPC server.
 
         request_type and ResponseTypeGeneric *cannot* be union types
         """
@@ -342,7 +342,7 @@ class GRPCClient:
         **kwargs: RequestTypeParameters.kwargs,
     ) -> ResponseTypeGeneric:
         """
-        Generic function for making a unary request to the gRPC server
+        Generic function for making a unary request to the gRPC server.
 
         request_type and ResponseTypeGeneric *cannot* be union types
         """
