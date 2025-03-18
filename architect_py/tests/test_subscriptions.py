@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import pytest
 from architect_py.async_client import AsyncClient
 from architect_py.scalars import TradableProduct
@@ -117,7 +118,8 @@ async def test_subscribe_cme_trades(async_client: AsyncClient):
 
     if not market_status.is_trading:
         pytest.skip("market is not trading")
-    elif datetime.now(
+    elif not 9 <= datetime.now(ZoneInfo("America/Chicago")).hour < 17:
+        pytest.skip("market is not liquid")
 
     i = 0
     async for trade in async_client.subscribe_trades_stream(market, venue):
