@@ -20,6 +20,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, AsyncIterator, List, Optional, Sequence
 
+from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.get_fills_query import (
     GetFillsQueryFolioHistoricalFills,
 )
@@ -45,7 +46,6 @@ from architect_py.grpc_client.Marketdata.SubscribeTradesRequest import (
 from architect_py.grpc_client.Marketdata.Trade import Trade
 from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import TickRoundMethod
-from templates.exceptions import GraphQLClientGraphQLMultiError
 
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
@@ -276,7 +276,7 @@ class AsyncClient:
                 symbol, execution_venue
             )
             return execution_info.execution_info
-        except GraphQLClientGraphQLMultiError as e:
+        except GraphQLClientGraphQLMultiError:
             # the try/except is done so it is consistent with product_info
             # execution info not found
             return None
