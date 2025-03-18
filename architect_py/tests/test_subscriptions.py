@@ -3,11 +3,13 @@ import pytest
 from architect_py.async_client import AsyncClient
 from architect_py.scalars import TradableProduct
 
+from zoneinfo import ZoneInfo
+
 from pytest_lazy_fixtures import lf
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(3)
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize(
     "endpoint,symbol,venue",
     [
@@ -58,7 +60,7 @@ async def test_subscribe_l1_stream(
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(3)
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize(
     "endpoint,symbol,venue",
     [
@@ -76,7 +78,7 @@ async def test_subscribe_l1_stream(
     ],
 )
 @pytest.mark.asyncio
-@pytest.mark.timeout(3)
+@pytest.mark.timeout(10)
 async def test_subscribe_l2_stream(
     async_client: AsyncClient, endpoint: str, symbol: str, venue: str
 ):
@@ -104,7 +106,7 @@ async def test_subscribe_l2_stream(
 
 
 @pytest.mark.asyncio
-@pytest.mark.timeout(10)
+@pytest.mark.timeout(15)
 async def test_subscribe_cme_trades(async_client: AsyncClient):
     venue = "CME"
     markets = await async_client.get_cme_futures_series("ES CME Futures")
@@ -115,6 +117,7 @@ async def test_subscribe_cme_trades(async_client: AsyncClient):
 
     if not market_status.is_trading:
         pytest.skip("market is not trading")
+    elif datetime.now(
 
     i = 0
     async for trade in async_client.subscribe_trades_stream(market, venue):

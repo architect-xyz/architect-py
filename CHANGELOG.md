@@ -1,3 +1,9 @@
+3.2.1
+
+Fixes:
+  removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+
+
+
 3.2.0
 Breaking:
   - Changed the way AsyncClient is instantiated, from normal __init__ to 

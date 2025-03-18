@@ -100,10 +100,10 @@ class OrderDir(str, Enum):
 
     def __str__(self) -> str:
         return self.value
-    
+
     def lower(self) -> str:
         return self.value.lower()
-    
+
     @classmethod
     def from_string(cls, value: str) -> "OrderDir":
         lower = value.lower()
@@ -144,12 +144,12 @@ class OrderDir(str, Enum):
 def graphql_serialize_order_dir(value: OrderDir) -> str:
     return value.lower()
 
+
 def graphql_parse_order_dir(value: str) -> OrderDir:
     if value == "buy":
         return OrderDir.BUY
     else:
         return OrderDir.SELL
-
 
 
 def convert_datetime_to_utc_str(dt: "Optional[datetime] | UnsetType") -> Optional[str]:
@@ -159,12 +159,12 @@ def convert_datetime_to_utc_str(dt: "Optional[datetime] | UnsetType") -> Optiona
     if dt.tzinfo is None:
         raise ValueError(
             "in a datetime sent to the backend, the good_til_date must be timezone-aware. Try \n"
-            "import pytz\n"
+            "from zoneinfo import ZoneInfo\n"
             "datetime(..., tzinfo={your_local_timezone}) or "
-            "datetime.now(tz=pytz.timezone('UTC'))\n"
+            "datetime.now(tz=ZoneInfo('UTC'))\n"
             "# examples of local timezones:\n"
-            "pytz.timezone('US/Eastern'), "
-            "pytz.timezone('US/Pacific'), pytz.timezone('US/Central')"
+            "ZoneInfo('America/New_York'), "
+            "ZoneInfo('America/Los_Angeles'), ZoneInfo('America/Chicago')"
         )
     utc_str = dt.astimezone(timezone.utc).isoformat()[:-6]
     # [:-6] removes the utc offset
