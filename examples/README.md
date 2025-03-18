@@ -9,3 +9,5 @@ The python has both a sync version of the client,. To use this flavor of the cli
 
 The best way to code to the API is with an IDE that does type checking (e.g. VSCode with the Pylance extension).
 The package has typing throughout, and the package will generally work when the types all work out.
+
+The scripts are meant for educational purposes and should NOT be run in production.

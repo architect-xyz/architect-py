@@ -86,6 +86,10 @@ class AsyncClient:
     graphql_client: GraphQLClient
     grpc_client: GRPCClient
 
+    # ------------------------------------------------------------
+    # Initialization
+    # ------------------------------------------------------------
+
     @staticmethod
     async def connect(
         *,
@@ -98,6 +102,8 @@ class AsyncClient:
         **kwargs: Any,
     ) -> "AsyncClient":
         """
+        The main way to create an AsyncClient object.
+
         Args:
             api_key: API key for the user
             api_secret: API secret for the user
@@ -154,9 +160,9 @@ class AsyncClient:
         **kwargs: Any,
     ):
         """
-        Users should not be using this constructor directly, unless they do not want to use any subscription methods
-        Use the create method instead.
+        Users should not be using this constructor directly, unless they do not want to use any subscription methods.
 
+        Use the create method instead.
         See self.connect for arg explanations
         """
 
@@ -202,6 +208,8 @@ class AsyncClient:
         execution_venue: Optional[str] = None,
     ) -> List[TradableProduct]:
         """
+        Search for symbols in the Architect database.
+
         Args:
             search_string: a string to search for in the symbol
                 Examples: "ES", "NQ", "GC"
@@ -220,6 +228,8 @@ class AsyncClient:
 
     async def get_product_info(self, symbol: str) -> Optional[ProductInfoFields]:
         """
+        Get the product information (product_type, underlying, multiplier, etc.) for a symbol.
+
         Args:
             symbol: the symbol to get information for
         Returns:
@@ -232,6 +242,8 @@ class AsyncClient:
         self, symbols: Optional[list[str]]
     ) -> Sequence[ProductInfoFields]:
         """
+        Get the product information (product_type, underlying, multiplier, etc.) for a list of symbols.
+
         Args:
             symbols: the symbols to get information for
         Returns:
@@ -249,6 +261,8 @@ class AsyncClient:
         self, symbol: TradableProduct, execution_venue: str
     ) -> Optional[ExecutionInfoFields]:
         """
+        Get the execution information (tick_size, step_size, margin, etc.) for a symbol.
+
         Args:
             symbol: the symbol to get execution information for
             execution_venue: the execution venue e.g. "CME"
@@ -273,6 +287,8 @@ class AsyncClient:
         execution_venue: Optional[str] = None,
     ) -> Sequence[ExecutionInfoFields]:
         """
+        Get the execution information (tick_size, step_size, etc.) for a list of symbols.
+
         Args:
             symbols: the symbols to get execution information for
             execution_venue: the execution venue e.g. "CME"
@@ -289,6 +305,8 @@ class AsyncClient:
 
     async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
         """
+        Get the first notice date for a CME future.
+
         Args:
             symbol: the symbol to get the first notice date for a CME future
 
@@ -302,6 +320,8 @@ class AsyncClient:
 
     async def get_future_series(self, series_symbol: str) -> list[str]:
         """
+        Get the series of futures for a given series symbol.
+
         Args:
             series_symbol: the symbol to get the series for
                 e.g. ES CME Futures" would yield a list of all the ES futures
@@ -320,6 +340,8 @@ class AsyncClient:
     @staticmethod
     def get_expiration_from_CME_name(name: str) -> date:
         """
+        Get the expiration date from a CME future name.
+
         Args:
             name: the CME future name
                 e.g. "ES 20211217 CME Future" -> date(2021, 12, 17)
@@ -331,6 +353,8 @@ class AsyncClient:
 
     async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
         """
+        Get the futures in a series from the CME.
+
         Args:
             series: the series to get the futures for
                 e.g. "ES CME Futures"
@@ -361,6 +385,8 @@ class AsyncClient:
         self, root: str, month: int, year: int
     ) -> str:
         """
+        Get the symbol for a CME future from the root, month, and year.
+
         Args:
             root: the root symbol for the future e.g. "ES"
             month: the month of the future
@@ -388,6 +414,8 @@ class AsyncClient:
 
     async def who_am_i(self) -> tuple[str, str]:
         """
+        Gets the user_id and user_email for the user that the API key belongs to.
+
         Returns:
             (user_id, user_email)
         """
@@ -398,6 +426,8 @@ class AsyncClient:
 
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
         """
+        List accounts for the user that the API key belongs to.
+
         Returns:
             a list of AccountWithPermissionsFields for the user that the API key belongs to
             (use who_am_i to get the user_id / email)
@@ -407,6 +437,8 @@ class AsyncClient:
 
     async def get_account_summary(self, account: str) -> AccountSummaryFields:
         """
+        Gets the account summary for the given account.
+
         Args:
             account: the account to get the summary for,
                 can be the account id( (a UUID) or the account name (e.g. CQG:00000)
@@ -422,6 +454,8 @@ class AsyncClient:
         trader: Optional[str] = None,
     ) -> Sequence[AccountSummaryFields]:
         """
+        Gets the account summaries for the given accounts and trader.
+
         Args:
             accounts: a list of account ids to get summaries for,
                 can be the account id( (a UUID) or the account name (e.g. CQG:00000)
@@ -443,6 +477,8 @@ class AsyncClient:
         to_exclusive: Optional[datetime] = None,
     ) -> Sequence[AccountSummaryFields]:
         """
+        Gets the account history for the given account and dates.
+
         Returns:
             a list of AccountSummaryFields for the account for the given dates
             use timestamp to get the time of the of the summary
@@ -466,6 +502,8 @@ class AsyncClient:
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         """
+        Returns a list of open orders for the user that match the filters.
+
         Args:
             order_ids: a list of order ids to get
             venue: the venue to get orders for
@@ -491,6 +529,8 @@ class AsyncClient:
 
     async def get_all_open_orders(self) -> Sequence[OrderFields]:
         """
+        Returns a list of all open orders for the user.
+
         Returns:
             a list of OrderFields of all the open orders for the user
         """
@@ -507,6 +547,8 @@ class AsyncClient:
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         """
+        Gets the historical orders that match the filters.
+
         Args:
             order_ids: a list of order ids to get
             from_inclusive: the start date to get orders for
@@ -534,8 +576,8 @@ class AsyncClient:
 
     async def get_order(self, order_id: str) -> Optional[OrderFields]:
         """
-        Returns the OrderFields object for the specified order
-        Useful for looking at past sent orders
+        Returns the OrderFields object for the specified order.
+        Useful for looking at past sent orders.
 
         Args:
             order_id: the order id to get
@@ -561,8 +603,9 @@ class AsyncClient:
 
     async def get_orders(self, order_ids: list[str]) -> list[Optional[OrderFields]]:
         """
-        Returns a list of OrderFields objects for the specified orders
-        Useful for looking at past sent orders
+        Returns a list of OrderFields objects for the specified orders.
+        Useful for looking at past sent orders.
+
         Args:
             order_ids: a list of order ids to get
         Returns:
@@ -603,7 +646,8 @@ class AsyncClient:
         order_id: Optional[str] = None,
     ) -> GetFillsQueryFolioHistoricalFills:
         """
-        returns a list of fills for the given filters
+        Returns a list of fills for the given filters.
+
         Args:
             from_inclusive: the start date to get fills for
             to_exclusive: the end date to get fills for
@@ -627,7 +671,8 @@ class AsyncClient:
         self, symbol: TradableProduct, venue: str
     ) -> MarketStatusFields:
         """
-        Returns market status for symbol (ie if it is quoting and trading)
+        Returns market status for symbol (ie if it is quoting and trading).
+
         Args:
             symbol: the symbol to get the market status for, e.g. "ES 20250321 CME Future/USD"
             venue: the venue that the symbol is traded at, e.g. CME
@@ -641,7 +686,8 @@ class AsyncClient:
         self, symbol: TradableProduct, venue: str
     ) -> MarketTickerFields:
         """
-        this is an alias for l1_book_snapshot
+        This is an alias for l1_book_snapshot.
+
         Args:
             symbol: the symbol to get the market snapshot for, e.g. "ES 20250321 CME Future/USD"
             venue: the venue that the symbol is traded at, e.g. CME
@@ -654,7 +700,7 @@ class AsyncClient:
         self, symbols: list[TradableProduct], venue: str
     ) -> Sequence[MarketTickerFields]:
         """
-        this is an alias for l1_book_snapshots
+        This is an alias for l1_book_snapshot.
 
         Args:
             symbols: the symbols to get the market snapshots for
@@ -674,6 +720,8 @@ class AsyncClient:
         end: datetime,
     ) -> HistoricalCandlesResponse:
         """
+        Gets the historical candles for a symbol.
+
         Args:
             symbol: the symbol to get the candles for
             venue: the venue of the symbol
@@ -698,6 +746,8 @@ class AsyncClient:
         venue: str,
     ) -> MarketTickerFields:
         """
+        Gets the L1 book snapshot for a symbol.
+
         Args:
             symbol: the symbol to get the l1 book snapshot for
             venue: the venue that the symbol is traded at
@@ -713,6 +763,8 @@ class AsyncClient:
         self, symbols: list[str], venue: str
     ) -> Sequence[MarketTickerFields]:
         """
+        Gets the L1 book snapshots for a list of symbols.
+
         Args:
             symbols: the symbols to get the l1 book snapshots for
             venue: the venue that the symbols are traded at
@@ -726,6 +778,8 @@ class AsyncClient:
 
     async def get_l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
         """
+        Gets the L2 book snapshot for a symbol.
+
         Args:
             symbol: the symbol to get the l2 book snapshot for
             venue: the venue that the symbol is traded at
@@ -744,6 +798,8 @@ class AsyncClient:
         self, symbols: list[TradableProduct], venue: str
     ) -> AsyncIterator[L1BookSnapshot]:
         """
+        Subscribe to the stream of L1BookSnapshots for a symbol.
+
         Args:
             symbol: the symbol to subscribe to
             venue: the venue to subscribe to
@@ -759,6 +815,8 @@ class AsyncClient:
         self, symbol: TradableProduct, venue: str
     ) -> AsyncIterator[L2BookUpdate]:
         """
+        Subscribe to the stream of L2BookUpdates for a symbol.
+
         IMPORTANT: note that the Snapshot is a different type than
         L2BookSnapshot
         Args:
@@ -778,6 +836,8 @@ class AsyncClient:
         self, symbols: list[TradableProduct]
     ) -> list[L1BookSnapshot]:
         """
+        Returns a L1BookSnapshot object that is constantly updating in the background.
+
         Args:
             symbols: the symbols to subscribe to
         Return:
@@ -814,6 +874,8 @@ class AsyncClient:
         venue: Optional[str],
     ) -> L2BookSnapshot:
         """
+        Returns a L2BookSnapshot object that is constantly updating in the background.
+
         Args:
             symbols: the symbols to subscribe to
         Return:
@@ -851,6 +913,9 @@ class AsyncClient:
     def subscribe_trades_stream(
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[Trade]:
+        """
+        Subscribe to a stream of trades for a symbol
+        """
         return self.grpc_client.subscribe(
             SubscribeTradesRequest, symbol=symbol, venue=venue
         )
@@ -861,6 +926,9 @@ class AsyncClient:
         venue: Optional[str],
         candle_widths: Optional[list[grpc_definitions.CandleWidth]],
     ) -> AsyncIterator[Candle]:
+        """
+        Subscribe to a stream of candles for a symbol
+        """
         return self.grpc_client.subscribe(
             SubscribeCandlesRequest,
             symbol=str(symbol),
@@ -977,8 +1045,8 @@ class AsyncClient:
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> OrderFields:
         """
-        Sends a market order with a limit price based on the BBO
-        Meant to behave as a market order but with more protections
+        Sends a market-order like limit price based on the BBO.
+        Meant to behave as a market order but with more protections.
 
         Args:
             symbol: the symbol to send the order for
@@ -1056,7 +1124,8 @@ class AsyncClient:
 
     async def cancel_order(self, order_id: str) -> CancelFields:
         """
-        Cancels an order by order id
+        Cancels an order by order id.
+
         Args:
             order_id: the order id to cancel
         Returns:
@@ -1067,7 +1136,8 @@ class AsyncClient:
 
     async def cancel_all_orders(self) -> bool:
         """
-        Cancels all open orders
+        Cancels all open orders.
+
         Returns:
             True if all orders were cancelled successfully
             False if there was an error

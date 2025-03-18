@@ -82,6 +82,14 @@ poetry run ariadne-codegen --config ariadne-codegen.toml > /dev/null
 printf "\nGenerating client protocol\n"
 python generate_sync_client_protocol.py > architect_py/client_protocol.py
 
+
+
+# -----------------------------
+# Update README
+# -----------------------------
+
+python generate_readme.py architect_py/async_client.py > FUNCTIONS.md
+
 # -----------------------------
 # Version check
 # -----------------------------
