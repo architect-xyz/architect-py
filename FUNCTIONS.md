@@ -46,8 +46,8 @@ subscribe_l1_book_stream: Subscribe to the stream of L1BookSnapshots for a symbo
 subscribe_l2_book_stream: Subscribe to the stream of L2BookUpdates for a symbol.
 subscribe_l1_book: Returns a L1BookSnapshot object that is constantly updating in the background.
 subscribe_l2_book: Returns a L2BookSnapshot object that is constantly updating in the background.
-subscribe_trades_stream: Subscribe to a stream of trades for a symbol
-subscribe_candles_stream: Subscribe to a stream of candles for a symbol
+subscribe_trades_stream: Subscribe to a stream of trades for a symbol.
+subscribe_candles_stream: Subscribe to a stream of candles for a symbol.
 
 # Order Entry and Cancellation
 

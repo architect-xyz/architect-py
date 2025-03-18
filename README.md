@@ -48,11 +48,12 @@ def main():
         host="<your installation domain>",
         api_key="<api key>",
         api_secret="<api secret>"
+        paper_trading=True,
     )
     print(c.who_am_i())
-    print("\n\n")
+
     print(client.get_account_summaries())
-    print("\n\n")
+
     print(client.search_symbols("ES"))
 ```
 

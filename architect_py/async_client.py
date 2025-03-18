@@ -914,7 +914,7 @@ class AsyncClient:
         self, symbol: TradableProduct, venue: Optional[str]
     ) -> AsyncIterator[Trade]:
         """
-        Subscribe to a stream of trades for a symbol
+        Subscribe to a stream of trades for a symbol.
         """
         return self.grpc_client.subscribe(
             SubscribeTradesRequest, symbol=symbol, venue=venue
@@ -927,7 +927,7 @@ class AsyncClient:
         candle_widths: Optional[list[grpc_definitions.CandleWidth]],
     ) -> AsyncIterator[Candle]:
         """
-        Subscribe to a stream of candles for a symbol
+        Subscribe to a stream of candles for a symbol.
         """
         return self.grpc_client.subscribe(
             SubscribeCandlesRequest,

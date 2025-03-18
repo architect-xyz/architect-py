@@ -25,7 +25,11 @@ def extract_sections(source_lines):
     while i < len(source_lines):
         if dashed_re.match(source_lines[i]):
             if i + 1 < len(source_lines) and title_re.match(source_lines[i + 1]):
-                section_name = title_re.match(source_lines[i + 1]).group(1).strip()
+                groups = title_re.match(source_lines[i + 1])
+                if groups is not None:
+                    section_name = groups.group(1).strip()
+                else:
+                    continue
                 # Check that the next line (i+2) is also a dashed line
                 if i + 2 < len(source_lines) and dashed_re.match(source_lines[i + 2]):
                     sections.append(
