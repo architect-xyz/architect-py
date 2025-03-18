@@ -14,11 +14,12 @@ class HistoricalOrdersResponse(Struct, omit_defaults=True):
     orders: List[Order]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         orders: List[Order],
-    ) -> "HistoricalOrdersResponse":
-        return HistoricalOrdersResponse(
+    ):
+        return cls(
             orders,
         )
 

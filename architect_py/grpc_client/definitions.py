@@ -50,16 +50,17 @@ class AccountPosition(Struct, omit_defaults=True):
     """
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         quantity: Decimal,
         break_even_price: Optional[Decimal] = None,
         cost_basis: Optional[Decimal] = None,
         liquidation_price: Optional[Decimal] = None,
         trade_time: Optional[datetime] = None,
         unrealized_pnl: Optional[Decimal] = None,
-    ) -> "AccountPosition":
-        return AccountPosition(
+    ):
+        return cls(
             quantity,
             break_even_price,
             cost_basis,
@@ -106,8 +107,9 @@ class AccountStatistics(Struct, omit_defaults=True):
     yesterday_equity: Optional[Decimal] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         cash_excess: Optional[Decimal] = None,
         equity: Optional[Decimal] = None,
         position_margin: Optional[Decimal] = None,
@@ -116,8 +118,8 @@ class AccountStatistics(Struct, omit_defaults=True):
         total_margin: Optional[Decimal] = None,
         unrealized_pnl: Optional[Decimal] = None,
         yesterday_equity: Optional[Decimal] = None,
-    ) -> "AccountStatistics":
-        return AccountStatistics(
+    ):
+        return cls(
             cash_excess,
             equity,
             position_margin,
@@ -158,9 +160,11 @@ class CptyLogoutRequest(Struct, omit_defaults=True):
     pass
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
-    def new() -> "CptyLogoutRequest":
-        return CptyLogoutRequest()
+    @classmethod
+    def new(
+        cls,
+    ):
+        return cls()
 
     def __str__(self) -> str:
         return f"CptyLogoutRequest()"
@@ -210,16 +214,17 @@ class L2BookDiff(Struct, omit_defaults=True):
     ts: Annotated[int, Meta(title="timestamp")]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         asks: List[Ask],
         bids: List[Bid],
         sequence_id: int,
         sequence_number: int,
         timestamp_ns: int,
         timestamp: int,
-    ) -> "L2BookDiff":
-        return L2BookDiff(
+    ):
+        return cls(
             asks,
             bids,
             sequence_id,
@@ -297,12 +302,13 @@ class OrderId(Struct, omit_defaults=True):
     seqno: Annotated[int, Meta(ge=0)]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         seqid: str,
         seqno: int,
-    ) -> "OrderId":
-        return OrderId(
+    ):
+        return cls(
             seqid,
             seqno,
         )
@@ -315,11 +321,12 @@ class OrderOut(Struct, omit_defaults=True):
     id: OrderId
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: OrderId,
-    ) -> "OrderOut":
-        return OrderOut(
+    ):
+        return cls(
             id,
         )
 
@@ -352,11 +359,12 @@ class OrderStale(Struct, omit_defaults=True):
     id: OrderId
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: OrderId,
-    ) -> "OrderStale":
-        return OrderStale(
+    ):
+        return cls(
             id,
         )
 
@@ -387,11 +395,12 @@ class GoodTilDate(Struct, omit_defaults=True):
     GTD: datetime
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         GTD: datetime,
-    ) -> "GoodTilDate":
-        return GoodTilDate(
+    ):
+        return cls(
             GTD,
         )
 
@@ -419,12 +428,13 @@ class TwapStatus(Struct, omit_defaults=True):
     realized_twap: Optional[Decimal] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         quantity_filled: Decimal,
         realized_twap: Optional[Decimal] = None,
-    ) -> "TwapStatus":
-        return TwapStatus(
+    ):
+        return cls(
             quantity_filled,
             realized_twap,
         )
@@ -448,15 +458,16 @@ class AccountPermissions(Struct, omit_defaults=True):
     view: bool
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         list: bool,
         reduce_or_close: bool,
         set_limits: bool,
         trade: bool,
         view: bool,
-    ) -> "AccountPermissions":
-        return AccountPermissions(
+    ):
+        return cls(
             list,
             reduce_or_close,
             set_limits,
@@ -490,11 +501,12 @@ class Base(Struct, omit_defaults=True):
     unit: Literal["base"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         unit: Literal["base"],
-    ) -> "Base":
-        return Base(
+    ):
+        return cls(
             unit,
         )
 
@@ -506,11 +518,12 @@ class Quote(Struct, omit_defaults=True):
     unit: Literal["quote"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         unit: Literal["quote"],
-    ) -> "Quote":
-        return Quote(
+    ):
+        return cls(
             unit,
         )
 
@@ -534,11 +547,12 @@ class Fiat(Struct, omit_defaults=True):
     product_type: Literal["Fiat"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: Literal["Fiat"],
-    ) -> "Fiat":
-        return Fiat(
+    ):
+        return cls(
             product_type,
         )
 
@@ -550,11 +564,12 @@ class Commodity(Struct, omit_defaults=True):
     product_type: Literal["Commodity"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: Literal["Commodity"],
-    ) -> "Commodity":
-        return Commodity(
+    ):
+        return cls(
             product_type,
         )
 
@@ -566,11 +581,12 @@ class Crypto(Struct, omit_defaults=True):
     product_type: Literal["Crypto"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: Literal["Crypto"],
-    ) -> "Crypto":
-        return Crypto(
+    ):
+        return cls(
             product_type,
         )
 
@@ -582,11 +598,12 @@ class Equity(Struct, omit_defaults=True):
     product_type: Literal["Equity"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: Literal["Equity"],
-    ) -> "Equity":
-        return Equity(
+    ):
+        return cls(
             product_type,
         )
 
@@ -598,11 +615,12 @@ class Index(Struct, omit_defaults=True):
     product_type: Literal["Index"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: Literal["Index"],
-    ) -> "Index":
-        return Index(
+    ):
+        return cls(
             product_type,
         )
 
@@ -620,8 +638,9 @@ class Future(Struct, omit_defaults=True):
     underlying: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         derivative_kind: DerivativeKind,
         expiration: datetime,
         multiplier: Decimal,
@@ -629,8 +648,8 @@ class Future(Struct, omit_defaults=True):
         first_notice_date: Optional[date] = None,
         series: Optional[str] = None,
         underlying: Optional[str] = None,
-    ) -> "Future":
-        return Future(
+    ):
+        return cls(
             derivative_kind,
             expiration,
             multiplier,
@@ -651,14 +670,15 @@ class Perpetual(Struct, omit_defaults=True):
     underlying: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         derivative_kind: DerivativeKind,
         multiplier: Decimal,
         product_type: Literal["Perpetual"],
         underlying: Optional[str] = None,
-    ) -> "Perpetual":
-        return Perpetual(
+    ):
+        return cls(
             derivative_kind,
             multiplier,
             product_type,
@@ -673,11 +693,12 @@ class Unknown(Struct, omit_defaults=True):
     product_type: Literal["Unknown"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: Literal["Unknown"],
-    ) -> "Unknown":
-        return Unknown(
+    ):
+        return cls(
             product_type,
         )
 
@@ -689,11 +710,12 @@ class SnapshotOrUpdateForStringAndString1(Struct, omit_defaults=True):
     snapshot: Dict[str, str]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         snapshot: Dict[str, str],
-    ) -> "SnapshotOrUpdateForStringAndString1":
-        return SnapshotOrUpdateForStringAndString1(
+    ):
+        return cls(
             snapshot,
         )
 
@@ -708,11 +730,12 @@ class SnapshotOrUpdateForStringAndString2(Struct, omit_defaults=True):
     updates: List[Update5]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         updates: List[Update5],
-    ) -> "SnapshotOrUpdateForStringAndString2":
-        return SnapshotOrUpdateForStringAndString2(
+    ):
+        return cls(
             updates,
         )
 
@@ -729,11 +752,12 @@ class SimpleDecimal(Struct, omit_defaults=True):
     simple: Decimal
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         simple: Decimal,
-    ) -> "SimpleDecimal":
-        return SimpleDecimal(
+    ):
+        return cls(
             simple,
         )
 
@@ -748,11 +772,12 @@ class Varying1(Struct, omit_defaults=True):
     thresholds: List[Threshold]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         thresholds: List[Threshold],
-    ) -> "Varying1":
-        return Varying1(
+    ):
+        return cls(
             thresholds,
         )
 
@@ -768,11 +793,12 @@ class Varying(Struct, omit_defaults=True):
     varying: Varying1
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         varying: Varying1,
-    ) -> "Varying":
-        return Varying(
+    ):
+        return cls(
             varying,
         )
 
@@ -1390,12 +1416,13 @@ class OptionLike(Struct, omit_defaults=True):
     expiration: Optional[datetime] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         strike: Decimal,
         expiration: Optional[datetime] = None,
-    ) -> "OptionLike":
-        return OptionLike(
+    ):
+        return cls(
             strike,
             expiration,
         )
@@ -1408,11 +1435,12 @@ class EventContractSeriesInstance2(Struct, omit_defaults=True):
     OptionLike: OptionLike
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         OptionLike: OptionLike,
-    ) -> "EventContractSeriesInstance2":
-        return EventContractSeriesInstance2(
+    ):
+        return cls(
             OptionLike,
         )
 
@@ -1433,12 +1461,13 @@ class SpreadLeg(Struct, omit_defaults=True):
     """
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product: str,
         quantity: Decimal,
-    ) -> "SpreadLeg":
-        return SpreadLeg(
+    ):
+        return cls(
             product,
             quantity,
         )
@@ -1451,11 +1480,12 @@ class Outcome(Struct, omit_defaults=True):
     name: str
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         name: str,
-    ) -> "Outcome":
-        return Outcome(
+    ):
+        return cls(
             name,
         )
 
@@ -1492,8 +1522,9 @@ class AberrantFill(Struct, omit_defaults=True):
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         fill_id: str,
         execution_venue: str,
         account: Optional[str] = None,
@@ -1511,8 +1542,8 @@ class AberrantFill(Struct, omit_defaults=True):
         trade_time: Optional[int] = None,
         trader: Optional[UserId] = None,
         exchange_fill_id: Optional[str] = None,
-    ) -> "AberrantFill":
-        return AberrantFill(
+    ):
+        return cls(
             fill_id,
             execution_venue,
             account,
@@ -1678,13 +1709,14 @@ class CancelReject(Struct, omit_defaults=True):
     rm: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: OrderId,
         xid: str,
         rm: Optional[str] = None,
-    ) -> "CancelReject":
-        return CancelReject(
+    ):
+        return cls(
             id,
             xid,
             rm,
@@ -1699,12 +1731,13 @@ class CptyLoginRequest(Struct, omit_defaults=True):
     trader: UserId
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: str,
         trader: UserId,
-    ) -> "CptyLoginRequest":
-        return CptyLoginRequest(
+    ):
+        return cls(
             account,
             trader,
         )
@@ -1739,8 +1772,9 @@ class ExecutionInfo(Struct, omit_defaults=True):
     maintenance_margin: Optional[Decimal] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         execution_venue: str,
         is_delisted: bool,
         min_order_quantity: Decimal,
@@ -1750,8 +1784,8 @@ class ExecutionInfo(Struct, omit_defaults=True):
         exchange_symbol: Optional[str] = None,
         initial_margin: Optional[Decimal] = None,
         maintenance_margin: Optional[Decimal] = None,
-    ) -> "ExecutionInfo":
-        return ExecutionInfo(
+    ):
+        return cls(
             execution_venue,
             is_delisted,
             min_order_quantity,
@@ -1816,8 +1850,9 @@ class Fill(Struct, omit_defaults=True):
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         direction: OrderDir,
         fill_id: str,
         fill_kind: FillKind,
@@ -1836,8 +1871,8 @@ class Fill(Struct, omit_defaults=True):
         order_id: Optional[OrderId] = None,
         trader: Optional[UserId] = None,
         exchange_fill_id: Optional[str] = None,
-    ) -> "Fill":
-        return Fill(
+    ):
+        return cls(
             direction,
             fill_id,
             fill_kind,
@@ -2020,8 +2055,9 @@ class OptionsSeriesInfo(Struct, omit_defaults=True):
     venue_discriminant: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         derivative_kind: DerivativeKind,
         exercise_type: OptionsExerciseType,
         expiration_time_of_day: time,
@@ -2033,8 +2069,8 @@ class OptionsSeriesInfo(Struct, omit_defaults=True):
         strikes_by_expiration: Dict[str, List[Decimal]],
         underlying: str,
         venue_discriminant: Optional[str] = None,
-    ) -> "OptionsSeriesInfo":
-        return OptionsSeriesInfo(
+    ):
+        return cls(
             derivative_kind,
             exercise_type,
             expiration_time_of_day,
@@ -2057,12 +2093,13 @@ class OrderAck(Struct, omit_defaults=True):
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         order_id: OrderId,
         exchange_order_id: Optional[str] = None,
-    ) -> "OrderAck":
-        return OrderAck(
+    ):
+        return cls(
             order_id,
             exchange_order_id,
         )
@@ -2092,12 +2129,13 @@ class OrderCanceled(Struct, omit_defaults=True):
     xid: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: OrderId,
         xid: Optional[str] = None,
-    ) -> "OrderCanceled":
-        return OrderCanceled(
+    ):
+        return cls(
             id,
             xid,
         )
@@ -2111,12 +2149,13 @@ class OrderCanceling(Struct, omit_defaults=True):
     xid: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: OrderId,
         xid: Optional[str] = None,
-    ) -> "OrderCanceling":
-        return OrderCanceling(
+    ):
+        return cls(
             id,
             xid,
         )
@@ -2131,13 +2170,14 @@ class OrderReject(Struct, omit_defaults=True):
     rm: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: OrderId,
         r: OrderRejectReason,
         rm: Optional[str] = None,
-    ) -> "OrderReject":
-        return OrderReject(
+    ):
+        return cls(
             id,
             r,
             rm,
@@ -2153,11 +2193,12 @@ class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
     snapshot: Dict[str, SnapshotOrUpdateForStringAndString]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         snapshot: Dict[str, SnapshotOrUpdateForStringAndString],
-    ) -> "SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1":
-        return SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
+    ):
+        return cls(
             snapshot,
         )
 
@@ -2174,11 +2215,12 @@ class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(
     updates: List[Update]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         updates: List[Update],
-    ) -> "SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2":
-        return SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2(
+    ):
+        return cls(
             updates,
         )
 
@@ -2196,11 +2238,12 @@ class SnapshotOrUpdateForStringAndOptionsSeriesInfo1(Struct, omit_defaults=True)
     snapshot: Dict[str, OptionsSeriesInfo]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         snapshot: Dict[str, OptionsSeriesInfo],
-    ) -> "SnapshotOrUpdateForStringAndOptionsSeriesInfo1":
-        return SnapshotOrUpdateForStringAndOptionsSeriesInfo1(
+    ):
+        return cls(
             snapshot,
         )
 
@@ -2217,11 +2260,12 @@ class SnapshotOrUpdateForStringAndOptionsSeriesInfo2(Struct, omit_defaults=True)
     updates: List[Update1]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         updates: List[Update1],
-    ) -> "SnapshotOrUpdateForStringAndOptionsSeriesInfo2":
-        return SnapshotOrUpdateForStringAndOptionsSeriesInfo2(
+    ):
+        return cls(
             updates,
         )
 
@@ -2246,8 +2290,9 @@ class TwapParams(Struct, omit_defaults=True):
     take_through_frac: Optional[Decimal] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         dir: OrderDir,
         end_time: datetime,
         execution_venue: str,
@@ -2256,8 +2301,8 @@ class TwapParams(Struct, omit_defaults=True):
         reject_lockout: HumanDuration,
         symbol: str,
         take_through_frac: Optional[Decimal] = None,
-    ) -> "TwapParams":
-        return TwapParams(
+    ):
+        return cls(
             dir,
             end_time,
             execution_venue,
@@ -2277,12 +2322,13 @@ class Account(Struct, omit_defaults=True):
     name: AccountName
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: str,
         name: AccountName,
-    ) -> "Account":
-        return Account(
+    ):
+        return cls(
             id,
             name,
         )
@@ -2296,12 +2342,13 @@ class FutureSpread(Struct, omit_defaults=True):
     product_type: Literal["FutureSpread"]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         legs: List[SpreadLeg],
         product_type: Literal["FutureSpread"],
-    ) -> "FutureSpread":
-        return FutureSpread(
+    ):
+        return cls(
             legs,
             product_type,
         )
@@ -2314,11 +2361,12 @@ class SnapshotOrUpdateForStringAndExecutionInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ExecutionInfo]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         snapshot: Dict[str, ExecutionInfo],
-    ) -> "SnapshotOrUpdateForStringAndExecutionInfo1":
-        return SnapshotOrUpdateForStringAndExecutionInfo1(
+    ):
+        return cls(
             snapshot,
         )
 
@@ -2333,11 +2381,12 @@ class SnapshotOrUpdateForStringAndExecutionInfo2(Struct, omit_defaults=True):
     updates: List[Update4]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         updates: List[Update4],
-    ) -> "SnapshotOrUpdateForStringAndExecutionInfo2":
-        return SnapshotOrUpdateForStringAndExecutionInfo2(
+    ):
+        return cls(
             updates,
         )
 
@@ -2355,11 +2404,12 @@ class Enumerated(Struct, omit_defaults=True):
     outcome: Outcome
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         outcome: Outcome,
-    ) -> "Enumerated":
-        return Enumerated(
+    ):
+        return cls(
             outcome,
         )
 
@@ -2371,11 +2421,12 @@ class EventContractSeriesInstance1(Struct, omit_defaults=True):
     Enumerated: Enumerated
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         Enumerated: Enumerated,
-    ) -> "EventContractSeriesInstance1":
-        return EventContractSeriesInstance1(
+    ):
+        return cls(
             Enumerated,
         )
 
@@ -2398,13 +2449,14 @@ class OptionsSeriesInstance(Struct, omit_defaults=True):
     strike: Decimal
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         expiration: datetime,
         put_or_call: PutOrCall,
         strike: Decimal,
-    ) -> "OptionsSeriesInstance":
-        return OptionsSeriesInstance(
+    ):
+        return cls(
             expiration,
             put_or_call,
             strike,
@@ -2420,13 +2472,14 @@ class AccountWithPermissions(Struct, omit_defaults=True):
     trader: UserId
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: Account,
         permissions: AccountPermissions,
         trader: UserId,
-    ) -> "AccountWithPermissions":
-        return AccountWithPermissions(
+    ):
+        return cls(
             account,
             permissions,
             trader,
@@ -2442,11 +2495,12 @@ class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(
     snapshot: Dict[str, SnapshotOrUpdateForStringAndExecutionInfo]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         snapshot: Dict[str, SnapshotOrUpdateForStringAndExecutionInfo],
-    ) -> "SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1":
-        return SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(
+    ):
+        return cls(
             snapshot,
         )
 
@@ -2463,11 +2517,12 @@ class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(
     updates: List[Update3]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         updates: List[Update3],
-    ) -> "SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2":
-        return SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2(
+    ):
+        return cls(
             updates,
         )
 
@@ -2487,13 +2542,14 @@ class Option(Struct, omit_defaults=True):
     series: str
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         instance: OptionsSeriesInstance,
         product_type: Literal["Option"],
         series: str,
-    ) -> "Option":
-        return Option(
+    ):
+        return cls(
             instance,
             product_type,
             series,
@@ -2509,13 +2565,14 @@ class EventContract(Struct, omit_defaults=True):
     series: str
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         instance: EventContractSeriesInstance,
         product_type: Literal["EventContract"],
         series: str,
-    ) -> "EventContract":
-        return EventContract(
+    ):
+        return cls(
             instance,
             product_type,
             series,
@@ -2546,13 +2603,14 @@ class ProductInfo(Struct, omit_defaults=True):
     primary_venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         product_type: ProductType,
         price_display_format: Optional[PriceDisplayFormat] = None,
         primary_venue: Optional[str] = None,
-    ) -> "ProductInfo":
-        return ProductInfo(
+    ):
+        return cls(
             product_type,
             price_display_format,
             primary_venue,
@@ -2566,11 +2624,12 @@ class SnapshotOrUpdateForStringAndProductInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ProductInfo]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         snapshot: Dict[str, ProductInfo],
-    ) -> "SnapshotOrUpdateForStringAndProductInfo1":
-        return SnapshotOrUpdateForStringAndProductInfo1(
+    ):
+        return cls(
             snapshot,
         )
 
@@ -2585,11 +2644,12 @@ class SnapshotOrUpdateForStringAndProductInfo2(Struct, omit_defaults=True):
     updates: List[Update2]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         updates: List[Update2],
-    ) -> "SnapshotOrUpdateForStringAndProductInfo2":
-        return SnapshotOrUpdateForStringAndProductInfo2(
+    ):
+        return cls(
             updates,
         )
 

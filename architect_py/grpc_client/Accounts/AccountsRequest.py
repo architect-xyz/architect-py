@@ -25,11 +25,12 @@ class AccountsRequest(Struct, omit_defaults=True):
     """
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         trader: Optional[definitions.TraderIdOrEmail] = None,
-    ) -> "AccountsRequest":
-        return AccountsRequest(
+    ):
+        return cls(
             trader,
         )
 

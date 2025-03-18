@@ -45,33 +45,18 @@ from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import 
 from architect_py.grpc_client.Marketdata.SubscribeL2BookUpdatesRequest import (
     SubscribeL2BookUpdatesRequest,
 )
-from architect_py.grpc_client.Oms import PlaceOrderRequest
 from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
 from architect_py.grpc_client.Orderflow.OrderflowRequest import (
     OrderflowRequest,
     OrderflowRequest_route,
     OrderflowRequestUnannotatedResponseType,
-    PlaceOrder,
 )
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
 
 
 """
-TODO:
-- confirm get_historical_candles works and fix if it doesn't work
-
 get_account_summaries_for_cpty
-subscribe_exchange_specific
-
-ticker timestamp is from last trade
-
-
-for decode, don't create your own decoder
-use the union types and tag values
-
-The decoder should be reused
-but it needs to be instantiated per response type
 """
 
 

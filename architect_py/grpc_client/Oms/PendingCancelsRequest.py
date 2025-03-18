@@ -19,15 +19,16 @@ class PendingCancelsRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: Optional[definitions.AccountIdOrName] = None,
         cancel_ids: Optional[List[str]] = None,
         symbol: Optional[str] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         venue: Optional[str] = None,
-    ) -> "PendingCancelsRequest":
-        return PendingCancelsRequest(
+    ):
+        return cls(
             account,
             cancel_ids,
             symbol,

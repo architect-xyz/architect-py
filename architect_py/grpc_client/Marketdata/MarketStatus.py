@@ -14,13 +14,14 @@ class MarketStatus(Struct, omit_defaults=True):
     is_trading: Optional[bool] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbol: str,
         is_quoting: Optional[bool] = None,
         is_trading: Optional[bool] = None,
-    ) -> "MarketStatus":
-        return MarketStatus(
+    ):
+        return cls(
             symbol,
             is_quoting,
             is_trading,

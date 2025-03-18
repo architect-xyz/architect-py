@@ -10,9 +10,11 @@ class PruneExpiredSymbolsResponse(Struct, omit_defaults=True):
     pass
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
-    def new() -> "PruneExpiredSymbolsResponse":
-        return PruneExpiredSymbolsResponse()
+    @classmethod
+    def new(
+        cls,
+    ):
+        return cls()
 
     def __str__(self) -> str:
         return f"PruneExpiredSymbolsResponse()"

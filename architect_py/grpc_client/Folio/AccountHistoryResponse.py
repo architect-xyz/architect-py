@@ -14,11 +14,12 @@ class AccountHistoryResponse(Struct, omit_defaults=True):
     history: List[AccountSummary]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         history: List[AccountSummary],
-    ) -> "AccountHistoryResponse":
-        return AccountHistoryResponse(
+    ):
+        return cls(
             history,
         )
 

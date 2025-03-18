@@ -55,8 +55,9 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         dir: OrderDir,
         quantity: Decimal,
         symbol: str,
@@ -71,8 +72,8 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         execution_venue: Optional[str] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
-    ) -> "PlaceOrderRequest":
-        return PlaceOrderRequest(
+    ):
+        return cls(
             dir,
             quantity,
             symbol,

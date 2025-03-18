@@ -25,11 +25,12 @@ class PruneExpiredSymbolsRequest(Struct, omit_defaults=True):
     """
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         cutoff: Optional[int] = None,
-    ) -> "PruneExpiredSymbolsRequest":
-        return PruneExpiredSymbolsRequest(
+    ):
+        return cls(
             cutoff,
         )
 

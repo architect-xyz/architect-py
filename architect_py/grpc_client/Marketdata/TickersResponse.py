@@ -14,11 +14,12 @@ class TickersResponse(Struct, omit_defaults=True):
     tickers: List[Ticker]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         tickers: List[Ticker],
-    ) -> "TickersResponse":
-        return TickersResponse(
+    ):
+        return cls(
             tickers,
         )
 

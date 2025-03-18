@@ -18,13 +18,14 @@ class AccountHistoryRequest(Struct, omit_defaults=True):
     to_exclusive: Optional[datetime] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: definitions.AccountIdOrName,
         from_inclusive: Optional[datetime] = None,
         to_exclusive: Optional[datetime] = None,
-    ) -> "AccountHistoryRequest":
-        return AccountHistoryRequest(
+    ):
+        return cls(
             account,
             from_inclusive,
             to_exclusive,

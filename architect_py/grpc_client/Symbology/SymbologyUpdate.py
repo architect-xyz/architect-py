@@ -29,8 +29,9 @@ class SymbologyUpdate(Struct, omit_defaults=True):
     products: Optional[definitions.SnapshotOrUpdateForStringAndProductInfo] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         sequence_id: int,
         sequence_number: int,
         execution_info: Optional[
@@ -43,8 +44,8 @@ class SymbologyUpdate(Struct, omit_defaults=True):
             definitions.SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString
         ] = None,
         products: Optional[definitions.SnapshotOrUpdateForStringAndProductInfo] = None,
-    ) -> "SymbologyUpdate":
-        return SymbologyUpdate(
+    ):
+        return cls(
             sequence_id,
             sequence_number,
             execution_info,

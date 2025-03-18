@@ -14,11 +14,12 @@ class AccountSummariesResponse(Struct, omit_defaults=True):
     account_summaries: List[AccountSummary]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account_summaries: List[AccountSummary],
-    ) -> "AccountSummariesResponse":
-        return AccountSummariesResponse(
+    ):
+        return cls(
             account_summaries,
         )
 

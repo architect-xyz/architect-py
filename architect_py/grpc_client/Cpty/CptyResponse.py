@@ -21,8 +21,9 @@ class UpdateAccountSummary(Struct, omit_defaults=True, tag_field="t", tag="as"):
     statistics: Optional[definitions.AccountStatistics] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: definitions.AccountIdOrName,
         is_snapshot: bool,
         timestamp: int,
@@ -30,8 +31,8 @@ class UpdateAccountSummary(Struct, omit_defaults=True, tag_field="t", tag="as"):
         balances: Optional[Dict[str, Any]] = None,
         positions: Optional[Dict[str, Any]] = None,
         statistics: Optional[definitions.AccountStatistics] = None,
-    ) -> "UpdateAccountSummary":
-        return UpdateAccountSummary(
+    ):
+        return cls(
             account,
             is_snapshot,
             timestamp,
@@ -50,12 +51,13 @@ class ReconcileOpenOrder(Struct, omit_defaults=True, tag_field="t", tag="oo"):
     snapshot_for_account: Optional[definitions.AccountIdOrName] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         orders: List[Order],
         snapshot_for_account: Optional[definitions.AccountIdOrName] = None,
-    ) -> "ReconcileOpenOrder":
-        return ReconcileOpenOrder(
+    ):
+        return cls(
             orders,
             snapshot_for_account,
         )

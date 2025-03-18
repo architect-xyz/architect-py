@@ -38,8 +38,9 @@ class Candle(Struct, omit_defaults=True):
     o: Optional[Annotated[Optional[Decimal], Meta(title="open")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         sell_volume: Decimal,
         buy_volume: Decimal,
         symbol: str,
@@ -63,8 +64,8 @@ class Candle(Struct, omit_defaults=True):
         mid_low: Optional[Decimal] = None,
         mid_open: Optional[Decimal] = None,
         open: Optional[Decimal] = None,
-    ) -> "Candle":
-        return Candle(
+    ):
+        return cls(
             sell_volume,
             buy_volume,
             symbol,

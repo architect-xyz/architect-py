@@ -13,11 +13,12 @@ class SubscribeLiquidationsRequest(Struct, omit_defaults=True):
     symbols: Optional[List[str]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbols: Optional[List[str]] = None,
-    ) -> "SubscribeLiquidationsRequest":
-        return SubscribeLiquidationsRequest(
+    ):
+        return cls(
             symbols,
         )
 

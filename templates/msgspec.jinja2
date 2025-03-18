@@ -42,8 +42,9 @@ class {{ class_name }}:
 
 {# Generate a constructor that takes all field titles (if available) as arguments #}
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+    cls,
 {%- for field in fields -%}
     {%- if field.extras and field.extras.title %}
     {{ field.extras.title }}: {{ field.type_hint }}
@@ -58,8 +59,8 @@ class {{ class_name }}:
     {%- endif -%}
     ,
 {%- endfor -%}
-    ) -> "{{ class_name }}":
-        return {{ class_name }}(
+    ):
+        return cls(
 {%- for field in fields -%}
     {%- if field.extras and field.extras.title %}
     {{ field.extras.title }}

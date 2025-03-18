@@ -50,8 +50,9 @@ class AccountSummary(Struct, omit_defaults=True):
     yesterday_equity: Optional[Decimal] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: str,
         balances: Dict[str, Decimal],
         positions: Dict[str, List[definitions.AccountPosition]],
@@ -64,8 +65,8 @@ class AccountSummary(Struct, omit_defaults=True):
         total_margin: Optional[Decimal] = None,
         unrealized_pnl: Optional[Decimal] = None,
         yesterday_equity: Optional[Decimal] = None,
-    ) -> "AccountSummary":
-        return AccountSummary(
+    ):
+        return cls(
             account,
             balances,
             positions,

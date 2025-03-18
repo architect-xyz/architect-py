@@ -48,8 +48,9 @@ class Order(Struct, omit_defaults=True):
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: str,
         dir: OrderDir,
         id: definitions.OrderId,
@@ -72,8 +73,8 @@ class Order(Struct, omit_defaults=True):
         average_fill_price: Optional[Decimal] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
-    ) -> "Order":
-        return Order(
+    ):
+        return cls(
             account,
             dir,
             id,

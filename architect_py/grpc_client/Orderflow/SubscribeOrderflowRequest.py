@@ -35,13 +35,14 @@ class SubscribeOrderflowRequest(Struct, omit_defaults=True):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: Optional[definitions.AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
-    ) -> "SubscribeOrderflowRequest":
-        return SubscribeOrderflowRequest(
+    ):
+        return cls(
             account,
             execution_venue,
             trader,

@@ -20,14 +20,15 @@ class HistoricalCandlesRequest(Struct, omit_defaults=True):
     symbol: str
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         candle_width: definitions.CandleWidth,
         end_date: datetime,
         start_date: datetime,
         symbol: str,
-    ) -> "HistoricalCandlesRequest":
-        return HistoricalCandlesRequest(
+    ):
+        return cls(
             candle_width,
             end_date,
             start_date,

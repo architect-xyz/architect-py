@@ -23,16 +23,17 @@ class SymbologySnapshot(Struct, omit_defaults=True):
     product_aliases: Optional[Dict[str, Dict[str, str]]] = {}
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         execution_info: Dict[str, Dict[str, definitions.ExecutionInfo]],
         options_series: Dict[str, definitions.OptionsSeriesInfo],
         products: Dict[str, definitions.ProductInfo],
         sequence_id: int,
         sequence_number: int,
         product_aliases: Optional[Dict[str, Dict[str, str]]] = {},
-    ) -> "SymbologySnapshot":
-        return SymbologySnapshot(
+    ):
+        return cls(
             execution_info,
             options_series,
             products,

@@ -14,11 +14,12 @@ class AccountsResponse(Struct, omit_defaults=True):
     accounts: List[definitions.AccountWithPermissions]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         accounts: List[definitions.AccountWithPermissions],
-    ) -> "AccountsResponse":
-        return AccountsResponse(
+    ):
+        return cls(
             accounts,
         )
 

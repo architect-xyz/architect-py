@@ -49,8 +49,9 @@ class Ticker(Struct, omit_defaults=True):
     xv: Optional[Annotated[Optional[Decimal], Meta(title="session_volume")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbol: str,
         timestamp_ns: int,
         timestamp: int,
@@ -82,8 +83,8 @@ class Ticker(Struct, omit_defaults=True):
         session_low: Optional[Decimal] = None,
         session_open: Optional[Decimal] = None,
         session_volume: Optional[Decimal] = None,
-    ) -> "Ticker":
-        return Ticker(
+    ):
+        return cls(
             symbol,
             timestamp_ns,
             timestamp,

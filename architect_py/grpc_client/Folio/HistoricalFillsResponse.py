@@ -15,12 +15,13 @@ class HistoricalFillsResponse(Struct, omit_defaults=True):
     fills: List[definitions.Fill]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         aberrant_fills: List[definitions.AberrantFill],
         fills: List[definitions.Fill],
-    ) -> "HistoricalFillsResponse":
-        return HistoricalFillsResponse(
+    ):
+        return cls(
             aberrant_fills,
             fills,
         )

@@ -29,8 +29,9 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: Optional[definitions.AccountIdOrName] = None,
         from_inclusive: Optional[datetime] = None,
         limit: Optional[int] = None,
@@ -38,8 +39,8 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
         to_exclusive: Optional[datetime] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         venue: Optional[str] = None,
-    ) -> "HistoricalFillsRequest":
-        return HistoricalFillsRequest(
+    ):
+        return cls(
             account,
             from_inclusive,
             limit,

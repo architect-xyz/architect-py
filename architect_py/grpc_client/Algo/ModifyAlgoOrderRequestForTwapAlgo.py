@@ -14,12 +14,13 @@ class ModifyAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
     params: definitions.TwapParams
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         algo_order_id: definitions.OrderId,
         params: definitions.TwapParams,
-    ) -> "ModifyAlgoOrderRequestForTwapAlgo":
-        return ModifyAlgoOrderRequestForTwapAlgo(
+    ):
+        return cls(
             algo_order_id,
             params,
         )

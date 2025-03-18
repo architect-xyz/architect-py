@@ -14,11 +14,12 @@ class PendingCancelsResponse(Struct, omit_defaults=True):
     pending_cancels: List[Cancel]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         pending_cancels: List[Cancel],
-    ) -> "PendingCancelsResponse":
-        return PendingCancelsResponse(
+    ):
+        return cls(
             pending_cancels,
         )
 

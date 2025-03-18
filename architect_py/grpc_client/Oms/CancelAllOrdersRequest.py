@@ -18,14 +18,15 @@ class CancelAllOrdersRequest(Struct, omit_defaults=True):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         id: str,
         account: Optional[definitions.AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
-    ) -> "CancelAllOrdersRequest":
-        return CancelAllOrdersRequest(
+    ):
+        return cls(
             id,
             account,
             execution_venue,

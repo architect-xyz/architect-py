@@ -20,16 +20,17 @@ class UploadSymbologyRequest(Struct, omit_defaults=True):
     products: Optional[Dict[str, definitions.ProductInfo]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         execution_info: Optional[
             Dict[str, Dict[str, definitions.ExecutionInfo]]
         ] = None,
         options_series: Optional[Dict[str, definitions.OptionsSeriesInfo]] = None,
         product_aliases: Optional[Dict[str, Dict[str, str]]] = None,
         products: Optional[Dict[str, definitions.ProductInfo]] = None,
-    ) -> "UploadSymbologyRequest":
-        return UploadSymbologyRequest(
+    ):
+        return cls(
             execution_info,
             options_series,
             product_aliases,

@@ -19,15 +19,16 @@ class TickersRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         i: Optional[int] = None,
         k: Optional[definitions.SortTickersBy] = None,
         n: Optional[int] = None,
         symbols: Optional[List[str]] = None,
         venue: Optional[str] = None,
-    ) -> "TickersRequest":
-        return TickersRequest(
+    ):
+        return cls(
             i,
             k,
             n,

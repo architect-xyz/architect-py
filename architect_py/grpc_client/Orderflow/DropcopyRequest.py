@@ -25,16 +25,17 @@ class DropcopyRequest(Struct, omit_defaults=True):
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         aberrant_fills: Optional[bool] = False,
         account: Optional[definitions.AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
         fills: Optional[bool] = True,
         orders: Optional[bool] = False,
         trader: Optional[definitions.TraderIdOrEmail] = None,
-    ) -> "DropcopyRequest":
-        return DropcopyRequest(
+    ):
+        return cls(
             aberrant_fills,
             account,
             execution_venue,

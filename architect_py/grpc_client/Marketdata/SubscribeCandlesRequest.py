@@ -25,13 +25,14 @@ class SubscribeCandlesRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbol: str,
         candle_widths: Optional[List[definitions.CandleWidth]] = None,
         venue: Optional[str] = None,
-    ) -> "SubscribeCandlesRequest":
-        return SubscribeCandlesRequest(
+    ):
+        return cls(
             symbol,
             candle_widths,
             venue,

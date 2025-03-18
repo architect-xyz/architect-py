@@ -14,12 +14,13 @@ class MarketStatusRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbol: str,
         venue: Optional[str] = None,
-    ) -> "MarketStatusRequest":
-        return MarketStatusRequest(
+    ):
+        return cls(
             symbol,
             venue,
         )

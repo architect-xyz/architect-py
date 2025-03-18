@@ -22,12 +22,13 @@ class SubscribeTradesRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbol: Optional[str] = None,
         venue: Optional[str] = None,
-    ) -> "SubscribeTradesRequest":
-        return SubscribeTradesRequest(
+    ):
+        return cls(
             symbol,
             venue,
         )

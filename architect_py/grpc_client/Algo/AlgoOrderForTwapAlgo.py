@@ -26,8 +26,9 @@ class AlgoOrderForTwapAlgo(Struct, omit_defaults=True):
     parent_order_id: Optional[definitions.OrderId] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: str,
         algo_name: str,
         algo_order_id: definitions.OrderId,
@@ -40,8 +41,8 @@ class AlgoOrderForTwapAlgo(Struct, omit_defaults=True):
         last_error: Optional[str] = None,
         last_error_time: Optional[datetime] = None,
         parent_order_id: Optional[definitions.OrderId] = None,
-    ) -> "AlgoOrderForTwapAlgo":
-        return AlgoOrderForTwapAlgo(
+    ):
+        return cls(
             account,
             algo_name,
             algo_order_id,

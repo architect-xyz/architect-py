@@ -12,11 +12,12 @@ class HealthCheckResponse(Struct, omit_defaults=True):
     status: definitions.HealthStatus
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         status: definitions.HealthStatus,
-    ) -> "HealthCheckResponse":
-        return HealthCheckResponse(
+    ):
+        return cls(
             status,
         )
 

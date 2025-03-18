@@ -20,16 +20,17 @@ class CreateAlgoOrderRequestForTwapAlgo(Struct, omit_defaults=True):
     trader: Optional[definitions.UserId] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         algo_name: str,
         params: definitions.TwapParams,
         account: Optional[str] = None,
         algo_order_id: Optional[definitions.OrderId] = None,
         parent_order_id: Optional[definitions.OrderId] = None,
         trader: Optional[definitions.UserId] = None,
-    ) -> "CreateAlgoOrderRequestForTwapAlgo":
-        return CreateAlgoOrderRequestForTwapAlgo(
+    ):
+        return cls(
             algo_name,
             params,
             account,

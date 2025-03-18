@@ -14,11 +14,12 @@ class HistoricalCandlesResponse(Struct, omit_defaults=True):
     candles: List[Candle]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         candles: List[Candle],
-    ) -> "HistoricalCandlesResponse":
-        return HistoricalCandlesResponse(
+    ):
+        return cls(
             candles,
         )
 

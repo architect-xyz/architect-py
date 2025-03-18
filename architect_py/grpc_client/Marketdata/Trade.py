@@ -22,16 +22,17 @@ class Trade(Struct, omit_defaults=True):
     d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         price: Decimal,
         size: Decimal,
         symbol: str,
         timestamp_ns: int,
         timestamp: int,
         direction: Optional[OrderDir] = None,
-    ) -> "Trade":
-        return Trade(
+    ):
+        return cls(
             price,
             size,
             symbol,

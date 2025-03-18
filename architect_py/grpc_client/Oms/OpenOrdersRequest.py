@@ -20,16 +20,17 @@ class OpenOrdersRequest(Struct, omit_defaults=True):
     venue: Optional[str] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: Optional[definitions.AccountIdOrName] = None,
         order_ids: Optional[List[definitions.OrderId]] = None,
         parent_order_id: Optional[definitions.OrderId] = None,
         symbol: Optional[str] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         venue: Optional[str] = None,
-    ) -> "OpenOrdersRequest":
-        return OpenOrdersRequest(
+    ):
+        return cls(
             account,
             order_ids,
             parent_order_id,

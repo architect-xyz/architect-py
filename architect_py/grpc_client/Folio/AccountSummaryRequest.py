@@ -13,11 +13,12 @@ class AccountSummaryRequest(Struct, omit_defaults=True):
     account: definitions.AccountIdOrName
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         account: definitions.AccountIdOrName,
-    ) -> "AccountSummaryRequest":
-        return AccountSummaryRequest(
+    ):
+        return cls(
             account,
         )
 

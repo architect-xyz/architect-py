@@ -11,11 +11,12 @@ class L1BookSnapshotRequest(Struct, omit_defaults=True):
     symbol: str
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbol: str,
-    ) -> "L1BookSnapshotRequest":
-        return L1BookSnapshotRequest(
+    ):
+        return cls(
             symbol,
         )
 

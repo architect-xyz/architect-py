@@ -24,12 +24,13 @@ class CancelOrder(Struct, omit_defaults=True, tag_field="t", tag="cancel_order")
     original_order: Optional[Order] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         cancel: Cancel,
         original_order: Optional[Order] = None,
-    ) -> "CancelOrder":
-        return CancelOrder(
+    ):
+        return cls(
             cancel,
             original_order,
         )

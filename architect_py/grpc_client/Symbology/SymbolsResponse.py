@@ -12,11 +12,12 @@ class SymbolsResponse(Struct, omit_defaults=True):
     symbols: List[str]
 
     # below is a constructor that takes all field titles as arguments for convenience
-    @staticmethod
+    @classmethod
     def new(
+        cls,
         symbols: List[str],
-    ) -> "SymbolsResponse":
-        return SymbolsResponse(
+    ):
+        return cls(
             symbols,
         )
 
