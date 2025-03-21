@@ -6,7 +6,6 @@
     {
       "tag_value": "s",
       "title": "L2BookSnapshot",
-      "ref_correction": "L2BookSnapshot",
       "$ref": "../Marketdata/L2BookSnapshot.json/#",
       "variant_name": "Snapshot"
     },

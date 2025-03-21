@@ -425,9 +425,8 @@ class AsyncClient:
             (user_id, user_email)
         """
         user_id = await self.graphql_client.user_id_query()
-        email = await self.graphql_client.user_email_query()
 
-        return user_id.user_id, email.user_email
+        return user_id.user_id, user_id.user_email
 
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
         """

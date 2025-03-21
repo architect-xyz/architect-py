@@ -148,15 +148,9 @@ fragment L2BookFields on L2Book {
 query UserIdQuery {
   user {
     userId
-  }
-}
-
-query UserEmailQuery {
-  user {
     userEmail
   }
 }
-
 
 query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $offset: Int, $limit: Int) {
   symbology {

@@ -5,7 +5,6 @@
     {
       "tag_value": "o",
       "title": "Order",
-      "ref_correction": "Order",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "TaggedOrder"
     },
