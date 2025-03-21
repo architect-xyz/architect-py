@@ -5,7 +5,6 @@
     {
       "tag_value": "w",
       "title": "Order",
-      "ref_correction": "Order",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "OrderPending"
     },
@@ -42,7 +41,6 @@
     {
       "tag_value": "xc",
       "title": "Cancel",
-      "ref_correction": "Cancel",
       "$ref": "../Oms/Cancel.json/#",
       "variant_name": "CancelPending"
     },

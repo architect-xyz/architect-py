@@ -5,21 +5,18 @@
     {
       "tag_value": "p",
       "title": "PlaceOrderRequest",
-      "ref_correction": "PlaceOrderRequest",
       "$ref": "../Oms/PlaceOrderRequest.json/#",
       "variant_name": "PlaceOrder"
     },
     {
       "tag_value": "x",
       "title": "CancelOrderRequest",
-      "ref_correction": "CancelOrderRequest",
       "$ref": "../Oms/CancelOrderRequest.json/#",
       "variant_name": "CancelOrder"
     },
     {
       "tag_value": "xo",
       "title": "CancelAllOrdersRequest",
-      "ref_correction": "CancelAllOrdersRequest",
       "$ref": "../Oms/CancelAllOrdersRequest.json/#",
       "variant_name": "CancelAllOrders"
     }

@@ -23,7 +23,15 @@ class AccountSummary(Struct, omit_defaults=True):
     """
     Cash available to withdraw.
     """
-    equity: Optional[Decimal] = None
+    equity: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Total account equity; net liquidation value."),
+        ]
+    ] = None
+    """
+    Total account equity; net liquidation value.
+    """
     position_margin: Optional[
         Annotated[
             Optional[Decimal],
@@ -33,7 +41,17 @@ class AccountSummary(Struct, omit_defaults=True):
     """
     Margin requirement based on current positions only.
     """
-    purchasing_power: Optional[Decimal] = None
+    purchasing_power: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)"
+            ),
+        ]
+    ] = None
+    """
+    Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)
+    """
     realized_pnl: Optional[Decimal] = None
     total_margin: Optional[
         Annotated[
@@ -47,7 +65,14 @@ class AccountSummary(Struct, omit_defaults=True):
     Margin requirement calculated for worst-case based on open positions and working orders.
     """
     unrealized_pnl: Optional[Decimal] = None
-    yesterday_equity: Optional[Decimal] = None
+    yesterday_equity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Yesterday total account equity.")
+        ]
+    ] = None
+    """
+    Yesterday total account equity.
+    """
 
     # below is a constructor that takes all field titles as arguments for convenience
     @classmethod

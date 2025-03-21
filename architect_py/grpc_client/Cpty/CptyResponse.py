@@ -46,6 +46,23 @@ class UpdateAccountSummary(Struct, omit_defaults=True, tag_field="t", tag="as"):
         return f"UpdateAccountSummary(account={self.account},is_snapshot={self.is_snapshot},timestamp={self.timestamp},timestamp_ns={self.timestamp_ns},balances={self.balances},positions={self.positions},statistics={self.statistics})"
 
 
+class Symbology(Struct, omit_defaults=True, tag_field="t", tag="xs"):
+    execution_info: Dict[str, Dict[str, definitions.ExecutionInfo]]
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        execution_info: Dict[str, Dict[str, definitions.ExecutionInfo]],
+    ):
+        return cls(
+            execution_info,
+        )
+
+    def __str__(self) -> str:
+        return f"Symbology(execution_info={self.execution_info})"
+
+
 class ReconcileOpenOrder(Struct, omit_defaults=True, tag_field="t", tag="oo"):
     orders: List[Order]
     snapshot_for_account: Optional[definitions.AccountIdOrName] = None
@@ -71,6 +88,6 @@ class ReconcileOrder(Order, omit_defaults=True, tag_field="t", tag="ro"):
 
 
 CptyResponse = Annotated[
-    Union[Dict[str, Any], ReconcileOrder, ReconcileOpenOrder, UpdateAccountSummary],
+    Union[Symbology, ReconcileOrder, ReconcileOpenOrder, UpdateAccountSummary],
     Meta(title="CptyResponse"),
 ]

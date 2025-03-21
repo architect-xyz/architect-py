@@ -43,6 +43,7 @@ class Order(Struct, omit_defaults=True):
         Annotated[Optional[definitions.OrderRejectReason], Meta(title="reject_reason")]
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
+    ss: Optional[Annotated[Optional[bool], Meta(title="is_short_sale")]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
@@ -70,6 +71,7 @@ class Order(Struct, omit_defaults=True):
         parent_id: Optional[definitions.OrderId] = None,
         reject_reason: Optional[definitions.OrderRejectReason] = None,
         reject_message: Optional[str] = None,
+        is_short_sale: Optional[bool] = None,
         average_fill_price: Optional[Decimal] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
@@ -94,13 +96,14 @@ class Order(Struct, omit_defaults=True):
             parent_id,
             reject_reason,
             reject_message,
+            is_short_sale,
             average_fill_price,
             post_only,
             trigger_price,
         )
 
     def __str__(self) -> str:
-        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},limit_price={self.p},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},average_fill_price={self.xp},post_only={self.po},trigger_price={self.tp})"
+        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},limit_price={self.p},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},is_short_sale={self.ss},average_fill_price={self.xp},post_only={self.po},trigger_price={self.tp})"
 
     @property
     def account(self) -> str:
@@ -245,6 +248,14 @@ class Order(Struct, omit_defaults=True):
     @reject_message.setter
     def reject_message(self, value: Optional[str]) -> None:
         self.rm = value
+
+    @property
+    def is_short_sale(self) -> Optional[bool]:
+        return self.ss
+
+    @is_short_sale.setter
+    def is_short_sale(self, value: Optional[bool]) -> None:
+        self.ss = value
 
     @property
     def average_fill_price(self) -> Optional[Decimal]:

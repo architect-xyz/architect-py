@@ -1,4 +1,49 @@
 {
+  "HealthMetric": {
+    "type": "object",
+    "required": [
+      "timestamp",
+      "value"
+    ],
+    "properties": {
+      "should_be_greater_than": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "should_be_greater_than_or_equal_to": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "should_be_less_than": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "should_be_less_than_or_equal_to": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "timestamp": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "value": {
+        "type": "number",
+        "format": "double"
+      }
+    }
+  },
   "HealthStatus": {
     "type": "string",
     "enum": [
@@ -430,6 +475,12 @@
           "product_type"
         ],
         "properties": {
+          "easy_to_borrow": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "product_type": {
             "type": "string",
             "enum": [
@@ -1300,7 +1351,8 @@
   "AliasKind": {
     "type": "string",
     "enum": [
-      "CME_GLOBEX"
+      "CME_GLOBEX",
+      "CFE"
     ]
   },
   "SnapshotOrUpdate_for_AliasKind_and_SnapshotOrUpdate_for_String_and_String": {
@@ -2250,6 +2302,9 @@
       "NoCpty",
       "UnsupportedOrderType",
       "UnsupportedExecutionVenue",
+      "InsufficientCash",
+      "InsufficientMargin",
+      "NotEasyToBorrow",
       "Unknown"
     ]
   },
@@ -2381,6 +2436,7 @@
         ]
       },
       "equity": {
+        "description": "Total account equity; net liquidation value.",
         "anyOf": [
           {
             "type": "number",
@@ -2404,6 +2460,7 @@
         ]
       },
       "purchasing_power": {
+        "description": "Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)",
         "anyOf": [
           {
             "type": "number",
@@ -2449,6 +2506,7 @@
         ]
       },
       "yesterday_equity": {
+        "description": "Yesterday total account equity.",
         "anyOf": [
           {
             "type": "number",
