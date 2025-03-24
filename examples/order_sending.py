@@ -2,11 +2,9 @@ import asyncio
 
 from decimal import Decimal
 import logging
-from datetime import datetime, timedelta
 
 from architect_py.async_client import AsyncClient
-from architect_py.grpc_client.Oms.PlaceOrderRequest import PlaceOrderRequestType
-from architect_py.grpc_client.definitions import TimeInForceEnum
+from architect_py.graphql_client.enums import OrderType, TimeInForce
 from architect_py.scalars import OrderDir, TradableProduct
 
 LOGGER = logging.getLogger(__name__)
@@ -56,7 +54,7 @@ async def test_send_order():
         limit_price=snapshot.bid_price
         - (snapshot.ask_price - snapshot.bid_price) * Decimal(10),
         account=ACCOUNT,
-        time_in_force=TimeInForceEnum.IOC,
+        time_in_force=TimeInForce.IOC,
     )
     logging.critical(f"ORDER TEST: {order}")
 
@@ -81,7 +79,7 @@ async def test_send_market_pro_order():
         odir=OrderDir.BUY,
         quantity=Decimal(1),
         account=ACCOUNT,
-        time_in_force=TimeInForceEnum.IOC,
+        time_in_force=TimeInForce.IOC,
     )
 
 
