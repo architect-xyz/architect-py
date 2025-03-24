@@ -3,7 +3,6 @@ from datetime import datetime
 
 import pytest
 from architect_py.async_client import AsyncClient
-from dateutil.relativedelta import relativedelta
 
 
 @pytest.mark.asyncio
@@ -35,7 +34,8 @@ async def test_search_for_es_front_month(async_client: AsyncClient):
 async def test_get_cme_future_from_root_month_year(async_client: AsyncClient):
     # BTC futures are monthly.  To avoid end-of-month weekend expiration,
     # check the next month from the current date.
-    now = datetime.now() + relativedelta(months=+1)
+    now = add_one_month_to_datetime(datetime.now())
+
     month = now.month
     year = now.year
     future = await async_client.get_cme_future_from_root_month_year(
@@ -45,6 +45,13 @@ async def test_get_cme_future_from_root_month_year(async_client: AsyncClient):
     assert re.match(
         f"BTC {year}{month:02d}[0-9]{{2}} CME Future", future
     ), "future base name does not match regex"
+
+
+def add_one_month_to_datetime(dt: datetime):
+    if dt.month == 12:
+        return dt.replace(year=dt.year + 1, month=1)
+    else:
+        return dt.replace(month=dt.month + 1)
 
 
 @pytest.mark.asyncio
