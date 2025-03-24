@@ -5,6 +5,7 @@ Improvements:
   - grpc_definitions.TimeInForce1 -> grpc_definitions.TimeInForceEnum
   - Revamped grpc_client.request and grpc_client.subscribe to not include the ParamSpec
   - Added caching to get_product_info, get_execution_info
+  - Loosened requirements for real this time - websockets requirement more flexible
 
 3.2.0
 Breaking:
