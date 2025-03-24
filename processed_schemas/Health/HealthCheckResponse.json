@@ -6,6 +6,15 @@
     "status"
   ],
   "properties": {
+    "metrics": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "$ref": "../definitions.json#/HealthMetric"
+      }
+    },
     "status": {
       "$ref": "../definitions.json#/HealthStatus"
     }

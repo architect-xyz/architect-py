@@ -1,10 +1,13 @@
-3.2.1
+# 3.2.1
+Improvements:
+  - removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+
+  - small type updates
+  - grpc_definitions.TimeInForce1 -> grpc_definitions.TimeInForceEnum
+  - Revamped grpc_client.request and grpc_client.subscribe to not include the ParamSpec
+  - Added caching to get_product_info, get_execution_info
+  - Loosened requirements for real this time - websockets requirement more flexible
 
-Fixes:
-  removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+
-
-
-3.2.0
+# 3.2.0
 Breaking:
   - Changed the way AsyncClient is instantiated, from normal __init__ to 
     - Can just change AsyncClient(args) -> AsyncClient.connect(args)
@@ -26,7 +29,7 @@ Features
   - Added docs for each function
   - OrderDir is now also a string
 
-3.1.11
+# 3.1.11
 Features:
   - Added the who_am_i function to get userid + email
 
@@ -35,21 +38,21 @@ Fixes:
   - Improved documentation
 
 
-3.1.10
+# 3.1.10
 Fixes:
   - Fix part 2 for send_market_pro_order, prematurely updated the schema
 
-3.1.9
+# 3.1.9
 Fixes:
   - Fix for send_market_pro_order
   - Minor internal renaming of functions
   - updated dependencies + poetry lock
 
-3.1.8
+# 3.1.8
 Fixes:
   - Minor function fixes
 
-3.1.7
+# 3.1.7
 Features:
   - added historical_candles_snapshot
   - ExecutionInfo now has `initialMargin` and `maintenanceMargin`
@@ -58,7 +61,7 @@ Fixes:
   - small type changes on return types and function args
   - added back candle_snapshot
 
-3.1.6
+# 3.1.6
 Features:
   - added explicit paper trading mode arg for client
   - composes graphql client instead of inheriting
@@ -69,21 +72,21 @@ Fixes:
   - get_order now works
   - fixed paper trading port
 
-3.1.5
+# 3.1.5
 Fixes:
   - fix get_historical_orders
   - fix the sync client import
 
-3.1.4
+# 3.1.4
 Features:
   - added get_order and get_orders
 
 
-3.1.3
+# 3.1.3
 Fixes:
   - Fix send_market_pro_order
 
-3.1.2 / 3.1.1
+# 3.1.2 / 3.1.1
 Features:
   - added marketStatus
 
@@ -94,7 +97,7 @@ Fixes:
 
 
 
-3.0.0
+# 3.0.0
 
 Breaking Changes:
 - Removed GetFilteredMarkets query, replaced by SearchMarkets

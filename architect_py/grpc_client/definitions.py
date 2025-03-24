@@ -80,7 +80,15 @@ class AccountStatistics(Struct, omit_defaults=True):
     """
     Cash available to withdraw.
     """
-    equity: Optional[Decimal] = None
+    equity: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Total account equity; net liquidation value."),
+        ]
+    ] = None
+    """
+    Total account equity; net liquidation value.
+    """
     position_margin: Optional[
         Annotated[
             Optional[Decimal],
@@ -90,7 +98,17 @@ class AccountStatistics(Struct, omit_defaults=True):
     """
     Margin requirement based on current positions only.
     """
-    purchasing_power: Optional[Decimal] = None
+    purchasing_power: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)"
+            ),
+        ]
+    ] = None
+    """
+    Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)
+    """
     realized_pnl: Optional[Decimal] = None
     total_margin: Optional[
         Annotated[
@@ -104,7 +122,14 @@ class AccountStatistics(Struct, omit_defaults=True):
     Margin requirement calculated for worst-case based on open positions and working orders.
     """
     unrealized_pnl: Optional[Decimal] = None
-    yesterday_equity: Optional[Decimal] = None
+    yesterday_equity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Yesterday total account equity.")
+        ]
+    ] = None
+    """
+    Yesterday total account equity.
+    """
 
     # below is a constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -132,6 +157,104 @@ class AccountStatistics(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"AccountStatistics(cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
+
+
+class AggregatedAccountSummary(Struct, omit_defaults=True):
+    account: str
+    balances: Dict[str, Decimal]
+    positions: Dict[str, AccountPosition]
+    timestamp: datetime
+    cash_excess: Optional[
+        Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
+    ] = None
+    """
+    Cash available to withdraw.
+    """
+    equity: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Total account equity; net liquidation value."),
+        ]
+    ] = None
+    """
+    Total account equity; net liquidation value.
+    """
+    position_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Margin requirement based on current positions only."),
+        ]
+    ] = None
+    """
+    Margin requirement based on current positions only.
+    """
+    purchasing_power: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)"
+            ),
+        ]
+    ] = None
+    """
+    Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)
+    """
+    realized_pnl: Optional[Decimal] = None
+    total_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Margin requirement calculated for worst-case based on open positions and working orders."
+            ),
+        ]
+    ] = None
+    """
+    Margin requirement calculated for worst-case based on open positions and working orders.
+    """
+    unrealized_pnl: Optional[Decimal] = None
+    yesterday_equity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Yesterday total account equity.")
+        ]
+    ] = None
+    """
+    Yesterday total account equity.
+    """
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: str,
+        balances: Dict[str, Decimal],
+        positions: Dict[str, AccountPosition],
+        timestamp: datetime,
+        cash_excess: Optional[Decimal] = None,
+        equity: Optional[Decimal] = None,
+        position_margin: Optional[Decimal] = None,
+        purchasing_power: Optional[Decimal] = None,
+        realized_pnl: Optional[Decimal] = None,
+        total_margin: Optional[Decimal] = None,
+        unrealized_pnl: Optional[Decimal] = None,
+        yesterday_equity: Optional[Decimal] = None,
+    ):
+        return cls(
+            account,
+            balances,
+            positions,
+            timestamp,
+            cash_excess,
+            equity,
+            position_margin,
+            purchasing_power,
+            realized_pnl,
+            total_margin,
+            unrealized_pnl,
+            yesterday_equity,
+        )
+
+    def __str__(self) -> str:
+        return f"AggregatedAccountSummary(account={self.account},balances={self.balances},positions={self.positions},timestamp={self.timestamp},cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
 
 
 class AlgoState(str, Enum):
@@ -168,6 +291,38 @@ class CptyLogoutRequest(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"CptyLogoutRequest()"
+
+
+class HealthMetric(Struct, omit_defaults=True):
+    timestamp: int
+    value: float
+    should_be_greater_than: Optional[float] = None
+    should_be_greater_than_or_equal_to: Optional[float] = None
+    should_be_less_than: Optional[float] = None
+    should_be_less_than_or_equal_to: Optional[float] = None
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        timestamp: int,
+        value: float,
+        should_be_greater_than: Optional[float] = None,
+        should_be_greater_than_or_equal_to: Optional[float] = None,
+        should_be_less_than: Optional[float] = None,
+        should_be_less_than_or_equal_to: Optional[float] = None,
+    ):
+        return cls(
+            timestamp,
+            value,
+            should_be_greater_than,
+            should_be_greater_than_or_equal_to,
+            should_be_less_than,
+            should_be_less_than_or_equal_to,
+        )
+
+    def __str__(self) -> str:
+        return f"HealthMetric(timestamp={self.timestamp},value={self.value},should_be_greater_than={self.should_be_greater_than},should_be_greater_than_or_equal_to={self.should_be_greater_than_or_equal_to},should_be_less_than={self.should_be_less_than},should_be_less_than_or_equal_to={self.should_be_less_than_or_equal_to})"
 
 
 class HealthStatus(str, Enum):
@@ -342,6 +497,9 @@ class OrderRejectReason(str, Enum):
     NoCpty = "NoCpty"
     UnsupportedOrderType = "UnsupportedOrderType"
     UnsupportedExecutionVenue = "UnsupportedExecutionVenue"
+    InsufficientCash = "InsufficientCash"
+    InsufficientMargin = "InsufficientMargin"
+    NotEasyToBorrow = "NotEasyToBorrow"
     Unknown = "Unknown"
 
 
@@ -408,7 +566,7 @@ class GoodTilDate(Struct, omit_defaults=True):
         return f"GoodTilDate(GTD={self.GTD})"
 
 
-class TimeInForce1(str, Enum):
+class TimeInForceEnum(str, Enum):
     GTC = "GTC"
     DAY = "DAY"
     IOC = "IOC"
@@ -417,7 +575,7 @@ class TimeInForce1(str, Enum):
     ATC = "ATC"
 
 
-TimeInForce = Union[GoodTilDate, TimeInForce1]
+TimeInForce = Union[GoodTilDate, TimeInForceEnum]
 
 
 TraderIdOrEmail = str
@@ -479,7 +637,9 @@ class AccountPermissions(Struct, omit_defaults=True):
         return f"AccountPermissions(list={self.list},reduce_or_close={self.reduce_or_close},set_limits={self.set_limits},trade={self.trade},view={self.view})"
 
 
-AliasKind = Literal["CME_GLOBEX"]
+class AliasKind(str, Enum):
+    CME_GLOBEX = "CME_GLOBEX"
+    CFE = "CFE"
 
 
 class DerivativeKind(str, Enum):
@@ -596,19 +756,22 @@ class Crypto(Struct, omit_defaults=True):
 
 class Equity(Struct, omit_defaults=True):
     product_type: Literal["Equity"]
+    easy_to_borrow: Optional[bool] = None
 
     # below is a constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         product_type: Literal["Equity"],
+        easy_to_borrow: Optional[bool] = None,
     ):
         return cls(
             product_type,
+            easy_to_borrow,
         )
 
     def __str__(self) -> str:
-        return f"Equity(product_type={self.product_type})"
+        return f"Equity(product_type={self.product_type},easy_to_borrow={self.easy_to_borrow})"
 
 
 class Index(Struct, omit_defaults=True):

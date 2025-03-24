@@ -15,6 +15,7 @@ The individual graphql types are subject to change, so it is not recommended to 
 """
 
 import asyncio
+import functools
 import logging
 from datetime import date, datetime
 from decimal import Decimal
@@ -243,6 +244,7 @@ class AsyncClient:
         info = await self.graphql_client.get_product_info_query(symbol)
         return info.product_info
 
+    @functools.lru_cache
     async def get_product_infos(
         self, symbols: Optional[list[str]]
     ) -> Sequence[ProductInfoFields]:
@@ -262,6 +264,7 @@ class AsyncClient:
         infos = await self.graphql_client.get_product_infos_query(symbols)
         return infos.product_infos
 
+    @functools.lru_cache
     async def get_execution_info(
         self, symbol: TradableProduct, execution_venue: str
     ) -> Optional[ExecutionInfoFields]:
@@ -425,9 +428,8 @@ class AsyncClient:
             (user_id, user_email)
         """
         user_id = await self.graphql_client.user_id_query()
-        email = await self.graphql_client.user_email_query()
 
-        return user_id.user_id, email.user_email
+        return user_id.user_id, user_id.user_email
 
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
         """
@@ -736,14 +738,14 @@ class AsyncClient:
         Returns:
             a list of CandleFields for the specified candles
         """
-
-        return await self.grpc_client.request(
-            HistoricalCandlesRequest,
+        request = HistoricalCandlesRequest(
             symbol=symbol,
             candle_width=candle_width,
             start_date=start,
             end_date=end,
         )
+
+        return await self.grpc_client.request(request)
 
     async def get_l1_book_snapshot(
         self,
@@ -921,9 +923,8 @@ class AsyncClient:
         """
         Subscribe to a stream of trades for a symbol.
         """
-        return self.grpc_client.subscribe(
-            SubscribeTradesRequest, symbol=symbol, venue=venue
-        )
+        request = SubscribeTradesRequest(symbol=symbol, venue=venue)
+        return self.grpc_client.subscribe(request)
 
     def subscribe_candles_stream(
         self,
@@ -934,12 +935,12 @@ class AsyncClient:
         """
         Subscribe to a stream of candles for a symbol.
         """
-        return self.grpc_client.subscribe(
-            SubscribeCandlesRequest,
+        request = SubscribeCandlesRequest(
             symbol=str(symbol),
             venue=venue,
             candle_widths=candle_widths,
         )
+        return self.grpc_client.subscribe(request)
 
     # ------------------------------------------------------------
     # Order Entry and Cancellation

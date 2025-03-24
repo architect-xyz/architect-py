@@ -447,6 +447,7 @@ type ProductInfo {
   primaryVenue: String
   priceDisplayFormat: String
   spreadLegs: [SpreadLeg!]
+  easyToBorrow: Boolean
 }
 
 type QueryRoot {

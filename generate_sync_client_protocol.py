@@ -116,6 +116,8 @@ def autogenerate_protocol(cls) -> str:
         "# It is not used for anything else",
         "# For maintainers: ensure that the types in this file are correct for correct type hinting",
         "\n",
+        "from typing import Union",
+        "from architect_py.grpc_client.definitions import *",
         "from architect_py.graphql_client import *",
         "from architect_py.async_client import *",
         "\n",

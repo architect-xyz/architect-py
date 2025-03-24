@@ -10,6 +10,7 @@ from msgspec import Meta, Struct
 
 
 class HealthCheckRequest(Struct, omit_defaults=True):
+    include_metrics: Optional[bool] = None
     service: Optional[
         Annotated[
             Optional[str],
@@ -28,14 +29,16 @@ class HealthCheckRequest(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        include_metrics: Optional[bool] = None,
         service: Optional[str] = None,
     ):
         return cls(
+            include_metrics,
             service,
         )
 
     def __str__(self) -> str:
-        return f"HealthCheckRequest(service={self.service})"
+        return f"HealthCheckRequest(include_metrics={self.include_metrics},service={self.service})"
 
     @staticmethod
     def get_response_type():

@@ -33,6 +33,7 @@
       ]
     },
     "equity": {
+      "description": "Total account equity; net liquidation value.",
       "anyOf": [
         {
           "type": "number",
@@ -65,6 +66,7 @@
       }
     },
     "purchasing_power": {
+      "description": "Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)",
       "anyOf": [
         {
           "type": "number",
@@ -114,6 +116,7 @@
       ]
     },
     "yesterday_equity": {
+      "description": "Yesterday total account equity.",
       "anyOf": [
         {
           "type": "number",

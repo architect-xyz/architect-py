@@ -4,7 +4,7 @@
 from __future__ import annotations
 from architect_py.grpc_client.Cpty.CptyResponse import (
     CptyResponse,
-    Any,
+    Symbology,
     ReconcileOrder,
     ReconcileOpenOrder,
     UpdateAccountSummary,
@@ -62,6 +62,6 @@ CptyRequest = Annotated[
 CptyRequest_rpc_method = "duplex_stream"
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
-    dict[str, Any] | ReconcileOrder | ReconcileOpenOrder | UpdateAccountSummary
+    Symbology | ReconcileOrder | ReconcileOpenOrder | UpdateAccountSummary
 )
 CptyRequest_route = "/json.architect.Cpty/Cpty"

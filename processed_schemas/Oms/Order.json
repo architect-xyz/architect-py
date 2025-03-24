@@ -97,6 +97,13 @@
         }
       ]
     },
+    "ss": {
+      "title": "is_short_sale",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "tif": {
       "title": "time_in_force",
       "allOf": [

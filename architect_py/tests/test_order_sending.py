@@ -30,10 +30,10 @@ async def test_live_far_order_cancel(async_client: AsyncClient, front_ES_future:
 
     min_qty = Decimal(execution_info.min_order_quantity)
 
-    if last_price := snapshot.bid_price:
-        far_price = last_price * Decimal("0.8")
+    if bid_price := snapshot.bid_price:
+        far_price = bid_price * Decimal("0.8")
     else:
-        raise ValueError("No last price in snapshot")
+        raise ValueError(f"No bid price in snapshot for {tp} at venue {venue}")
     limit_price = TickRoundMethod.FLOOR(far_price, execution_info.tick_size)
 
     accounts = await async_client.list_accounts()

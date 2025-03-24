@@ -58,7 +58,6 @@ if TYPE_CHECKING:
         SubscribeOrderflowOrderflowOrderStale,
     )
     from .subscribe_trades import SubscribeTradesTrades
-    from .user_email_query import UserEmailQueryUser
     from .user_id_query import UserIdQueryUser
 
 
@@ -75,6 +74,7 @@ class GraphQLClient(JuniperBaseClient):
             query UserIdQuery {
               user {
                 userId
+                userEmail
               }
             }
             """
@@ -85,25 +85,6 @@ class GraphQLClient(JuniperBaseClient):
         )
         data = self.get_data(response)
         return UserIdQuery.model_validate(data).user
-
-    async def user_email_query(self, **kwargs: Any) -> "UserEmailQueryUser":
-        from .user_email_query import UserEmailQuery
-
-        query = gql(
-            """
-            query UserEmailQuery {
-              user {
-                userEmail
-              }
-            }
-            """
-        )
-        variables: Dict[str, object] = {}
-        response = await self.execute(
-            query=query, operation_name="UserEmailQuery", variables=variables, **kwargs
-        )
-        data = self.get_data(response)
-        return UserEmailQuery.model_validate(data).user
 
     async def search_symbols_query(
         self,

@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 
 import pytest
@@ -99,11 +100,19 @@ def sync_client():
 async def front_ES_future(async_client: AsyncClient) -> str:
     series = await async_client.get_cme_futures_series("ES CME Futures")
 
-    return series[0][1]
+    inc = 0
+    if datetime.now().date() >= async_client.get_expiration_from_CME_name(series[0][1]):
+        inc += 1
+
+    return series[inc][1]
 
 
 @pytest_asyncio.fixture
 async def front_ES_future_tp(async_client: AsyncClient) -> str:
     series = await async_client.get_cme_futures_series("ES CME Futures")
 
-    return f"{series[0][1]}/USD"
+    inc = 0
+    if datetime.now().date() >= async_client.get_expiration_from_CME_name(series[0][1]):
+        inc += 1
+
+    return f"{series[inc][1]}/USD"

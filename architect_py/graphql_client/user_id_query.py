@@ -12,6 +12,7 @@ class UserIdQuery(BaseModel):
 
 class UserIdQueryUser(BaseModel):
     user_id: str = Field(alias="userId")
+    user_email: str = Field(alias="userEmail")
 
 
 UserIdQuery.model_rebuild()
