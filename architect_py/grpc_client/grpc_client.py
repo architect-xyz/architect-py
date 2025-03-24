@@ -4,13 +4,11 @@ from typing import (
     Any,
     AsyncIterator,
     Optional,
-    ParamSpec,
     Protocol,
     Type,
     TypeVar,
     cast,
 )
-from collections.abc import Callable
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
@@ -67,10 +65,9 @@ def enc_hook(obj: Any) -> Any:
 
 encoder = msgspec.json.Encoder(enc_hook=enc_hook)
 ResponseTypeGeneric = TypeVar("ResponseTypeGeneric", covariant=True)
-RequestTypeParameters = ParamSpec("RequestTypeParameters")
 
 
-class RequestType(Protocol[RequestTypeParameters, ResponseTypeGeneric]):
+class RequestType(Protocol[ResponseTypeGeneric]):
     @staticmethod
     def get_unannotated_response_type() -> Type[ResponseTypeGeneric]: ...
 
@@ -82,10 +79,6 @@ class RequestType(Protocol[RequestTypeParameters, ResponseTypeGeneric]):
 
     @staticmethod
     def get_rpc_method() -> Any: ...
-
-    def __init__(
-        self, *args: RequestTypeParameters.args, **kwargs: RequestTypeParameters.kwargs
-    ) -> None: ...
 
 
 class GRPCClient:
@@ -200,12 +193,14 @@ class GRPCClient:
             return decoder
 
     async def request_l1_book_snapshot(self, symbol: TradableProduct) -> L1BookSnapshot:
-        return await self.request(L1BookSnapshotRequest, symbol=symbol)
+        request = L1BookSnapshotRequest(symbol=symbol)
+        return await self.request(request)
 
     async def request_l2_book_snapshot(
         self, venue: Optional[str], symbol: TradableProduct
     ) -> L2BookSnapshot:
-        return await self.request(L2BookSnapshotRequest, venue=venue, symbol=symbol)
+        request = L2BookSnapshotRequest(venue=venue, symbol=symbol)
+        return await self.request(request)
 
     def initialize_l1_books(
         self, symbols: list[TradableProduct]
@@ -228,9 +223,10 @@ class GRPCClient:
 
     async def watch_l1_books(self, symbols: list[TradableProduct]) -> None:
         symbols_cast = cast(list[str], symbols)
-        async for snap in self.subscribe(
-            SubscribeL1BookSnapshotsRequest, symbols=symbols_cast
-        ):
+
+        request = SubscribeL1BookSnapshotsRequest(symbols=symbols_cast)
+
+        async for snap in self.subscribe(request):
             book = self.l1_books[cast(TradableProduct, snap.symbol)]
             update_struct(book, snap)
 
@@ -248,9 +244,9 @@ class GRPCClient:
     async def subscribe_l1_books_stream(
         self, symbols: list[str]
     ) -> AsyncIterator[L1BookSnapshot]:
+        request = SubscribeL1BookSnapshotsRequest(symbols=symbols)
         return self.subscribe(
-            SubscribeL1BookSnapshotsRequest,
-            symbols=symbols,
+            request,
         )
 
     async def subscribe_l2_books_stream(
@@ -312,9 +308,7 @@ class GRPCClient:
 
     async def subscribe(
         self,
-        request_type: Type[RequestType[RequestTypeParameters, ResponseTypeGeneric]],
-        *args: RequestTypeParameters.args,
-        **kwargs: RequestTypeParameters.kwargs,
+        request: RequestType[ResponseTypeGeneric],
     ) -> AsyncIterator[ResponseTypeGeneric]:
         """
         Generic function for subscribing to a stream of updates from the gRPC server.
@@ -322,24 +316,21 @@ class GRPCClient:
         request_type and ResponseTypeGeneric *cannot* be union types
         """
         decoder: msgspec.json.Decoder[ResponseTypeGeneric] = self.get_decoder(
-            request_type.get_unannotated_response_type()
+            request.get_unannotated_response_type()
         )
         stub = self.channel.unary_stream(
-            request_type.get_route(),
+            request.get_route(),
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        req = request_type(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()
-        call = stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
+        call = stub(request, metadata=(("authorization", f"Bearer {jwt}"),))
         async for update in call:
             yield update
 
     async def request(
         self,
-        request_type: Type[RequestType[RequestTypeParameters, ResponseTypeGeneric]],
-        *args: RequestTypeParameters.args,
-        **kwargs: RequestTypeParameters.kwargs,
+        request: RequestType[ResponseTypeGeneric],
     ) -> ResponseTypeGeneric:
         """
         Generic function for making a unary request to the gRPC server.
@@ -347,16 +338,15 @@ class GRPCClient:
         request_type and ResponseTypeGeneric *cannot* be union types
         """
         decoder: msgspec.json.Decoder[ResponseTypeGeneric] = self.get_decoder(
-            request_type.get_unannotated_response_type()
+            request.get_unannotated_response_type()
         )
         stub = self.channel.unary_unary(
-            request_type.get_route(),
+            request.get_route(),
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        req = request_type(*args, **kwargs)
         jwt = await self.refresh_grpc_credentials()
-        return await stub(req, metadata=(("authorization", f"Bearer {jwt}"),))
+        return await stub(request, metadata=(("authorization", f"Bearer {jwt}"),))
 
 
 def update_order_list(

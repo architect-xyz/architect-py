@@ -468,7 +468,7 @@ class GoodTilDate(Struct, omit_defaults=True):
         return f"GoodTilDate(GTD={self.GTD})"
 
 
-class TimeInForce1(str, Enum):
+class TimeInForceEnum(str, Enum):
     GTC = "GTC"
     DAY = "DAY"
     IOC = "IOC"
@@ -477,7 +477,7 @@ class TimeInForce1(str, Enum):
     ATC = "ATC"
 
 
-TimeInForce = Union[GoodTilDate, TimeInForce1]
+TimeInForce = Union[GoodTilDate, TimeInForceEnum]
 
 
 TraderIdOrEmail = str

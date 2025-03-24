@@ -293,6 +293,7 @@ def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
             definition.update(new_one_of[0])
         else:
             definition["oneOf"] = new_one_of
+            new_enum["title"] = f"{t}Enum"
 
 
 def process_schema_definitions(

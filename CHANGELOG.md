@@ -1,8 +1,9 @@
 3.2.1
-
 Fixes:
-  removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+
-
+  - removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+
+  - small type updates
+  - grpc_definitions.TimeInForce1 -> grpc_definitions.TimeInForceEnum
+  - Revamped grpc_client.request and grpc_client.subscribe to not include the ParamSpec
 
 3.2.0
 Breaking:

@@ -735,14 +735,14 @@ class AsyncClient:
         Returns:
             a list of CandleFields for the specified candles
         """
-
-        return await self.grpc_client.request(
-            HistoricalCandlesRequest,
+        request = HistoricalCandlesRequest(
             symbol=symbol,
             candle_width=candle_width,
             start_date=start,
             end_date=end,
         )
+
+        return await self.grpc_client.request(request)
 
     async def get_l1_book_snapshot(
         self,
@@ -920,9 +920,8 @@ class AsyncClient:
         """
         Subscribe to a stream of trades for a symbol.
         """
-        return self.grpc_client.subscribe(
-            SubscribeTradesRequest, symbol=symbol, venue=venue
-        )
+        request = SubscribeTradesRequest(symbol=symbol, venue=venue)
+        return self.grpc_client.subscribe(request)
 
     def subscribe_candles_stream(
         self,
@@ -933,12 +932,12 @@ class AsyncClient:
         """
         Subscribe to a stream of candles for a symbol.
         """
-        return self.grpc_client.subscribe(
-            SubscribeCandlesRequest,
+        request = SubscribeCandlesRequest(
             symbol=str(symbol),
             venue=venue,
             candle_widths=candle_widths,
         )
+        return self.grpc_client.subscribe(request)
 
     # ------------------------------------------------------------
     # Order Entry and Cancellation
