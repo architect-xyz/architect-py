@@ -19,7 +19,7 @@ from architect_py.grpc_client.Orderflow.OrderflowRequest import (
     OrderflowRequest,
     PlaceOrder,
 )
-from architect_py.grpc_client.definitions import TimeInForce1
+from architect_py.grpc_client.definitions import TimeInForceEnum
 from architect_py.scalars import OrderDir, TradableProduct
 
 from .common import connect_async_client
@@ -53,10 +53,8 @@ class OrderflowRequester:
 
 
 async def update_marketdata(c: AsyncClient):
-    s = c.grpc_client.subscribe(
-        TickerRequest,
-        symbol=tradable_product,
-    )
+    ticker_request = TickerRequest(symbol=tradable_product)
+    s = c.grpc_client.subscribe(ticker_request)
     async for ticker in s:
         if ticker.funding_rate:
             global current_funding_rate
@@ -128,7 +126,7 @@ async def step_to_target_position(
                     quantity=Decimal(1),
                     execution_venue=None,
                     limit_price=best_ask_price,
-                    time_in_force=TimeInForce1.DAY,
+                    time_in_force=TimeInForceEnum.DAY,
                     place_order_request_type=PlaceOrderRequestType.LIMIT,
                 )
 
@@ -143,7 +141,7 @@ async def step_to_target_position(
                     quantity=Decimal(1),
                     execution_venue=None,
                     limit_price=best_bid_price,
-                    time_in_force=TimeInForce1.DAY,
+                    time_in_force=TimeInForceEnum.DAY,
                     place_order_request_type=PlaceOrderRequestType.LIMIT,
                 )
 
