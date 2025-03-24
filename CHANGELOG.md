@@ -1,3 +1,9 @@
+# 3.3.0
+Breaking:
+  - in AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
+    - no functionality change, just changes to input types and output types
+
+
 # 3.2.1
 Improvements:
   - removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+

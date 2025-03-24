@@ -48,7 +48,7 @@ async def test_send_order():
         symbol=symbol,
         odir=OrderDir.BUY,
         quantity=Decimal(1),
-        order_type=OrderType.LIMIT,
+        order_type=PlaceOrderRequestType.LIMIT,
         execution_venue="CME",
         post_only=True,
         limit_price=snapshot.bid_price
