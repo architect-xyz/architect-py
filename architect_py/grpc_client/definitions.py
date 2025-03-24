@@ -159,6 +159,104 @@ class AccountStatistics(Struct, omit_defaults=True):
         return f"AccountStatistics(cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
 
 
+class AggregatedAccountSummary(Struct, omit_defaults=True):
+    account: str
+    balances: Dict[str, Decimal]
+    positions: Dict[str, AccountPosition]
+    timestamp: datetime
+    cash_excess: Optional[
+        Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
+    ] = None
+    """
+    Cash available to withdraw.
+    """
+    equity: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Total account equity; net liquidation value."),
+        ]
+    ] = None
+    """
+    Total account equity; net liquidation value.
+    """
+    position_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Margin requirement based on current positions only."),
+        ]
+    ] = None
+    """
+    Margin requirement based on current positions only.
+    """
+    purchasing_power: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)"
+            ),
+        ]
+    ] = None
+    """
+    Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)
+    """
+    realized_pnl: Optional[Decimal] = None
+    total_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Margin requirement calculated for worst-case based on open positions and working orders."
+            ),
+        ]
+    ] = None
+    """
+    Margin requirement calculated for worst-case based on open positions and working orders.
+    """
+    unrealized_pnl: Optional[Decimal] = None
+    yesterday_equity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Yesterday total account equity.")
+        ]
+    ] = None
+    """
+    Yesterday total account equity.
+    """
+
+    # below is a constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: str,
+        balances: Dict[str, Decimal],
+        positions: Dict[str, AccountPosition],
+        timestamp: datetime,
+        cash_excess: Optional[Decimal] = None,
+        equity: Optional[Decimal] = None,
+        position_margin: Optional[Decimal] = None,
+        purchasing_power: Optional[Decimal] = None,
+        realized_pnl: Optional[Decimal] = None,
+        total_margin: Optional[Decimal] = None,
+        unrealized_pnl: Optional[Decimal] = None,
+        yesterday_equity: Optional[Decimal] = None,
+    ):
+        return cls(
+            account,
+            balances,
+            positions,
+            timestamp,
+            cash_excess,
+            equity,
+            position_margin,
+            purchasing_power,
+            realized_pnl,
+            total_margin,
+            unrealized_pnl,
+            yesterday_equity,
+        )
+
+    def __str__(self) -> str:
+        return f"AggregatedAccountSummary(account={self.account},balances={self.balances},positions={self.positions},timestamp={self.timestamp},cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
+
+
 class AlgoState(str, Enum):
     Pending = "Pending"
     Running = "Running"
