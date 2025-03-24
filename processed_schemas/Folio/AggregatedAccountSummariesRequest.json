@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AggregatedAccountSummariesRequest",
+  "type": "object",
+  "properties": {
+    "accounts": {
+      "description": "If trader and accounts are both None, return all accounts for the user",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "../definitions.json#/AccountIdOrName"
+      }
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "route": "/json.architect.Folio/AggregatedAccountSummaries",
+  "rpc_method": "unary",
+  "service": "Folio",
+  "response_type": "AggregatedAccountSummariesResponse"
+}
