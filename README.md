@@ -1,7 +1,7 @@
 # [![Architect](https://avatars.githubusercontent.com/u/116864654?s=29&v=2)](https://architect.co) architect_py 
 [![PyPI version](https://img.shields.io/pypi/v/architect-py.svg)](https://pypi.org/project/architect-py/)
 
-A Python API for [Architect](https://architect.co).
+A fully-featured trading Python API for the [Architect](https://architect.co) brokerage..
 
 Just some of the features of this API:
 symbology, market snapshots, past trades, account queries, order management (including sending advanced algos!), and market feed subscriptions.
