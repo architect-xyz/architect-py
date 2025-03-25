@@ -1,9 +1,9 @@
 # Async vs Sync Clients
 
-The python has both a sync version of the client,. To use this flavor of the client, import from architect_py.client and import the Client instead. It is completely identical to the AsyncClient except 2 key differences:
+The python has both a sync version of the client,. To use this flavor of the client, import from `architect_py.client` and import the `Client` instead. It is completely identical to the `AsyncClient` except 2 key differences:
 
 - Not async, so if you simply remove the async/await keywords from every example
-- Subscriptions do not work
+- Subscription functions do not work and are not available
 
 # Tips
 
