@@ -106,16 +106,16 @@ def main(filename):
     # Alternatively, sort by section name alphabetically:
     # sorted_sections = sorted(grouped.items())
     for section, funcs in sorted_sections:
-        print(f"# {section}")
+        print(f"### {section}")
         print()
         # Sort functions by their line number
         for name, summary, lineno in sorted(funcs, key=lambda x: x[2]):
             # Only output if summary is non-empty
             if summary:
-                print(f"{name}: {summary}")
+                print(f"- **`{name}`**: {summary}")
             else:
-                print(f"{name}: <No docstring>")
-        print()
+                print(f"- **`{name}`**: <No docstring>")
+        print("\n---\n")
 
 
 if __name__ == "__main__":
