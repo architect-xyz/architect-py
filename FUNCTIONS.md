@@ -1,11 +1,11 @@
-### Initialization
+### 🚀 Initialization
 
 - **`connect`**: The main way to create an AsyncClient object.
 - **`__init__`**: Users should not be using this constructor directly, unless they do not want to use any subscription methods.
 
 ---
 
-### Symbology
+### 🔍 Symbology
 
 - **`search_symbols`**: Search for symbols in the Architect database.
 - **`get_product_info`**: Get the product information (product_type, underlying, multiplier, etc.) for a symbol.
@@ -20,7 +20,7 @@
 
 ---
 
-### Account Management
+### 👤 Account Management
 
 - **`who_am_i`**: Gets the user_id and user_email for the user that the API key belongs to.
 - **`list_accounts`**: List accounts for the user that the API key belongs to.
@@ -30,7 +30,7 @@
 
 ---
 
-### Order Management
+### 📑 Order Management
 
 - **`get_open_orders`**: Returns a list of open orders for the user that match the filters.
 - **`get_all_open_orders`**: Returns a list of all open orders for the user.
@@ -41,7 +41,7 @@
 
 ---
 
-### Market Data
+### 📈 Market Data
 
 - **`get_market_status`**: Returns market status for symbol (ie if it is quoting and trading).
 - **`get_market_snapshot`**: This is an alias for l1_book_snapshot.
@@ -59,7 +59,7 @@
 
 ---
 
-### Order Entry and Cancellation
+### 📝 Order Entry and Cancellation
 
 - **`send_limit_order`**: Sends a regular limit order.
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.

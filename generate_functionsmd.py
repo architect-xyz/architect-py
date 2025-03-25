@@ -106,7 +106,10 @@ def main(filename):
     # Alternatively, sort by section name alphabetically:
     # sorted_sections = sorted(grouped.items())
     for section, funcs in sorted_sections:
-        print(f"### {section}")
+        emoji = emoji_dict.get(section, "")
+        if emoji == "":
+            raise ValueError(f'Section "{section}" does not have an emoji.')
+        print(f"### {emoji} {section}")
         print()
         # Sort functions by their line number
         for name, summary, lineno in sorted(funcs, key=lambda x: x[2]):
@@ -117,6 +120,15 @@ def main(filename):
                 print(f"- **`{name}`**: <No docstring>")
         print("\n---\n")
 
+
+emoji_dict: dict[str, str] = {
+    "Initialization": "🚀",
+    "Symbology": "🔍",
+    "Account Management": "👤",
+    "Order Management": "📑",
+    "Market Data": "📈",
+    "Order Entry and Cancellation": "📝",
+}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
