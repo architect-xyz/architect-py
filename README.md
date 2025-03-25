@@ -1,4 +1,4 @@
-# architect_py
+# [![Architect](https://avatars.githubusercontent.com/u/116864654?s=29&v=2)](https://architect.co) architect_py 
 [![PyPI version](https://img.shields.io/pypi/v/architect-py.svg)](https://pypi.org/project/architect-py/)
 
 A Python API for [Architect](https://architect.co).
