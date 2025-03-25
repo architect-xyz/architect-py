@@ -8,6 +8,10 @@ symbology, market snapshots, past trades, account queries, order management (inc
 
 This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.
 
+## API keys for the brokerage
+
+API keys/secrets for the brokerage can be generated on the [user account page](https://app.architect.co/user/account).
+
 
 ## Example usage
 
@@ -157,10 +161,3 @@ python -m examples.trades
 
 You can exit the poetry shell by running `exit`. Environment variables set
 within the shell are not persisted.
-
-
-## API keys for the brokerage
-
-API keys/secrets for the brokerage can be generated on the [user account page](https://app.architect.co/user/account).
-
-
