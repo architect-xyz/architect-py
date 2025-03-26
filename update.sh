@@ -65,7 +65,6 @@ datamodel-codegen \
 
 
 python postprocess_grpc_file.py --file_path "$GRPC_CLIENT_DIR" --json_folder "$PROCESSED_DIR"
-black -q "$GRPC_CLIENT_DIR"
 
 
 # the __init__.py file is overwritten by datamodel-code-generator so we need to re-import the files
@@ -89,6 +88,13 @@ python generate_sync_client_protocol.py > architect_py/client_protocol.py
 # -----------------------------
 
 python generate_functionsmd.py architect_py/async_client.py > FUNCTIONS.md
+
+
+# -----------------------------
+# Run black
+# -----------------------------
+black -q .
+
 
 # -----------------------------
 # Version check
