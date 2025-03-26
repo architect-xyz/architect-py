@@ -202,6 +202,8 @@ class AsyncClient:
     async def enable_orderflow(self):
         """
         Load and cache product and execution info so that the SDK can send orders.
+
+        CR alee: determine if this is better than @functools.lru_cache
         """
         pass
 
