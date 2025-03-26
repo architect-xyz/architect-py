@@ -163,7 +163,7 @@ class AsyncClient:
         """
         Users should not be using this constructor directly, unless they do not want to use any subscription methods.
 
-        Use the create method instead.
+        Use the connect method instead.
         See self.connect for arg explanations
         """
 
@@ -198,6 +198,12 @@ class AsyncClient:
         self.graphql_client = GraphQLClient(
             api_key=api_key, api_secret=api_secret, host=host, port=_port, **kwargs
         )
+
+    async def enable_orderflow(self):
+        """
+        Load and cache product and execution info so that the SDK can send orders.
+        """
+        pass
 
     # ------------------------------------------------------------
     # Symbology
@@ -949,6 +955,7 @@ class AsyncClient:
     async def send_limit_order(
         self,
         *,
+        id: Optional[str] = None,
         symbol: TradableProduct,
         execution_venue: Optional[str],
         odir: OrderDir,
@@ -1027,7 +1034,7 @@ class AsyncClient:
             quantity,
             order_type,
             time_in_force,
-            None,
+            id,
             trader,
             account,
             limit_price,
