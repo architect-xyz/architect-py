@@ -4,7 +4,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated, Optional
 
@@ -37,6 +37,7 @@ class Ticker(Struct, omit_defaults=True):
     p: Optional[Annotated[Optional[Decimal], Meta(title="last_price")]] = None
     price_to_earnings: Optional[Decimal] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title="last_size")]] = None
+    sd: Optional[Annotated[Optional[date], Meta(title="last_settlement_date")]] = None
     shares_outstanding_weighted_adj: Optional[Decimal] = None
     sp: Optional[Annotated[Optional[Decimal], Meta(title="last_settlement_price")]] = (
         None
@@ -75,6 +76,7 @@ class Ticker(Struct, omit_defaults=True):
         last_price: Optional[Decimal] = None,
         price_to_earnings: Optional[Decimal] = None,
         last_size: Optional[Decimal] = None,
+        last_settlement_date: Optional[date] = None,
         shares_outstanding_weighted_adj: Optional[Decimal] = None,
         last_settlement_price: Optional[Decimal] = None,
         volume_24h: Optional[Decimal] = None,
@@ -108,6 +110,7 @@ class Ticker(Struct, omit_defaults=True):
             last_price,
             price_to_earnings,
             last_size,
+            last_settlement_date,
             shares_outstanding_weighted_adj,
             last_settlement_price,
             volume_24h,
@@ -119,7 +122,7 @@ class Ticker(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"Ticker(symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},venue={self.ve},ask_price={self.ap},ask_size={self.as_},bid_price={self.bp},bid_size={self.bs},dividend={self.dividend},dividend_yield={self.dividend_yield},eps_adj={self.eps_adj},funding_rate={self.fr},next_funding_time={self.ft},high_24h={self.h},index_price={self.ip},low_24h={self.l},market_cap={self.market_cap},mark_price={self.mp},open_24h={self.o},open_interest={self.oi},last_price={self.p},price_to_earnings={self.price_to_earnings},last_size={self.q},shares_outstanding_weighted_adj={self.shares_outstanding_weighted_adj},last_settlement_price={self.sp},volume_24h={self.v},volume_30d={self.vm},session_high={self.xh},session_low={self.xl},session_open={self.xo},session_volume={self.xv})"
+        return f"Ticker(symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},venue={self.ve},ask_price={self.ap},ask_size={self.as_},bid_price={self.bp},bid_size={self.bs},dividend={self.dividend},dividend_yield={self.dividend_yield},eps_adj={self.eps_adj},funding_rate={self.fr},next_funding_time={self.ft},high_24h={self.h},index_price={self.ip},low_24h={self.l},market_cap={self.market_cap},mark_price={self.mp},open_24h={self.o},open_interest={self.oi},last_price={self.p},price_to_earnings={self.price_to_earnings},last_size={self.q},last_settlement_date={self.sd},shares_outstanding_weighted_adj={self.shares_outstanding_weighted_adj},last_settlement_price={self.sp},volume_24h={self.v},volume_30d={self.vm},session_high={self.xh},session_low={self.xl},session_open={self.xo},session_volume={self.xv})"
 
     @property
     def symbol(self) -> str:
@@ -272,6 +275,14 @@ class Ticker(Struct, omit_defaults=True):
     @last_size.setter
     def last_size(self, value: Optional[Decimal]) -> None:
         self.q = value
+
+    @property
+    def last_settlement_date(self) -> Optional[date]:
+        return self.sd
+
+    @last_settlement_date.setter
+    def last_settlement_date(self, value: Optional[date]) -> None:
+        self.sd = value
 
     @property
     def last_settlement_price(self) -> Optional[Decimal]:

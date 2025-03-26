@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AggregatedAccountSummariesResponse",
+  "title": "CptysResponse",
   "type": "object",
   "required": [
-    "account_summaries"
+    "cptys"
   ],
   "properties": {
-    "account_summaries": {
+    "cptys": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/AggregatedAccountSummary"
+        "$ref": "../Cpty/CptyStatus.json/#"
       }
     }
   }

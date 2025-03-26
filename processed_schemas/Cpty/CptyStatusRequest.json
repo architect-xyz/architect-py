@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CptyStatusRequest",
+  "type": "object",
+  "required": [
+    "kind"
+  ],
+  "properties": {
+    "instance": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kind": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Cpty/CptyStatus",
+  "rpc_method": "unary",
+  "service": "Cpty",
+  "response_type": "CptyStatus"
+}
