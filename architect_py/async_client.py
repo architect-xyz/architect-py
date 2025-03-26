@@ -1051,6 +1051,7 @@ class AsyncClient:
     async def send_market_pro_order(
         self,
         *,
+        id: Optional[str] = None,
         symbol: TradableProduct,
         execution_venue: str,
         odir: OrderDir,
@@ -1127,6 +1128,7 @@ class AsyncClient:
             limit_price = tick_round_method(limit_price, tick_size)
 
         return await self.send_limit_order(
+            id=id,
             symbol=symbol,
             execution_venue=execution_venue,
             odir=odir,
