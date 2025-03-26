@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CptyStatus",
+  "type": "object",
+  "required": [
+    "connected",
+    "kind",
+    "last_heartbeat",
+    "last_heartbeat_stale_threshold",
+    "logged_in"
+  ],
+  "properties": {
+    "connected": {
+      "type": "boolean"
+    },
+    "instance": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kind": {
+      "type": "string"
+    },
+    "last_heartbeat": {
+      "description": "UNIX epoch time or -1 for never",
+      "type": "integer",
+      "format": "int64"
+    },
+    "last_heartbeat_stale_threshold": {
+      "description": "Stale threshold in seconds, or -1 for never stale",
+      "type": "integer",
+      "format": "int64"
+    },
+    "logged_in": {
+      "type": "boolean"
+    }
+  }
+}

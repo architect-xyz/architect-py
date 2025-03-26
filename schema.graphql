@@ -291,6 +291,15 @@ type ConfigQueryRoot {
   marketdataVenues: [MarketdataVenue!]!
 }
 
+type CptyStatus {
+  kind: String!
+  instance: String
+  connected: Boolean!
+  loggedIn: Boolean!
+  lastHeartbeat: DateTime
+  lastHeartbeatStaleThresholdInSeconds: Int
+}
+
 type ExchangeSymbologyQueryRoot {
   cmeProductGroupInfo(seriesSymbol: String!): CmeProductGroupInfo
   "Get all CME product group infos, or filtered by series symbols if specified, e.g. [\"ES\", \"NQ\", \"CL\"]"
@@ -459,6 +468,7 @@ type QueryRoot {
   marketdata: MarketdataQueryRoot!
   oms: OmsQueryRoot!
   folio: FolioQueryRoot!
+  cptys: [CptyStatus!]!
 }
 
 type SpreadLeg {
@@ -510,6 +520,7 @@ type Ticker {
   volume30d: Decimal
   openInterest: Decimal
   lastSettlementPrice: Decimal
+  lastSettlementDate: Date
   marketCap: Decimal
   priceToEarnings: Decimal
   epsAdj: Decimal
