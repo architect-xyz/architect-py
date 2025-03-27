@@ -3,6 +3,11 @@ Breaking:
   - in AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
     - no functionality change, just changes to input types and output types
 
+Fixes:
+  - Set order_id in send_order functions
+  - Added External cpty protocol example
+  - Fixed MinOrderQuantityUnit type
+
 
 # 3.2.1
 Improvements:

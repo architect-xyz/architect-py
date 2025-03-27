@@ -996,7 +996,7 @@ class AsyncClient:
     async def send_limit_order(
         self,
         *,
-        id: Optional[str] = None,
+        id: Optional[grpc_definitions.OrderId] = None,
         symbol: TradableProduct,
         execution_venue: Optional[str],
         odir: OrderDir,
@@ -1014,6 +1014,7 @@ class AsyncClient:
         Sends a regular limit order.
 
         Args:
+            id:
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
@@ -1092,7 +1093,7 @@ class AsyncClient:
     async def send_market_pro_order(
         self,
         *,
-        id: Optional[str] = None,
+        id: Optional[grpc_definitions.OrderId] = None,
         symbol: TradableProduct,
         execution_venue: str,
         odir: OrderDir,
