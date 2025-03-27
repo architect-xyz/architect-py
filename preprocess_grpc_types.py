@@ -300,54 +300,54 @@ def correct_enums_with_multiple_titles(schema: Dict[str, Any]) -> None:
     if "definitions" not in schema:
         return
 
-    definitions: dict[str, Any] = schema["definitions"]
-    for t, definition in definitions.items():
-        if "oneOf" not in definition:
-            continue
-        one_of: list[dict[str, Any]] = definition["oneOf"]
-
-        if len(one_of) == 1:
+    for type_name, definition in schema["definitions"].items():
+        one_of = definition.get("oneOf")
+        if not one_of or len(one_of) <= 1:
             continue
 
-        if not all(item["type"] == one_of[0]["type"] for item in one_of):
-            continue
-
+        first = one_of[0]
         if not all(
-            len(item.get("required", [])) == 1
-            and item["required"] == one_of[0]["required"]
+            item.get("type") == first["type"]
+            and item.get("required") == first.get("required")
+            and "properties" in item
+            and item["properties"].keys() == first["properties"].keys()
             for item in one_of
         ):
             continue
 
+        prop_keys = first["properties"].keys()
         if not all(
-            len(item["properties"]) == 1
-            and item["properties"].keys() == one_of[0]["properties"].keys()
+            all(
+                item["properties"][key].get("type")
+                == first["properties"][key].get("type")
+                and "enum" in item["properties"][key]
+                for key in prop_keys
+            )
             for item in one_of
         ):
             continue
 
-        if not all(
-            v["type"] == one_of[0]["properties"][k]["type"]
-            for item in one_of
-            for k, v in item["properties"].items()
-        ):
-            continue
+        # Consolidate the definition
+        merged_props = {
+            key: {
+                "type": first["properties"][key]["type"],
+                "enum": sorted(
+                    {
+                        enum_val
+                        for item in one_of
+                        for enum_val in item["properties"][key]["enum"]
+                    }
+                ),
+            }
+            for key in prop_keys
+        }
 
-        if not all("enum" in v for item in one_of for v in item["properties"].values()):
-            pass
-
-        definition.pop("oneOf")
-
-        definition["title"] = t
-        definition["type"] = one_of[0]["type"]
-        definition["required"] = one_of[0]["required"]
-        definition["properties"] = one_of[0]["properties"]
-
-        for k, v in definition["properties"].items():
-            enum_list: list[str] = v["enum"]
-            for item in one_of:
-                enum_list.extend(item["properties"][k]["enum"])
-            v["enum"] = list(set(enum_list))
+        schema["definitions"][type_name] = {
+            "title": type_name,
+            "type": first["type"],
+            "required": first["required"],
+            "properties": merged_props,
+        }
 
 
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
@@ -394,6 +394,44 @@ def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
             new_enum["title"] = f"{t}Enum"
 
 
+def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
+    """
+    "title": "recv_time_ns",
+    "type": [
+      "integer",
+      "null"
+    ],
+    "format": "default",
+    "minimum": 0.0
+
+
+    in this case, there's an error when the type is potentially null and there's a constraint.
+    """
+    if "definitions" not in schema:
+        return
+
+    definitions: dict[str, Any] = schema["definitions"]
+    for definition in definitions.values():
+        properties = definition.get("properties", {})
+        for prop_def in properties.values():
+            if "type" in prop_def and "null" in prop_def["type"]:
+                constraints = (
+                    "exclusiveMinimum",
+                    "minimum",
+                    "exclusiveMaximum",
+                    "maximum",
+                    "multipleOf",
+                    "minItems",
+                    "maxItems",
+                    "minLength",
+                    "maxLength",
+                    "pattern",
+                )
+                for constraint in constraints:
+                    if constraint in prop_def:
+                        prop_def.pop(constraint)
+
+
 def process_schema_definitions(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
@@ -413,6 +451,7 @@ def process_schema_definitions(
     correct_enums_with_descriptions(schema)
     correct_variant_types(schema, definitions, type_to_json_file)
     correct_flattened_types(schema)
+    correct_null_types_with_constraints(schema)
 
     new_defs: dict[str, Any] = schema.pop("definitions")
     for t, definition in new_defs.items():

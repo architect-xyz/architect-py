@@ -263,8 +263,8 @@
       "unit": {
         "type": "string",
         "enum": [
-          "quote",
-          "base"
+          "base",
+          "quote"
         ]
       }
     }
@@ -1971,8 +1971,7 @@
           "integer",
           "null"
         ],
-        "format": "default",
-        "minimum": 0.0
+        "format": "default"
       },
       "ats": {
         "title": "recv_time",
@@ -2107,8 +2106,7 @@
           "integer",
           "null"
         ],
-        "format": "default",
-        "minimum": 0.0
+        "format": "default"
       },
       "ats": {
         "title": "recv_time",
@@ -2212,8 +2210,7 @@
           "integer",
           "null"
         ],
-        "format": "default",
-        "minimum": 0.0
+        "format": "default"
       },
       "ts": {
         "title": "trade_time",

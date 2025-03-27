@@ -560,8 +560,8 @@ HumanDuration = str
 
 
 class Unit(str, Enum):
-    quote = "quote"
     base = "base"
+    quote = "quote"
 
 
 class MinOrderQuantityUnit(Struct, omit_defaults=True):
@@ -1556,7 +1556,7 @@ class AberrantFill(Struct, omit_defaults=True):
     id: Annotated[str, Meta(title="fill_id")]
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
-    atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
+    atn: Optional[Annotated[Optional[int], Meta(title="recv_time_ns")]] = None
     ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
     d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
     f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
@@ -1566,7 +1566,7 @@ class AberrantFill(Struct, omit_defaults=True):
     p: Optional[Annotated[Optional[Decimal], Meta(title="price")]] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title="quantity")]] = None
     s: Optional[Annotated[Optional[str], Meta(title="symbol")]] = None
-    tn: Optional[Annotated[Optional[int], Meta(ge=0, title="trade_time_ns")]] = None
+    tn: Optional[Annotated[Optional[int], Meta(title="trade_time_ns")]] = None
     ts: Optional[Annotated[Optional[int], Meta(title="trade_time")]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title="trader")]] = None
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
@@ -1869,7 +1869,7 @@ class Fill(Struct, omit_defaults=True):
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     agg: Optional[Annotated[int, Meta(title="is_taker")]] = None
-    atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
+    atn: Optional[Annotated[Optional[int], Meta(title="recv_time_ns")]] = None
     ats: Optional[
         Annotated[
             Optional[int],
