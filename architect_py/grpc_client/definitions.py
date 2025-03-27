@@ -559,41 +559,26 @@ class FillKind(int, Enum):
 HumanDuration = str
 
 
-class Base(Struct, omit_defaults=True):
-    unit: Literal["base"]
+class Unit(str, Enum):
+    quote = "quote"
+    base = "base"
+
+
+class MinOrderQuantityUnit(Struct, omit_defaults=True):
+    unit: Unit
 
     # below is a constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        unit: Literal["base"],
+        unit: Unit,
     ):
         return cls(
             unit,
         )
 
     def __str__(self) -> str:
-        return f"Base(unit={self.unit})"
-
-
-class Quote(Struct, omit_defaults=True):
-    unit: Literal["quote"]
-
-    # below is a constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        unit: Literal["quote"],
-    ):
-        return cls(
-            unit,
-        )
-
-    def __str__(self) -> str:
-        return f"Quote(unit={self.unit})"
-
-
-MinOrderQuantityUnit = Union[Base, Quote]
+        return f"MinOrderQuantityUnit(unit={self.unit})"
 
 
 class OptionsExerciseType(str, Enum):

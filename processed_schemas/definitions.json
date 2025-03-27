@@ -254,38 +254,20 @@
     }
   },
   "MinOrderQuantityUnit": {
-    "oneOf": [
-      {
-        "title": "Base",
-        "type": "object",
-        "required": [
-          "unit"
-        ],
-        "properties": {
-          "unit": {
-            "type": "string",
-            "enum": [
-              "base"
-            ]
-          }
-        }
-      },
-      {
-        "title": "Quote",
-        "type": "object",
-        "required": [
-          "unit"
-        ],
-        "properties": {
-          "unit": {
-            "type": "string",
-            "enum": [
-              "quote"
-            ]
-          }
-        }
+    "title": "MinOrderQuantityUnit",
+    "type": "object",
+    "required": [
+      "unit"
+    ],
+    "properties": {
+      "unit": {
+        "type": "string",
+        "enum": [
+          "quote",
+          "base"
+        ]
       }
-    ]
+    }
   },
   "OptionsExerciseType": {
     "type": "string",

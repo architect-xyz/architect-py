@@ -252,6 +252,104 @@ def correct_variant_types(
     schema["tag_field"] = tag_field
 
 
+def correct_enums_with_multiple_titles(schema: Dict[str, Any]) -> None:
+    """
+    "MinOrderQuantityUnit": {
+      "oneOf": [
+        {
+          "title": "Base",
+          "type": "object",
+          "required": [
+            "unit"
+          ],
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "base"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Quote",
+          "type": "object",
+          "required": [
+            "unit"
+          ],
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "quote"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    This output
+    class Base(Struct, omit_defaults=True):
+        unit: Literal["base"]
+
+    class Quote(Struct, omit_defaults=True):
+        unit: Literal["quote"]
+
+    which was redundant. This removes it to one class named after the ultimate type.
+    """
+    if "definitions" not in schema:
+        return
+
+    definitions: dict[str, Any] = schema["definitions"]
+    for t, definition in definitions.items():
+        if "oneOf" not in definition:
+            continue
+        one_of: list[dict[str, Any]] = definition["oneOf"]
+
+        if len(one_of) == 1:
+            continue
+
+        if not all(item["type"] == one_of[0]["type"] for item in one_of):
+            continue
+
+        if not all(
+            len(item.get("required", [])) == 1
+            and item["required"] == one_of[0]["required"]
+            for item in one_of
+        ):
+            continue
+
+        if not all(
+            len(item["properties"]) == 1
+            and item["properties"].keys() == one_of[0]["properties"].keys()
+            for item in one_of
+        ):
+            continue
+
+        if not all(
+            v["type"] == one_of[0]["properties"][k]["type"]
+            for item in one_of
+            for k, v in item["properties"].items()
+        ):
+            continue
+
+        if not all("enum" in v for item in one_of for v in item["properties"].values()):
+            pass
+
+        definition.pop("oneOf")
+
+        definition["title"] = t
+        definition["type"] = one_of[0]["type"]
+        definition["required"] = one_of[0]["required"]
+        definition["properties"] = one_of[0]["properties"]
+
+        for k, v in definition["properties"].items():
+            enum_list: list[str] = v["enum"]
+            for item in one_of:
+                enum_list.extend(item["properties"][k]["enum"])
+            v["enum"] = list(set(enum_list))
+
+
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
     """
     Process enums that have descriptions in the schema.
@@ -311,6 +409,7 @@ def process_schema_definitions(
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
 
+    correct_enums_with_multiple_titles(schema)
     correct_enums_with_descriptions(schema)
     correct_variant_types(schema, definitions, type_to_json_file)
     correct_flattened_types(schema)
