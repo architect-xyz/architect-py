@@ -60,6 +60,7 @@ CptyRequest = Annotated[
 ]
 
 CptyRequest_rpc_method = "duplex_stream"
+UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
     Symbology | ReconcileOrder | ReconcileOpenOrder | UpdateAccountSummary
