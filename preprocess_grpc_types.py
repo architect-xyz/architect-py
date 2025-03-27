@@ -346,6 +346,7 @@ def correct_enums_with_multiple_titles(schema: Dict[str, Any]) -> None:
             "required": first["required"],
             "properties": merged_props,
         }
+<<<<<<< HEAD
 
 
 def correct_enums_with_x_enumNames(schema: Dict[str, Any]) -> None:
@@ -384,6 +385,8 @@ def correct_enums_with_x_enumNames(schema: Dict[str, Any]) -> None:
             )
         definition["enum"] = enum_names
         definition["type"] = "string"
+=======
+>>>>>>> 466a0e8 (removed any constraints from nullable)
 
 
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
@@ -439,6 +442,7 @@ def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
     ],
     "format": "default",
     "minimum": 0.0
+
     in this case, there's an error when the type is potentially null and there's a constraint.
     """
     if "definitions" not in schema:
