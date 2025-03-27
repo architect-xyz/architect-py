@@ -49,7 +49,9 @@ from architect_py.grpc_client.Orderflow.OrderflowRequest import (
     OrderflowRequest_route,
     OrderflowRequestUnannotatedResponseType,
 )
-from architect_py.grpc_client.Symbology.SymbolsRequest import SymbolsRequest, SymbolsResponse
+from architect_py.grpc_client.Symbology.SymbolsRequest import (
+    SymbolsRequest,
+)
 from architect_py.grpc_client.definitions import L2BookDiff
 from architect_py.scalars import TradableProduct
 
@@ -192,7 +194,7 @@ class GRPCClient:
             decoder = msgspec.json.Decoder(type=response_type)
             self._decoders[response_type] = decoder
             return decoder
-        
+
     async def symbols(self) -> list[str]:
         request = SymbolsRequest()
         response = await self.request(request)
