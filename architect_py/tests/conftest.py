@@ -99,9 +99,10 @@ def sync_client():
 @pytest_asyncio.fixture
 async def front_ES_future(async_client: AsyncClient) -> str:
     series = await async_client.get_cme_futures_series("ES CME Futures")
+    assert async_client.get_expiration_from_CME_name(series[0][1]) == series[0][0]
 
     inc = 0
-    if datetime.now().date() >= async_client.get_expiration_from_CME_name(series[0][1]):
+    if datetime.now().date() >= series[0][0]:
         inc += 1
 
     return series[inc][1]
@@ -110,9 +111,10 @@ async def front_ES_future(async_client: AsyncClient) -> str:
 @pytest_asyncio.fixture
 async def front_ES_future_tp(async_client: AsyncClient) -> str:
     series = await async_client.get_cme_futures_series("ES CME Futures")
+    assert async_client.get_expiration_from_CME_name(series[0][1]) == series[0][0]
 
     inc = 0
-    if datetime.now().date() >= async_client.get_expiration_from_CME_name(series[0][1]):
+    if datetime.now().date() >= series[0][0]:
         inc += 1
 
     return f"{series[inc][1]}/USD"

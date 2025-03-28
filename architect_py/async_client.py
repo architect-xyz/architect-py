@@ -262,7 +262,6 @@ class AsyncClient:
         info = await self.graphql_client.get_product_info_query(symbol)
         return info.product_info
 
-    @functools.lru_cache
     async def get_product_infos(
         self, symbols: Optional[list[str]]
     ) -> Sequence[ProductInfoFields]:
