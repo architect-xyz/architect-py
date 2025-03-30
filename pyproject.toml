@@ -1,3 +1,6 @@
+[project]
+name = "architect-py"
+
 [tool.poetry]
 name = "architect-py"
 version = "0.0.0"  # the version is dynamically generated from architect_py/_version.py
