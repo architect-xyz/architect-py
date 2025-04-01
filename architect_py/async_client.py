@@ -161,7 +161,7 @@ class AsyncClient:
         **kwargs: Any,
     ):
         """
-        Users should not be using this constructor directly, unless they do not want to use any subscription methods.
+        Users should essentially never be using this constructor directly.
 
         Use the connect method instead.
         See self.connect for arg explanations
