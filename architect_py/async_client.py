@@ -252,7 +252,6 @@ class AsyncClient:
         info = await self.graphql_client.get_product_info_query(symbol)
         return info.product_info
 
-    @functools.lru_cache
     async def get_product_infos(
         self, symbols: Optional[list[str]]
     ) -> Sequence[ProductInfoFields]:
@@ -272,7 +271,6 @@ class AsyncClient:
         infos = await self.graphql_client.get_product_infos_query(symbols)
         return infos.product_infos
 
-    @functools.lru_cache
     async def get_execution_info(
         self, symbol: TradableProduct, execution_venue: str
     ) -> Optional[ExecutionInfoFields]:

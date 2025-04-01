@@ -1,3 +1,7 @@
+# 3.2.2
+Fixes:
+  - removed lru_cache on execution_info
+
 # 3.2.1
 Improvements:
   - removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+
