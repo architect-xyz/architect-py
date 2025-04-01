@@ -24,6 +24,8 @@ class Client(AsyncClientProtocol):
     This class is a wrapper around the AsyncClient class that allows you to call async methods synchronously.
     This does not work for subscription based methods.
 
+    This Client takes control of the event loop, which you can pass in.
+
     One can find the function definition in the AsyncClient class.
 
     The AsyncClient is more performant and powerful, so it is recommended to use that class if possible.
@@ -48,18 +50,6 @@ class Client(AsyncClientProtocol):
         loop: Optional[AbstractEventLoop] = None,
         **kwargs,
     ):
-        super().__setattr__(
-            "client",
-            AsyncClient(
-                api_key=api_key,
-                api_secret=api_secret,
-                host=host,
-                paper_trading=paper_trading,
-                _i_know_what_i_am_doing=True,
-                **kwargs,
-            ),
-        )
-
         if loop is None:
             try:
                 loop = asyncio.get_running_loop()
@@ -67,6 +57,20 @@ class Client(AsyncClientProtocol):
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
         super().__setattr__("_loop", loop)
+
+        async_client = loop.run_until_complete(
+            AsyncClient.connect(
+                api_key=api_key,
+                api_secret=api_secret,
+                host=host,
+                paper_trading=paper_trading,
+                **kwargs,
+            )
+        )
+        super().__setattr__(
+            "client",
+            async_client,
+        )
 
         if "ipykernel" in sys.modules:
             # for jupyter notebooks
