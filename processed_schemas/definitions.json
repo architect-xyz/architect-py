@@ -831,6 +831,7 @@
       "America/Coral_Harbour",
       "America/Cordoba",
       "America/Costa_Rica",
+      "America/Coyhaique",
       "America/Creston",
       "America/Cuiaba",
       "America/Curacao",
@@ -1705,8 +1706,16 @@
     }
   },
   "CandleWidth": {
-    "type": "integer",
-    "enum": [
+    "type": "string",
+    "x-enumNames": [
+      "OneSecond",
+      "FiveSecond",
+      "OneMinute",
+      "FifteenMinute",
+      "OneHour",
+      "OneDay"
+    ],
+    "old_enum": [
       1,
       2,
       4,
@@ -1714,7 +1723,7 @@
       16,
       32
     ],
-    "x-enumNames": [
+    "enum": [
       "OneSecond",
       "FiveSecond",
       "OneMinute",
@@ -1763,8 +1772,17 @@
     }
   },
   "OrderSource": {
-    "type": "integer",
-    "enum": [
+    "type": "string",
+    "x-enumNames": [
+      "API",
+      "GUI",
+      "Algo",
+      "Reconciled",
+      "CLI",
+      "Telegram",
+      "Other"
+    ],
+    "old_enum": [
       0,
       1,
       2,
@@ -1773,7 +1791,7 @@
       5,
       255
     ],
-    "x-enumNames": [
+    "enum": [
       "API",
       "GUI",
       "Algo",
@@ -2245,14 +2263,20 @@
     }
   },
   "CancelStatus": {
-    "type": "integer",
-    "enum": [
+    "type": "string",
+    "x-enumNames": [
+      "Pending",
+      "Acked",
+      "Rejected",
+      "Out"
+    ],
+    "old_enum": [
       0,
       1,
       2,
       127
     ],
-    "x-enumNames": [
+    "enum": [
       "Pending",
       "Acked",
       "Rejected",
@@ -2260,13 +2284,18 @@
     ]
   },
   "FillKind": {
-    "type": "integer",
-    "enum": [
+    "type": "string",
+    "x-enumNames": [
+      "Normal",
+      "Reversal",
+      "Correction"
+    ],
+    "old_enum": [
       0,
       1,
       2
     ],
-    "x-enumNames": [
+    "enum": [
       "Normal",
       "Reversal",
       "Correction"
@@ -2289,8 +2318,19 @@
     ]
   },
   "OrderStatus": {
-    "type": "integer",
-    "enum": [
+    "type": "string",
+    "x-enumNames": [
+      "Pending",
+      "Open",
+      "Rejected",
+      "Out",
+      "Canceling",
+      "Canceled",
+      "ReconciledOut",
+      "Stale",
+      "Unknown"
+    ],
+    "old_enum": [
       0,
       1,
       2,
@@ -2301,7 +2341,7 @@
       254,
       255
     ],
-    "x-enumNames": [
+    "enum": [
       "Pending",
       "Open",
       "Rejected",

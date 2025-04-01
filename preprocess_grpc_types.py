@@ -350,6 +350,45 @@ def correct_enums_with_multiple_titles(schema: Dict[str, Any]) -> None:
         }
 
 
+def correct_enums_with_x_enumNames(schema: Dict[str, Any]) -> None:
+    """
+    Process enums that have x-enumNames in the schema.
+    "FillKind": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "x-enumNames": [
+        "Normal",
+        "Reversal",
+        "Correction"
+      ]
+    },
+
+    this should actually be a string enum, the values of the integers actually do not matter
+    the names and values should be x-enumNames
+    """
+    if "definitions" not in schema:
+        return
+
+    definitions: dict[str, Any] = schema["definitions"]
+    for t, definition in definitions.items():
+        if "x-enumNames" not in definition:
+            continue
+        assert definition["type"] == "integer"
+        enum_names: list[str] = definition["x-enumNames"]
+        enum_ints: list[int] = definition.pop("enum")
+        definition["old_enum"] = enum_ints
+        if len(enum_names) != len(enum_ints):
+            raise ValueError(
+                f"Enum names and values length mismatch in {t} in {schema['title']}"
+            )
+        definition["enum"] = enum_names
+        definition["type"] = "string"
+
+
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
     """
     Process enums that have descriptions in the schema.
@@ -448,6 +487,7 @@ def process_schema_definitions(
         schema["definitions"]["Decimal"]["format"] = "decimal"
 
     correct_enums_with_multiple_titles(schema)
+    correct_enums_with_x_enumNames(schema)
     correct_enums_with_descriptions(schema)
     correct_variant_types(schema, definitions, type_to_json_file)
     correct_flattened_types(schema)
