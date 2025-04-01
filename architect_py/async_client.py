@@ -968,6 +968,13 @@ class AsyncClient:
     ) -> AsyncIterator[Trade]:
         """
         Subscribe to a stream of trades for a symbol.
+
+        Example usage:
+        tp = TradableProduct("ES 20250620 CME Future/USD")
+        async for trade in client.subscribe_trades_stream(tp, "CME"):
+            print(trade.datetime_local, trade)
+
+        this WILL block until the stream is closed
         """
         request = SubscribeTradesRequest(symbol=symbol, venue=venue)
         return self.grpc_client.subscribe(request)
@@ -1013,7 +1020,7 @@ class AsyncClient:
         Sends a regular limit order.
 
         Args:
-            id:
+            id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
@@ -1106,6 +1113,7 @@ class AsyncClient:
         Meant to behave as a market order but with more protections.
 
         Args:
+            id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to
             odir: the direction of the order
