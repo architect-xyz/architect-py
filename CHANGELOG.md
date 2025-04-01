@@ -7,6 +7,7 @@ Fixes:
   - Set order_id in send_order functions
   - Added External cpty protocol example
   - Fixed MinOrderQuantityUnit type
+  - Fix some Enum grpc types that were incorrect
 
 
 # 3.2.1
