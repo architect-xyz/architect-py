@@ -987,6 +987,13 @@ class AsyncClient:
     ) -> AsyncIterator[Candle]:
         """
         Subscribe to a stream of candles for a symbol.
+
+        Example usage:
+        tp = TradableProduct("ES 20250620 CME Future/USD")
+        async for candle in client.subscribe_candles_stream(tp, "CME"):
+            print(trade.datetime_local, trade)
+
+        this WILL block until the stream is closed
         """
         request = SubscribeCandlesRequest(
             symbol=str(symbol),
