@@ -439,7 +439,6 @@ def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
     ],
     "format": "default",
     "minimum": 0.0
-
     in this case, there's an error when the type is potentially null and there's a constraint.
     """
     if "definitions" not in schema:
