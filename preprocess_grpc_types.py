@@ -252,6 +252,140 @@ def correct_variant_types(
     schema["tag_field"] = tag_field
 
 
+def correct_enums_with_multiple_titles(schema: Dict[str, Any]) -> None:
+    """
+    "MinOrderQuantityUnit": {
+      "oneOf": [
+        {
+          "title": "Base",
+          "type": "object",
+          "required": [
+            "unit"
+          ],
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "base"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Quote",
+          "type": "object",
+          "required": [
+            "unit"
+          ],
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": [
+                "quote"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    This output
+    class Base(Struct, omit_defaults=True):
+        unit: Literal["base"]
+    class Quote(Struct, omit_defaults=True):
+        unit: Literal["quote"]
+    which was redundant. This removes it to one class named after the ultimate type.
+    """
+    if "definitions" not in schema:
+        return
+
+    for type_name, definition in schema["definitions"].items():
+        one_of = definition.get("oneOf")
+        if not one_of or len(one_of) <= 1:
+            continue
+
+        first = one_of[0]
+        if not all(
+            item.get("type") == first["type"]
+            and item.get("required") == first.get("required")
+            and "properties" in item
+            and item["properties"].keys() == first["properties"].keys()
+            for item in one_of
+        ):
+            continue
+
+        prop_keys = first["properties"].keys()
+        if not all(
+            all(
+                item["properties"][key].get("type")
+                == first["properties"][key].get("type")
+                and "enum" in item["properties"][key]
+                for key in prop_keys
+            )
+            for item in one_of
+        ):
+            continue
+
+        # Consolidate the definition
+        merged_props = {
+            key: {
+                "type": first["properties"][key]["type"],
+                "enum": sorted(
+                    {
+                        enum_val
+                        for item in one_of
+                        for enum_val in item["properties"][key]["enum"]
+                    }
+                ),
+            }
+            for key in prop_keys
+        }
+
+        schema["definitions"][type_name] = {
+            "title": type_name,
+            "type": first["type"],
+            "required": first["required"],
+            "properties": merged_props,
+        }
+
+
+def correct_enums_with_x_enumNames(schema: Dict[str, Any]) -> None:
+    """
+    Process enums that have x-enumNames in the schema.
+    "FillKind": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "x-enumNames": [
+        "Normal",
+        "Reversal",
+        "Correction"
+      ]
+    },
+    this should actually be a string enum, the values of the integers actually do not matter
+    the names and values should be x-enumNames
+    """
+    if "definitions" not in schema:
+        return
+
+    definitions: dict[str, Any] = schema["definitions"]
+    for t, definition in definitions.items():
+        if "x-enumNames" not in definition:
+            continue
+        assert definition["type"] == "integer"
+        enum_names: list[str] = definition["x-enumNames"]
+        enum_ints: list[int] = definition.pop("enum")
+        definition["old_enum"] = enum_ints
+        if len(enum_names) != len(enum_ints):
+            raise ValueError(
+                f"Enum names and values length mismatch in {t} in {schema['title']}"
+            )
+        definition["enum"] = enum_names
+        definition["type"] = "string"
+
+
 def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
     """
     Process enums that have descriptions in the schema.
@@ -296,6 +430,42 @@ def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
             new_enum["title"] = f"{t}Enum"
 
 
+def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
+    """
+    "title": "recv_time_ns",
+    "type": [
+      "integer",
+      "null"
+    ],
+    "format": "default",
+    "minimum": 0.0
+    in this case, there's an error when the type is potentially null and there's a constraint.
+    """
+    if "definitions" not in schema:
+        return
+
+    definitions: dict[str, Any] = schema["definitions"]
+    for definition in definitions.values():
+        properties = definition.get("properties", {})
+        for prop_def in properties.values():
+            if "type" in prop_def and "null" in prop_def["type"]:
+                constraints = (
+                    "exclusiveMinimum",
+                    "minimum",
+                    "exclusiveMaximum",
+                    "maximum",
+                    "multipleOf",
+                    "minItems",
+                    "maxItems",
+                    "minLength",
+                    "maxLength",
+                    "pattern",
+                )
+                for constraint in constraints:
+                    if constraint in prop_def:
+                        prop_def.pop(constraint)
+
+
 def process_schema_definitions(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
@@ -311,9 +481,12 @@ def process_schema_definitions(
     if "Decimal" in schema["definitions"]:
         schema["definitions"]["Decimal"]["format"] = "decimal"
 
+    correct_enums_with_multiple_titles(schema)
+    correct_enums_with_x_enumNames(schema)
     correct_enums_with_descriptions(schema)
     correct_variant_types(schema, definitions, type_to_json_file)
     correct_flattened_types(schema)
+    correct_null_types_with_constraints(schema)
 
     new_defs: dict[str, Any] = schema.pop("definitions")
     for t, definition in new_defs.items():

@@ -6,7 +6,7 @@ from architect_py.grpc_client.Cpty.CptyResponse import (
     CptyResponse,
     Symbology,
     ReconcileOrder,
-    ReconcileOpenOrder,
+    ReconcileOpenOrders,
     UpdateAccountSummary,
 )
 
@@ -60,8 +60,9 @@ CptyRequest = Annotated[
 ]
 
 CptyRequest_rpc_method = "duplex_stream"
+UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
-    Symbology | ReconcileOrder | ReconcileOpenOrder | UpdateAccountSummary
+    Symbology | ReconcileOrder | ReconcileOpenOrders | UpdateAccountSummary
 )
 CptyRequest_route = "/json.architect.Cpty/Cpty"

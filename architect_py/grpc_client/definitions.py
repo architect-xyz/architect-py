@@ -165,20 +165,20 @@ class AlgoState(str, Enum):
     Stopped = "Stopped"
 
 
-class CancelStatus(int, Enum):
-    Pending = 0
-    Acked = 1
-    Rejected = 2
-    Out = 127
+class CancelStatus(str, Enum):
+    Pending = "Pending"
+    Acked = "Acked"
+    Rejected = "Rejected"
+    Out = "Out"
 
 
-class CandleWidth(int, Enum):
-    OneSecond = 1
-    FiveSecond = 2
-    OneMinute = 4
-    FifteenMinute = 8
-    OneHour = 16
-    OneDay = 32
+class CandleWidth(str, Enum):
+    OneSecond = "OneSecond"
+    FiveSecond = "FiveSecond"
+    OneMinute = "OneMinute"
+    FifteenMinute = "FifteenMinute"
+    OneHour = "OneHour"
+    OneDay = "OneDay"
 
 
 class CptyLogoutRequest(Struct, omit_defaults=True):
@@ -405,14 +405,14 @@ class OrderRejectReason(str, Enum):
     Unknown = "Unknown"
 
 
-class OrderSource(int, Enum):
-    API = 0
-    GUI = 1
-    Algo = 2
-    Reconciled = 3
-    CLI = 4
-    Telegram = 5
-    Other = 255
+class OrderSource(str, Enum):
+    API = "API"
+    GUI = "GUI"
+    Algo = "Algo"
+    Reconciled = "Reconciled"
+    CLI = "CLI"
+    Telegram = "Telegram"
+    Other = "Other"
 
 
 class OrderStale(Struct, omit_defaults=True):
@@ -432,16 +432,16 @@ class OrderStale(Struct, omit_defaults=True):
         return f"OrderStale(id={self.id})"
 
 
-class OrderStatus(int, Enum):
-    Pending = 0
-    Open = 1
-    Rejected = 2
-    Out = 127
-    Canceling = 128
-    Canceled = 129
-    ReconciledOut = 130
-    Stale = 254
-    Unknown = 255
+class OrderStatus(str, Enum):
+    Pending = "Pending"
+    Open = "Open"
+    Rejected = "Rejected"
+    Out = "Out"
+    Canceling = "Canceling"
+    Canceled = "Canceled"
+    ReconciledOut = "ReconciledOut"
+    Stale = "Stale"
+    Unknown = "Unknown"
 
 
 class SortTickersBy(str, Enum):
@@ -550,50 +550,35 @@ class DerivativeKind(str, Enum):
     Quanto = "Quanto"
 
 
-class FillKind(int, Enum):
-    Normal = 0
-    Reversal = 1
-    Correction = 2
+class FillKind(str, Enum):
+    Normal = "Normal"
+    Reversal = "Reversal"
+    Correction = "Correction"
 
 
 HumanDuration = str
 
 
-class Base(Struct, omit_defaults=True):
-    unit: Literal["base"]
+class Unit(str, Enum):
+    base = "base"
+    quote = "quote"
+
+
+class MinOrderQuantityUnit(Struct, omit_defaults=True):
+    unit: Unit
 
     # below is a constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        unit: Literal["base"],
+        unit: Unit,
     ):
         return cls(
             unit,
         )
 
     def __str__(self) -> str:
-        return f"Base(unit={self.unit})"
-
-
-class Quote(Struct, omit_defaults=True):
-    unit: Literal["quote"]
-
-    # below is a constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        unit: Literal["quote"],
-    ):
-        return cls(
-            unit,
-        )
-
-    def __str__(self) -> str:
-        return f"Quote(unit={self.unit})"
-
-
-MinOrderQuantityUnit = Union[Base, Quote]
+        return f"MinOrderQuantityUnit(unit={self.unit})"
 
 
 class OptionsExerciseType(str, Enum):
@@ -974,6 +959,7 @@ class TimeZone(str, Enum):
     America_Coral_Harbour = "America/Coral_Harbour"
     America_Cordoba = "America/Cordoba"
     America_Costa_Rica = "America/Costa_Rica"
+    America_Coyhaique = "America/Coyhaique"
     America_Creston = "America/Creston"
     America_Cuiaba = "America/Cuiaba"
     America_Curacao = "America/Curacao"
@@ -1571,7 +1557,7 @@ class AberrantFill(Struct, omit_defaults=True):
     id: Annotated[str, Meta(title="fill_id")]
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
-    atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
+    atn: Optional[Annotated[Optional[int], Meta(title="recv_time_ns")]] = None
     ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
     d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
     f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
@@ -1581,7 +1567,7 @@ class AberrantFill(Struct, omit_defaults=True):
     p: Optional[Annotated[Optional[Decimal], Meta(title="price")]] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title="quantity")]] = None
     s: Optional[Annotated[Optional[str], Meta(title="symbol")]] = None
-    tn: Optional[Annotated[Optional[int], Meta(ge=0, title="trade_time_ns")]] = None
+    tn: Optional[Annotated[Optional[int], Meta(title="trade_time_ns")]] = None
     ts: Optional[Annotated[Optional[int], Meta(title="trade_time")]] = None
     u: Optional[Annotated[Optional[UserId], Meta(title="trader")]] = None
     xid: Optional[Annotated[Optional[str], Meta(title="exchange_fill_id")]] = None
@@ -1884,7 +1870,7 @@ class Fill(Struct, omit_defaults=True):
     x: Annotated[str, Meta(title="execution_venue")]
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     agg: Optional[Annotated[int, Meta(title="is_taker")]] = None
-    atn: Optional[Annotated[Optional[int], Meta(ge=0, title="recv_time_ns")]] = None
+    atn: Optional[Annotated[Optional[int], Meta(title="recv_time_ns")]] = None
     ats: Optional[
         Annotated[
             Optional[int],

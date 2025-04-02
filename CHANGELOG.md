@@ -1,6 +1,13 @@
 # 3.2.2
 Fixes:
   - removed lru_cache on execution_info
+  - Fixed sync client not having grpc functions
+  - Set order_id in send_order functions
+  - Added External cpty protocol example
+  - Fixed MinOrderQuantityUnit type
+  - Fix some Enum grpc types that were incorrect
+  - Updated examples and fixed test
+  - added UnannotatedRequest types for Union Request types
 
 # 3.2.1
 Improvements:

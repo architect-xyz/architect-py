@@ -382,6 +382,13 @@ def generate_stub(content: str, json_data: dict) -> str:
     unannotated_response_type_str = get_type_str(UnAnnotatedResponseType)
     union_type_import_str = get_import_str(UnAnnotatedResponseType)
 
+    request_type_module = importlib.import_module(
+        f"architect_py.grpc_client.{service}.{request_type_name}"
+    )
+    RequestType = getattr(request_type_module, request_type_name)
+    UnAnnotatedRequestType = get_unannotated_type(RequestType)
+    unannotated_request_type_str = get_type_str(UnAnnotatedRequestType)
+
     if get_origin(UnAnnotatedResponseType) is Union:
         response_import_str = f"from architect_py.grpc_client.{service}.{response_type_name} import {response_type_name}, {union_type_import_str}\n"
     elif get_origin(UnAnnotatedResponseType) is not None:
@@ -391,7 +398,7 @@ def generate_stub(content: str, json_data: dict) -> str:
 
     lines = content.splitlines(keepends=True)
     for i, line in enumerate(lines):
-        if line.startswith('"SENTINAL_VALUE"'):
+        if line.startswith('    "SENTINAL_VALUE"'):
             lines[
                 i
             ] = f"""
@@ -420,6 +427,9 @@ def generate_stub(content: str, json_data: dict) -> str:
         route = json_data["route"]
 
         lines.append(f'\n\n{request_type_name}_rpc_method = "{rpc_method}"\n')
+        lines.append(
+            f"Unannotated{request_type_name} = {unannotated_request_type_str}\n"
+        )
         lines.append(f"{request_type_name}ResponseType = {response_type}\n")
         lines.append(
             f"{request_type_name}UnannotatedResponseType = {unannotated_response_type_str}\n"
@@ -552,7 +562,7 @@ def part_2(py_file_path: str, json_data: dict) -> None:
         """
         content = generate_stub(content, json_data)
     else:
-        content = content.replace('"SENTINAL_VALUE"', "")
+        content = content.replace('    "SENTINAL_VALUE"', "")
 
     write_file(py_file_path, content)
 

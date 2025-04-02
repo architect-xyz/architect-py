@@ -65,7 +65,6 @@ datamodel-codegen \
 
 
 python postprocess_grpc_file.py --file_path "$GRPC_CLIENT_DIR" --json_folder "$PROCESSED_DIR"
-black -q "$GRPC_CLIENT_DIR"
 
 
 # the __init__.py file is overwritten by datamodel-code-generator so we need to re-import the files
@@ -82,7 +81,11 @@ poetry run ariadne-codegen --config ariadne-codegen.toml > /dev/null
 printf "\nGenerating client protocol\n"
 python generate_sync_client_protocol.py > architect_py/client_protocol.py
 
+# ------------------------------
+# Format code
+# ------------------------------
 
+black -q "$GRPC_CLIENT_DIR"
 
 # -----------------------------
 # Update README

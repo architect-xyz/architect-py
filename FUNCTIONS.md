@@ -1,7 +1,8 @@
 ### 🚀 Initialization
 
 - **`connect`**: The main way to create an AsyncClient object.
-- **`__init__`**: Users should not be using this constructor directly, unless they do not want to use any subscription methods.
+- **`__init__`**: Users should essentially never be using this constructor directly.
+- **`enable_orderflow`**: Load and cache product and execution info so that the SDK can send orders.
 
 ---
 

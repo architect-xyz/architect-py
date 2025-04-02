@@ -46,6 +46,7 @@ OrderflowRequest = Annotated[
 ]
 
 OrderflowRequest_rpc_method = "duplex_stream"
+UnannotatedOrderflowRequest = PlaceOrder | CancelOrder | CancelAllOrders
 OrderflowRequestResponseType = Orderflow
 OrderflowRequestUnannotatedResponseType = (
     OrderPending

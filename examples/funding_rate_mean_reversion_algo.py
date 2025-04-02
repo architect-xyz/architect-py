@@ -158,7 +158,7 @@ async def print_info(c: AsyncClient):
         account_summaries = await c.get_account_summaries(
             accounts=[account.account.name for account in accounts]
         )
-        pos = 0
+        pos = Decimal(0)
         for account in account_summaries:
             for balance in account.balances:
                 if balance.product is None:
@@ -167,7 +167,7 @@ async def print_info(c: AsyncClient):
                     name = balance.product
                 print(f"balance for {name}: {balance.balance}")
                 if name and balance.balance is not None:
-                    pos += float(balance.balance)
+                    pos += balance.balance
         global current_position
         current_position = pos
         print(f"---")

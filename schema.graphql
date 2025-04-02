@@ -374,7 +374,7 @@ type MarketStatus {
 
 type MarketdataQueryRoot {
   historicalCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, start: DateTime!, end: DateTime!): [Candle!]!
-  l2BookSnapshot(venue: MarketdataVenue, symbol: String!): L2Book!
+  l2BookSnapshot(venue: MarketdataVenue, symbol: String!, numLevels: Int): L2Book!
   ticker(venue: MarketdataVenue, symbol: String!): Ticker!
   tickers(venue: MarketdataVenue!, symbols: [String!], offset: Int, limit: Int, sortBy: SortTickersBy): [Ticker!]!
   marketStatus(venue: MarketdataVenue, symbol: String!): MarketStatus!

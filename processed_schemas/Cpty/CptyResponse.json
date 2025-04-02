@@ -30,7 +30,7 @@
     },
     {
       "tag_value": "oo",
-      "variant_name": "ReconcileOpenOrder",
+      "variant_name": "ReconcileOpenOrders",
       "type": "object",
       "required": [
         "orders"
@@ -53,7 +53,7 @@
           ]
         }
       },
-      "title": "ReconcileOpenOrder"
+      "title": "ReconcileOpenOrders"
     },
     {
       "tag_value": "as",

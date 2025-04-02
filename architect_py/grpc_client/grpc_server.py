@@ -2,7 +2,9 @@ import grpc
 import msgspec
 from typing import Union
 from .grpc_client import encoder
-from .Cpty.CptyRequest import Login, Logout, PlaceOrder, CancelOrder
+from .Cpty.CptyRequest import (
+    UnannotatedCptyRequest,
+)
 from .Orderflow.SubscribeOrderflowRequest import SubscribeOrderflowRequest
 
 
@@ -14,8 +16,7 @@ class CptyServicer(object):
 
 
 def add_CptyServicer_to_server(servicer, server):
-    # CR alee: there must be a better way to get the unannotated request type
-    decoder = msgspec.json.Decoder(type=Union[Login, Logout, PlaceOrder, CancelOrder])
+    decoder = msgspec.json.Decoder(type=UnannotatedCptyRequest)
     rpc_method_handlers = {
         "Cpty": grpc.stream_stream_rpc_method_handler(
             servicer.Cpty,
@@ -37,9 +38,9 @@ class OrderflowServicer(object):
 
 
 def add_OrderflowServicer_to_server(servicer, server):
-    # CR alee: this doesn't work
-    # decoder = msgspec.json.Decoder(type=SubscribeOrderflowRequest.get_unannotated_response_type())
-    decoder = msgspec.json.Decoder(type=dict)
+    decoder = msgspec.json.Decoder(
+        type=SubscribeOrderflowRequest.get_unannotated_response_type()
+    )
     rpc_method_handlers = {
         "SubscribeOrderflow": grpc.unary_stream_rpc_method_handler(
             servicer.SubscribeOrderflow,

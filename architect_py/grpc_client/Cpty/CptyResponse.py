@@ -63,7 +63,7 @@ class Symbology(Struct, omit_defaults=True, tag_field="t", tag="xs"):
         return f"Symbology(execution_info={self.execution_info})"
 
 
-class ReconcileOpenOrder(Struct, omit_defaults=True, tag_field="t", tag="oo"):
+class ReconcileOpenOrders(Struct, omit_defaults=True, tag_field="t", tag="oo"):
     orders: List[Order]
     snapshot_for_account: Optional[definitions.AccountIdOrName] = None
 
@@ -80,7 +80,7 @@ class ReconcileOpenOrder(Struct, omit_defaults=True, tag_field="t", tag="oo"):
         )
 
     def __str__(self) -> str:
-        return f"ReconcileOpenOrder(orders={self.orders},snapshot_for_account={self.snapshot_for_account})"
+        return f"ReconcileOpenOrders(orders={self.orders},snapshot_for_account={self.snapshot_for_account})"
 
 
 class ReconcileOrder(Order, omit_defaults=True, tag_field="t", tag="ro"):
@@ -88,6 +88,6 @@ class ReconcileOrder(Order, omit_defaults=True, tag_field="t", tag="ro"):
 
 
 CptyResponse = Annotated[
-    Union[Symbology, ReconcileOrder, ReconcileOpenOrder, UpdateAccountSummary],
+    Union[Symbology, ReconcileOrder, ReconcileOpenOrders, UpdateAccountSummary],
     Meta(title="CptyResponse"),
 ]

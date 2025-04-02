@@ -30,10 +30,10 @@ async def print_l2_book(c: AsyncClient, symbol: TradableProduct, venue: str):
 
 async def main():
     c: AsyncClient = await connect_async_client()
-    endpoint = "coinbase.marketdata.architect.co"
+    endpoint = "app.architect.co"  # one example of alternative can be "binance.marketdata.architect.co"
     await c.grpc_client.change_channel(endpoint)
-    market_symbol = TradableProduct("BTC Crypto/USD")
-    venue = "COINBASE"
+    market_symbol = TradableProduct("ES 20250620 CME Future/USD")
+    venue = "CME"
     await print_l2_book(c, market_symbol, venue=venue)
 
 

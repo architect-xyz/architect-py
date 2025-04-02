@@ -108,12 +108,9 @@ async def test_subscribe_l2_stream(
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(15)
-async def test_subscribe_cme_trades(async_client: AsyncClient):
+async def test_subscribe_cme_trades(async_client: AsyncClient, front_ES_future_tp: str):
     venue = "CME"
-    markets = await async_client.get_cme_futures_series("ES CME Futures")
-    _, market = markets[0]
-
-    market = TradableProduct(market, "USD")
+    market = TradableProduct(front_ES_future_tp)
     market_status = await async_client.get_market_status(market, venue)
 
     if not market_status.is_trading:
