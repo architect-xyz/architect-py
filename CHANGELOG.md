@@ -14,7 +14,6 @@ Fixes:
   - Updated examples and fixed test
   - added UnannotatedRequest types for Union Request types
 
-
 # 3.2.1
 Improvements:
   - removed pytz as a requirement, replaced with built in ZoneInfo for py3.9+

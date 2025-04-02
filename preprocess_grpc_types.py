@@ -291,10 +291,8 @@ def correct_enums_with_multiple_titles(schema: Dict[str, Any]) -> None:
     This output
     class Base(Struct, omit_defaults=True):
         unit: Literal["base"]
-
     class Quote(Struct, omit_defaults=True):
         unit: Literal["quote"]
-
     which was redundant. This removes it to one class named after the ultimate type.
     """
     if "definitions" not in schema:
@@ -366,7 +364,6 @@ def correct_enums_with_x_enumNames(schema: Dict[str, Any]) -> None:
         "Correction"
       ]
     },
-
     this should actually be a string enum, the values of the integers actually do not matter
     the names and values should be x-enumNames
     """
@@ -442,8 +439,6 @@ def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
     ],
     "format": "default",
     "minimum": 0.0
-
-
     in this case, there's an error when the type is potentially null and there's a constraint.
     """
     if "definitions" not in schema:

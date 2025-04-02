@@ -81,7 +81,11 @@ poetry run ariadne-codegen --config ariadne-codegen.toml > /dev/null
 printf "\nGenerating client protocol\n"
 python generate_sync_client_protocol.py > architect_py/client_protocol.py
 
+# ------------------------------
+# Format code
+# ------------------------------
 
+black -q "$GRPC_CLIENT_DIR"
 
 # -----------------------------
 # Update README
