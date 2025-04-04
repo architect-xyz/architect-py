@@ -1,12 +1,17 @@
 # [![Architect](https://avatars.githubusercontent.com/u/116864654?s=29&v=2)](https://architect.co) architect_py 
 [![PyPI version](https://img.shields.io/pypi/v/architect-py.svg)](https://pypi.org/project/architect-py/)
 
-A Python API for [Architect](https://architect.co).
+A fully-featured trading Python API for the [Architect](https://architect.co) brokerage..
 
 Just some of the features of this API:
 symbology, market snapshots, past trades, account queries, order management (including sending advanced algos!), and market feed subscriptions.
 
 This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.
+
+## API keys for the brokerage
+
+API keys/secrets for the brokerage can be generated on the [user account page](https://app.architect.co/user/account).
+
 
 
 ## Example usage
@@ -157,10 +162,3 @@ python -m examples.trades
 
 You can exit the poetry shell by running `exit`. Environment variables set
 within the shell are not persisted.
-
-
-## API keys for the brokerage
-
-API keys/secrets for the brokerage can be generated on the [user account page](https://app.architect.co/user/account).
-
-

@@ -22,10 +22,21 @@ from decimal import Decimal
 from typing import Any, AsyncIterator, List, Optional, Sequence
 
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError
-from architect_py.graphql_client.get_fills_query import (
-    GetFillsQueryFolioHistoricalFills,
-)
 
+from architect_py.grpc_client.Accounts.AccountsRequest import AccountsRequest
+from architect_py.grpc_client.Folio.AccountHistoryRequest import AccountHistoryRequest
+from architect_py.grpc_client.Folio.AccountSummariesRequest import (
+    AccountSummariesRequest,
+)
+from architect_py.grpc_client.Folio.AccountSummary import AccountSummary
+from architect_py.grpc_client.Folio.AccountSummaryRequest import AccountSummaryRequest
+from architect_py.grpc_client.Folio.HistoricalFillsRequest import HistoricalFillsRequest
+from architect_py.grpc_client.Folio.HistoricalFillsResponse import (
+    HistoricalFillsResponse,
+)
+from architect_py.grpc_client.Folio.HistoricalOrdersRequest import (
+    HistoricalOrdersRequest,
+)
 from architect_py.grpc_client.Marketdata.Candle import Candle
 from architect_py.grpc_client.Marketdata.HistoricalCandlesRequest import (
     HistoricalCandlesRequest,
@@ -33,8 +44,15 @@ from architect_py.grpc_client.Marketdata.HistoricalCandlesRequest import (
 from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
     HistoricalCandlesResponse,
 )
+from architect_py.grpc_client.Oms.Cancel import Cancel
+from architect_py.grpc_client.Oms.CancelOrderRequest import CancelOrderRequest
+from architect_py.grpc_client.Oms.OpenOrdersRequest import OpenOrdersRequest
+from architect_py.grpc_client.Oms.Order import Order
+from architect_py.grpc_client.Oms.PlaceOrderRequest import (
+    PlaceOrderRequest,
+    PlaceOrderRequestType,
+)
 import architect_py.grpc_client.definitions as grpc_definitions
-from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookUpdate import L2BookUpdate
@@ -49,19 +67,11 @@ from architect_py.scalars import OrderDir, TradableProduct
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from .graphql_client import GraphQLClient
-from .graphql_client.enums import (
-    OrderType,
-    TimeInForce,
-)
 from .graphql_client.fragments import (
-    AccountSummaryFields,
-    AccountWithPermissionsFields,
-    CancelFields,
     ExecutionInfoFields,
     L2BookFields,
     MarketStatusFields,
     MarketTickerFields,
-    OrderFields,
     ProductInfoFields,
 )
 
@@ -437,18 +447,20 @@ class AsyncClient:
 
         return user_id.user_id, user_id.user_email
 
-    async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
+    async def list_accounts(self) -> List[grpc_definitions.AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.
 
         Returns:
-            a list of AccountWithPermissionsFields for the user that the API key belongs to
+            a list of AccountWithPermissions for the user that the API key belongs to
             (use who_am_i to get the user_id / email)
         """
-        accounts = await self.graphql_client.list_accounts_query()
+
+        request = AccountsRequest()
+        accounts = await self.grpc_client.request(request)
         return accounts.accounts
 
-    async def get_account_summary(self, account: str) -> AccountSummaryFields:
+    async def get_account_summary(self, account: str) -> AccountSummary:
         """
         Gets the account summary for the given account.
 
@@ -456,16 +468,17 @@ class AsyncClient:
             account: the account to get the summary for,
                 can be the account id( (a UUID) or the account name (e.g. CQG:00000)
         Returns:
-            AccountSummaryFields for the account
+            AccountSummary for the account
         """
-        summary = await self.graphql_client.get_account_summary_query(account=account)
-        return summary.account_summary
+        request = AccountSummaryRequest(account=account)
+        account_summary = await self.grpc_client.request(request)
+        return account_summary
 
     async def get_account_summaries(
         self,
         accounts: Optional[list[str]] = None,
         trader: Optional[str] = None,
-    ) -> Sequence[AccountSummaryFields]:
+    ) -> list[AccountSummary]:
         """
         Gets the account summaries for the given accounts and trader.
 
@@ -478,28 +491,31 @@ class AsyncClient:
         Returns:
             a list of AccountSummary for the accounts
         """
-        summaries = await self.graphql_client.get_account_summaries_query(
-            trader=trader, accounts=accounts
+        request = AccountSummariesRequest(
+            accounts=accounts,
+            trader=trader,
         )
-        return summaries.account_summaries
+        account_summaries = await self.grpc_client.request(request)
+        return account_summaries.account_summaries
 
     async def get_account_history(
         self,
         account: str,
         from_inclusive: Optional[datetime] = None,
         to_exclusive: Optional[datetime] = None,
-    ) -> Sequence[AccountSummaryFields]:
+    ) -> list[AccountSummary]:
         """
         Gets the account history for the given account and dates.
 
         Returns:
-            a list of AccountSummaryFields for the account for the given dates
+            a list of AccountSummary for the account for the given dates
             use timestamp to get the time of the of the summary
         """
-        history = await self.graphql_client.get_account_history_query(
+        request = AccountHistoryRequest(
             account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
         )
-        return history.account_history
+        history = await self.grpc_client.request(request)
+        return history.history
 
     # ------------------------------------------------------------
     # Order Management
@@ -507,13 +523,13 @@ class AsyncClient:
 
     async def get_open_orders(
         self,
-        order_ids: Optional[list[str]] = None,
+        order_ids: Optional[list[grpc_definitions.OrderId]] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
         symbol: Optional[str] = None,
-        parent_order_id: Optional[str] = None,
-    ) -> Sequence[OrderFields]:
+        parent_order_id: Optional[grpc_definitions.OrderId] = None,
+    ) -> List[Order]:
         """
         Returns a list of open orders for the user that match the filters.
 
@@ -528,9 +544,9 @@ class AsyncClient:
             these filters are combinewd via OR statements so if you pass
             in multiple arguments, it will return the union of the results
         Returns:
-            a list of OrderFields of the open orders that match the union of the filters
+            a list of Order of the open orders that match the union of the filters
         """
-        orders = await self.graphql_client.get_open_orders_query(
+        open_orders_request = OpenOrdersRequest(
             venue=venue,
             account=account,
             trader=trader,
@@ -538,27 +554,30 @@ class AsyncClient:
             parent_order_id=parent_order_id,
             order_ids=order_ids,
         )
-        return orders.open_orders
 
-    async def get_all_open_orders(self) -> Sequence[OrderFields]:
+        return (await self.grpc_client.request(open_orders_request)).open_orders
+
+    async def get_all_open_orders(self) -> list[Order]:
         """
         Returns a list of all open orders for the user.
 
         Returns:
-            a list of OrderFields of all the open orders for the user
+            a list of Order of all the open orders for the user
         """
-        orders = await self.graphql_client.get_open_orders_query()
-        return orders.open_orders
+
+        open_orders_request = OpenOrdersRequest()
+
+        return (await self.grpc_client.request(open_orders_request)).open_orders
 
     async def get_historical_orders(
         self,
-        order_ids: Optional[list[str]] = None,
+        order_ids: Optional[list[grpc_definitions.OrderId]] = None,
         from_inclusive: Optional[datetime] = None,
         to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
-        parent_order_id: Optional[str] = None,
-    ) -> Sequence[OrderFields]:
+        parent_order_id: Optional[grpc_definitions.OrderId] = None,
+    ) -> Sequence[Order]:
         """
         Gets the historical orders that match the filters.
 
@@ -571,13 +590,13 @@ class AsyncClient:
                 can be the account id( (a UUID) or the account name (e.g. CQG:00000)
             parent_order_id: the parent order id to get orders for
         Returns:
-            a list of OrderFields of the historical orders that match the filters
+            a list of Order of the historical orders that match the filters
 
             either the order_ids parameter needs to be filled
             OR
             the from_inclusive and to_exclusive parameters need to be filled
         """
-        orders = await self.graphql_client.get_historical_orders_query(
+        historical_orders_request = HistoricalOrdersRequest.new(
             order_ids=order_ids,
             venue=venue,
             account=account,
@@ -585,9 +604,10 @@ class AsyncClient:
             from_inclusive=from_inclusive,
             to_exclusive=to_exclusive,
         )
-        return orders.historical_orders
+        orders = await self.grpc_client.request(historical_orders_request)
+        return orders.orders
 
-    async def get_order(self, order_id: str) -> Optional[OrderFields]:
+    async def get_order(self, order_id: grpc_definitions.OrderId) -> Optional[Order]:
         """
         Returns the OrderFields object for the specified order.
         Useful for looking at past sent orders.
@@ -595,26 +615,33 @@ class AsyncClient:
         Args:
             order_id: the order id to get
         Returns:
-            the OrderFields object for the order
+            the Order object for the order
 
         Queries open_orders first then queries historical_orders
         """
-        open_orders = await self.graphql_client.get_open_orders_query(
-            order_ids=[order_id]
+
+        open_orders_request = OpenOrdersRequest.new(
+            order_ids=[order_id],
         )
+
+        open_orders = await self.grpc_client.request(open_orders_request)
 
         for open_order in open_orders.open_orders:
             if open_order.id == order_id:
                 return open_order
 
-        historical_orders = await self.graphql_client.get_historical_orders_query(
-            order_ids=[order_id]
+        historical_orders_request = HistoricalOrdersRequest.new(
+            order_ids=[order_id],
         )
 
-        if historical_orders.historical_orders:
-            return historical_orders.historical_orders[0]
+        historical_orders = await self.grpc_client.request(historical_orders_request)
 
-    async def get_orders(self, order_ids: list[str]) -> list[Optional[OrderFields]]:
+        if historical_orders.orders:
+            return historical_orders.orders[0]
+
+    async def get_orders(
+        self, order_ids: list[grpc_definitions.OrderId]
+    ) -> list[Optional[Order]]:
         """
         Returns a list of OrderFields objects for the specified orders.
         Useful for looking at past sent orders.
@@ -622,30 +649,32 @@ class AsyncClient:
         Args:
             order_ids: a list of order ids to get
         Returns:
-            a list of OrderFields objects for the orders
+            a list of Order objects for the orders
 
         Plural form of get_order
         """
-        orders_dict: dict[str, Optional[OrderFields]] = {
+        orders_dict: dict[grpc_definitions.OrderId, Optional[Order]] = {
             order_id: None for order_id in order_ids
         }
 
-        open_orders = (
-            await self.graphql_client.get_open_orders_query(order_ids=order_ids)
-        ).open_orders
-        for open_order in open_orders:
+        open_orders_request = OpenOrdersRequest.new(
+            order_ids=order_ids,
+        )
+
+        open_orders = await self.grpc_client.request(open_orders_request)
+        for open_order in open_orders.open_orders:
             orders_dict[open_order.id] = open_order
 
         not_open_order_ids = [
             order_id for order_id in order_ids if orders_dict[order_id] is None
         ]
 
-        historical_orders = (
-            await self.graphql_client.get_historical_orders_query(
-                order_ids=not_open_order_ids
-            )
-        ).historical_orders
-        for historical_order in historical_orders:
+        historical_orders_request = HistoricalOrdersRequest.new(
+            order_ids=not_open_order_ids,
+        )
+        historical_orders = await self.grpc_client.request(historical_orders_request)
+
+        for historical_order in historical_orders.orders:
             orders_dict[historical_order.id] = historical_order
 
         return [orders_dict[order_id] for order_id in order_ids]
@@ -656,8 +685,9 @@ class AsyncClient:
         to_exclusive: Optional[datetime],
         venue: Optional[str] = None,
         account: Optional[str] = None,
-        order_id: Optional[str] = None,
-    ) -> GetFillsQueryFolioHistoricalFills:
+        order_id: Optional[grpc_definitions.OrderId] = None,
+        limit: Optional[int] = None,
+    ) -> HistoricalFillsResponse:
         """
         Returns a list of fills for the given filters.
 
@@ -669,12 +699,21 @@ class AsyncClient:
                 can be the account id( (a UUID) or the account name (e.g. CQG:00000)
             order_id: the order id to get fills for
         Returns:
-            a list of GetFillsQueryFolioHistoricalFills
+            HistoricalFillsResponse
         """
-        fills = await self.graphql_client.get_fills_query(
-            venue, account, order_id, from_inclusive, to_exclusive
+
+        fills_request = HistoricalFillsRequest(
+            account,
+            from_inclusive,
+            limit,
+            order_id,
+            to_exclusive,
+            venue,
         )
-        return fills.historical_fills
+
+        fills = await self.grpc_client.request(fills_request)
+
+        return fills
 
     # ------------------------------------------------------------
     # Market Data
@@ -928,6 +967,13 @@ class AsyncClient:
     ) -> AsyncIterator[Trade]:
         """
         Subscribe to a stream of trades for a symbol.
+
+        Example usage:
+        tp = TradableProduct("ES 20250620 CME Future/USD")
+        async for trade in client.subscribe_trades_stream(tp, "CME"):
+            print(trade.datetime_local, trade)
+
+        this WILL block until the stream is closed
         """
         request = SubscribeTradesRequest(symbol=symbol, venue=venue)
         return self.grpc_client.subscribe(request)
@@ -940,6 +986,13 @@ class AsyncClient:
     ) -> AsyncIterator[Candle]:
         """
         Subscribe to a stream of candles for a symbol.
+
+        Example usage:
+        tp = TradableProduct("ES 20250620 CME Future/USD")
+        async for candle in client.subscribe_candles_stream(tp, "CME"):
+            print(trade.datetime_local, trade)
+
+        this WILL block until the stream is closed
         """
         request = SubscribeCandlesRequest(
             symbol=str(symbol),
@@ -955,25 +1008,25 @@ class AsyncClient:
     async def send_limit_order(
         self,
         *,
-        id: Optional[str] = None,
+        id: Optional[grpc_definitions.OrderId] = None,
         symbol: TradableProduct,
         execution_venue: Optional[str],
         odir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
-        order_type: OrderType = OrderType.LIMIT,
-        time_in_force: TimeInForce = TimeInForce.DAY,
-        good_til_date: Optional[datetime] = None,
+        order_type: PlaceOrderRequestType = PlaceOrderRequestType.LIMIT,
+        time_in_force: grpc_definitions.TimeInForce = grpc_definitions.TimeInForceEnum.DAY,
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
         post_only: bool = False,
         trigger_price: Optional[Decimal] = None,
-    ) -> OrderFields:
+    ) -> Order:
         """
         Sends a regular limit order.
 
         Args:
+            id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
@@ -993,7 +1046,7 @@ class AsyncClient:
             post_only: whether the order should be post only, not supported by all exchanges
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
         Returns:
-            the OrderFields object for the order
+            the Order object for the order
             The order.status should  be "PENDING" until the order is "OPEN" / "REJECTED" / "OUT" / "CANCELED" / "STALE"
 
             If the order is rejected, the order.reject_reason and order.reject_message will be set
@@ -1028,41 +1081,45 @@ class AsyncClient:
         if not isinstance(trigger_price, Decimal) and trigger_price is not None:
             trigger_price = Decimal(trigger_price)
 
-        order: PlaceOrderMutationOms = await self.graphql_client.place_order_mutation(
-            symbol,
+        place_order_request: PlaceOrderRequest = PlaceOrderRequest.new(
             odir,
             quantity,
-            order_type,
+            symbol,
             time_in_force,
-            id,
-            trader,
-            account,
             limit_price,
+            order_type,
+            account,
+            id,
+            None,
+            grpc_definitions.OrderSource.API,
+            trader,
+            execution_venue,
             post_only,
             trigger_price,
-            good_til_date,
-            execution_venue,
         )
 
-        return order.place_order
+        order = await self.grpc_client.request(place_order_request)
+
+        return order
 
     async def send_market_pro_order(
         self,
         *,
-        id: Optional[str] = None,
+        id: Optional[grpc_definitions.OrderId] = None,
         symbol: TradableProduct,
         execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,
-        time_in_force: TimeInForce = TimeInForce.DAY,
+        time_in_force: grpc_definitions.TimeInForce = grpc_definitions.TimeInForceEnum.DAY,
         account: Optional[str] = None,
         fraction_through_market: Decimal = Decimal("0.001"),
-    ) -> OrderFields:
+    ) -> Order:
         """
         Sends a market-order like limit price based on the BBO.
         Meant to behave as a market order but with more protections.
 
         Args:
+            id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to
             odir: the direction of the order
@@ -1132,22 +1189,23 @@ class AsyncClient:
             odir=odir,
             quantity=quantity,
             account=account,
-            order_type=OrderType.LIMIT,
+            order_type=PlaceOrderRequestType.LIMIT,
             limit_price=limit_price,
             time_in_force=time_in_force,
         )
 
-    async def cancel_order(self, order_id: str) -> CancelFields:
+    async def cancel_order(self, order_id: grpc_definitions.OrderId) -> Cancel:
         """
         Cancels an order by order id.
 
         Args:
             order_id: the order id to cancel
         Returns:
-            the CancelFields object
+            the Cancel object
         """
-        cancel = await self.graphql_client.cancel_order_mutation(order_id)
-        return cancel.cancel_order
+        cancel_request = CancelOrderRequest.new(order_id=order_id)
+        cancel = await self.grpc_client.request(cancel_request)
+        return cancel
 
     async def cancel_all_orders(self) -> bool:
         """

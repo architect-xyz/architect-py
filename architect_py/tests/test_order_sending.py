@@ -54,7 +54,7 @@ async def test_live_far_order_cancel(async_client: AsyncClient, front_ES_future:
 
     assert order is not None
 
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.5)
 
     order_query = await async_client.get_order(order.id)
     if order_query is None:
