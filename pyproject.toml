@@ -1,8 +1,9 @@
-[tool.poetry]
+[project]
 name = "architect-py"
-version = "0.0.0"  # the version is dynamically generated from architect_py/_version.py
+version = "0.0.0"
 description = "Client library for the Architect trading platform."
-authors = ["Architect Financial Technologies, Inc. <hello@architect.xyz>"]
+authors = [{ name = "Architect Financial Technologies, Inc.", email = "hello@architect.co" }]
+requires-python = ">=3.10,<4"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -10,33 +11,34 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Development Status :: 3 - Alpha",
 ]
+dependencies = [
+    "asyncio>=3",
+    "gql[httpx]>=3.5.0,<4",
+    "grpcio>=1.66.1",
+    "msgspec>=0.19,<0.20",
+    "pydantic~=2.10",
+    "websockets>=11",
+    "dnspython>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "ariadne-codegen[subscriptions]>=0.13.0",
+    "datamodel-code-generator>=0.28.0",
+    "black>=24",
+    "mypy>=1,<2",
+    "python-dotenv>=1,<2",
+    "pytest>=8,<9",
+    "poetry_dynamic_versioning>=1.7.0",
+    "pytest-asyncio>=0.24",
+    "pytest-timeout>=2,<3",
+    "pytest-lazy-fixtures>=1.1.2",
+    "simplewebsocketserver>=0.1.2,<0.2",
+    "ufmt>=2,<3",
+]
 
 [tool.setuptools.dynamic]
 version = { attr = "architect_py._version.__version__" }
-
-[tool.poetry.dependencies]
-asyncio = ">=3"
-gql = { extras = ["httpx"], version = "^3.5.0" }
-grpcio = ">=1.66.1"
-msgspec = "^0.19"
-pydantic = "^2.10"
-python = ">=3.10,<4"
-websockets = ">=11"
-dnspython = ">=2.0"
-
-[tool.poetry.group.dev.dependencies]
-ariadne-codegen = { extras = ["subscriptions"], version = ">=0.13.0" }
-datamodel-code-generator = ">=0.28.0"
-black = ">=24"
-mypy = "^1"
-python-dotenv = "^1"
-pytest = "^8"
-poetry_dynamic_versioning = ">=1.7.0"
-pytest-asyncio = ">=0.24"
-pytest-timeout = "^2"
-pytest-lazy-fixtures = ">=1.1.2"
-simplewebsocketserver = "^0.1.2"
-ufmt = "^2"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
