@@ -1015,7 +1015,7 @@ class AsyncClient:
         )
         return self.grpc_client.subscribe(request)
 
-    async def subscribe_orderflow_duplex(
+    async def orderflow(
         self,
         request_iterator: AsyncIterator[OrderflowRequest],
     ) -> AsyncIterator[Orderflow]:
