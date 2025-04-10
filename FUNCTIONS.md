@@ -57,7 +57,8 @@
 - **`subscribe_l2_book`**: Returns a L2BookSnapshot object that is constantly updating in the background.
 - **`subscribe_trades_stream`**: Subscribe to a stream of trades for a symbol.
 - **`subscribe_candles_stream`**: Subscribe to a stream of candles for a symbol.
-- **`subscribe_orderflow_stream`**: A duplex stream for both SENDING/CANCELLING orders and RECEIVING order updates (fills, acks, outs, etc.).
+- **`subscribe_orderflow`**: A duplex stream for both SENDING/CANCELLING orders and RECEIVING order updates (fills, acks, outs, etc.).
+- **`subscribe_orderflow_stream`**: A stream for receiving order updates (fills, acks, outs, etc.).
 
 ---
 

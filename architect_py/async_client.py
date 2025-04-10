@@ -60,6 +60,9 @@ from architect_py.grpc_client.Orderflow.OrderflowRequest import (
     OrderflowRequest_route,
     OrderflowRequestUnannotatedResponseType,
 )
+from architect_py.grpc_client.Orderflow.SubscribeOrderflowRequest import (
+    SubscribeOrderflowRequest,
+)
 import architect_py.grpc_client.definitions as grpc_definitions
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
 from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
@@ -984,7 +987,7 @@ class AsyncClient:
         async for trade in client.subscribe_trades_stream(tp, "CME"):
             print(trade.datetime_local, trade)
 
-        this WILL block until the stream is closed
+        This WILL block the event loop until the stream is closed.
         """
         request = SubscribeTradesRequest(symbol=symbol, venue=venue)
         return self.grpc_client.subscribe(request)
@@ -1003,7 +1006,7 @@ class AsyncClient:
         async for candle in client.subscribe_candles_stream(tp, "CME"):
             print(trade.datetime_local, trade)
 
-        this WILL block until the stream is closed
+        This WILL block the event loop until the stream is closed.
         """
         request = SubscribeCandlesRequest(
             symbol=str(symbol),
@@ -1012,15 +1015,16 @@ class AsyncClient:
         )
         return self.grpc_client.subscribe(request)
 
-    async def subscribe_orderflow_stream(
+    async def subscribe_orderflow(
         self,
         request_iterator: AsyncIterator[OrderflowRequest],
     ) -> AsyncIterator[Orderflow]:
         """
-        A duplex stream for both SENDING/CANCELLING orders and RECEIVING order updates (fills, acks, outs, etc.).
-
+        A duplex stream for both SENDING orders and RECEIVING order updates (fills, acks, outs, etc.).
 
         The sending will go in the request_iterator and the receiving will be yielded from the function.
+
+        This WILL block the event loop until the stream is closed.
         """
         decoder = self.grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
         stub = self.grpc_client.channel.stream_stream(
@@ -1030,6 +1034,36 @@ class AsyncClient:
         )
         jwt = await self.grpc_client.refresh_grpc_credentials()
         call = stub(request_iterator, metadata=(("authorization", f"Bearer {jwt}"),))
+        async for update in call:
+            yield update
+
+    async def subscribe_orderflow_stream(
+        self,
+        account: Optional[grpc_definitions.AccountIdOrName] = None,
+        execution_venue: Optional[str] = None,
+        trader: Optional[grpc_definitions.TraderIdOrEmail] = None,
+    ) -> AsyncIterator[Orderflow]:
+        """
+        A stream for receiving order updates (fills, acks, outs, etc.).
+
+        Example:
+            request = SubscribeOrderflowRequest.new()
+            async for of in client.subscribe_orderflow_stream(request):
+                print(of)
+
+        This WILL block the event loop until the stream is closed.
+        """
+        request: SubscribeOrderflowRequest = SubscribeOrderflowRequest(
+            account=account, execution_venue=execution_venue, trader=trader
+        )
+        decoder = self.grpc_client.get_decoder(SubscribeOrderflowRequest)
+        stub = self.grpc_client.channel.unary_stream(
+            SubscribeOrderflowRequest.get_route(),
+            request_serializer=self.grpc_client.encoder().encode,
+            response_deserializer=decoder.decode,
+        )
+        jwt = await self.grpc_client.refresh_grpc_credentials()
+        call = stub(request, metadata=(("authorization", f"Bearer {jwt}"),))
         async for update in call:
             yield update
 
