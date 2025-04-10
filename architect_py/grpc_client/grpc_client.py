@@ -296,7 +296,7 @@ class GRPCClient:
                 book = self.l2_books[symbol]
                 update_struct(book, up)
 
-    async def subscribe_orderflow_stream(
+    async def orderflow(
         self, request_iterator: AsyncIterator[OrderflowRequest]
     ) -> AsyncIterator[Orderflow]:
         """
