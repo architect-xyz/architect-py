@@ -39,7 +39,7 @@ async def main():
     await c.grpc_client.change_channel("binance.marketdata.architect.co")
     symbol = TradableProduct("SOL-USDC BINANCE Perpetual/USDC Crypto")
     try:
-        stream = c.subscribe_l1_book_stream(symbols=[symbol], venue="BINANCE")
+        stream = c.subscribe_l1_books_stream(symbols=[symbol])
         # it is better to do `Decimal("0.1")` instead of Decimal(0.1) to avoid floating point errors
         async for book in stream:
             print_book(book)

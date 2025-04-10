@@ -20,9 +20,7 @@ async def test_grpc(async_client: AsyncClient, front_ES_future: str):
     assert snapshot is not None
 
     i = 0
-    async for update in await async_client.grpc_client.subscribe_l1_books_stream(
-        [front_ES_future]
-    ):
+    async for update in async_client.subscribe_l1_books_stream([tp]):
         assert update is not None
         if i == 100:
             break

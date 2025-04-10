@@ -28,3 +28,10 @@ To run tests:
 
 1. Uses ariadne-codegen to generate the async client
 2. Autogenerates the protocol that the sync client inherits from
+
+
+## Type Linting
+
+We want ZERO Pylance errors.
+One important note: occassionally, Pylance will throw a fake error. To remove the error, just delete one letter in the error and then add it back.
+This is generally on the Unannotated types.

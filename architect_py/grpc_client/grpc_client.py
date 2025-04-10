@@ -67,6 +67,7 @@ def enc_hook(obj: Any) -> Any:
 
 
 encoder = msgspec.json.Encoder(enc_hook=enc_hook)
+decoders: dict[type | UnionType, msgspec.json.Decoder] = {}
 ResponseTypeGeneric = TypeVar("ResponseTypeGeneric", covariant=True)
 
 
@@ -92,7 +93,6 @@ class GRPCClient:
     l1_books: dict[TradableProduct, L1BookSnapshot]
     l2_books: dict[TradableProduct, L2BookSnapshot]
     channel: grpc.aio.Channel
-    _decoders: dict[type | UnionType, msgspec.json.Decoder]
 
     def __init__(
         self,
@@ -125,8 +125,6 @@ class GRPCClient:
         self.l1_books: dict[TradableProduct, L1BookSnapshot] = {}
         self.l2_books: dict[TradableProduct, L2BookSnapshot] = {}
         self.endpoint = endpoint
-
-        self._decoders: dict[type | UnionType, msgspec.json.Decoder] = {}
 
     async def initialize(self) -> Optional[str]:
         """
@@ -182,17 +180,21 @@ class GRPCClient:
                 logger.error("Failed to refresh gRPC credentials: %s", e)
         return self.jwt
 
+    @staticmethod
+    def encoder() -> msgspec.json.Encoder:
+        return encoder
+
     def get_decoder(
         self,
         response_type: type[ResponseTypeGeneric] | UnionType,
     ) -> msgspec.json.Decoder:
         try:
-            return self._decoders[response_type]
+            return decoders[response_type]
         except KeyError:
             # we use a try / except because we sacrifice first time query
             # to optimize for repeated lookups
             decoder = msgspec.json.Decoder(type=response_type)
-            self._decoders[response_type] = decoder
+            decoders[response_type] = decoder
             return decoder
 
     async def symbols(self) -> list[str]:
@@ -248,14 +250,6 @@ class GRPCClient:
                 )
             self.l2_books[symbol] = L2BookSnapshot([], [], 0, 0, 0, 0)
         return self.l2_books[symbol]
-
-    async def subscribe_l1_books_stream(
-        self, symbols: list[str]
-    ) -> AsyncIterator[L1BookSnapshot]:
-        request = SubscribeL1BookSnapshotsRequest(symbols=symbols)
-        return self.subscribe(
-            request,
-        )
 
     async def subscribe_l2_books_stream(
         self, symbol: TradableProduct, venue: Optional[str]

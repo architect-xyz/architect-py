@@ -2,6 +2,7 @@
 Breaking:
   - in AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
     - no functionality change, just changes to input types and output types
+  - Moved around some of the subscription stream types (e.g. orderflow) from the grpc_client to the AsyncClient
 
 # 3.2.2
 Fixes:

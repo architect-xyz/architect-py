@@ -10,9 +10,8 @@ from .common import connect_async_client
 async def main():
     c: AsyncClient = await connect_async_client()
 
-    async for snap in c.subscribe_l1_book_stream(
+    async for snap in c.subscribe_l1_books_stream(
         symbols=[TradableProduct("ES 20250620 CME Future/USD")],
-        venue="CME",
     ):
         best_bid_s = "<no bid>"
         best_ask_s = "<no ask>"

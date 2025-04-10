@@ -47,7 +47,7 @@ async def test_subscribe_l1_stream(
     [l1_book] = await async_client.subscribe_l1_book(symbols)
 
     i = 0
-    async for snap in async_client.subscribe_l1_book_stream(symbols, venue):
+    async for snap in async_client.subscribe_l1_books_stream(symbols):
         assert snap.best_bid is not None, f"{symbol} should always be bid"
         assert snap.best_ask is not None, f"{symbol} should always be offered"
         assert snap.best_bid[0] > 1_000, f"{symbol} should be > $1000"

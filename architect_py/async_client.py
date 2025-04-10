@@ -15,7 +15,6 @@ The individual graphql types are subject to change, so it is not recommended to 
 """
 
 import asyncio
-import functools
 import logging
 from datetime import date, datetime
 from decimal import Decimal
@@ -44,6 +43,9 @@ from architect_py.grpc_client.Marketdata.HistoricalCandlesRequest import (
 from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
     HistoricalCandlesResponse,
 )
+from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
+    SubscribeL1BookSnapshotsRequest,
+)
 from architect_py.grpc_client.Oms.Cancel import Cancel
 from architect_py.grpc_client.Oms.CancelOrderRequest import CancelOrderRequest
 from architect_py.grpc_client.Oms.OpenOrdersRequest import OpenOrdersRequest
@@ -51,6 +53,12 @@ from architect_py.grpc_client.Oms.Order import Order
 from architect_py.grpc_client.Oms.PlaceOrderRequest import (
     PlaceOrderRequest,
     PlaceOrderRequestType,
+)
+from architect_py.grpc_client.Orderflow.Orderflow import Orderflow
+from architect_py.grpc_client.Orderflow.OrderflowRequest import (
+    OrderflowRequest,
+    OrderflowRequest_route,
+    OrderflowRequestUnannotatedResponseType,
 )
 import architect_py.grpc_client.definitions as grpc_definitions
 from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
@@ -846,8 +854,8 @@ class AsyncClient:
         )
         return l2_book.l_2_book_snapshot
 
-    async def subscribe_l1_book_stream(
-        self, symbols: list[TradableProduct], venue: str
+    async def subscribe_l1_books_stream(
+        self, symbols: list[TradableProduct]
     ) -> AsyncIterator[L1BookSnapshot]:
         """
         Subscribe to the stream of L1BookSnapshots for a symbol.
@@ -857,11 +865,17 @@ class AsyncClient:
             venue: the venue to subscribe to
         Returns:
             an async iterator that yields L1BookSnapshot, representing the l1 book updates
+
+        Example usage:
+            async for snap in async_client.subscribe_l1_books_stream(symbols):
+                print(snap.datetime_local, snap)
         """
-        async for snapshot in await self.grpc_client.subscribe_l1_books_stream(
-            symbols=[str(s) for s in symbols]
+        request = SubscribeL1BookSnapshotsRequest(symbols=symbols)  # type: ignore
+
+        async for snap in self.grpc_client.subscribe(
+            request,
         ):
-            yield snapshot
+            yield snap
 
     async def subscribe_l2_book_stream(
         self, symbol: TradableProduct, venue: str
@@ -879,10 +893,7 @@ class AsyncClient:
             L2BookFields is either a Snapshot or a Diff
             See the grpc_client code for how to handle the different types
         """
-        async for snapshot in self.grpc_client.subscribe_l2_books_stream(
-            symbol=symbol, venue=venue
-        ):
-            yield snapshot
+        return self.grpc_client.subscribe_l2_books_stream(symbol=symbol, venue=venue)
 
     async def subscribe_l1_book(
         self, symbols: list[TradableProduct]
@@ -1000,6 +1011,25 @@ class AsyncClient:
             candle_widths=candle_widths,
         )
         return self.grpc_client.subscribe(request)
+
+    async def subscribe_orderflow_stream(
+        self,
+        request_iterator: AsyncIterator[OrderflowRequest],
+    ) -> AsyncIterator[Orderflow]:
+        """
+        subscribe_orderflow_stream is a duplex_stream meaning that it is a stream that can be read from and written to.
+        This is a stream that will be used to send orders to the Architect and receive order updates from the Architect.
+        """
+        decoder = self.grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
+        stub = self.grpc_client.channel.stream_stream(
+            OrderflowRequest_route,
+            request_serializer=self.grpc_client.encoder().encode,
+            response_deserializer=decoder.decode,
+        )
+        jwt = await self.grpc_client.refresh_grpc_credentials()
+        call = stub(request_iterator, metadata=(("authorization", f"Bearer {jwt}"),))
+        async for update in call:
+            yield update
 
     # ------------------------------------------------------------
     # Order Entry and Cancellation
