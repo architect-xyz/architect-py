@@ -27,7 +27,6 @@ from pytest_lazy_fixtures import lf
         # ),
     ],
 )
-@pytest.mark.asyncio
 async def test_subscribe_l1_stream(
     async_client: AsyncClient,
     endpoint: str,

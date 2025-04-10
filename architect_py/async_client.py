@@ -1024,6 +1024,8 @@ class AsyncClient:
 
         The sending will go in the request_iterator and the receiving will be yielded from the function.
 
+        See test_orderflow.py for an example.
+
         This WILL block the event loop until the stream is closed.
         """
         decoder = self.grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
