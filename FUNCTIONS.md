@@ -51,12 +51,13 @@
 - **`get_l1_book_snapshot`**: Gets the L1 book snapshot for a symbol.
 - **`get_l1_book_snapshots`**: Gets the L1 book snapshots for a list of symbols.
 - **`get_l2_book_snapshot`**: Gets the L2 book snapshot for a symbol.
-- **`subscribe_l1_book_stream`**: Subscribe to the stream of L1BookSnapshots for a symbol.
+- **`subscribe_l1_books_stream`**: Subscribe to the stream of L1BookSnapshots for a symbol.
 - **`subscribe_l2_book_stream`**: Subscribe to the stream of L2BookUpdates for a symbol.
 - **`subscribe_l1_book`**: Returns a L1BookSnapshot object that is constantly updating in the background.
 - **`subscribe_l2_book`**: Returns a L2BookSnapshot object that is constantly updating in the background.
 - **`subscribe_trades_stream`**: Subscribe to a stream of trades for a symbol.
 - **`subscribe_candles_stream`**: Subscribe to a stream of candles for a symbol.
+- **`subscribe_orderflow_stream`**: A duplex stream for both SENDING/CANCELLING orders and RECEIVING order updates (fills, acks, outs, etc.).
 
 ---
 

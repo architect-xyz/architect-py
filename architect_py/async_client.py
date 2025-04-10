@@ -1017,8 +1017,10 @@ class AsyncClient:
         request_iterator: AsyncIterator[OrderflowRequest],
     ) -> AsyncIterator[Orderflow]:
         """
-        subscribe_orderflow_stream is a duplex_stream meaning that it is a stream that can be read from and written to.
-        This is a stream that will be used to send orders to the Architect and receive order updates from the Architect.
+        A duplex stream for both SENDING/CANCELLING orders and RECEIVING order updates (fills, acks, outs, etc.).
+
+
+        The sending will go in the request_iterator and the receiving will be yielded from the function.
         """
         decoder = self.grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
         stub = self.grpc_client.channel.stream_stream(
