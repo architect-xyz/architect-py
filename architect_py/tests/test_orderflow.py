@@ -32,6 +32,6 @@ class OrderflowAsyncIterator:
 @pytest.mark.timeout(10)
 async def test_subscribe_l1_stream(async_client: AsyncClient):
     oai = OrderflowAsyncIterator()
-    async for of in async_client.subscribe_orderflow_duplex(oai):
+    async for of in async_client.orderflow(oai):
         assert of is not None
         return
