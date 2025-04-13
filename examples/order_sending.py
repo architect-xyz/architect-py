@@ -31,8 +31,16 @@ async def search_symbol() -> tuple[str, TradableProduct]:
         search_string="ES",
         execution_venue=venue,
     )
-    market = markets[0]
-    return venue, market
+
+    for market in markets:
+        ei = await client.get_execution_info(
+            symbol=market,
+            execution_venue=venue,
+        )
+        if ei is None or ei.is_delisted:
+            continue
+        return venue, market
+    raise ValueError(f"No markets found for {venue}")
 
 
 async def test_send_order():

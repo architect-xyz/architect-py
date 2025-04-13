@@ -10,7 +10,10 @@ from .common import connect_async_client
 
 async def main():
     c: AsyncClient = await connect_async_client()
+
     symbol = "ES 20250321 CME Future"
+    # can search for symbols using the search_symbols method
+
     quote = "USD"
     tradable_product = TradableProduct(symbol, quote)
     venue = "CME"
