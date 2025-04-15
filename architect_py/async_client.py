@@ -16,7 +16,7 @@ The individual graphql types are subject to change, so it is not recommended to 
 
 import asyncio
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import Any, AsyncIterator, List, Optional, Sequence
 
@@ -363,9 +363,10 @@ class AsyncClient:
         Returns:
             a list of symbols in the series
         """
-        assert (
-            " " in series_symbol
-        ), 'series_symbol must have the venue in it, e.g. "ES CME Futures" or "GC CME Futures"'
+        if not " " in series_symbol:
+            raise ValueError(
+                'series_symbol must have the venue in it, e.g. "ES CME Futures" or "GC CME Futures"'
+            )
 
         futures_series = await self.graphql_client.get_future_series_query(
             series_symbol
@@ -522,6 +523,20 @@ class AsyncClient:
             a list of AccountSummary for the account for the given dates
             use timestamp to get the time of the of the summary
         """
+        if from_inclusive is not None:
+            assert from_inclusive.tzinfo is timezone.utc, (
+                "from_inclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
+        if to_exclusive is not None:
+            assert to_exclusive.tzinfo is timezone.utc, (
+                "to_exclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
         request = AccountHistoryRequest(
             account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
         )
@@ -607,6 +622,21 @@ class AsyncClient:
             OR
             the from_inclusive and to_exclusive parameters need to be filled
         """
+
+        if from_inclusive is not None:
+            assert from_inclusive.tzinfo is timezone.utc, (
+                "from_inclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
+        if to_exclusive is not None:
+            assert to_exclusive.tzinfo is timezone.utc, (
+                "to_exclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
         historical_orders_request = HistoricalOrdersRequest.new(
             order_ids=order_ids,
             venue=venue,
@@ -713,6 +743,20 @@ class AsyncClient:
             HistoricalFillsResponse
         """
 
+        if from_inclusive is not None:
+            assert from_inclusive.tzinfo is timezone.utc, (
+                "from_inclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+        
+        if to_exclusive is not None:
+            assert to_exclusive.tzinfo is timezone.utc, (
+                "to_exclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
         fills_request = HistoricalFillsRequest(
             account,
             from_inclusive,
@@ -794,6 +838,20 @@ class AsyncClient:
         Returns:
             a list of CandleFields for the specified candles
         """
+
+        if start.tzinfo is not timezone.utc:
+            raise ValueError(
+                "start must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+        if end.tzinfo is not timezone.utc:
+            raise ValueError(
+                "end must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
         request = HistoricalCandlesRequest(
             symbol=symbol,
             candle_width=candle_width,
