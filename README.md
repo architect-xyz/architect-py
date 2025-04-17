@@ -10,6 +10,11 @@ Also, it is compatible with Jupyter notebooks! Check the examples for an example
 
 This repo heavily uses type hinting, so using a type checker such as Pylance or mypy is suggestible to reduce potential for error.
 
+## Installation
+
+`pip install architect-py`
+in your favorite python environment
+
 ## API keys for the brokerage
 
 API keys/secrets for the brokerage can be generated on the [user account page](https://app.architect.co/user/account).
