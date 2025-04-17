@@ -6,7 +6,8 @@ scratch*.py.*
 .env
 .env*
 .DS_Store
-*.ipynb
+ipynb/
+*-checkpoint.ipynb
 
 
 pytest.env

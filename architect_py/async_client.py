@@ -43,6 +43,12 @@ from architect_py.grpc_client.Marketdata.HistoricalCandlesRequest import (
 from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
     HistoricalCandlesResponse,
 )
+from architect_py.grpc_client.Marketdata.L1BookSnapshotRequest import (
+    L1BookSnapshotRequest,
+)
+from architect_py.grpc_client.Marketdata.L1BookSnapshotsRequest import (
+    L1BookSnapshotsRequest,
+)
 from architect_py.grpc_client.Marketdata.SubscribeL1BookSnapshotsRequest import (
     SubscribeL1BookSnapshotsRequest,
 )
@@ -749,7 +755,7 @@ class AsyncClient:
                 "for example datetime.now(timezone.utc) or \n"
                 "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
             )
-        
+
         if to_exclusive is not None:
             assert to_exclusive.tzinfo is timezone.utc, (
                 "to_exclusive must be a utc datetime:\n"
@@ -865,7 +871,7 @@ class AsyncClient:
         self,
         symbol: str,
         venue: str,
-    ) -> MarketTickerFields:
+    ) -> L1BookSnapshot:
         """
         Gets the L1 book snapshot for a symbol.
 
@@ -875,14 +881,13 @@ class AsyncClient:
         Returns:
             MarketTickerFields for the symbol
         """
-        snapshot = await self.graphql_client.get_l_1_book_snapshot_query(
-            symbol=symbol, venue=venue
-        )
-        return snapshot.ticker
+        request = L1BookSnapshotRequest(symbol)
+        snapshot = await self.grpc_client.request(request)
+        return snapshot
 
     async def get_l1_book_snapshots(
         self, symbols: list[str], venue: str
-    ) -> Sequence[MarketTickerFields]:
+    ) -> list[L1BookSnapshot]:
         """
         Gets the L1 book snapshots for a list of symbols.
 
@@ -892,10 +897,17 @@ class AsyncClient:
         Returns:
             a list of MarketTickerFields for the symbols
         """
-        snapshot = await self.graphql_client.get_l_1_book_snapshots_query(
-            venue=venue, symbols=symbols
+
+        request = L1BookSnapshotsRequest(symbols)
+
+        decoder = self.grpc_client.get_decoder(request.get_unannotated_response_type())
+        stub = self.grpc_client.channel.unary_unary(
+            request.get_route(),
+            request_serializer=self.grpc_client.encoder().encode,
+            response_deserializer=decoder.decode,
         )
-        return snapshot.tickers
+        jwt = await self.grpc_client.refresh_grpc_credentials()
+        return await stub(request, metadata=(("authorization", f"Bearer {jwt}"),))
 
     async def get_l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
         """
