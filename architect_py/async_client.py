@@ -797,7 +797,7 @@ class AsyncClient:
 
     async def get_market_snapshot(
         self, symbol: TradableProduct, venue: str
-    ) -> MarketTickerFields:
+    ) -> L1BookSnapshot:
         """
         This is an alias for l1_book_snapshot.
 
@@ -811,7 +811,7 @@ class AsyncClient:
 
     async def get_market_snapshots(
         self, symbols: list[TradableProduct], venue: str
-    ) -> Sequence[MarketTickerFields]:
+    ) -> list[L1BookSnapshot]:
         """
         This is an alias for l1_book_snapshot.
 
@@ -1285,25 +1285,17 @@ class AsyncClient:
         price_band = price_band_pairs.get(symbol, None)
 
         if odir == OrderDir.BUY:
-            if bbo_snapshot.ask_price is None:
+            if bbo_snapshot.best_ask is None:
                 raise ValueError(
                     f"Failed to send market order with reason: no ask price for {symbol}"
                 )
-            limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
-
-            if price_band and bbo_snapshot.last_price:
-                price_band_reference_price = bbo_snapshot.last_price + price_band
-                limit_price = min(limit_price, price_band_reference_price)
-
+            limit_price = bbo_snapshot.best_ask[0] * (1 + fraction_through_market)
         else:
-            if bbo_snapshot.bid_price is None:
+            if bbo_snapshot.best_bid is None:
                 raise ValueError(
                     f"Failed to send market order with reason: no bid price for {symbol}"
                 )
-            limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
-            if price_band and bbo_snapshot.last_price:
-                price_band_reference_price = bbo_snapshot.last_price - price_band
-                limit_price = min(limit_price, price_band_reference_price)
+            limit_price = bbo_snapshot.best_bid[0] * (1 - fraction_through_market)
 
         # Conservatively round price to nearest tick
         tick_round_method = (

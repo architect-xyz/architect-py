@@ -50,7 +50,7 @@ async def test_send_order():
     if snapshot is None:
         return ValueError(f"Market snapshot for {symbol} is None")
 
-    if snapshot.ask_price is None or snapshot.bid_price is None:
+    if snapshot.best_ask is None or snapshot.best_bid is None:
         return ValueError(f"Market snapshot for {symbol} is None")
 
     order = await client.send_limit_order(
@@ -60,8 +60,8 @@ async def test_send_order():
         order_type=PlaceOrderRequestType.LIMIT,
         execution_venue="CME",
         post_only=True,
-        limit_price=snapshot.bid_price
-        - (snapshot.ask_price - snapshot.bid_price) * Decimal(10),
+        limit_price=snapshot.best_bid[0]
+        - (snapshot.best_ask[0] - snapshot.best_bid[0]) * Decimal(10),
         account=ACCOUNT,
         time_in_force=TimeInForceEnum.IOC,
     )

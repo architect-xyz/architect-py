@@ -31,7 +31,9 @@ async def test_live_far_order_cancel(async_client: AsyncClient, front_ES_future:
 
     min_qty = Decimal(execution_info.min_order_quantity)
 
-    if bid_price := snapshot.bid_price:
+    assert snapshot.best_bid is not None
+
+    if bid_price := snapshot.best_bid[0]:
         far_price = bid_price * Decimal("0.9")
     else:
         raise ValueError(f"No bid price in snapshot for {tp} at venue {venue}")

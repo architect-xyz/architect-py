@@ -19,8 +19,8 @@ async def main():
     print()
     print(f"Market snapshot for {market}")
     market_snapshot = await c.get_market_snapshot(symbol=market, venue=execution_venue)
-    print(f"Best bid: {market_snapshot.bid_price}")
-    print(f"Best ask: {market_snapshot.ask_price}")
+    print(f"Best bid: {market_snapshot.best_bid}")
+    print(f"Best ask: {market_snapshot.best_ask}")
 
     # List your FCM accounts
     print()
@@ -32,7 +32,8 @@ async def main():
     account_id = accounts[0].account.id
 
     # Place a limit order $100 below the best bid
-    best_bid = market_snapshot.bid_price
+    assert market_snapshot.best_bid is not None
+    best_bid = market_snapshot.best_bid[0]
     if best_bid is None:
         raise ValueError("No bid price available")
     limit_price = best_bid - Decimal(100)
