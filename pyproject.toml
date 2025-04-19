@@ -41,8 +41,8 @@ dev = [
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
 
-[tool.setuptools]
-packages = ["architect_py"]
+[tool.setuptools.packages.find]
+exclude = []
 
 [tool.ufmt]
 excludes = [
