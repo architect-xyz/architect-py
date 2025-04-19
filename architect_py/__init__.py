@@ -1,2 +1,1 @@
-__version__ = "0.0.0"
-# this is automatically updated by poetry-dynamic-versioning, see README.md
+__version__ = "4.0.0"
