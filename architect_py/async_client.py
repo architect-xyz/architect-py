@@ -652,8 +652,8 @@ class AsyncClient:
 
     async def get_fills(
         self,
-        from_inclusive: Optional[datetime],
-        to_exclusive: Optional[datetime],
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
         order_id: Optional[str] = None,
@@ -696,7 +696,7 @@ class AsyncClient:
         return market_status.market_status
 
     async def get_market_snapshot(
-        self, symbol: TradableProduct, venue: str
+        self, symbol: TradableProduct | str, venue: str
     ) -> MarketTickerFields:
         """
         This is an alias for l1_book_snapshot.
@@ -710,7 +710,7 @@ class AsyncClient:
         return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
     async def get_market_snapshots(
-        self, symbols: list[TradableProduct], venue: str
+        self, symbols: list[TradableProduct | str], venue: str
     ) -> Sequence[MarketTickerFields]:
         """
         This is an alias for l1_book_snapshot.
@@ -808,7 +808,7 @@ class AsyncClient:
         return l2_book.l_2_book_snapshot
 
     async def subscribe_l1_book_stream(
-        self, symbols: list[TradableProduct], venue: str
+        self, symbols: list[TradableProduct | str], venue: str
     ) -> AsyncIterator[L1BookSnapshot]:
         """
         Subscribe to the stream of L1BookSnapshots for a symbol.
@@ -825,7 +825,7 @@ class AsyncClient:
             yield snapshot
 
     async def subscribe_l2_book_stream(
-        self, symbol: TradableProduct, venue: str
+        self, symbol: TradableProduct | str, venue: str
     ) -> AsyncIterator[L2BookUpdate]:
         """
         Subscribe to the stream of L2BookUpdates for a symbol.
@@ -883,7 +883,7 @@ class AsyncClient:
 
     async def subscribe_l2_book(
         self,
-        symbol: TradableProduct,
+        symbol: TradableProduct | str,
         venue: Optional[str],
     ) -> L2BookSnapshot:
         """
@@ -924,7 +924,7 @@ class AsyncClient:
         return book
 
     def subscribe_trades_stream(
-        self, symbol: TradableProduct, venue: Optional[str]
+        self, symbol: TradableProduct | str, venue: Optional[str]
     ) -> AsyncIterator[Trade]:
         """
         Subscribe to a stream of trades for a symbol.
@@ -934,7 +934,7 @@ class AsyncClient:
 
     def subscribe_candles_stream(
         self,
-        symbol: TradableProduct,
+        symbol: TradableProduct | str,
         venue: Optional[str],
         candle_widths: Optional[list[grpc_definitions.CandleWidth]],
     ) -> AsyncIterator[Candle]:
@@ -956,7 +956,7 @@ class AsyncClient:
         self,
         *,
         id: Optional[str] = None,
-        symbol: TradableProduct,
+        symbol: TradableProduct | str,
         execution_venue: Optional[str],
         odir: OrderDir,
         quantity: Decimal,
@@ -1050,7 +1050,7 @@ class AsyncClient:
         self,
         *,
         id: Optional[str] = None,
-        symbol: TradableProduct,
+        symbol: TradableProduct | str,
         execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,

@@ -250,7 +250,7 @@ class GRPCClient:
         return self.l2_books[symbol]
 
     async def subscribe_l1_books_stream(
-        self, symbols: list[str]
+        self, symbols: list[TradableProduct | str]
     ) -> AsyncIterator[L1BookSnapshot]:
         request = SubscribeL1BookSnapshotsRequest(symbols=symbols)
         return self.subscribe(
@@ -258,7 +258,7 @@ class GRPCClient:
         )
 
     async def subscribe_l2_books_stream(
-        self, symbol: TradableProduct, venue: Optional[str]
+        self, symbol: TradableProduct | str, venue: Optional[str]
     ) -> AsyncIterator[L2BookUpdate]:
         decoder: msgspec.json.Decoder[L2BookUpdate] = self.get_decoder(
             SubscribeL2BookUpdatesRequest.get_unannotated_response_type()
