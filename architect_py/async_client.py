@@ -48,6 +48,7 @@ class AsyncClient:
     graphql_client: GraphQLClient
     grpc_core: Optional[GrpcClient] = None
     grpc_marketdata: dict[Venue, GrpcClient] = {}
+    grpc_hmart: Optional[GrpcClient] = None
     jwt: str | None = None
     jwt_expiration: datetime | None = None
 
@@ -244,6 +245,40 @@ class AsyncClient:
         await self.refresh_jwt()
         self.grpc_marketdata[venue].set_jwt(self.jwt)
         return self.grpc_marketdata[venue]
+
+    async def set_hmart(self, endpoint: str):
+        """
+        Manually set the hmart (historical marketdata service) endpoint.
+        """
+        try:
+            grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+            logging.info(
+                "Resolved hmart endpoint %s: %s:%d use_ssl=%s",
+                endpoint,
+                grpc_host,
+                grpc_port,
+                use_ssl,
+            )
+            self.grpc_hmart = GrpcClient(
+                host=grpc_host, port=grpc_port, use_ssl=use_ssl
+            )
+        except Exception as e:
+            logging.error("Failed to set hmart endpoint: %s", e)
+
+    async def hmart(self) -> GrpcClient:
+        """
+        Get the hmart (historical marketdata service) client.
+        """
+        if self.grpc_hmart is None:
+            # default to historical.marketdata.architect.co
+            await self.set_hmart("https://historical.marketdata.architect.co")
+
+        if self.grpc_hmart is None:
+            raise ValueError("hmart client not initialized")
+
+        await self.refresh_jwt()
+        self.grpc_hmart.set_jwt(self.jwt)
+        return self.grpc_hmart
 
     async def core(self) -> GrpcClient:
         """
@@ -564,8 +599,9 @@ class AsyncClient:
             end: the end date to get candles for;
                 For naive datetimes, the server will assume UTC.
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self.hmart()
         req = HistoricalCandlesRequest(
+            venue=venue,
             symbol=str(symbol),
             candle_width=candle_width,
             start_date=start,
