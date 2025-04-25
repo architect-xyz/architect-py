@@ -559,8 +559,10 @@ class AsyncClient:
             symbol: the symbol to get the candles for
             venue: the venue of the symbol
             candle_width: the width of the candles
-            start: the start date to get candles for
-            end: the end date to get candles for
+            start: the start date to get candles for;
+                For naive datetimes, the server will assume UTC.
+            end: the end date to get candles for;
+                For naive datetimes, the server will assume UTC.
         """
         grpc_client = await self.marketdata(venue)
         req = HistoricalCandlesRequest(
