@@ -195,6 +195,9 @@ class CptyLogoutRequest(Struct, omit_defaults=True):
         return f"CptyLogoutRequest()"
 
 
+DateTimeOrUtc = datetime
+
+
 class HealthMetric(Struct, omit_defaults=True):
     timestamp: int
     value: float

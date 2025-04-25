@@ -6,7 +6,7 @@ from architect_py.grpc.models.Marketdata.HistoricalCandlesResponse import (
     HistoricalCandlesResponse,
 )
 
-from datetime import datetime
+from typing import Optional
 
 from msgspec import Struct
 
@@ -15,28 +15,31 @@ from .. import definitions
 
 class HistoricalCandlesRequest(Struct, omit_defaults=True):
     candle_width: definitions.CandleWidth
-    end_date: datetime
-    start_date: datetime
+    end_date: definitions.DateTimeOrUtc
+    start_date: definitions.DateTimeOrUtc
     symbol: str
+    venue: Optional[str] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         candle_width: definitions.CandleWidth,
-        end_date: datetime,
-        start_date: datetime,
+        end_date: definitions.DateTimeOrUtc,
+        start_date: definitions.DateTimeOrUtc,
         symbol: str,
+        venue: Optional[str] = None,
     ):
         return cls(
             candle_width,
             end_date,
             start_date,
             symbol,
+            venue,
         )
 
     def __str__(self) -> str:
-        return f"HistoricalCandlesRequest(candle_width={self.candle_width},end_date={self.end_date},start_date={self.start_date},symbol={self.symbol})"
+        return f"HistoricalCandlesRequest(candle_width={self.candle_width},end_date={self.end_date},start_date={self.start_date},symbol={self.symbol},venue={self.venue})"
 
     @staticmethod
     def get_response_type():

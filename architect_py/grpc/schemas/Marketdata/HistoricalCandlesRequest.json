@@ -13,15 +13,19 @@
       "$ref": "../definitions.json#/CandleWidth"
     },
     "end_date": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "../definitions.json#/DateTimeOrUtc"
     },
     "start_date": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "../definitions.json#/DateTimeOrUtc"
     },
     "symbol": {
       "type": "string"
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "route": "/json.architect.Marketdata/HistoricalCandles",
