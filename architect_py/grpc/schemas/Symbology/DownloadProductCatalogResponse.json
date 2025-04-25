@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DownloadProductCatalogResponse",
+  "type": "object",
+  "required": [
+    "product_catalog"
+  ],
+  "properties": {
+    "product_catalog": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/ProductCatalogInfo"
+      }
+    }
+  }
+}

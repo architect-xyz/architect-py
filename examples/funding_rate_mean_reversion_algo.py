@@ -8,6 +8,7 @@ from typing import AsyncIterator, Optional
 
 from architect_py.async_client import AsyncClient
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
+from architect_py.grpc_client.definitions import TimeInForceEnum
 from architect_py.grpc_client.Marketdata.TickerRequest import TickerRequest
 from architect_py.grpc_client.Oms.PlaceOrderRequest import PlaceOrderRequestType
 from architect_py.grpc_client.Orderflow.Orderflow import (
@@ -19,14 +20,12 @@ from architect_py.grpc_client.Orderflow.OrderflowRequest import (
     OrderflowRequest,
     PlaceOrder,
 )
-from architect_py.grpc_client.definitions import TimeInForceEnum
 from architect_py.scalars import OrderDir, TradableProduct
 
 from .common import connect_async_client
 
-
 venue = "BINANCE"
-product = f"BTC-USDT Perpetual"
+product = "BTC-USDT Perpetual"
 tradable_product = TradableProduct(product, "USDT Crypto")
 best_bid_price: Optional[Decimal] = None
 best_ask_price: Optional[Decimal] = None
@@ -170,7 +169,7 @@ async def print_info(c: AsyncClient):
                     pos += balance.balance
         global current_position
         current_position = pos
-        print(f"---")
+        print("---")
         print(f"info : funding_rate: {current_funding_rate}")
         print(f"info : bbo: {best_bid_price} {best_ask_price}")
         print(f"info : current_position: {current_position}")

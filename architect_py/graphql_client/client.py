@@ -6,12 +6,9 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from architect_py.scalars import (
-    OrderDir,
-    TradableProduct,
-    convert_datetime_to_utc_str,
-    graphql_serialize_order_dir,
-)
+from architect_py.common_types import OrderDir, TradableProduct
+from architect_py.common_types.order_dir import graphql_serialize_order_dir
+from architect_py.common_types.scalars import convert_datetime_to_utc_str
 
 from .base_model import UNSET
 from .juniper_base_client import JuniperBaseClient

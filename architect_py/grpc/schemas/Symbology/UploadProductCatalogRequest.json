@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UploadProductCatalogRequest",
+  "type": "object",
+  "required": [
+    "exchange",
+    "product_catalog"
+  ],
+  "properties": {
+    "exchange": {
+      "type": "string"
+    },
+    "product_catalog": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/ProductCatalogInfo"
+      }
+    }
+  },
+  "route": "/json.architect.Symbology/UploadProductCatalog",
+  "rpc_method": "unary",
+  "service": "Symbology",
+  "response_type": "UploadProductCatalogResponse"
+}

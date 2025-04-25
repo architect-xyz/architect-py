@@ -1,8 +1,8 @@
 import asyncio
-import os
-from uuid import UUID
+
 from architect_py.async_client import AsyncClient
 from architect_py.scalars import TradableProduct
+
 from .common import connect_async_client
 
 buy_columns = "{:>15} {:>15}"

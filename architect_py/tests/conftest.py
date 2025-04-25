@@ -1,14 +1,12 @@
-from datetime import datetime
 import os
+from datetime import datetime
 
 import pytest
 import pytest_asyncio
-from architect_py.client import Client
-from architect_py.async_client import AsyncClient
 from dotenv import load_dotenv
 
 from architect_py.async_client import AsyncClient
-
+from architect_py.client import Client
 
 """
 if you have a file named ".env" in your working directory with:
@@ -52,11 +50,11 @@ async def async_client() -> AsyncClient:
         )
 
     return await AsyncClient.connect(
-        host=host,
-        _port=port,
         api_key=api_key,
         api_secret=api_secret,
         paper_trading=paper_trading,
+        endpoint=host,
+        graphql_port=port,
     )
 
 

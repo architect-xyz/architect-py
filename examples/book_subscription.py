@@ -1,11 +1,10 @@
 import asyncio
 import os
 
-from architect_py.async_client import AsyncClient
-from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-
 from pydantic import ValidationError
 
+from architect_py.async_client import AsyncClient
+from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 from architect_py.scalars import TradableProduct
 
 from .common import connect_async_client

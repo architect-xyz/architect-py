@@ -1,7 +1,6 @@
 import asyncio
-
-from decimal import Decimal
 import logging
+from decimal import Decimal
 
 from architect_py.async_client import AsyncClient
 from architect_py.graphql_client.enums import OrderType, TimeInForce

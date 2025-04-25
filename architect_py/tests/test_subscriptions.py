@@ -1,12 +1,12 @@
 import asyncio
 from datetime import datetime
-import pytest
-from architect_py.async_client import AsyncClient
-from architect_py.scalars import TradableProduct
-
 from zoneinfo import ZoneInfo
 
+import pytest
 from pytest_lazy_fixtures import lf
+
+from architect_py.async_client import AsyncClient
+from architect_py.common_types import TradableProduct
 
 
 @pytest.mark.asyncio
@@ -36,18 +36,16 @@ async def test_subscribe_l1_stream(
 ):
     tp = TradableProduct(symbol)
 
-    await async_client.grpc_client.change_channel(endpoint)
-
     market_status = await async_client.get_market_status(tp, venue)
     if not market_status.is_trading:
         pytest.skip("market is not trading")
 
     symbols = [tp]
 
-    [l1_book] = await async_client.subscribe_l1_book(symbols)
+    l1_book = await async_client.subscribe_l1_book(tp, venue)
 
     i = 0
-    async for snap in async_client.subscribe_l1_book_stream(symbols, venue):
+    async for snap in await async_client.stream_l1_book_snapshots(symbols, venue):
         assert snap.best_bid is not None, f"{symbol} should always be bid"
         assert snap.best_ask is not None, f"{symbol} should always be offered"
         assert snap.best_bid[0] > 1_000, f"{symbol} should be > $1000"
@@ -93,9 +91,7 @@ async def test_subscribe_l2_stream(
     ts = l2_book.timestamp
 
     i = 0
-    async for snap in async_client.grpc_client.subscribe_l2_books_stream(
-        symbol=tp, venue=venue
-    ):
+    async for snap in await async_client.stream_l2_book_updates(symbol=tp, venue=venue):
         assert snap is not None
         if i > 5:
             break
@@ -119,7 +115,7 @@ async def test_subscribe_cme_trades(async_client: AsyncClient, front_ES_future_t
         pytest.skip("market is not liquid")
 
     i = 0
-    async for trade in async_client.subscribe_trades_stream(market, venue):
+    async for trade in await async_client.stream_trades(market, venue):
         assert trade is not None, "trade from stream was None"
         if i > 3:
             break

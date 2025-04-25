@@ -1,17 +1,17 @@
 [tool.ariadne-codegen]
-target_package_path = "./architect_py"
-target_package_name = "graphql_client"
-client_name = "GraphQLClient"
-schema_path = "schema.graphql"
-queries_path = "queries.graphql"
-base_client_name = "JuniperBaseClient"
 base_client_file_path = "./templates/juniper_base_client.py"
+base_client_name = "JuniperBaseClient"
+client_name = "GraphQLClient"
 files_to_include = ["./templates/exceptions.py"]
 plugins = [
     "ariadne_codegen.contrib.shorter_results.ShorterResultsPlugin",
     "ariadne_codegen.contrib.client_forward_refs.ClientForwardRefsPlugin",
     # adding a plugin for making __slots__ is not a good idea because it is not compatible with Pydantic
 ]
+queries_path = "queries.graphql"
+schema_path = "schema.graphql"
+target_package_name = "graphql_client"
+target_package_path = "./architect_py"
 
 [tool.ariadne-codegen.scalars]
 Decimal.type = "decimal.Decimal"
@@ -22,17 +22,17 @@ MarketdataVenue.type = "str"
 OrderId.type = "str"
 Product.type = "str"
 
-TradableProduct.type = "architect_py.scalars.TradableProduct"
-TradableProduct.parse = "architect_py.scalars.parse_tradable_product"
+TradableProduct.parse = "architect_py.common_types.tradable_product.parse_tradable_product"
+TradableProduct.type = "architect_py.common_types.TradableProduct"
 
 UserId.type = "str"
 Uuid.type = "uuid.UUID"
 
-Dir.type = "architect_py.scalars.OrderDir"  # enums auto serialize/parse
-Dir.serialize = "architect_py.scalars.graphql_serialize_order_dir"
-Dir.parse = "architect_py.scalars.graphql_parse_order_dir"
+Dir.parse = "architect_py.common_types.order_dir.graphql_parse_order_dir"
+Dir.serialize = "architect_py.common_types.order_dir.graphql_serialize_order_dir"
+Dir.type = "architect_py.common_types.OrderDir" # enums auto serialize/parse
 
+DateTime.serialize = "architect_py.common_types.scalars.convert_datetime_to_utc_str"
 DateTime.type = "datetime.datetime"
-DateTime.serialize = "architect_py.scalars.convert_datetime_to_utc_str"
 
 Date.type = "datetime.date"

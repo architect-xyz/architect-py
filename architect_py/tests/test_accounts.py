@@ -1,9 +1,9 @@
+from collections import defaultdict
 from decimal import Decimal
+
 import pytest
 
 from architect_py.async_client import AsyncClient
-
-from collections import defaultdict
 
 
 @pytest.mark.asyncio

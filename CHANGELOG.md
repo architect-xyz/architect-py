@@ -1,3 +1,14 @@
+# 5.0.0b (WORK IN PROGRESS--DO NOT UPSTREAM)
+
+- refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
+- as a consequence, many marketdata methods require a `venue` argument
+- some methods renamed
+- moved some directories around, esp auto-generated files
+- added justfile and switched to ruff for linting and formatting
+- switched to pyright for typechecking
+- in AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
+- Moved around some of the subscription stream types (e.g. orderflow) from the grpc_client to the AsyncClient 
+
 # 3.2.2
 Fixes:
   - removed lru_cache on execution_info

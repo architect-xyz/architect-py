@@ -1,215 +1,289 @@
-"""
-This file composes the GraphQLClient class to provide a higher-level interface
-for order entry with the Architect API.
-
-These are not required to send orders, but provide typed interfaces for the
-various order types and algorithms that can be sent to the OMS.
-
-
-The functions to send orders will return the order ID string
-After sending the order, this string can be used to retrieve the order status
-
-send_limit_order -> get_order
-
-The individual graphql types are subject to change, so it is not recommended to use them directly.
-"""
-
 import asyncio
-import functools
 import logging
-from datetime import date, datetime
+import re
+from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import Any, AsyncIterator, List, Optional, Sequence
+from typing import AsyncIterator, List, Optional, Sequence
 
-from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError
-from architect_py.graphql_client.get_fills_query import (
-    GetFillsQueryFolioHistoricalFills,
+from architect_py.grpc.models.Orderflow.Orderflow import Orderflow
+from architect_py.grpc.models.Orderflow.OrderflowRequest import (
+    OrderflowRequest,
+    OrderflowRequest_route,
+    OrderflowRequestUnannotatedResponseType,
+)
+from architect_py.grpc.models.Orderflow.SubscribeOrderflowRequest import (
+    SubscribeOrderflowRequest,
 )
 
-from architect_py.grpc_client.Marketdata.Candle import Candle
-from architect_py.grpc_client.Marketdata.HistoricalCandlesRequest import (
-    HistoricalCandlesRequest,
-)
-from architect_py.grpc_client.Marketdata.HistoricalCandlesResponse import (
-    HistoricalCandlesResponse,
-)
-import architect_py.grpc_client.definitions as grpc_definitions
-from architect_py.graphql_client.place_order_mutation import PlaceOrderMutationOms
-from architect_py.grpc_client.Marketdata.L1BookSnapshot import L1BookSnapshot
-from architect_py.grpc_client.Marketdata.L2BookSnapshot import L2BookSnapshot
-from architect_py.grpc_client.Marketdata.L2BookUpdate import L2BookUpdate
-from architect_py.grpc_client.Marketdata.SubscribeCandlesRequest import (
-    SubscribeCandlesRequest,
-)
-from architect_py.grpc_client.Marketdata.SubscribeTradesRequest import (
-    SubscribeTradesRequest,
-)
-from architect_py.grpc_client.Marketdata.Trade import Trade
-from architect_py.scalars import OrderDir, TradableProduct
-from architect_py.utils.nearest_tick import TickRoundMethod
-
+from .common_types import OrderDir, TradableProduct, Venue
 from .graphql_client import GraphQLClient
 from .graphql_client.enums import (
     OrderType,
     TimeInForce,
 )
+from .graphql_client.exceptions import GraphQLClientGraphQLMultiError
 from .graphql_client.fragments import (
     AccountSummaryFields,
     AccountWithPermissionsFields,
     CancelFields,
     ExecutionInfoFields,
-    L2BookFields,
-    MarketStatusFields,
-    MarketTickerFields,
     OrderFields,
     ProductInfoFields,
 )
-
-# from .graphql_client.input_types import (
-#     CreateMMAlgo,
-#     CreateOrder,
-#     CreatePovAlgo,
-#     CreateSmartOrderRouterAlgo,
-#     CreateSpreadAlgo,
-#     CreateSpreadAlgoHedgeMarket,
-#     CreateTimeInForce,
-#     CreateTimeInForceInstruction,
-#     CreateTwapAlgo,
-# )
-from .grpc_client import GRPCClient
-
+from .graphql_client.get_fills_query import GetFillsQueryFolioHistoricalFills
+from .graphql_client.place_order_mutation import PlaceOrderMutationOms
+from .grpc import *
+from .grpc.client import GrpcClient
+from .grpc.models import definitions as grpc_definitions
+from .utils.nearest_tick import TickRoundMethod
+from .utils.orderbook import update_orderbook_side
 from .utils.price_bands import price_band_pairs
-
-logger = logging.getLogger(__name__)
+from .utils.symbol_parsing import nominative_expiration
 
 
 class AsyncClient:
+    api_key: Optional[str] = None
+    api_secret: Optional[str] = None
+    paper_trading: bool
     graphql_client: GraphQLClient
-    grpc_client: GRPCClient
+    grpc_core: Optional[GrpcClient] = None
+    grpc_marketdata: dict[Venue, GrpcClient] = {}
+    jwt: str | None = None
+    jwt_expiration: datetime | None = None
+
+    l1_books: dict[Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]]
+    l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]]
 
     # ------------------------------------------------------------
-    # Initialization
+    # Initialization and configuration
     # ------------------------------------------------------------
 
     @staticmethod
     async def connect(
         *,
-        api_key: str,
-        api_secret: str,
+        api_key: Optional[str] = None,
+        api_secret: Optional[str] = None,
         paper_trading: bool,
-        host: str = "app.architect.co",
-        grpc_endpoint: str = "cme.marketdata.architect.co",
-        _port: Optional[int] = None,
-        **kwargs: Any,
+        endpoint: str = "https://app.architect.co",
+        graphql_port: Optional[int] = None,
     ) -> "AsyncClient":
         """
-        The main way to create an AsyncClient object.
+        Connect to an Architect installation.
 
-        Args:
-            api_key: API key for the user
-            api_secret: API secret for the user
-            host: Host for the GraphQL server, defaults to "app.architect.co"
-            paper_trading: Whether to use the paper trading environment, defaults to True
-            _port: Port for the GraphQL server, more for debugging purposes, do not set this unless you are sure of the port
-
-        the API key and secret can be generated on the app.architect.co website
-
-        Returns:
-            Client object
-
-        Raises:
-            ValueError: If the API key or secret are not the correct length or contain invalid characters
-
-        For any request, if you get a "GraphQLClientHttpError: HTTP status code: 500" it likely means that your
-        API key and secret are incorrect. Please double check your credentials.
-
-        If you get a "GraphQLClientHttpError: HTTP status code: 400", please contact support so we can fix the function.
-
-        If you get an AttributeError on the grpc_client, it means that the GRPC client has not been initialized
-        likely due to the client not being instantiated with the connect method
+        Raises ValueError if the API key and secret are not the correct length or contain invalid characters.
         """
         if paper_trading:
-            logger.critical(
-                "You are using the paper trading environment. Please make sure to switch to the live environment when you are ready."
-            )
+            COLOR = "\033[30;43m"
+            RESET = "\033[0m"
+            print(f"🧻 {COLOR} YOU ARE IN PAPER TRADING MODE {RESET}")
 
-        async_client = AsyncClient(
+        grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+
+        client = AsyncClient(
             api_key=api_key,
             api_secret=api_secret,
-            host=host,
             paper_trading=paper_trading,
-            _port=_port,
+            grpc_host=grpc_host,
+            grpc_port=grpc_port,
+            graphql_port=graphql_port,
+            use_ssl=use_ssl,
             _i_know_what_i_am_doing=True,
-            **kwargs,
         )
 
-        async_client.grpc_client = GRPCClient(
-            async_client.graphql_client, grpc_endpoint
-        )
-        await async_client.grpc_client.initialize()
-        return async_client
+        logging.info("Exchanging credentials...")
+        await client.refresh_jwt()
+
+        logging.info("Discovering marketdata endpoints...")
+        await client.discover_marketdata()
+
+        return client
 
     def __init__(
         self,
         *,
-        api_key: str,
-        api_secret: str,
-        host: str = "app.architect.co",
-        paper_trading: bool = True,
-        _port: Optional[int] = None,
+        api_key: Optional[str] = None,
+        api_secret: Optional[str] = None,
+        paper_trading: bool,
+        grpc_host: str = "app.architect.co",
+        grpc_port: int,
+        graphql_port: Optional[int] = None,
+        use_ssl: bool = True,
         _i_know_what_i_am_doing: bool = False,
-        **kwargs: Any,
     ):
         """
-        Users should essentially never be using this constructor directly.
-
-        Use the connect method instead.
-        See self.connect for arg explanations
+        Use AsyncClient.connect instead.
         """
-
         if not _i_know_what_i_am_doing:
+            raise ValueError("Use AsyncClient.connect to create an AsyncClient object.")
+
+        if api_key is not None and not re.match(r"^[a-zA-Z0-9]{24}$", api_key):
+            raise ValueError("API key must be exactly 24 alphanumeric characters")
+        if api_secret is not None and not re.match(
+            r"^[a-zA-Z0-9+\/=]{44}$", api_secret
+        ):
             raise ValueError(
-                "Please use the connect method to create an AsyncClient object."
+                "API secret must be a Base64-encoded string, 44 characters long"
             )
 
-        if not api_key.isalnum():
+        if paper_trading and (graphql_port is not None or grpc_port is not None):
             raise ValueError(
-                "API key must be alphanumeric, please double check your credentials."
-            )
-        elif "," in api_key or "," in api_secret:
-            raise ValueError(
-                "API key and secret cannot contain commas, please double check your credentials."
-            )
-        elif " " in api_key or " " in api_secret:
-            raise ValueError(
-                "API key and secret cannot contain spaces, please double check your credentials."
-            )
-        elif len(api_key) != 24 or len(api_secret) != 44:
-            raise ValueError(
-                "API key and secret are not the correct length, please double check your credentials."
+                "If paper_trading is True, graphql_port and grpc_port must be None"
             )
 
-        if _port is None:
+        if graphql_port is None:
             if paper_trading:
-                _port = 5678
+                graphql_port = 5678
             else:
-                _port = 4567
+                graphql_port = 4567
 
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.paper_trading = paper_trading
         self.graphql_client = GraphQLClient(
-            api_key=api_key, api_secret=api_secret, host=host, port=_port, **kwargs
+            host=grpc_host,
+            port=graphql_port,
+            use_tls=use_ssl,
+            api_key=api_key,
+            api_secret=api_secret,
         )
+        self.grpc_core = GrpcClient(host=grpc_host, port=grpc_port, use_ssl=use_ssl)
 
-    async def enable_orderflow(self):
+    async def refresh_jwt(self, force: bool = False):
         """
-        Load and cache product and execution info so that the SDK can send orders.
+        Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
+        If force=True, refresh the JWT unconditionally.
 
-        CR alee: determine if this is better than @functools.lru_cache
+        Query methods on AsyncClient that require auth will call this method internally.
         """
-        pass
+        if not self.api_key or not self.api_secret:
+            raise ValueError("API key and secret not set")
+        if self.grpc_core is None:
+            raise ValueError("gRPC client to Architect not initialized")
+
+        if (
+            force
+            or self.jwt_expiration is None
+            or datetime.now() > self.jwt_expiration - timedelta(minutes=1)
+        ):
+            try:
+                req = CreateJwtRequest(api_key=self.api_key, api_secret=self.api_secret)
+                res: CreateJwtResponse = await self.grpc_core.unary_unary(req)
+                self.jwt = res.jwt
+                # CR alee: actually read the JWT to get the expiration time;
+                # for now, we just "know" that the JWTs are granted for an hour
+                self.jwt_expiration = datetime.now() + timedelta(hours=1)
+            except Exception as e:
+                logging.error("Failed to refresh gRPC credentials: %s", e)
+
+    def set_jwt(self, jwt: str | None, jwt_expiration: datetime | None = None):
+        """
+        Manually set the JWT for gRPC authentication.
+
+        Args:
+            jwt: the JWT to set;
+                None to clear the JWT
+            jwt_expiration: when to expire the JWT
+        """
+        self.jwt = jwt
+        self.jwt_expiration = jwt_expiration
+
+    async def discover_marketdata(self):
+        """
+        Load marketdata endpoints from the server config.
+
+        The Architect core is responsible for telling you where to find marketdata as per
+        its configuration.  You can also manually set marketdata endpoints by calling
+        set_marketdata directly.
+
+        This method is called on AsyncClient.connect.
+        """
+        try:
+            grpc_client = await self.core()
+            req = ConfigRequest()
+            res: ConfigResponse = await grpc_client.unary_unary(req)
+            for venue, endpoint in res.marketdata.items():
+                try:
+                    grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+                    logging.info(
+                        "Setting marketdata endpoint for %s: %s:%d use_ssl=%s",
+                        venue,
+                        grpc_host,
+                        grpc_port,
+                        use_ssl,
+                    )
+                    self.grpc_marketdata[venue] = GrpcClient(
+                        host=grpc_host, port=grpc_port, use_ssl=use_ssl
+                    )
+                except Exception as e:
+                    logging.error("Failed to set marketdata endpoint: %s", e)
+        except Exception as e:
+            logging.error("Failed to get marketdata config: %s", e)
+
+    async def set_marketdata(self, venue: Venue, endpoint: str):
+        """
+        Manually set the marketdata endpoint for a venue.
+        """
+        try:
+            grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+            self.grpc_marketdata[venue] = GrpcClient(
+                host=grpc_host, port=grpc_port, use_ssl=use_ssl
+            )
+        except Exception as e:
+            logging.error("Failed to set marketdata endpoint: %s", e)
+
+    async def marketdata(self, venue: Venue) -> GrpcClient:
+        """
+        Get the marketdata client for a venue.
+        """
+        if venue not in self.grpc_marketdata:
+            raise ValueError(f"Marketdata not configured for venue: {venue}")
+
+        await self.refresh_jwt()
+        self.grpc_marketdata[venue].set_jwt(self.jwt)
+        return self.grpc_marketdata[venue]
+
+    async def core(self) -> GrpcClient:
+        """
+        Get the core client.
+        """
+        if self.grpc_core is None:
+            raise ValueError("gRPC client to Architect not initialized")
+
+        await self.refresh_jwt()
+        self.grpc_core.set_jwt(self.jwt)
+        return self.grpc_core
+
+    async def who_am_i(self) -> tuple[str, str]:
+        """
+        Gets the user_id and user_email for the user that the API key belongs to.
+
+        Returns:
+            (user_id, user_email)
+        """
+        res = await self.graphql_client.user_id_query()
+        return res.user_id, res.user_email
 
     # ------------------------------------------------------------
     # Symbology
     # ------------------------------------------------------------
+
+    async def list_symbols(self, *, marketdata: Optional[Venue] = None) -> list[str]:
+        """
+        List all symbols.
+
+        Args:
+            marketdata: query marketdata endpoint for the specified venue directly;
+                If provided, query the venue's marketdata endpoint directly,
+                instead of the Architect core.  This is sometimes useful for
+                cross-referencing symbols or checking availability.
+        """
+        if marketdata is not None:
+            grpc_client = await self.marketdata(marketdata)
+        else:
+            grpc_client = await self.core()
+        req = SymbolsRequest()
+        res: SymbolsResponse = await grpc_client.unary_unary(req)
+        return res.symbols
 
     async def search_symbols(
         self,
@@ -219,75 +293,70 @@ class AsyncClient:
         limit: int = 20,
     ) -> List[TradableProduct]:
         """
-        Search for symbols in the Architect database.
+        Search for tradable products on Architect.
 
         Args:
-            search_string: a string to search for in the symbol. Can be "*" for wild card search.
+            search_string: a string to search for in the symbol
+                Can be "*" for wild card search.
                 Examples: "ES", "NQ", "GC"
             execution_venue: the execution venue to search in
                 Examples: "CME"
-        Returns:
-            a list of TradableProduct objects
         """
-        markets = (
-            await self.graphql_client.search_symbols_query(
-                search_string=search_string,
-                execution_venue=execution_venue,
-                offset=offset,
-                limit=limit,
-            )
-        ).search_symbols
-
-        return markets
+        res = await self.graphql_client.search_symbols_query(
+            search_string=search_string,
+            execution_venue=execution_venue,
+            offset=offset,
+            limit=limit,
+        )
+        return res.search_symbols
 
     async def get_product_info(self, symbol: str) -> Optional[ProductInfoFields]:
         """
-        Get the product information (product_type, underlying, multiplier, etc.) for a symbol.
+        Get information about a product, e.g. product_type, underlying, multiplier.
 
         Args:
             symbol: the symbol to get information for
+
         Returns:
-            ProductInfoFields object if the symbol exists
+            None if the symbol does not exist
         """
-        info = await self.graphql_client.get_product_info_query(symbol)
-        return info.product_info
+        res = await self.graphql_client.get_product_info_query(symbol)
+        return res.product_info
 
     async def get_product_infos(
         self, symbols: Optional[list[str]]
     ) -> Sequence[ProductInfoFields]:
         """
-        Get the product information (product_type, underlying, multiplier, etc.) for a list of symbols.
+        Get information about products, e.g. product_type, underlying, multiplier.
 
         Args:
-            symbols: the symbols to get information for
+            symbols: the symbols to get information for, or None for all symbols
+
         Returns:
-            a list of ProductInfoFields
-
-        Any duplicate or invalid symbols will be ignored.
-        The order of the symbols in the list will not necessarily be preserved in the output.
-
-        If you want the entire universe of symbols, pass in None
+            Product infos for each symbol.  Not guaranteed to contain all symbols
+            that were asked for, or in the same order; any duplicates or invalid
+            symbols will be ignored.
         """
-        infos = await self.graphql_client.get_product_infos_query(symbols)
-        return infos.product_infos
+        res = await self.graphql_client.get_product_infos_query(symbols)
+        return res.product_infos
 
     async def get_execution_info(
-        self, symbol: TradableProduct, execution_venue: str
+        self, symbol: TradableProduct | str, execution_venue: str
     ) -> Optional[ExecutionInfoFields]:
         """
-        Get the execution information (tick_size, step_size, margin, etc.) for a symbol.
+        Get information about tradable product execution, e.g. tick_size,
+        step_size, margins.
 
         Args:
             symbol: the symbol to get execution information for
             execution_venue: the execution venue e.g. "CME"
 
         Returns:
-            ExecutionInfoFields
-
+            None if the symbol doesn't exist
         """
         try:
             execution_info = await self.graphql_client.get_execution_info_query(
-                symbol, execution_venue
+                TradableProduct(symbol), execution_venue
             )
             return execution_info.execution_info
         except GraphQLClientGraphQLMultiError:
@@ -301,59 +370,60 @@ class AsyncClient:
         execution_venue: Optional[str] = None,
     ) -> Sequence[ExecutionInfoFields]:
         """
-        Get the execution information (tick_size, step_size, etc.) for a list of symbols.
+        Get information about tradable product execution, e.g. tick_size,
+        step_size, margins, for many symbols.
 
         Args:
-            symbols: the symbols to get execution information for
+            symbols: the symbols to get execution information for, or None for all symbols
             execution_venue: the execution venue e.g. "CME"
 
         Returns:
-            a list of ExecutionInfoFields
-
-        If you want the entire universe of execution infos, pass in None
+            Execution infos for each symbol.  Not guaranteed to contain all symbols
+            that were asked for, or in the same order; any duplicates or invalid
+            symbols will be ignored.
         """
-        execution_infos = await self.graphql_client.get_execution_infos_query(
+        res = await self.graphql_client.get_execution_infos_query(
             symbols, execution_venue
         )
-        return execution_infos.execution_infos
+        return res.execution_infos
 
     async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
         """
+        @deprecated(reason="Use get_product_info instead; first_notice_date is now a field")
+
         Get the first notice date for a CME future.
 
         Args:
             symbol: the symbol to get the first notice date for a CME future
 
         Returns:
-            the first notice date as a date object if it exists
+            The first notice date as a date object if it exists
         """
-        notice = await self.graphql_client.get_first_notice_date_query(symbol)
-        if notice is None or notice.product_info is None:
+        res = await self.graphql_client.get_first_notice_date_query(symbol)
+        if res is None or res.product_info is None:
             return None
-        return notice.product_info.first_notice_date
+        return res.product_info.first_notice_date
 
     async def get_future_series(self, series_symbol: str) -> list[str]:
         """
-        Get the series of futures for a given series symbol.
+        List all futures in a given series.
 
         Args:
-            series_symbol: the symbol to get the series for
-                e.g. ES CME Futures" would yield a list of all the ES futures
+            series_symbol: the futures series
+                e.g. "ES CME Futures" would yield a list of all the ES futures
         Returns:
-            a list of symbols in the series
+            List of futures products
         """
-        assert (
-            " " in series_symbol
-        ), 'series_symbol must have the venue in it, e.g. "ES CME Futures" or "GC CME Futures"'
-
-        futures_series = await self.graphql_client.get_future_series_query(
-            series_symbol
-        )
-        return futures_series.futures_series
+        if not series_symbol.endswith("Futures"):
+            raise ValueError("series_symbol must end with 'Futures'")
+        res = await self.graphql_client.get_future_series_query(series_symbol)
+        return res.futures_series
 
     @staticmethod
-    def get_expiration_from_CME_name(name: str) -> date:
+    def get_expiration_from_CME_name(name: str) -> Optional[date]:
         """
+        @deprecated(reason="Use utils.symbol_parsing.nominative_expiration instead")
+
         Get the expiration date from a CME future name.
 
         Args:
@@ -362,12 +432,13 @@ class AsyncClient:
         Returns:
             the expiration date as a date object
         """
-        _, d, *_ = name.split(" ")
-        return datetime.strptime(d, "%Y%m%d").date()
+        return nominative_expiration(name)
 
     async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
         """
-        Get the futures in a series from the CME.
+        @deprecated(reason="Use get_future_series instead")
+
+        List all futures in a given CME series.
 
         Args:
             series: the series to get the futures for
@@ -383,33 +454,28 @@ class AsyncClient:
              ...
             ]
         """
-        markets = await self.get_future_series(
-            series,
-        )
-
-        filtered_markets = [
-            (self.get_expiration_from_CME_name(market), market) for market in markets
-        ]
-
-        filtered_markets.sort(key=lambda x: x[0])
-
-        return filtered_markets
+        futures = await self.get_future_series(series)
+        exp_and_futures = []
+        for future in futures:
+            exp = nominative_expiration(future)
+            if exp is not None:
+                exp_and_futures.append((exp, future))
+        exp_and_futures.sort(key=lambda x: x[0])
+        return exp_and_futures
 
     async def get_cme_future_from_root_month_year(
         self, root: str, month: int, year: int
     ) -> str:
         """
         Get the symbol for a CME future from the root, month, and year.
+        This is a simple wrapper around search_symbols.
 
         Args:
             root: the root symbol for the future e.g. "ES"
             month: the month of the future
             year: the year of the future
         Returns:
-            the symbol for the future
-
-            Errors if the result is not unique
-            This is a simple wrapper around search_symbols
+            The future symbol if it exists and is unique.
         """
         [market] = [
             market
@@ -419,23 +485,360 @@ class AsyncClient:
             )
             if market.startswith(f"{root} {year}{month:02d}")
         ]
-
         return market
 
     # ------------------------------------------------------------
-    # Account Management
+    # Marketdata
     # ------------------------------------------------------------
 
-    async def who_am_i(self) -> tuple[str, str]:
+    async def get_market_status(
+        self, symbol: TradableProduct | str, venue: Venue
+    ) -> MarketStatus:
         """
-        Gets the user_id and user_email for the user that the API key belongs to.
+        @deprecated(reason="Use get_future_series instead")
 
+        Returns market status for symbol (e.g. if it's currently quoting or trading).
+
+        Args:
+            symbol: the symbol to get the market status for, e.g. "ES 20250321 CME Future/USD"
+            venue: the venue that the symbol is traded at, e.g. CME
+        """
+        grpc_client = await self.marketdata(venue)
+        req = MarketStatusRequest(symbol=str(symbol), venue=venue)
+        res: MarketStatus = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_market_snapshot(
+        self, symbol: TradableProduct | str, venue: Venue
+    ) -> L1BookSnapshot:
+        """
+        @deprecated(reason="Use get_l1_snapshot instead")
+
+        This is an alias for l1_book_snapshot.
+
+        Args:
+            symbol: the symbol to get the market snapshot for, e.g. "ES 20250321 CME Future/USD"
+            venue: the venue that the symbol is traded at, e.g. CME
         Returns:
-            (user_id, user_email)
+            MarketTickerFields for the symbol
         """
-        user_id = await self.graphql_client.user_id_query()
+        return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
-        return user_id.user_id, user_id.user_email
+    async def get_market_snapshots(
+        self, symbols: list[TradableProduct | str], venue: Venue
+    ) -> Sequence[L1BookSnapshot]:
+        """
+        @deprecated(reason="Use get_l1_snapshots instead")
+
+            This is an alias for l1_book_snapshots.
+
+            Args:
+                symbols: the symbols to get the market snapshots for
+                venue: the venue that the symbols are traded at
+        """
+        return await self.get_l1_book_snapshots(
+            venue=venue,
+            symbols=symbols,  # type: ignore
+        )
+
+    async def get_historical_candles(
+        self,
+        symbol: TradableProduct | str,
+        venue: Venue,
+        candle_width: CandleWidth,
+        start: datetime,
+        end: datetime,
+    ) -> List[Candle]:
+        """
+        Gets historical candles for a symbol.
+
+        Args:
+            symbol: the symbol to get the candles for
+            venue: the venue of the symbol
+            candle_width: the width of the candles
+            start: the start date to get candles for
+            end: the end date to get candles for
+        """
+        grpc_client = await self.marketdata(venue)
+        req = HistoricalCandlesRequest(
+            symbol=str(symbol),
+            candle_width=candle_width,
+            start_date=start,
+            end_date=end,
+        )
+        res: HistoricalCandlesResponse = await grpc_client.unary_unary(req)
+        return res.candles
+
+    async def get_l1_book_snapshot(
+        self,
+        symbol: TradableProduct | str,
+        venue: Venue,
+    ) -> L1BookSnapshot:
+        """
+        Gets the L1 book snapshot for a symbol.
+
+        Args:
+            symbol: the symbol to get the l1 book snapshot for
+            venue: the venue that the symbol is traded at
+        """
+        grpc_client = await self.marketdata(venue)
+        req = L1BookSnapshotRequest(symbol=str(symbol), venue=venue)
+        res: L1BookSnapshot = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_l1_book_snapshots(
+        self, symbols: list[TradableProduct | str], venue: Venue
+    ) -> Sequence[L1BookSnapshot]:
+        """
+        Gets the L1 book snapshots for a list of symbols.
+
+        Args:
+            symbols: the symbols to get the l1 book snapshots for
+            venue: the venue that the symbols are traded at
+        """
+        grpc_client = await self.marketdata(venue)
+        req = L1BookSnapshotsRequest(symbols=symbols)
+        res: ArrayOfL1BookSnapshot = await grpc_client.unary_unary(req)  # type: ignore
+        return res
+
+    async def get_l2_book_snapshot(
+        self, symbol: TradableProduct | str, venue: Venue
+    ) -> L2BookSnapshot:
+        """
+        Gets the L2 book snapshot for a symbol.
+
+        Args:
+            symbol: the symbol to get the l2 book snapshot for
+            venue: the venue that the symbol is traded at
+        """
+        grpc_client = await self.marketdata(venue)
+        req = L2BookSnapshotRequest(symbol=str(symbol), venue=venue)
+        res: L2BookSnapshot = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_ticker(self, symbol: TradableProduct | str, venue: Venue) -> Ticker:
+        """
+        Gets the ticker for a symbol.
+        """
+        grpc_client = await self.marketdata(venue)
+        req = TickerRequest(symbol=str(symbol), venue=venue)
+        res: Ticker = await grpc_client.unary_unary(req)
+        return res
+
+    async def stream_l1_book_snapshots(
+        self, symbols: Sequence[TradableProduct | str], venue: Venue
+    ) -> AsyncIterator[L1BookSnapshot]:
+        """
+        Subscribe to the stream of L1BookSnapshots for a symbol.
+
+        Args:
+            symbols: the symbols to subscribe to;
+                If symbols=None, subscribe to all symbols available for the venue.
+            venue: the venue to subscribe to
+        """
+        grpc_client = await self.marketdata(venue)
+        req = SubscribeL1BookSnapshotsRequest(symbols=list(symbols), venue=venue)
+        return grpc_client.unary_stream(req)
+
+    async def stream_l2_book_updates(
+        self, symbol: TradableProduct | str, venue: Venue
+    ) -> AsyncIterator[L2BookUpdate]:
+        """
+        Subscribe to the stream of L2BookUpdates for a symbol.
+
+        This stream is a diff stream; to construct and maintain the actual state of
+        the L2 book, apply the updates stream using the method described.
+
+        Args:
+            symbol: the symbol to subscribe to
+            venue: the marketdata venue
+        """
+        grpc_client = await self.marketdata(venue)
+        req = SubscribeL2BookUpdatesRequest(symbol=str(symbol), venue=venue)
+        return grpc_client.unary_stream(req)  # type: ignore
+
+    async def subscribe_l1_book(
+        self, symbol: TradableProduct | str, venue: Venue
+    ) -> L1BookSnapshot:
+        """
+        Subscribe to the L1 stream for a symbol in the background.
+
+        If a subscription is already active, the existing reference will be
+        returned; otherwise, a new subscription will be created.
+
+        Snapshots will have an initial value of timestamp=0 and bid/ask=None.
+
+        Args:
+            symbol: the symbol to subscribe to
+            venue: the marketdata venue
+
+        Return:
+            An L1 book object that is constantly updating in the background.
+        """
+        symbol = TradableProduct(symbol)
+
+        if venue in self.l1_books:
+            if symbol in self.l1_books[venue]:
+                return self.l1_books[venue][symbol][0]
+        else:
+            self.l1_books[venue] = {}
+
+        grpc_client = await self.marketdata(venue)
+        book = L1BookSnapshot(symbol, 0, 0)
+        self.l1_books[venue][symbol] = (
+            book,
+            asyncio.create_task(
+                self.__subscribe_l1_book_task(symbol, venue, grpc_client, book)
+            ),
+        )
+        return book
+
+    async def unsubscribe_l1_book(self, symbol: TradableProduct | str, venue: Venue):
+        symbol = TradableProduct(symbol)
+        try:
+            task = self.l1_books[venue][symbol][1]
+            task.cancel()
+        except Exception as e:
+            logging.error(
+                f"Error unsubscribing from L1 book for {symbol}, venue {venue}: {e}"
+            )
+        finally:
+            if venue in self.l1_books and symbol in self.l1_books[venue]:
+                del self.l1_books[venue][symbol]
+
+    async def __subscribe_l1_book_task(
+        self,
+        symbol: TradableProduct,
+        venue: Venue,
+        grpc_client: GrpcClient,
+        book: L1BookSnapshot,
+    ):
+        try:
+            req = SubscribeL1BookSnapshotsRequest(symbols=[symbol], venue=venue)
+            stream = grpc_client.unary_stream(req)
+            async for snap in stream:
+                book.tn = snap.tn
+                book.ts = snap.ts
+                book.a = snap.a
+                book.b = snap.b
+                book.rt = snap.rt
+                book.rtn = snap.rtn
+        except Exception as e:
+            logging.error(
+                f"Error subscribing to L1 book for {symbol}, venue {venue}: {e}"
+            )
+        finally:
+            del self.l1_books[venue][symbol]
+
+    async def subscribe_l2_book(
+        self,
+        symbol: TradableProduct | str,
+        venue: Venue,
+    ) -> L2BookSnapshot:
+        """
+        Subscribe to the L2 stream for a symbol in the background.
+
+        If a subscription is already active, the existing reference will be
+        returned; otherwise, a new subscription will be created.
+
+        Snapshots will have an initial value of timestamp=0 and bids/asks=[].
+
+        Args:
+            symbol: the symbol to subscribe to
+            venue: the marketdata venue
+
+        Return:
+            An L2 book object that is constantly updating in the background.
+        """
+        symbol = TradableProduct(symbol)
+
+        if venue in self.l2_books:
+            if symbol in self.l2_books[venue]:
+                return self.l2_books[venue][symbol][0]
+        else:
+            self.l2_books[venue] = {}
+
+        grpc_client = await self.marketdata(venue)
+        book = L2BookSnapshot([], [], 0, 0, 0, 0)
+        self.l2_books[venue][symbol] = (
+            book,
+            asyncio.create_task(
+                self.__subscribe_l2_book_task(symbol, venue, grpc_client, book)
+            ),
+        )
+        return book
+
+    async def __subscribe_l2_book_task(
+        self,
+        symbol: TradableProduct,
+        venue: Venue,
+        grpc_client: GrpcClient,
+        book: L2BookSnapshot,
+    ):
+        try:
+            req = SubscribeL2BookUpdatesRequest(symbol=str(symbol), venue=venue)
+            stream = grpc_client.unary_stream(req)  # type: ignore
+            async for up in stream:
+                if isinstance(up, L2BookDiff):
+                    if (
+                        up.sequence_id != book.sequence_id
+                        or up.sequence_number != book.sequence_number + 1
+                    ):
+                        raise ValueError(
+                            f"Received update out-of-order for L2 book: {symbol}"
+                        )
+                    book.sid = up.sid
+                    book.sn = up.sn
+                    book.ts = up.ts
+                    book.tn = up.tn
+                    for px, sz in up.bids:
+                        update_orderbook_side(book.bids, px, sz, ascending=False)
+                    for px, sz in up.asks:
+                        update_orderbook_side(book.asks, px, sz, ascending=True)
+                elif isinstance(up, L2BookSnapshot):
+                    book.sid = up.sid
+                    book.sn = up.sn
+                    book.ts = up.ts
+                    book.tn = up.tn
+                    book.a = up.a
+                    book.b = up.b
+        except Exception as e:
+            logging.error(
+                f"Error subscribing to L2 book for {symbol}, venue {venue}: {e}"
+            )
+        finally:
+            del self.l2_books[venue][symbol]
+
+    async def stream_trades(
+        self, symbol: TradableProduct | str, venue: Venue
+    ) -> AsyncIterator[Trade]:
+        """
+        Subscribe to a stream of trades for a symbol.
+        """
+        grpc_client = await self.marketdata(venue)
+        req = SubscribeTradesRequest(symbol=str(symbol), venue=venue)
+        return grpc_client.unary_stream(req)
+
+    async def stream_candles(
+        self,
+        symbol: TradableProduct | str,
+        venue: Venue,
+        candle_widths: Optional[list[CandleWidth]],
+    ) -> AsyncIterator[Candle]:
+        """
+        Subscribe to a stream of candles for a symbol.
+        """
+        grpc_client = await self.marketdata(venue)
+        req = SubscribeCandlesRequest(
+            symbol=str(symbol),
+            venue=venue,
+            candle_widths=candle_widths,
+        )
+        return grpc_client.unary_stream(req)
+
+    # ------------------------------------------------------------
+    # Portfolio management
+    # ------------------------------------------------------------
 
     async def list_accounts(self) -> Sequence[AccountWithPermissionsFields]:
         """
@@ -443,23 +846,35 @@ class AsyncClient:
 
         Returns:
             a list of AccountWithPermissionsFields for the user that the API key belongs to
+            a list of AccountWithPermissions for the user that the API key belongs to
             (use who_am_i to get the user_id / email)
         """
-        accounts = await self.graphql_client.list_accounts_query()
+        res = await self.graphql_client.list_accounts_query()
+        return res.accounts
+
+        """
+    async def list_accounts(self) -> List[grpc_definitions.AccountWithPermissions]:
+        request = AccountsRequest()
+        accounts = await self.grpc_client.request(request)
         return accounts.accounts
+        """
 
     async def get_account_summary(self, account: str) -> AccountSummaryFields:
         """
-        Gets the account summary for the given account.
+        Get account summary, including balances, positions, pnls, etc.
 
         Args:
-            account: the account to get the summary for,
-                can be the account id( (a UUID) or the account name (e.g. CQG:00000)
-        Returns:
-            AccountSummaryFields for the account
+            account: account uuid or name
+                Examples: "00000000-0000-0000-0000-000000000000", "STONEX:000000/JDoe"
         """
-        summary = await self.graphql_client.get_account_summary_query(account=account)
-        return summary.account_summary
+        res = await self.graphql_client.get_account_summary_query(account=account)
+        return res.account_summary
+        """
+        async def get_account_summary(self, account: str) -> AccountSummary:
+            request = AccountSummaryRequest(account=account)
+            account_summary = await self.grpc_client.request(request)
+            return account_summary
+        """
 
     async def get_account_summaries(
         self,
@@ -467,21 +882,31 @@ class AsyncClient:
         trader: Optional[str] = None,
     ) -> Sequence[AccountSummaryFields]:
         """
-        Gets the account summaries for the given accounts and trader.
+        Get account summaries for accounts matching the filters.
 
         Args:
-            accounts: a list of account ids to get summaries for,
-                can be the account id( (a UUID) or the account name (e.g. CQG:00000)
-            trader: the trader / userId to get summaries for
+            accounts: list of account uuids or names
+            trader: if specified, return summaries for all accounts for this trader
 
-            if both arguments are given, the accounts are all appended and returned together
-        Returns:
-            a list of AccountSummary for the accounts
+        If both arguments are given, the union of matching accounts are returned.
         """
-        summaries = await self.graphql_client.get_account_summaries_query(
+        res = await self.graphql_client.get_account_summaries_query(
             trader=trader, accounts=accounts
         )
-        return summaries.account_summaries
+        return res.account_summaries
+        """
+    async def get_account_summaries(
+        self,
+        accounts: Optional[list[str]] = None,
+        trader: Optional[str] = None,
+    ) -> list[AccountSummary]:
+        request = AccountSummariesRequest(
+            accounts=accounts,
+            trader=trader,
+        )
+        account_summaries = await self.grpc_client.request(request)
+        return account_summaries.account_summaries        
+        """
 
     async def get_account_history(
         self,
@@ -490,19 +915,43 @@ class AsyncClient:
         to_exclusive: Optional[datetime] = None,
     ) -> Sequence[AccountSummaryFields]:
         """
-        Gets the account history for the given account and dates.
-
-        Returns:
-            a list of AccountSummaryFields for the account for the given dates
-            use timestamp to get the time of the of the summary
+        Get historical sequence of account summaries for the given account.
         """
-        history = await self.graphql_client.get_account_history_query(
+        res = await self.graphql_client.get_account_history_query(
             account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
         )
-        return history.account_history
+        return res.account_history
+
+        """
+    async def get_account_history(
+        self,
+        account: str,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
+    ) -> list[AccountSummary]:        
+        if from_inclusive is not None:
+            assert from_inclusive.tzinfo is timezone.utc, (
+                "from_inclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
+        if to_exclusive is not None:
+            assert to_exclusive.tzinfo is timezone.utc, (
+                "to_exclusive must be a utc datetime:\n"
+                "for example datetime.now(timezone.utc) or \n"
+                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
+            )
+
+        request = AccountHistoryRequest(
+            account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
+        )
+        history = await self.grpc_client.request(request)
+        return history.history
+        """
 
     # ------------------------------------------------------------
-    # Order Management
+    # Order management
     # ------------------------------------------------------------
 
     async def get_open_orders(
@@ -525,12 +974,10 @@ class AsyncClient:
             symbol: the symbol to get orders for
             parent_order_id: the parent order id to get orders for
 
-            these filters are combinewd via OR statements so if you pass
-            in multiple arguments, it will return the union of the results
         Returns:
-            a list of OrderFields of the open orders that match the union of the filters
+            Open orders that match the union of the filters
         """
-        orders = await self.graphql_client.get_open_orders_query(
+        res = await self.graphql_client.get_open_orders_query(
             venue=venue,
             account=account,
             trader=trader,
@@ -538,17 +985,16 @@ class AsyncClient:
             parent_order_id=parent_order_id,
             order_ids=order_ids,
         )
-        return orders.open_orders
+        return res.open_orders
 
     async def get_all_open_orders(self) -> Sequence[OrderFields]:
         """
-        Returns a list of all open orders for the user.
+        @deprecated(reason="Use get_open_orders with no parameters instead")
 
-        Returns:
-            a list of OrderFields of all the open orders for the user
+        Returns a list of all open orders for the authenticated user.
         """
-        orders = await self.graphql_client.get_open_orders_query()
-        return orders.open_orders
+        res = await self.graphql_client.get_open_orders_query()
+        return res.open_orders
 
     async def get_historical_orders(
         self,
@@ -560,24 +1006,25 @@ class AsyncClient:
         parent_order_id: Optional[str] = None,
     ) -> Sequence[OrderFields]:
         """
-        Gets the historical orders that match the filters.
+        Returns a list of all historical orders that match the filters.
+
+        Historical orders are orders that are not open, having been filled,
+        canceled, expired, or outed.
 
         Args:
             order_ids: a list of order ids to get
             from_inclusive: the start date to get orders for
             to_exclusive: the end date to get orders for
             venue: the venue to get orders for, e.g. CME
-            account: the account to get orders for,
-                can be the account id( (a UUID) or the account name (e.g. CQG:00000)
+            account: account uuid or name
             parent_order_id: the parent order id to get orders for
         Returns:
-            a list of OrderFields of the historical orders that match the filters
+            Historical orders that match the union of the filters.
 
-            either the order_ids parameter needs to be filled
-            OR
-            the from_inclusive and to_exclusive parameters need to be filled
+        If order_ids is not specified, then from_inclusive and to_exclusive
+        MUST be specified.
         """
-        orders = await self.graphql_client.get_historical_orders_query(
+        res = await self.graphql_client.get_historical_orders_query(
             order_ids=order_ids,
             venue=venue,
             account=account,
@@ -585,54 +1032,41 @@ class AsyncClient:
             from_inclusive=from_inclusive,
             to_exclusive=to_exclusive,
         )
-        return orders.historical_orders
+        return res.historical_orders
 
     async def get_order(self, order_id: str) -> Optional[OrderFields]:
         """
-        Returns the OrderFields object for the specified order.
-        Useful for looking at past sent orders.
+        Returns the specified order.  Useful for looking at past sent orders.
+        Queries open_orders first, then queries historical_orders.
 
         Args:
             order_id: the order id to get
-        Returns:
-            the OrderFields object for the order
-
-        Queries open_orders first then queries historical_orders
         """
-        open_orders = await self.graphql_client.get_open_orders_query(
-            order_ids=[order_id]
-        )
-
-        for open_order in open_orders.open_orders:
+        res = await self.graphql_client.get_open_orders_query(order_ids=[order_id])
+        for open_order in res.open_orders:
             if open_order.id == order_id:
                 return open_order
 
-        historical_orders = await self.graphql_client.get_historical_orders_query(
+        res = await self.graphql_client.get_historical_orders_query(
             order_ids=[order_id]
         )
-
-        if historical_orders.historical_orders:
-            return historical_orders.historical_orders[0]
+        if res.historical_orders and len(res.historical_orders) > 0:
+            return res.historical_orders[0]
 
     async def get_orders(self, order_ids: list[str]) -> list[Optional[OrderFields]]:
         """
-        Returns a list of OrderFields objects for the specified orders.
-        Useful for looking at past sent orders.
+        Returns the specified orders.  Useful for looking at past sent orders.
+        Plural form of get_order.
 
         Args:
             order_ids: a list of order ids to get
-        Returns:
-            a list of OrderFields objects for the orders
-
-        Plural form of get_order
         """
         orders_dict: dict[str, Optional[OrderFields]] = {
             order_id: None for order_id in order_ids
         }
 
-        open_orders = (
-            await self.graphql_client.get_open_orders_query(order_ids=order_ids)
-        ).open_orders
+        res = await self.graphql_client.get_open_orders_query(order_ids=order_ids)
+        open_orders = res.open_orders
         for open_order in open_orders:
             orders_dict[open_order.id] = open_order
 
@@ -640,11 +1074,10 @@ class AsyncClient:
             order_id for order_id in order_ids if orders_dict[order_id] is None
         ]
 
-        historical_orders = (
-            await self.graphql_client.get_historical_orders_query(
-                order_ids=not_open_order_ids
-            )
-        ).historical_orders
+        res = await self.graphql_client.get_historical_orders_query(
+            order_ids=not_open_order_ids
+        )
+        historical_orders = res.historical_orders
         for historical_order in historical_orders:
             orders_dict[historical_order.id] = historical_order
 
@@ -659,300 +1092,85 @@ class AsyncClient:
         order_id: Optional[str] = None,
     ) -> GetFillsQueryFolioHistoricalFills:
         """
-        Returns a list of fills for the given filters.
+        Returns all fills matching the given filters.
 
         Args:
             from_inclusive: the start date to get fills for
             to_exclusive: the end date to get fills for
             venue: the venue to get fills for, e.g. "CME"
-            account: the account to get fills for,
-                can be the account id( (a UUID) or the account name (e.g. CQG:00000)
+            account: account uuid or name
             order_id: the order id to get fills for
-        Returns:
-            a list of GetFillsQueryFolioHistoricalFills
         """
-        fills = await self.graphql_client.get_fills_query(
+        res = await self.graphql_client.get_fills_query(
             venue, account, order_id, from_inclusive, to_exclusive
         )
-        return fills.historical_fills
+        return res.historical_fills
+
+    async def orderflow(
+        self,
+        request_iterator: AsyncIterator[OrderflowRequest],
+    ) -> AsyncIterator[Orderflow]:
+        """
+        A two-way channel for both order entry and listening to order updates (fills, acks, outs, etc.).
+
+        This is considered the most efficient way to trade in this SDK.
+
+        Example:
+            See test_orderflow.py for an example.
+
+        This WILL block the event loop until the stream is closed.
+        """
+        grpc_client = await self.core()
+        decoder = grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
+        stub = grpc_client.channel.stream_stream(
+            OrderflowRequest_route,
+            request_serializer=grpc_client.encoder().encode,
+            response_deserializer=decoder.decode,
+        )
+        call = stub(
+            request_iterator, metadata=(("authorization", f"Bearer {grpc_client.jwt}"),)
+        )
+        async for update in call:
+            yield update
+
+    async def stream_orderflow(
+        self,
+        account: Optional[grpc_definitions.AccountIdOrName] = None,
+        execution_venue: Optional[str] = None,
+        trader: Optional[grpc_definitions.TraderIdOrEmail] = None,
+    ) -> AsyncIterator[Orderflow]:
+        """
+        A stream for listening to order updates (fills, acks, outs, etc.).
+
+        Example:
+            ```python
+            request = SubscribeOrderflowRequest.new()
+            async for of in client.subscribe_orderflow_stream(request):
+                print(of)
+            ```
+
+        This WILL block the event loop until the stream is closed.
+        """
+        grpc_client = await self.core()
+        request: SubscribeOrderflowRequest = SubscribeOrderflowRequest(
+            account=account, execution_venue=execution_venue, trader=trader
+        )
+        grpc_client = await self.core()
+        decoder = grpc_client.get_decoder(SubscribeOrderflowRequest)
+        stub = grpc_client.channel.unary_stream(
+            SubscribeOrderflowRequest.get_route(),
+            request_serializer=grpc_client.encoder().encode,
+            response_deserializer=decoder.decode,
+        )
+        call = stub(request, metadata=(("authorization", f"Bearer {grpc_client.jwt}"),))
+        async for update in call:
+            yield update
 
     # ------------------------------------------------------------
-    # Market Data
+    # Order entry
     # ------------------------------------------------------------
 
-    async def get_market_status(
-        self, symbol: TradableProduct, venue: str
-    ) -> MarketStatusFields:
-        """
-        Returns market status for symbol (ie if it is quoting and trading).
-
-        Args:
-            symbol: the symbol to get the market status for, e.g. "ES 20250321 CME Future/USD"
-            venue: the venue that the symbol is traded at, e.g. CME
-        Returns:
-            MarketStatusFields for the symbol
-        """
-        market_status = await self.graphql_client.get_market_status_query(symbol, venue)
-        return market_status.market_status
-
-    async def get_market_snapshot(
-        self, symbol: TradableProduct | str, venue: str
-    ) -> MarketTickerFields:
-        """
-        This is an alias for l1_book_snapshot.
-
-        Args:
-            symbol: the symbol to get the market snapshot for, e.g. "ES 20250321 CME Future/USD"
-            venue: the venue that the symbol is traded at, e.g. CME
-        Returns:
-            MarketTickerFields for the symbol
-        """
-        return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
-
-    async def get_market_snapshots(
-        self, symbols: list[TradableProduct | str], venue: str
-    ) -> Sequence[MarketTickerFields]:
-        """
-        This is an alias for l1_book_snapshot.
-
-        Args:
-            symbols: the symbols to get the market snapshots for
-            venue: the venue that the symbols are traded at
-        Returns:
-            a list of MarketTickerFields for the symbols
-        """
-        return await self.get_l1_book_snapshots(
-            venue=venue, symbols=symbols  # type: ignore
-        )
-
-    async def get_historical_candles(
-        self,
-        symbol: str,
-        candle_width: grpc_definitions.CandleWidth,
-        start: datetime,
-        end: datetime,
-    ) -> HistoricalCandlesResponse:
-        """
-        Gets the historical candles for a symbol.
-
-        Args:
-            symbol: the symbol to get the candles for
-            venue: the venue of the symbol
-            candle_width: the width of the candles
-            start: the start date to get candles for
-            end: the end date to get candles for
-        Returns:
-            a list of CandleFields for the specified candles
-        """
-        request = HistoricalCandlesRequest(
-            symbol=symbol,
-            candle_width=candle_width,
-            start_date=start,
-            end_date=end,
-        )
-
-        return await self.grpc_client.request(request)
-
-    async def get_l1_book_snapshot(
-        self,
-        symbol: str,
-        venue: str,
-    ) -> MarketTickerFields:
-        """
-        Gets the L1 book snapshot for a symbol.
-
-        Args:
-            symbol: the symbol to get the l1 book snapshot for
-            venue: the venue that the symbol is traded at
-        Returns:
-            MarketTickerFields for the symbol
-        """
-        snapshot = await self.graphql_client.get_l_1_book_snapshot_query(
-            symbol=symbol, venue=venue
-        )
-        return snapshot.ticker
-
-    async def get_l1_book_snapshots(
-        self, symbols: list[str], venue: str
-    ) -> Sequence[MarketTickerFields]:
-        """
-        Gets the L1 book snapshots for a list of symbols.
-
-        Args:
-            symbols: the symbols to get the l1 book snapshots for
-            venue: the venue that the symbols are traded at
-        Returns:
-            a list of MarketTickerFields for the symbols
-        """
-        snapshot = await self.graphql_client.get_l_1_book_snapshots_query(
-            venue=venue, symbols=symbols
-        )
-        return snapshot.tickers
-
-    async def get_l2_book_snapshot(self, symbol: str, venue: str) -> L2BookFields:
-        """
-        Gets the L2 book snapshot for a symbol.
-
-        Args:
-            symbol: the symbol to get the l2 book snapshot for
-            venue: the venue that the symbol is traded at
-        Returns:
-            L2BookFields for the symbol
-
-            Note: this does NOT update, it is a snapshot at a given time
-            For an object that updates, use subscribe_l2_book
-        """
-        l2_book = await self.graphql_client.get_l_2_book_snapshot_query(
-            symbol=symbol, venue=venue
-        )
-        return l2_book.l_2_book_snapshot
-
-    async def subscribe_l1_book_stream(
-        self, symbols: list[TradableProduct | str], venue: str
-    ) -> AsyncIterator[L1BookSnapshot]:
-        """
-        Subscribe to the stream of L1BookSnapshots for a symbol.
-
-        Args:
-            symbol: the symbol to subscribe to
-            venue: the venue to subscribe to
-        Returns:
-            an async iterator that yields L1BookSnapshot, representing the l1 book updates
-        """
-        async for snapshot in await self.grpc_client.subscribe_l1_books_stream(
-            symbols=[str(s) for s in symbols]
-        ):
-            yield snapshot
-
-    async def subscribe_l2_book_stream(
-        self, symbol: TradableProduct | str, venue: str
-    ) -> AsyncIterator[L2BookUpdate]:
-        """
-        Subscribe to the stream of L2BookUpdates for a symbol.
-
-        IMPORTANT: note that the Snapshot is a different type than
-        L2BookSnapshot
-        Args:
-            symbol: the symbol to subscribe to
-            venue: the venue to subscribe to
-        Returns:
-            an async iterator that yields L2BookFields
-            L2BookFields is either a Snapshot or a Diff
-            See the grpc_client code for how to handle the different types
-        """
-        async for snapshot in self.grpc_client.subscribe_l2_books_stream(
-            symbol=symbol, venue=venue
-        ):
-            yield snapshot
-
-    async def subscribe_l1_book(
-        self, symbols: list[TradableProduct]
-    ) -> list[L1BookSnapshot]:
-        """
-        Returns a L1BookSnapshot object that is constantly updating in the background.
-
-        Args:
-            symbols: the symbols to subscribe to
-        Return:
-            a list of L1BookSnapshot objects that are constantly updating in the background
-            For the duration of the program, the client will be subscribed to the stream
-            and be updating the L1BookSnapshot.
-
-            IMPORTANT: The L1BookSnapshot will be initialized with
-            a timestamp (field tn and ts) of 0
-            along with None for bid and ask
-
-            The reference to the object should be kept, but can also be referenced via
-            client.grpc_client.l1_books.get(symbol)
-
-        If you want direct access to the stream to do on_update type code, you can
-        call client.grpc_client.stream_l1_books
-        """
-        books = self.grpc_client.initialize_l1_books(symbols)
-        asyncio.create_task(self.grpc_client.watch_l1_books(symbols=symbols))
-        i = 0
-        while not all(book.ts > 0 for book in books) and i < 10:
-            await asyncio.sleep(0.2)
-            i += 1
-        if i == 10:
-            raise ValueError(
-                f"Could not get L1 books for {symbols}. Check if market is quoting via client.get_market_status."
-            )
-
-        return books
-
-    async def subscribe_l2_book(
-        self,
-        symbol: TradableProduct | str,
-        venue: Optional[str],
-    ) -> L2BookSnapshot:
-        """
-        Returns a L2BookSnapshot object that is constantly updating in the background.
-
-        Args:
-            symbols: the symbols to subscribe to
-        Return:
-            a list of L2BookSnapshot object that is constantly updating in the background
-            For the duration of the program, the client will be subscribed to the stream
-            and be updating the L2BookSnapshot.
-
-            IMPORTANT: The LBBookSnapshot will be initialized with
-            a timestamp (field tn and ts) of 0
-            along with None for bid and ask
-
-            The reference to the object should be kept, but can also be referenced via
-            client.grpc_client.l1_books.get(symbol)
-
-        If you want direct access to the stream to do on_update type code, you can
-        call client.grpc_client.stream_l2_book
-        """
-        book = self.grpc_client.initialize_l2_book(symbol, venue)
-        asyncio.create_task(self.grpc_client.watch_l2_book(symbol, venue))
-        i = 0
-        while book.ts == 0 and i < 10:
-            await asyncio.sleep(0.2)
-            i += 1
-        if book.ts == 0:
-            if venue:
-                market_status = await self.get_market_status(symbol, venue)
-                if not market_status.is_quoting:
-                    raise ValueError(
-                        f"Market {symbol} is currently closed, cannot get L2."
-                    )
-            raise ValueError(f"Could not get L2 book for {symbol}.")
-
-        return book
-
-    def subscribe_trades_stream(
-        self, symbol: TradableProduct | str, venue: Optional[str]
-    ) -> AsyncIterator[Trade]:
-        """
-        Subscribe to a stream of trades for a symbol.
-        """
-        request = SubscribeTradesRequest(symbol=symbol, venue=venue)
-        return self.grpc_client.subscribe(request)
-
-    def subscribe_candles_stream(
-        self,
-        symbol: TradableProduct | str,
-        venue: Optional[str],
-        candle_widths: Optional[list[grpc_definitions.CandleWidth]],
-    ) -> AsyncIterator[Candle]:
-        """
-        Subscribe to a stream of candles for a symbol.
-        """
-        request = SubscribeCandlesRequest(
-            symbol=str(symbol),
-            venue=venue,
-            candle_widths=candle_widths,
-        )
-        return self.grpc_client.subscribe(request)
-
-    # ------------------------------------------------------------
-    # Order Entry and Cancellation
-    # ------------------------------------------------------------
-
-    async def send_limit_order(
+    async def place_limit_order(
         self,
         *,
         id: Optional[str] = None,
@@ -1078,36 +1296,33 @@ class AsyncClient:
             If the order is rejected, the order.reject_reason and order.reject_message will be set
         """
 
-        # Check for GQL failures
-        bbo_snapshot = await self.get_market_snapshot(
-            symbol=symbol, venue=execution_venue
-        )
-        if bbo_snapshot is None:
+        ticker = await self.get_ticker(symbol, execution_venue)
+        if ticker is None:
             raise ValueError(
-                f"Failed to send market order with reason: no market snapshot for {symbol}"
+                f"Failed to send market order with reason: no ticker for {symbol}"
             )
 
         price_band = price_band_pairs.get(symbol, None)
 
         if odir == OrderDir.BUY:
-            if bbo_snapshot.ask_price is None:
+            if ticker.ask_price is None:
                 raise ValueError(
                     f"Failed to send market order with reason: no ask price for {symbol}"
                 )
-            limit_price = bbo_snapshot.ask_price * (1 + fraction_through_market)
+            limit_price = ticker.ask_price * (1 + fraction_through_market)
 
-            if price_band and bbo_snapshot.last_price:
-                price_band_reference_price = bbo_snapshot.last_price + price_band
+            if price_band and ticker.last_price:
+                price_band_reference_price = ticker.last_price + price_band
                 limit_price = min(limit_price, price_band_reference_price)
 
         else:
-            if bbo_snapshot.bid_price is None:
+            if ticker.bid_price is None:
                 raise ValueError(
                     f"Failed to send market order with reason: no bid price for {symbol}"
                 )
-            limit_price = bbo_snapshot.bid_price * (1 - fraction_through_market)
-            if price_band and bbo_snapshot.last_price:
-                price_band_reference_price = bbo_snapshot.last_price - price_band
+            limit_price = ticker.bid_price * (1 - fraction_through_market)
+            if price_band and ticker.last_price:
+                price_band_reference_price = ticker.last_price - price_band
                 limit_price = min(limit_price, price_band_reference_price)
 
         # Conservatively round price to nearest tick
@@ -1125,7 +1340,7 @@ class AsyncClient:
         ):
             limit_price = tick_round_method(limit_price, tick_size)
 
-        return await self.send_limit_order(
+        return await self.place_limit_order(
             id=id,
             symbol=symbol,
             execution_venue=execution_venue,

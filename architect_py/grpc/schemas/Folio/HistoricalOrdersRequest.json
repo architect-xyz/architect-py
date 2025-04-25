@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalOrdersRequest",
+  "type": "object",
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "from_inclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "limit": {
+      "description": "Default maximum is 1000.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "default"
+    },
+    "order_ids": {
+      "description": "if order_ids is not empty, the limit field is ignored",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "../definitions.json#/OrderId"
+      }
+    },
+    "parent_order_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "to_exclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "route": "/json.architect.Folio/HistoricalOrders",
+  "rpc_method": "unary",
+  "service": "Folio",
+  "response_type": "HistoricalOrdersResponse"
+}

@@ -1,9 +1,8 @@
 import pytest
+from pytest_lazy_fixtures import lf
 
 from architect_py.async_client import AsyncClient
-from architect_py.scalars import TradableProduct
-
-from pytest_lazy_fixtures import lf
+from architect_py.common_types import TradableProduct
 
 
 @pytest.mark.asyncio

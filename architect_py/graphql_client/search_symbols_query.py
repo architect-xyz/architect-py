@@ -5,7 +5,8 @@ from typing import Annotated, List
 
 from pydantic import BeforeValidator, Field
 
-from architect_py.scalars import TradableProduct, parse_tradable_product
+from architect_py.common_types import TradableProduct
+from architect_py.common_types.tradable_product import parse_tradable_product
 
 from .base_model import BaseModel
 

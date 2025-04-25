@@ -7,7 +7,8 @@ from typing import Annotated, Optional
 
 from pydantic import BeforeValidator
 
-from architect_py.scalars import OrderDir, graphql_parse_order_dir
+from architect_py.common_types import OrderDir
+from architect_py.common_types.order_dir import graphql_parse_order_dir
 
 from .base_model import BaseModel
 

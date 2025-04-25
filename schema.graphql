@@ -273,19 +273,6 @@ type Candle {
   askLow: Decimal
 }
 
-type CmeProductGroupInfo {
-  seriesSymbol: String!
-  productName: String
-  url: String
-  category: String
-  subCategory: String
-  clearingSymbol: String
-  settleMethod: String
-  globexSchedule: String
-  mainFraction: Int
-  subfraction: String
-}
-
 type ConfigQueryRoot {
   "List marketdata venues that are configured"
   marketdataVenues: [MarketdataVenue!]!
@@ -298,12 +285,6 @@ type CptyStatus {
   loggedIn: Boolean!
   lastHeartbeat: DateTime
   lastHeartbeatStaleThresholdInSeconds: Int
-}
-
-type ExchangeSymbologyQueryRoot {
-  cmeProductGroupInfo(seriesSymbol: String!): CmeProductGroupInfo
-  "Get all CME product group infos, or filtered by series symbols if specified, e.g. [\"ES\", \"NQ\", \"CL\"]"
-  cmeProductGroupInfos(seriesSymbols: [String!]): [CmeProductGroupInfo!]!
 }
 
 type ExecutionInfo {
@@ -445,6 +426,33 @@ type OrderStale {
   orderId: OrderId!
 }
 
+"""
+  Loosely normalized information about exchange products; used to
+  seed symbology loaders and populate extended product info;
+
+  Symbology loaders will use catalog fields to augment and/or
+  cross-check any other load source.
+"""
+type ProductCatalogInfo {
+  exchange: ExecutionVenue!
+  "Could be anything really"
+  exchangeProduct: String!
+  quoteCurrency: Product
+  "For derivatives contracts, the multiplier"
+  multiplier: Decimal
+  category: String
+  subCategory: String
+  "Short description of the product, suitable for display in a bubble, for example"
+  shortDescription: String
+  longDescription: String
+  scheduleDescription: String
+  settleMethod: String
+  priceDisplayFormat: String
+  "URL to more product info"
+  infoUrl: String
+  cqgContractSymbol: String
+}
+
 type ProductInfo {
   symbol: String!
   productType: String!
@@ -492,9 +500,10 @@ type SubscriptionRoot {
 type SymbologyQueryRoot {
   "Given a series symbol, e.g. \"ES CME Futures\", return the related futures, e.g. [\"ES 20250321 CME Future\", ...]"
   futuresSeries(seriesSymbol: String!): [String!]!
-  exchangeSymbology: ExchangeSymbologyQueryRoot!
   executionInfo(symbol: TradableProduct!, executionVenue: ExecutionVenue!): ExecutionInfo!
   executionInfos(symbols: [TradableProduct!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
+  productCatalogInfo(exchangeProduct: String!): ProductCatalogInfo
+  productCatalogInfos(exchangeProducts: [String!]): [ProductCatalogInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
   searchSymbols(searchString: String, executionVenue: ExecutionVenue, offset: Int, limit: Int): [TradableProduct!]!

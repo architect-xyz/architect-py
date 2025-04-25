@@ -1,4 +1,5 @@
 import pytest
+
 from architect_py.async_client import AsyncClient
 from architect_py.client import Client
 
@@ -6,10 +7,22 @@ from architect_py.client import Client
 @pytest.mark.asyncio
 async def test_client_init():
     with pytest.raises(ValueError):
-        client = AsyncClient(host="localhost", port=4567, api_key=" ", api_secret=" ")
+        _ = AsyncClient(
+            grpc_host="localhost",
+            grpc_port=8081,
+            graphql_port=4567,
+            api_key=" ",
+            api_secret=" ",
+            paper_trading=True,
+        )
     with pytest.raises(ValueError):
-        client = AsyncClient(
-            host="localhost", port=4567, api_key="something", api_secret='"alskjdf"'
+        _ = AsyncClient(
+            grpc_host="localhost",
+            grpc_port=8081,
+            graphql_port=4567,
+            api_key="something",
+            api_secret='"alskjdf"',
+            paper_trading=True,
         )
 
 

@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 
 from architect_py.async_client import AsyncClient, OrderDir
-from architect_py.scalars import TradableProduct
+from architect_py.common_types import TradableProduct
 from architect_py.utils.nearest_tick_2 import TickRoundMethod
 
 
@@ -19,9 +19,9 @@ async def test_live_far_order_cancel(async_client: AsyncClient, front_ES_future:
 
     # Get snapshot
     execution_info = await async_client.get_execution_info(tp, venue)
-    assert (
-        execution_info is not None
-    ), f"execution_info does not exist for {tp}, {venue}"
+    assert execution_info is not None, (
+        f"execution_info does not exist for {tp}, {venue}"
+    )
 
     assert execution_info.min_order_quantity is not None
     assert execution_info.tick_size is not None
@@ -31,7 +31,8 @@ async def test_live_far_order_cancel(async_client: AsyncClient, front_ES_future:
 
     min_qty = Decimal(execution_info.min_order_quantity)
 
-    if bid_price := snapshot.bid_price:
+    if snapshot.best_bid is not None:
+        bid_price = snapshot.best_bid[0]
         far_price = bid_price * Decimal("0.9")
     else:
         raise ValueError(f"No bid price in snapshot for {tp} at venue {venue}")
@@ -43,7 +44,7 @@ async def test_live_far_order_cancel(async_client: AsyncClient, front_ES_future:
     print(account)
 
     # Make a very cheap bid
-    order = await async_client.send_limit_order(
+    order = await async_client.place_limit_order(
         symbol=tp,
         odir=OrderDir.BUY,
         execution_venue=venue,

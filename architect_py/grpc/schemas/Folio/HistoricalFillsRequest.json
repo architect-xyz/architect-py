@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HistoricalFillsRequest",
+  "type": "object",
+  "properties": {
+    "account": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "from_inclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "limit": {
+      "description": "Default maximum is 1000.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "default"
+    },
+    "order_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "to_exclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "trader": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/TraderIdOrEmail"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "venue": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "route": "/json.architect.Folio/HistoricalFills",
+  "rpc_method": "unary",
+  "service": "Folio",
+  "response_type": "HistoricalFillsResponse"
+}

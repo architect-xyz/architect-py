@@ -1,13 +1,12 @@
-from decimal import Decimal
 import pprint
 import time
+from decimal import Decimal
 
 from architect_py.graphql_client.enums import OrderStatus
 from architect_py.scalars import OrderDir
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from .common import confirm, connect_client, print_book, print_open_orders
-
 
 c = connect_client()
 

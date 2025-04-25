@@ -1,14 +1,12 @@
 import asyncio
-
 import sys
 import threading
 from asyncio import AbstractEventLoop
 from functools import partial
 from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
 
-from architect_py.async_client import AsyncClient
-from .client_protocol import AsyncClientProtocol
-
+from .async_client import AsyncClient
+from .client_interface import ClientProtocol
 
 T = TypeVar("T")
 
@@ -19,7 +17,7 @@ def is_async_function(obj):
     return callable(obj) and hasattr(obj, "__code__") and obj.__code__.co_flags & 0x80
 
 
-class Client(AsyncClientProtocol):
+class Client(ClientProtocol):
     """
     This class is a wrapper around the AsyncClient class that allows you to call async methods synchronously.
     This does not work for subscription based methods.
@@ -36,34 +34,36 @@ class Client(AsyncClientProtocol):
     Instead, add them to the AsyncClient class.
     """
 
-    __slots__ = ("client", "_loop")
+    __slots__ = ("client", "_event_loop")
     client: AsyncClient
-    _loop: AbstractEventLoop
+    _event_loop: AbstractEventLoop
 
     def __init__(
         self,
         *,
-        api_key: str,
-        api_secret: str,
-        host: str = "app.architect.co",
-        paper_trading: bool = True,
-        loop: Optional[AbstractEventLoop] = None,
+        api_key: Optional[str] = None,
+        api_secret: Optional[str] = None,
+        paper_trading: bool,
+        endpoint: str = "https://app.architect.co",
+        graphql_port: Optional[int] = None,
+        event_loop: Optional[AbstractEventLoop] = None,
         **kwargs,
     ):
-        if loop is None:
+        if event_loop is None:
             try:
-                loop = asyncio.get_running_loop()
+                event_loop = asyncio.get_running_loop()
             except RuntimeError:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-        super().__setattr__("_loop", loop)
+                event_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(event_loop)
+        super().__setattr__("_event_loop", event_loop)
 
-        async_client = loop.run_until_complete(
+        async_client = self._event_loop.run_until_complete(
             AsyncClient.connect(
                 api_key=api_key,
                 api_secret=api_secret,
-                host=host,
                 paper_trading=paper_trading,
+                endpoint=endpoint,
+                graphql_port=graphql_port,
                 **kwargs,
             )
         )
@@ -128,19 +128,18 @@ class Client(AsyncClientProtocol):
     ) -> T:
         return (
             super()
-            .__getattribute__("_loop")
+            .__getattribute__("_event_loop")
             .run_until_complete(async_method(*args, **kwargs))
         )
 
 
 class AsyncExecutor:
     def __init__(self):
-        """
-        one consideration is to enforce this class to be a singleton
-        however, this is not necessary as the class is only used in the Client class
-        when it is used in a jupyter notebook, so unlikely to be a problem
-        """
-
+        # NB: one consideration is to enforce this class to be a singleton.
+        #
+        # However, this is not necessary as the class is only used in the
+        # Client class when it is used in a jupyter notebook, so its unlikely
+        # to be a problem.
         self.loop = asyncio.new_event_loop()
         self.thread = threading.Thread(target=self._run_loop, daemon=True)
         self.thread.start()

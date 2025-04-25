@@ -1,8 +1,10 @@
 import time
+from concurrent import futures
 from decimal import Decimal
 from typing import Iterator
+
 import grpc
-from concurrent import futures
+
 from architect_py.grpc_client.Cpty.CptyRequest import CancelOrder, PlaceOrder
 from architect_py.grpc_client.Cpty.CptyResponse import Symbology
 from architect_py.grpc_client.definitions import (
@@ -14,10 +16,10 @@ from architect_py.grpc_client.definitions import (
     Unit,
 )
 from architect_py.grpc_client.grpc_server import (
-    add_CptyServicer_to_server,
     CptyServicer,
-    add_OrderflowServicer_to_server,
     OrderflowServicer,
+    add_CptyServicer_to_server,
+    add_OrderflowServicer_to_server,
 )
 
 

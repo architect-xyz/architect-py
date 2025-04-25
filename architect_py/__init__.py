@@ -1,4 +1,6 @@
-__version__ = "4.0.0"
+__version__ = "5.0.0b1"
 
 from .async_client import AsyncClient
 from .client import Client
+
+__all__ = ["AsyncClient", "Client"]

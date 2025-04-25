@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 import pytest
+
 from architect_py.async_client import AsyncClient
 
 
@@ -15,9 +16,9 @@ async def test_futures_series_populated(async_client: AsyncClient):
             execution_venue="CME", search_string=series
         )
         futures = [market for market in markets if market.startswith(f"{series} ")]
-        assert (
-            len(futures) > min_count
-        ), f"not enough futures markets found in {series} series: {len(markets)}"
+        assert len(futures) > min_count, (
+            f"not enough futures markets found in {series} series: {len(markets)}"
+        )
 
 
 @pytest.mark.asyncio
@@ -25,9 +26,9 @@ async def test_search_for_es_front_month(async_client: AsyncClient):
     series = await async_client.get_cme_futures_series("ES CME Futures")
     assert len(series) > 0, "no futures markets found in ES series"
     _, front_month_future = series[0]
-    assert re.match(
-        r"ES \d* CME Future", front_month_future
-    ), "front month future base name does not match regex"
+    assert re.match(r"ES \d* CME Future", front_month_future), (
+        "front month future base name does not match regex"
+    )
 
 
 @pytest.mark.asyncio
@@ -42,9 +43,9 @@ async def test_get_cme_future_from_root_month_year(async_client: AsyncClient):
         "BTC", month=month, year=year
     )
 
-    assert re.match(
-        f"BTC {year}{month:02d}[0-9]{{2}} CME Future", future
-    ), "future base name does not match regex"
+    assert re.match(f"BTC {year}{month:02d}[0-9]{{2}} CME Future", future), (
+        "future base name does not match regex"
+    )
 
 
 def add_one_month_to_datetime(dt: datetime):

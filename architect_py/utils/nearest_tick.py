@@ -5,11 +5,9 @@ tick_size = get_tick_size(market_id, client)
 nearest_tick(123.456, TickRoundMethod.ROUND, tick_size)
 """
 
-from enum import Enum
-
-from functools import partial
-
 import sys
+from enum import Enum
+from functools import partial
 
 """
 This conditional import is to deal with
@@ -19,14 +17,13 @@ given on Python 3.12+
 if sys.version_info >= (3, 11):
     from .nearest_tick_2 import *
 else:
-
     from decimal import (
-        Decimal,
         ROUND_CEILING,
         ROUND_DOWN,
         ROUND_FLOOR,
         ROUND_HALF_UP,
         ROUND_UP,
+        Decimal,
     )
 
     def round_method(value: Decimal, tick_size: Decimal) -> Decimal:
