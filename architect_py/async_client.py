@@ -78,6 +78,9 @@ class AsyncClient:
             print(f"🧻 {COLOR} YOU ARE IN PAPER TRADING MODE {RESET}")
 
         grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+        logging.info(
+            f"Resolved endpoint {endpoint}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
+        )
 
         client = AsyncClient(
             api_key=api_key,

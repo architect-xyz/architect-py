@@ -30,6 +30,8 @@ async def resolve_endpoint(endpoint: str) -> Tuple[str, int, bool]:
     | app.architect.co | app.architect.co | 8081 | True |
     | localhost:9000 | localhost | 9000 | False |
     """
+    if "://" not in endpoint:
+        endpoint = f"unknown://{endpoint}"
     url = urlparse(endpoint)
 
     if url.hostname is None:
