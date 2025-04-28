@@ -69,7 +69,12 @@ def format_type_hint_with_generics(type_hint) -> str:
         return "tuple[Any, ...]"
 
     try:
-        return type_hint.__name__
+        if type_hint.__module__ == "pandas" or type_hint.__module__.startswith(
+            "pandas."
+        ):
+            return f"pd.{type_hint.__name__}"
+        else:
+            return type_hint.__name__
     except AttributeError:
         return str(type_hint)
 

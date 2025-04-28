@@ -71,6 +71,28 @@ def get_asyncclient_methods(filename):
         if isinstance(node, ast.ClassDef) and node.name == "AsyncClient":
             for item in node.body:
                 if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    # Exclude typing overloads
+                    is_fn_overload = False
+                    for decorator in item.decorator_list:
+                        decorator_name = ""
+                        if isinstance(decorator, ast.Call):
+                            decorator_name = (
+                                decorator.func.attr
+                                if isinstance(decorator.func, ast.Attribute)
+                                else decorator.func.id
+                            )
+                        else:
+                            decorator_name = (
+                                decorator.attr
+                                if isinstance(decorator, ast.Attribute)
+                                else decorator.id
+                            )
+                        if decorator_name == "overload":
+                            is_fn_overload = True
+
+                    if is_fn_overload:
+                        continue
+
                     # Get docstring using ast.get_docstring
                     doc = ast.get_docstring(item)
                     if doc:

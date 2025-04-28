@@ -3,7 +3,15 @@ import logging
 import re
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import AsyncIterator, List, Optional, Sequence
+from typing import (
+    AsyncIterator,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Union,
+    overload,
+)
 
 from architect_py.grpc.models.Orderflow.Orderflow import Orderflow
 from architect_py.grpc.models.Orderflow.OrderflowRequest import (
@@ -39,6 +47,15 @@ from .utils.nearest_tick import TickRoundMethod
 from .utils.orderbook import update_orderbook_side
 from .utils.price_bands import price_band_pairs
 from .utils.symbol_parsing import nominative_expiration
+
+try:
+    import pandas as pd
+
+    from .utils.pandas import candles_to_dataframe
+
+    FEATURE_PANDAS = True
+except ImportError:
+    FEATURE_PANDAS = False
 
 
 class AsyncClient:
@@ -579,6 +596,7 @@ class AsyncClient:
             symbols=symbols,  # type: ignore
         )
 
+    @overload
     async def get_historical_candles(
         self,
         symbol: TradableProduct | str,
@@ -586,7 +604,32 @@ class AsyncClient:
         candle_width: CandleWidth,
         start: datetime,
         end: datetime,
-    ) -> List[Candle]:
+        *,
+        as_dataframe: Literal[True],
+    ) -> pd.DataFrame: ...
+
+    @overload
+    async def get_historical_candles(
+        self,
+        symbol: TradableProduct | str,
+        venue: Venue,
+        candle_width: CandleWidth,
+        start: datetime,
+        end: datetime,
+        *,
+        as_dataframe: Literal[False],
+    ) -> List[Candle]: ...
+
+    async def get_historical_candles(
+        self,
+        symbol: TradableProduct | str,
+        venue: Venue,
+        candle_width: CandleWidth,
+        start: datetime,
+        end: datetime,
+        *,
+        as_dataframe: bool = False,
+    ) -> Union[List[Candle], pd.DataFrame]:
         """
         Gets historical candles for a symbol.
 
@@ -598,6 +641,8 @@ class AsyncClient:
                 For naive datetimes, the server will assume UTC.
             end: the end date to get candles for;
                 For naive datetimes, the server will assume UTC.
+            as_dataframe: if True, return a pandas DataFrame
+
         """
         grpc_client = await self.hmart()
         req = HistoricalCandlesRequest(
@@ -608,7 +653,13 @@ class AsyncClient:
             end_date=end,
         )
         res: HistoricalCandlesResponse = await grpc_client.unary_unary(req)
-        return res.candles
+
+        if as_dataframe and FEATURE_PANDAS:
+            return candles_to_dataframe(res.candles)
+        elif as_dataframe and not FEATURE_PANDAS:
+            raise RuntimeError("as_dataframe is True but pandas is not installed")
+        else:
+            return res.candles
 
     async def get_l1_book_snapshot(
         self,

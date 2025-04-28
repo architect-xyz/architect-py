@@ -23,6 +23,9 @@ readme = "README.md"
 requires-python = ">=3.10,<4"
 version = "5.0.0b1"
 
+[project.optional-dependencies]
+pandas = ["pandas>=2"]
+
 [dependency-groups]
 dev = [
     "ariadne-codegen[subscriptions]>=0.13.0",
@@ -38,6 +41,7 @@ dev = [
     "simplewebsocketserver>=0.1.2,<0.2",
     "ufmt>=2,<3",
     "marko",
+    "pandas>=2",
 ]
 
 [tool.pytest.ini_options]
