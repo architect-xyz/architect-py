@@ -6,6 +6,8 @@
 - **`discover_marketdata`**: Load marketdata endpoints from the server config.
 - **`set_marketdata`**: Manually set the marketdata endpoint for a venue.
 - **`marketdata`**: Get the marketdata client for a venue.
+- **`set_hmart`**: Manually set the hmart (historical marketdata service) endpoint.
+- **`hmart`**: Get the hmart (historical marketdata service) client.
 - **`core`**: Get the core client.
 - **`who_am_i`**: Gets the user_id and user_email for the user that the API key belongs to.
 
