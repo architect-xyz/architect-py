@@ -21,13 +21,14 @@
 - **`get_product_infos`**: Get information about products, e.g. product_type, underlying, multiplier.
 - **`get_execution_info`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_execution_infos`**: Get information about tradable product execution, e.g. tick_size,
-- **`get_future_series`**: List all futures in a given series.
+- **`get_futures_series`**: List all futures in a given series.
 - **`get_cme_future_from_root_month_year`**: Get the symbol for a CME future from the root, month, and year.
 
 ---
 
 ### 🧮 Marketdata
 
+- **`get_market_status`**: Returns market status for symbol (e.g. if it's currently quoting or trading).
 - **`get_historical_candles`**: Gets historical candles for a symbol.
 - **`get_l1_book_snapshot`**: Gets the L1 book snapshot for a symbol.
 - **`get_l1_book_snapshots`**: Gets the L1 book snapshots for a list of symbols.

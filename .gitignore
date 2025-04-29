@@ -10,6 +10,6 @@ scratch*.py.*
 ipynb/
 *-checkpoint.ipynb
 *.egg-info
-
-
+.coverage
+htmlcov/
 pytest.env

@@ -459,7 +459,7 @@ class AsyncClient:
             return None
         return res.product_info.first_notice_date
 
-    async def get_future_series(self, series_symbol: str) -> list[str]:
+    async def get_futures_series(self, series_symbol: str) -> list[str]:
         """
         List all futures in a given series.
 
@@ -491,7 +491,7 @@ class AsyncClient:
 
     async def get_cme_futures_series(self, series: str) -> list[tuple[date, str]]:
         """
-        @deprecated(reason="Use get_future_series instead")
+        @deprecated(reason="Use get_futures_series instead")
 
         List all futures in a given CME series.
 
@@ -509,7 +509,7 @@ class AsyncClient:
              ...
             ]
         """
-        futures = await self.get_future_series(series)
+        futures = await self.get_futures_series(series)
         exp_and_futures = []
         for future in futures:
             exp = nominative_expiration(future)
@@ -550,8 +550,6 @@ class AsyncClient:
         self, symbol: TradableProduct | str, venue: Venue
     ) -> MarketStatus:
         """
-        @deprecated(reason="Use get_future_series instead")
-
         Returns market status for symbol (e.g. if it's currently quoting or trading).
 
         Args:
@@ -616,8 +614,6 @@ class AsyncClient:
         candle_width: CandleWidth,
         start: datetime,
         end: datetime,
-        *,
-        as_dataframe: Literal[False],
     ) -> List[Candle]: ...
 
     async def get_historical_candles(

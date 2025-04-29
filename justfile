@@ -10,6 +10,9 @@ format:
 lint:
     uv run ruff check
 
+test:
+    uv run pytest --cov
+
 typecheck:
     uv run pyright
 

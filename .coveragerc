@@ -1,0 +1,2 @@
+[run]
+include = architect_py/async_client.py
