@@ -55,6 +55,8 @@ try:
 
     FEATURE_PANDAS = True
 except ImportError:
+    from .internal_utils import no_pandas as pd
+
     FEATURE_PANDAS = False
 
 
