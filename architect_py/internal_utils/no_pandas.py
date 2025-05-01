@@ -1,3 +1,3 @@
-from typing import Never 
+from typing import Never
 
 DataFrame = Never
