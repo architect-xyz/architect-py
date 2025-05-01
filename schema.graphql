@@ -59,6 +59,11 @@ enum OrderType {
   TAKE_PROFIT_LIMIT
 }
 
+enum PutOrCall {
+  PUT
+  CALL
+}
+
 enum SortTickersBy {
   VOLUME_DESC
   CHANGE_ASC
@@ -234,6 +239,11 @@ type ApiKey {
   apiSecret: String!
 }
 
+type BackOfficeQueryRoot {
+  statements(accountId: Uuid!): [Statement!]!
+  statementUrl(statementUuid: Uuid!): String!
+}
+
 type Cancel {
   cancelId: Uuid!
   orderId: OrderId!
@@ -359,6 +369,9 @@ type MarketdataQueryRoot {
   ticker(venue: MarketdataVenue, symbol: String!): Ticker!
   tickers(venue: MarketdataVenue!, symbols: [String!], offset: Int, limit: Int, sortBy: SortTickersBy): [Ticker!]!
   marketStatus(venue: MarketdataVenue, symbol: String!): MarketStatus!
+  optionsExpirations(venue: MarketdataVenue, underlying: String!): [Date!]!
+  optionsChain(venue: MarketdataVenue, underlying: String!, expiration: Date!): OptionsChain!
+  optionsChainGreeks(venue: MarketdataVenue, underlying: String!, expiration: Date!): OptionsChainGreeks!
 }
 
 type MutationRoot {
@@ -376,6 +389,39 @@ type OmsMutationRoot {
 type OmsQueryRoot {
   openOrders(venue: ExecutionVenue, account: String, trader: String, symbol: String, parentOrderId: OrderId, orderIds: [OrderId!]): [Order!]!
   pendingCancels(venue: ExecutionVenue, account: String, trader: String, symbol: String, cancelIds: [Uuid!]): [Cancel!]!
+}
+
+type OptionsChain {
+  calls: [OptionsContract!]!
+  puts: [OptionsContract!]!
+}
+
+type OptionsChainGreeks {
+  calls: [OptionsGreeks!]!
+  puts: [OptionsGreeks!]!
+}
+
+type OptionsContract {
+  ticker: Ticker!
+  underlying: String!
+  expiration: Date!
+  strike: Decimal!
+  putOrCall: PutOrCall!
+  inTheMoney: Boolean
+}
+
+type OptionsGreeks {
+  symbol: String!
+  underlying: String!
+  strike: Decimal!
+  expiration: Date!
+  putOrCall: PutOrCall!
+  delta: Decimal!
+  gamma: Decimal!
+  theta: Decimal!
+  vega: Decimal!
+  rho: Decimal!
+  impliedVolatility: Decimal!
 }
 
 type Order {
@@ -474,6 +520,7 @@ type QueryRoot {
   user: UserQueryRoot!
   symbology: SymbologyQueryRoot!
   marketdata: MarketdataQueryRoot!
+  middleBackOffice: BackOfficeQueryRoot!
   oms: OmsQueryRoot!
   folio: FolioQueryRoot!
   cptys: [CptyStatus!]!
@@ -486,6 +533,15 @@ type SpreadLeg {
     We would represent that with quantities in the legs: 1, -2, 1
   """
   quantity: Decimal!
+}
+
+type Statement {
+  statementUuid: Uuid!
+  account: String!
+  statementType: String!
+  clearingFirm: String!
+  timestamp: DateTime!
+  filename: String!
 }
 
 type SubscriptionRoot {

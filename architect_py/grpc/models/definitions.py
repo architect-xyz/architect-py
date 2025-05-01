@@ -12,6 +12,8 @@ from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
+from .Marketdata.Ticker import Ticker
+
 Model = Any
 
 
@@ -539,6 +541,38 @@ class SortTickersBy(str, Enum):
     ABS_CHANGE_DESC = "ABS_CHANGE_DESC"
 
 
+class Statement(Struct, omit_defaults=True):
+    account: str
+    clearing_firm: str
+    filename: str
+    statement_type: str
+    statement_uuid: str
+    timestamp: datetime
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: str,
+        clearing_firm: str,
+        filename: str,
+        statement_type: str,
+        statement_uuid: str,
+        timestamp: datetime,
+    ):
+        return cls(
+            account,
+            clearing_firm,
+            filename,
+            statement_type,
+            statement_uuid,
+            timestamp,
+        )
+
+    def __str__(self) -> str:
+        return f"Statement(account={self.account},clearing_firm={self.clearing_firm},filename={self.filename},statement_type={self.statement_type},statement_uuid={self.statement_uuid},timestamp={self.timestamp})"
+
+
 class GoodTilDate(Struct, omit_defaults=True):
     GTD: datetime
 
@@ -842,6 +876,11 @@ class Unknown(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"Unknown(product_type={self.product_type})"
+
+
+class PutOrCall(str, Enum):
+    P = "P"
+    C = "C"
 
 
 class SnapshotOrUpdateForStringAndProductCatalogInfo1(Struct, omit_defaults=True):
@@ -1634,6 +1673,33 @@ class EventContractSeriesInstance2(Struct, omit_defaults=True):
         return f"EventContractSeriesInstance2(OptionLike={self.OptionLike})"
 
 
+class OptionsSeriesInstance(Struct, omit_defaults=True):
+    """
+    A specific option from a series.
+    """
+
+    expiration: datetime
+    put_or_call: PutOrCall
+    strike: Decimal
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        expiration: datetime,
+        put_or_call: PutOrCall,
+        strike: Decimal,
+    ):
+        return cls(
+            expiration,
+            put_or_call,
+            strike,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionsSeriesInstance(expiration={self.expiration},put_or_call={self.put_or_call},strike={self.strike})"
+
+
 class SpreadLeg(Struct, omit_defaults=True):
     product: str
     quantity: Annotated[
@@ -1677,11 +1743,6 @@ class Outcome(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"Outcome(name={self.name})"
-
-
-class PutOrCall(str, Enum):
-    P = "P"
-    C = "C"
 
 
 class AberrantFill(Struct, omit_defaults=True):
@@ -2227,6 +2288,85 @@ class Fill(Struct, omit_defaults=True):
         self.xid = value
 
 
+class OptionsContract(Struct, omit_defaults=True):
+    expiration: date
+    put_or_call: PutOrCall
+    strike: Decimal
+    ticker: Ticker
+    underlying: str
+    in_the_money: Optional[bool] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        expiration: date,
+        put_or_call: PutOrCall,
+        strike: Decimal,
+        ticker: Ticker,
+        underlying: str,
+        in_the_money: Optional[bool] = None,
+    ):
+        return cls(
+            expiration,
+            put_or_call,
+            strike,
+            ticker,
+            underlying,
+            in_the_money,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionsContract(expiration={self.expiration},put_or_call={self.put_or_call},strike={self.strike},ticker={self.ticker},underlying={self.underlying},in_the_money={self.in_the_money})"
+
+
+class OptionsGreeks(Struct, omit_defaults=True):
+    delta: Decimal
+    expiration: date
+    gamma: Decimal
+    implied_volatility: Decimal
+    put_or_call: PutOrCall
+    rho: Decimal
+    strike: Decimal
+    symbol: str
+    theta: Decimal
+    underlying: str
+    vega: Decimal
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        delta: Decimal,
+        expiration: date,
+        gamma: Decimal,
+        implied_volatility: Decimal,
+        put_or_call: PutOrCall,
+        rho: Decimal,
+        strike: Decimal,
+        symbol: str,
+        theta: Decimal,
+        underlying: str,
+        vega: Decimal,
+    ):
+        return cls(
+            delta,
+            expiration,
+            gamma,
+            implied_volatility,
+            put_or_call,
+            rho,
+            strike,
+            symbol,
+            theta,
+            underlying,
+            vega,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionsGreeks(delta={self.delta},expiration={self.expiration},gamma={self.gamma},implied_volatility={self.implied_volatility},put_or_call={self.put_or_call},rho={self.rho},strike={self.strike},symbol={self.symbol},theta={self.theta},underlying={self.underlying},vega={self.vega})"
+
+
 class OptionsSeriesInfo(Struct, omit_defaults=True):
     derivative_kind: DerivativeKind
     exercise_type: OptionsExerciseType
@@ -2590,6 +2730,29 @@ class FutureSpread(Struct, omit_defaults=True):
         return f"FutureSpread(legs={self.legs},product_type={self.product_type})"
 
 
+class Option(Struct, omit_defaults=True):
+    instance: OptionsSeriesInstance
+    product_type: Literal["Option"]
+    series: str
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        instance: OptionsSeriesInstance,
+        product_type: Literal["Option"],
+        series: str,
+    ):
+        return cls(
+            instance,
+            product_type,
+            series,
+        )
+
+    def __str__(self) -> str:
+        return f"Option(instance={self.instance},product_type={self.product_type},series={self.series})"
+
+
 class SnapshotOrUpdateForStringAndExecutionInfo1(Struct, omit_defaults=True):
     snapshot: Dict[str, ExecutionInfo]
 
@@ -2672,33 +2835,6 @@ EventContractSeriesInstance = Union[
 ]
 
 
-class OptionsSeriesInstance(Struct, omit_defaults=True):
-    """
-    A specific option from a series.
-    """
-
-    expiration: datetime
-    put_or_call: PutOrCall
-    strike: Decimal
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        expiration: datetime,
-        put_or_call: PutOrCall,
-        strike: Decimal,
-    ):
-        return cls(
-            expiration,
-            put_or_call,
-            strike,
-        )
-
-    def __str__(self) -> str:
-        return f"OptionsSeriesInstance(expiration={self.expiration},put_or_call={self.put_or_call},strike={self.strike})"
-
-
 class AccountWithPermissions(Struct, omit_defaults=True):
     account: Account
     permissions: AccountPermissions
@@ -2767,29 +2903,6 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo = Union[
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2,
 ]
-
-
-class Option(Struct, omit_defaults=True):
-    instance: OptionsSeriesInstance
-    product_type: Literal["Option"]
-    series: str
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        instance: OptionsSeriesInstance,
-        product_type: Literal["Option"],
-        series: str,
-    ):
-        return cls(
-            instance,
-            product_type,
-            series,
-        )
-
-    def __str__(self) -> str:
-        return f"Option(instance={self.instance},product_type={self.product_type},series={self.series})"
 
 
 class EventContract(Struct, omit_defaults=True):

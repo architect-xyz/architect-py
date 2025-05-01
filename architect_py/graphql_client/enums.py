@@ -59,6 +59,11 @@ class OrderType(str, Enum):
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
 
 
+class PutOrCall(str, Enum):
+    PUT = "PUT"
+    CALL = "CALL"
+
+
 class SortTickersBy(str, Enum):
     VOLUME_DESC = "VOLUME_DESC"
     CHANGE_ASC = "CHANGE_ASC"

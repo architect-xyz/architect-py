@@ -1942,6 +1942,100 @@
       "ABS_CHANGE_DESC"
     ]
   },
+  "OptionsContract": {
+    "type": "object",
+    "required": [
+      "expiration",
+      "put_or_call",
+      "strike",
+      "ticker",
+      "underlying"
+    ],
+    "properties": {
+      "expiration": {
+        "type": "string",
+        "format": "date"
+      },
+      "in_the_money": {
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
+      "put_or_call": {
+        "$ref": "#/PutOrCall"
+      },
+      "strike": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "ticker": {
+        "$ref": "Marketdata/Ticker.json/#"
+      },
+      "underlying": {
+        "type": "string"
+      }
+    }
+  },
+  "OptionsGreeks": {
+    "type": "object",
+    "required": [
+      "delta",
+      "expiration",
+      "gamma",
+      "implied_volatility",
+      "put_or_call",
+      "rho",
+      "strike",
+      "symbol",
+      "theta",
+      "underlying",
+      "vega"
+    ],
+    "properties": {
+      "delta": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "expiration": {
+        "type": "string",
+        "format": "date"
+      },
+      "gamma": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "implied_volatility": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "put_or_call": {
+        "$ref": "#/PutOrCall"
+      },
+      "rho": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "strike": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "symbol": {
+        "type": "string"
+      },
+      "theta": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "underlying": {
+        "type": "string"
+      },
+      "vega": {
+        "type": "number",
+        "format": "decimal"
+      }
+    }
+  },
   "AccountIdOrName": {
     "type": "string"
   },
@@ -2811,6 +2905,39 @@
             "type": "null"
           }
         ]
+      }
+    }
+  },
+  "Statement": {
+    "type": "object",
+    "required": [
+      "account",
+      "clearing_firm",
+      "filename",
+      "statement_type",
+      "statement_uuid",
+      "timestamp"
+    ],
+    "properties": {
+      "account": {
+        "type": "string"
+      },
+      "clearing_firm": {
+        "type": "string"
+      },
+      "filename": {
+        "type": "string"
+      },
+      "statement_type": {
+        "type": "string"
+      },
+      "statement_uuid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
       }
     }
   }

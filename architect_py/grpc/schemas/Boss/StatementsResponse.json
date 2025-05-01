@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StatementsResponse",
+  "type": "object",
+  "required": [
+    "statements"
+  ],
+  "properties": {
+    "statements": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/Statement"
+      }
+    }
+  }
+}

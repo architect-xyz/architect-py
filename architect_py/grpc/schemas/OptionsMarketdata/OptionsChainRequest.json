@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OptionsChainRequest",
+  "type": "object",
+  "required": [
+    "expiration",
+    "underlying"
+  ],
+  "properties": {
+    "expiration": {
+      "type": "string",
+      "format": "date"
+    },
+    "underlying": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.OptionsMarketdata/OptionsChain",
+  "rpc_method": "unary",
+  "service": "OptionsMarketdata",
+  "response_type": "OptionsChain"
+}

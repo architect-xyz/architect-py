@@ -20,6 +20,7 @@ from .enums import (
     OrderSource,
     OrderStatus,
     OrderType,
+    PutOrCall,
     SortTickersBy,
     TimeInForce,
 )
@@ -259,6 +260,7 @@ __all__ = [
     "PlaceOrderMutationOmsPlaceOrder",
     "ProductInfoFields",
     "ProductInfoFieldsSpreadLegs",
+    "PutOrCall",
     "SearchSymbolsQuery",
     "SearchSymbolsQuerySymbology",
     "SortTickersBy",
