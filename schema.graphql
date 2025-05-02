@@ -447,6 +447,7 @@ type Order {
   goodTilDate: DateTime
   source: OrderSource!
   executionVenue: ExecutionVenue!
+  isShortSale: Boolean
 }
 
 type OrderAck {
