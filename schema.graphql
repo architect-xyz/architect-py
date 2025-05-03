@@ -242,6 +242,9 @@ type ApiKey {
 type BackOfficeQueryRoot {
   statements(accountId: Uuid!): [Statement!]!
   statementUrl(statementUuid: Uuid!): String!
+  deposits(accountId: Uuid!): [Deposit!]!
+  withdrawals(accountId: Uuid!): [Withdrawal!]!
+  rqdAccountStatistics(accountId: Uuid!): RqdAccountStatistics!
 }
 
 type Cancel {
@@ -295,6 +298,13 @@ type CptyStatus {
   loggedIn: Boolean!
   lastHeartbeat: DateTime
   lastHeartbeatStaleThresholdInSeconds: Int
+}
+
+type Deposit {
+  account: String!
+  amount: Decimal!
+  timestamp: DateTime!
+  description: String!
 }
 
 type ExecutionInfo {
@@ -527,6 +537,56 @@ type QueryRoot {
   cptys: [CptyStatus!]!
 }
 
+type RqdAccountStatistics {
+  accountNumber: String!
+  availableCashBalance: Decimal
+  accountType: String
+  overnightBuyingPower: Decimal
+  cashAvailableForWithdrawal: Decimal
+  cumulativeDayTradePnl: Decimal
+  isDayTrader: String
+  dayTradingBuyingPower: Decimal
+  dayTradingMarginCallAmount: Decimal
+  dayTradingBuyingPowerHighWaterMark: Decimal
+  startOfDayDayTradingBuyingPower: Decimal
+  dayTradingBuyingPowerMaintenanceMarginMultiplier: Decimal
+  dayTradingMinimumEquityMarignCallAmount: Decimal
+  dayTradingHouseMinimumEquityMarignCallAmount: Decimal
+  totalEquity: Decimal
+  houseMarginRequirementAdjustmentFactor: Decimal
+  marginCallAmount: Decimal
+  maintenanceMarginRequirement: Decimal
+  excessSmaAmount: Decimal
+  regTMarginCallAmount: Decimal
+  regTInitialMarginRequirement: Decimal
+  houseInitialMarginRequirementAdjustmentFactor: Decimal
+  houseMarginCallAmount: Decimal
+  houseMarginRequirement: Decimal
+  tradeDateTotalLongMarketValue: Decimal
+  marketValueAdjustmentFactor: Decimal
+  marginableEquity: Decimal
+  tradeDateOptionLongMarketValue: Decimal
+  numberOpenDayTradingMarginCalls: Decimal
+  startOfDayDayTradingBuyingPowerMarginCallAmount: Decimal
+  startOfDayMaintenanceMarginCallAmount: Decimal
+  startOfDayRegTMarginCallAmount: Decimal
+  startOfDayHouseMarginCallAmount: Decimal
+  usableSmaBalance: Decimal
+  optionOnlyMaintenanceMarginRequirement: Decimal
+  optionTradeDateShortMarketValue: Decimal
+  regTMentainanceMarginRequirementAdjustmentFactor: String
+  strategyBasedReliefAdjustmentFactor: Decimal
+  settlementDateCashBalance: Decimal
+  settlementDateLongMarketValue: Decimal
+  settlementDateOptionLongMarketValue: Decimal
+  settlementDateOptionShortMarketValue: Decimal
+  settlementDateShortMarketValue: Decimal
+  overallCurrentSmaBalance: Decimal
+  tradeDateTotalShortMarketValue: Decimal
+  asOfDate: String
+  tradeDateCashBalance: Decimal
+}
+
 type SpreadLeg {
   product: Product!
   """
@@ -624,6 +684,13 @@ type UserQueryRoot {
   accounts: [AccountWithPermissions!]!
   "List user's API keys"
   apiKeys: [ApiKey!]!
+}
+
+type Withdrawal {
+  account: String!
+  amount: Decimal!
+  timestamp: DateTime!
+  description: String!
 }
 
 union Orderflow = Order | OrderAck | GqlOrderReject | OrderOut | OrderStale | Cancel | CancelReject | OrderCanceling | OrderCanceled | Fill | AberrantFill
