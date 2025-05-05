@@ -1,28 +1,16 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AlgoOrderForTwapAlgo",
+  "title": "AlgoOrderForNull",
   "type": "object",
   "required": [
-    "account",
-    "algo_name",
-    "algo_order_id",
     "create_time",
+    "id",
     "params",
-    "state",
     "status",
+    "status_details",
     "trader"
   ],
   "properties": {
-    "account": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "algo_name": {
-      "type": "string"
-    },
-    "algo_order_id": {
-      "$ref": "../definitions.json#/OrderId"
-    },
     "create_time": {
       "type": "string",
       "format": "date-time"
@@ -36,23 +24,20 @@
         "type": "string"
       }
     },
-    "last_error": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "last_error_time": {
+    "finish_time": {
       "type": [
         "string",
         "null"
       ],
       "format": "date-time"
     },
-    "params": {
-      "$ref": "../definitions.json#/TwapParams"
+    "id": {
+      "$ref": "../definitions.json#/OrderId"
     },
-    "parent_order_id": {
+    "params": {
+      "type": "null"
+    },
+    "parent_id": {
       "anyOf": [
         {
           "$ref": "../definitions.json#/OrderId"
@@ -62,14 +47,27 @@
         }
       ]
     },
-    "state": {
-      "$ref": "../definitions.json#/AlgoState"
+    "reject_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "status": {
-      "$ref": "../definitions.json#/TwapStatus"
+      "$ref": "../definitions.json#/AlgoOrderStatus"
+    },
+    "status_details": {
+      "type": "null"
     },
     "trader": {
       "$ref": "../definitions.json#/UserId"
+    },
+    "working_progress": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double"
     }
   }
 }

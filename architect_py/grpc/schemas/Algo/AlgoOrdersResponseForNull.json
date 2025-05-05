@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlgoOrdersResponseForNull",
+  "type": "object",
+  "required": [
+    "algo_orders"
+  ],
+  "properties": {
+    "algo_orders": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/AlgoOrder_for_Null"
+      }
+    }
+  }
+}

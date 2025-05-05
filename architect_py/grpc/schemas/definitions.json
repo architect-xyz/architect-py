@@ -2826,8 +2826,147 @@
       }
     }
   },
+  "AlgoOrderStatus": {
+    "type": "string",
+    "enum": [
+      "pending",
+      "working",
+      "rejected",
+      "paused",
+      "pausing",
+      "stopped",
+      "stopping"
+    ]
+  },
+  "AlgoOrder_for_Null": {
+    "type": "object",
+    "required": [
+      "create_time",
+      "id",
+      "params",
+      "status",
+      "status_details",
+      "trader"
+    ],
+    "properties": {
+      "create_time": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "display_symbols": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        }
+      },
+      "finish_time": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "date-time"
+      },
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "params": {
+        "type": "null"
+      },
+      "parent_id": {
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "reject_reason": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "status": {
+        "$ref": "#/AlgoOrderStatus"
+      },
+      "status_details": {
+        "type": "null"
+      },
+      "trader": {
+        "$ref": "#/UserId"
+      },
+      "working_progress": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      }
+    }
+  },
   "HumanDuration": {
     "type": "string"
+  },
+  "TakeThrough": {
+    "oneOf": [
+      {
+        "type": "object",
+        "required": [
+          "Fraction"
+        ],
+        "properties": {
+          "Fraction": {
+            "type": "number",
+            "format": "decimal"
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "Percent"
+        ],
+        "properties": {
+          "Percent": {
+            "type": "number",
+            "format": "decimal"
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "Price"
+        ],
+        "properties": {
+          "Price": {
+            "type": "number",
+            "format": "decimal"
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "Ticks"
+        ],
+        "properties": {
+          "Ticks": {
+            "type": "number",
+            "format": "decimal"
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
   },
   "TwapParams": {
     "type": "object",
@@ -2836,15 +2975,28 @@
       "end_time",
       "execution_venue",
       "interval",
+      "marketdata_venue",
       "quantity",
       "reject_lockout",
-      "symbol"
+      "symbol",
+      "take_through"
     ],
     "properties": {
+      "account": {
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "dir": {
         "$ref": "#/Dir"
       },
       "end_time": {
+        "description": "The TWAP will finish within 1 interval of the end time.",
         "type": "string",
         "format": "date-time"
       },
@@ -2853,6 +3005,9 @@
       },
       "interval": {
         "$ref": "#/HumanDuration"
+      },
+      "marketdata_venue": {
+        "type": "string"
       },
       "quantity": {
         "type": "number",
@@ -2864,26 +3019,15 @@
       "symbol": {
         "type": "string"
       },
-      "take_through_frac": {
-        "anyOf": [
+      "take_through": {
+        "description": "When placing an order, how aggressively to take.",
+        "allOf": [
           {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
+            "$ref": "#/TakeThrough"
           }
         ]
       }
     }
-  },
-  "AlgoState": {
-    "type": "string",
-    "enum": [
-      "Pending",
-      "Running",
-      "Stopped"
-    ]
   },
   "TwapStatus": {
     "type": "object",
@@ -2908,15 +3052,86 @@
       }
     }
   },
+  "AlgoOrder_for_Twap": {
+    "type": "object",
+    "required": [
+      "create_time",
+      "id",
+      "params",
+      "status",
+      "status_details",
+      "trader"
+    ],
+    "properties": {
+      "create_time": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "display_symbols": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        }
+      },
+      "finish_time": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "date-time"
+      },
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "params": {
+        "$ref": "#/TwapParams"
+      },
+      "parent_id": {
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "reject_reason": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "status": {
+        "$ref": "#/AlgoOrderStatus"
+      },
+      "status_details": {
+        "$ref": "#/TwapStatus"
+      },
+      "trader": {
+        "$ref": "#/UserId"
+      },
+      "working_progress": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      }
+    }
+  },
   "Statement": {
     "type": "object",
     "required": [
       "account",
       "clearing_firm",
       "filename",
+      "statement_date",
       "statement_type",
-      "statement_uuid",
-      "timestamp"
+      "statement_uuid"
     ],
     "properties": {
       "account": {
@@ -2928,12 +3143,559 @@
       "filename": {
         "type": "string"
       },
+      "statement_date": {
+        "type": "string",
+        "format": "date"
+      },
       "statement_type": {
         "type": "string"
       },
       "statement_uuid": {
         "type": "string",
         "format": "uuid"
+      }
+    }
+  },
+  "RqdAccountStatistics": {
+    "type": "object",
+    "required": [
+      "account_number"
+    ],
+    "properties": {
+      "account_number": {
+        "type": "string"
+      },
+      "account_type": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "as_of_date": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "available_cash_balance": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "cash_available_for_withdrawal": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "cumulative_day_trade_pnl": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "day_trading_buying_power": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "day_trading_buying_power_high_water_mark": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "day_trading_buying_power_maintenance_margin_multiplier": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "day_trading_house_minimum_equity_marign_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "day_trading_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "day_trading_minimum_equity_marign_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "excess_sma_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "house_initial_margin_requirement_adjustment_factor": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "house_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "house_margin_requirement": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "house_margin_requirement_adjustment_factor": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "is_day_trader": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "maintenance_margin_requirement": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "marginable_equity": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "market_value_adjustment_factor": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "number_open_day_trading_margin_calls": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "option_only_maintenance_margin_requirement": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "option_trade_date_short_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "overall_current_sma_balance": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "overnight_buying_power": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "reg_t_initial_margin_requirement": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "reg_t_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "reg_t_mentainance_margin_requirement_adjustment_factor": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "settlement_date_cash_balance": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "settlement_date_long_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "settlement_date_option_long_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "settlement_date_option_short_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "settlement_date_short_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "start_of_day_day_trading_buying_power": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "start_of_day_day_trading_buying_power_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "start_of_day_house_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "start_of_day_maintenance_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "start_of_day_reg_t_margin_call_amount": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "strategy_based_relief_adjustment_factor": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "total_equity": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "trade_date_cash_balance": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "trade_date_option_long_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "trade_date_total_long_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "trade_date_total_short_market_value": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "usable_sma_balance": {
+        "anyOf": [
+          {
+            "type": "number",
+            "format": "decimal"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  },
+  "Deposit": {
+    "type": "object",
+    "required": [
+      "account",
+      "amount",
+      "description",
+      "timestamp"
+    ],
+    "properties": {
+      "account": {
+        "type": "string"
+      },
+      "amount": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "description": {
+        "type": "string"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "Withdrawal": {
+    "type": "object",
+    "required": [
+      "account",
+      "amount",
+      "description",
+      "timestamp"
+    ],
+    "properties": {
+      "account": {
+        "type": "string"
+      },
+      "amount": {
+        "type": "number",
+        "format": "decimal"
+      },
+      "description": {
+        "type": "string"
       },
       "timestamp": {
         "type": "string",

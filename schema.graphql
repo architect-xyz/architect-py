@@ -601,7 +601,7 @@ type Statement {
   account: String!
   statementType: String!
   clearingFirm: String!
-  timestamp: DateTime!
+  statementDate: Date!
   filename: String!
 }
 

@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlgoOrderForTwap",
+  "type": "object",
+  "required": [
+    "create_time",
+    "id",
+    "params",
+    "status",
+    "status_details",
+    "trader"
+  ],
+  "properties": {
+    "create_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "display_symbols": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "finish_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "id": {
+      "$ref": "../definitions.json#/OrderId"
+    },
+    "params": {
+      "$ref": "../definitions.json#/TwapParams"
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reject_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "$ref": "../definitions.json#/AlgoOrderStatus"
+    },
+    "status_details": {
+      "$ref": "../definitions.json#/TwapStatus"
+    },
+    "trader": {
+      "$ref": "../definitions.json#/UserId"
+    },
+    "working_progress": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double"
+    }
+  }
+}

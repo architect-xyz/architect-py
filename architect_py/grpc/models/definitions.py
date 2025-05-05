@@ -161,10 +161,14 @@ class AccountStatistics(Struct, omit_defaults=True):
         return f"AccountStatistics(cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
 
 
-class AlgoState(str, Enum):
-    Pending = "Pending"
-    Running = "Running"
-    Stopped = "Stopped"
+class AlgoOrderStatus(str, Enum):
+    pending = "pending"
+    working = "working"
+    rejected = "rejected"
+    paused = "paused"
+    pausing = "pausing"
+    stopped = "stopped"
+    stopping = "stopping"
 
 
 class CancelStatus(str, Enum):
@@ -198,6 +202,32 @@ class CptyLogoutRequest(Struct, omit_defaults=True):
 
 
 DateTimeOrUtc = datetime
+
+
+class Deposit(Struct, omit_defaults=True):
+    account: str
+    amount: Decimal
+    description: str
+    timestamp: datetime
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: str,
+        amount: Decimal,
+        description: str,
+        timestamp: datetime,
+    ):
+        return cls(
+            account,
+            amount,
+            description,
+            timestamp,
+        )
+
+    def __str__(self) -> str:
+        return f"Deposit(account={self.account},amount={self.amount},description={self.description},timestamp={self.timestamp})"
 
 
 class HealthMetric(Struct, omit_defaults=True):
@@ -534,6 +564,165 @@ class ProductCatalogInfo(Struct, omit_defaults=True):
         return f"ProductCatalogInfo(exchange={self.exchange},exchange_product={self.exchange_product},category={self.category},cqg_contract_symbol={self.cqg_contract_symbol},info_url={self.info_url},long_description={self.long_description},multiplier={self.multiplier},price_display_format={self.price_display_format},quote_currency={self.quote_currency},schedule_description={self.schedule_description},settle_method={self.settle_method},short_description={self.short_description},sub_category={self.sub_category})"
 
 
+class RqdAccountStatistics(Struct, omit_defaults=True):
+    account_number: str
+    account_type: Optional[str] = None
+    as_of_date: Optional[str] = None
+    available_cash_balance: Optional[Decimal] = None
+    cash_available_for_withdrawal: Optional[Decimal] = None
+    cumulative_day_trade_pnl: Optional[Decimal] = None
+    day_trading_buying_power: Optional[Decimal] = None
+    day_trading_buying_power_high_water_mark: Optional[Decimal] = None
+    day_trading_buying_power_maintenance_margin_multiplier: Optional[Decimal] = None
+    day_trading_house_minimum_equity_marign_call_amount: Optional[Decimal] = None
+    day_trading_margin_call_amount: Optional[Decimal] = None
+    day_trading_minimum_equity_marign_call_amount: Optional[Decimal] = None
+    excess_sma_amount: Optional[Decimal] = None
+    house_initial_margin_requirement_adjustment_factor: Optional[Decimal] = None
+    house_margin_call_amount: Optional[Decimal] = None
+    house_margin_requirement: Optional[Decimal] = None
+    house_margin_requirement_adjustment_factor: Optional[Decimal] = None
+    is_day_trader: Optional[str] = None
+    maintenance_margin_requirement: Optional[Decimal] = None
+    margin_call_amount: Optional[Decimal] = None
+    marginable_equity: Optional[Decimal] = None
+    market_value_adjustment_factor: Optional[Decimal] = None
+    number_open_day_trading_margin_calls: Optional[Decimal] = None
+    option_only_maintenance_margin_requirement: Optional[Decimal] = None
+    option_trade_date_short_market_value: Optional[Decimal] = None
+    overall_current_sma_balance: Optional[Decimal] = None
+    overnight_buying_power: Optional[Decimal] = None
+    reg_t_initial_margin_requirement: Optional[Decimal] = None
+    reg_t_margin_call_amount: Optional[Decimal] = None
+    reg_t_mentainance_margin_requirement_adjustment_factor: Optional[str] = None
+    settlement_date_cash_balance: Optional[Decimal] = None
+    settlement_date_long_market_value: Optional[Decimal] = None
+    settlement_date_option_long_market_value: Optional[Decimal] = None
+    settlement_date_option_short_market_value: Optional[Decimal] = None
+    settlement_date_short_market_value: Optional[Decimal] = None
+    start_of_day_day_trading_buying_power: Optional[Decimal] = None
+    start_of_day_day_trading_buying_power_margin_call_amount: Optional[Decimal] = None
+    start_of_day_house_margin_call_amount: Optional[Decimal] = None
+    start_of_day_maintenance_margin_call_amount: Optional[Decimal] = None
+    start_of_day_reg_t_margin_call_amount: Optional[Decimal] = None
+    strategy_based_relief_adjustment_factor: Optional[Decimal] = None
+    total_equity: Optional[Decimal] = None
+    trade_date_cash_balance: Optional[Decimal] = None
+    trade_date_option_long_market_value: Optional[Decimal] = None
+    trade_date_total_long_market_value: Optional[Decimal] = None
+    trade_date_total_short_market_value: Optional[Decimal] = None
+    usable_sma_balance: Optional[Decimal] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account_number: str,
+        account_type: Optional[str] = None,
+        as_of_date: Optional[str] = None,
+        available_cash_balance: Optional[Decimal] = None,
+        cash_available_for_withdrawal: Optional[Decimal] = None,
+        cumulative_day_trade_pnl: Optional[Decimal] = None,
+        day_trading_buying_power: Optional[Decimal] = None,
+        day_trading_buying_power_high_water_mark: Optional[Decimal] = None,
+        day_trading_buying_power_maintenance_margin_multiplier: Optional[
+            Decimal
+        ] = None,
+        day_trading_house_minimum_equity_marign_call_amount: Optional[Decimal] = None,
+        day_trading_margin_call_amount: Optional[Decimal] = None,
+        day_trading_minimum_equity_marign_call_amount: Optional[Decimal] = None,
+        excess_sma_amount: Optional[Decimal] = None,
+        house_initial_margin_requirement_adjustment_factor: Optional[Decimal] = None,
+        house_margin_call_amount: Optional[Decimal] = None,
+        house_margin_requirement: Optional[Decimal] = None,
+        house_margin_requirement_adjustment_factor: Optional[Decimal] = None,
+        is_day_trader: Optional[str] = None,
+        maintenance_margin_requirement: Optional[Decimal] = None,
+        margin_call_amount: Optional[Decimal] = None,
+        marginable_equity: Optional[Decimal] = None,
+        market_value_adjustment_factor: Optional[Decimal] = None,
+        number_open_day_trading_margin_calls: Optional[Decimal] = None,
+        option_only_maintenance_margin_requirement: Optional[Decimal] = None,
+        option_trade_date_short_market_value: Optional[Decimal] = None,
+        overall_current_sma_balance: Optional[Decimal] = None,
+        overnight_buying_power: Optional[Decimal] = None,
+        reg_t_initial_margin_requirement: Optional[Decimal] = None,
+        reg_t_margin_call_amount: Optional[Decimal] = None,
+        reg_t_mentainance_margin_requirement_adjustment_factor: Optional[str] = None,
+        settlement_date_cash_balance: Optional[Decimal] = None,
+        settlement_date_long_market_value: Optional[Decimal] = None,
+        settlement_date_option_long_market_value: Optional[Decimal] = None,
+        settlement_date_option_short_market_value: Optional[Decimal] = None,
+        settlement_date_short_market_value: Optional[Decimal] = None,
+        start_of_day_day_trading_buying_power: Optional[Decimal] = None,
+        start_of_day_day_trading_buying_power_margin_call_amount: Optional[
+            Decimal
+        ] = None,
+        start_of_day_house_margin_call_amount: Optional[Decimal] = None,
+        start_of_day_maintenance_margin_call_amount: Optional[Decimal] = None,
+        start_of_day_reg_t_margin_call_amount: Optional[Decimal] = None,
+        strategy_based_relief_adjustment_factor: Optional[Decimal] = None,
+        total_equity: Optional[Decimal] = None,
+        trade_date_cash_balance: Optional[Decimal] = None,
+        trade_date_option_long_market_value: Optional[Decimal] = None,
+        trade_date_total_long_market_value: Optional[Decimal] = None,
+        trade_date_total_short_market_value: Optional[Decimal] = None,
+        usable_sma_balance: Optional[Decimal] = None,
+    ):
+        return cls(
+            account_number,
+            account_type,
+            as_of_date,
+            available_cash_balance,
+            cash_available_for_withdrawal,
+            cumulative_day_trade_pnl,
+            day_trading_buying_power,
+            day_trading_buying_power_high_water_mark,
+            day_trading_buying_power_maintenance_margin_multiplier,
+            day_trading_house_minimum_equity_marign_call_amount,
+            day_trading_margin_call_amount,
+            day_trading_minimum_equity_marign_call_amount,
+            excess_sma_amount,
+            house_initial_margin_requirement_adjustment_factor,
+            house_margin_call_amount,
+            house_margin_requirement,
+            house_margin_requirement_adjustment_factor,
+            is_day_trader,
+            maintenance_margin_requirement,
+            margin_call_amount,
+            marginable_equity,
+            market_value_adjustment_factor,
+            number_open_day_trading_margin_calls,
+            option_only_maintenance_margin_requirement,
+            option_trade_date_short_market_value,
+            overall_current_sma_balance,
+            overnight_buying_power,
+            reg_t_initial_margin_requirement,
+            reg_t_margin_call_amount,
+            reg_t_mentainance_margin_requirement_adjustment_factor,
+            settlement_date_cash_balance,
+            settlement_date_long_market_value,
+            settlement_date_option_long_market_value,
+            settlement_date_option_short_market_value,
+            settlement_date_short_market_value,
+            start_of_day_day_trading_buying_power,
+            start_of_day_day_trading_buying_power_margin_call_amount,
+            start_of_day_house_margin_call_amount,
+            start_of_day_maintenance_margin_call_amount,
+            start_of_day_reg_t_margin_call_amount,
+            strategy_based_relief_adjustment_factor,
+            total_equity,
+            trade_date_cash_balance,
+            trade_date_option_long_market_value,
+            trade_date_total_long_market_value,
+            trade_date_total_short_market_value,
+            usable_sma_balance,
+        )
+
+    def __str__(self) -> str:
+        return f"RqdAccountStatistics(account_number={self.account_number},account_type={self.account_type},as_of_date={self.as_of_date},available_cash_balance={self.available_cash_balance},cash_available_for_withdrawal={self.cash_available_for_withdrawal},cumulative_day_trade_pnl={self.cumulative_day_trade_pnl},day_trading_buying_power={self.day_trading_buying_power},day_trading_buying_power_high_water_mark={self.day_trading_buying_power_high_water_mark},day_trading_buying_power_maintenance_margin_multiplier={self.day_trading_buying_power_maintenance_margin_multiplier},day_trading_house_minimum_equity_marign_call_amount={self.day_trading_house_minimum_equity_marign_call_amount},day_trading_margin_call_amount={self.day_trading_margin_call_amount},day_trading_minimum_equity_marign_call_amount={self.day_trading_minimum_equity_marign_call_amount},excess_sma_amount={self.excess_sma_amount},house_initial_margin_requirement_adjustment_factor={self.house_initial_margin_requirement_adjustment_factor},house_margin_call_amount={self.house_margin_call_amount},house_margin_requirement={self.house_margin_requirement},house_margin_requirement_adjustment_factor={self.house_margin_requirement_adjustment_factor},is_day_trader={self.is_day_trader},maintenance_margin_requirement={self.maintenance_margin_requirement},margin_call_amount={self.margin_call_amount},marginable_equity={self.marginable_equity},market_value_adjustment_factor={self.market_value_adjustment_factor},number_open_day_trading_margin_calls={self.number_open_day_trading_margin_calls},option_only_maintenance_margin_requirement={self.option_only_maintenance_margin_requirement},option_trade_date_short_market_value={self.option_trade_date_short_market_value},overall_current_sma_balance={self.overall_current_sma_balance},overnight_buying_power={self.overnight_buying_power},reg_t_initial_margin_requirement={self.reg_t_initial_margin_requirement},reg_t_margin_call_amount={self.reg_t_margin_call_amount},reg_t_mentainance_margin_requirement_adjustment_factor={self.reg_t_mentainance_margin_requirement_adjustment_factor},settlement_date_cash_balance={self.settlement_date_cash_balance},settlement_date_long_market_value={self.settlement_date_long_market_value},settlement_date_option_long_market_value={self.settlement_date_option_long_market_value},settlement_date_option_short_market_value={self.settlement_date_option_short_market_value},settlement_date_short_market_value={self.settlement_date_short_market_value},start_of_day_day_trading_buying_power={self.start_of_day_day_trading_buying_power},start_of_day_day_trading_buying_power_margin_call_amount={self.start_of_day_day_trading_buying_power_margin_call_amount},start_of_day_house_margin_call_amount={self.start_of_day_house_margin_call_amount},start_of_day_maintenance_margin_call_amount={self.start_of_day_maintenance_margin_call_amount},start_of_day_reg_t_margin_call_amount={self.start_of_day_reg_t_margin_call_amount},strategy_based_relief_adjustment_factor={self.strategy_based_relief_adjustment_factor},total_equity={self.total_equity},trade_date_cash_balance={self.trade_date_cash_balance},trade_date_option_long_market_value={self.trade_date_option_long_market_value},trade_date_total_long_market_value={self.trade_date_total_long_market_value},trade_date_total_short_market_value={self.trade_date_total_short_market_value},usable_sma_balance={self.usable_sma_balance})"
+
+
 class SortTickersBy(str, Enum):
     VOLUME_DESC = "VOLUME_DESC"
     CHANGE_ASC = "CHANGE_ASC"
@@ -545,9 +734,9 @@ class Statement(Struct, omit_defaults=True):
     account: str
     clearing_firm: str
     filename: str
+    statement_date: date
     statement_type: str
     statement_uuid: str
-    timestamp: datetime
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -556,21 +745,21 @@ class Statement(Struct, omit_defaults=True):
         account: str,
         clearing_firm: str,
         filename: str,
+        statement_date: date,
         statement_type: str,
         statement_uuid: str,
-        timestamp: datetime,
     ):
         return cls(
             account,
             clearing_firm,
             filename,
+            statement_date,
             statement_type,
             statement_uuid,
-            timestamp,
         )
 
     def __str__(self) -> str:
-        return f"Statement(account={self.account},clearing_firm={self.clearing_firm},filename={self.filename},statement_type={self.statement_type},statement_uuid={self.statement_uuid},timestamp={self.timestamp})"
+        return f"Statement(account={self.account},clearing_firm={self.clearing_firm},filename={self.filename},statement_date={self.statement_date},statement_type={self.statement_type},statement_uuid={self.statement_uuid})"
 
 
 class GoodTilDate(Struct, omit_defaults=True):
@@ -626,6 +815,32 @@ class TwapStatus(Struct, omit_defaults=True):
 
 
 UserId = str
+
+
+class Withdrawal(Struct, omit_defaults=True):
+    account: str
+    amount: Decimal
+    description: str
+    timestamp: datetime
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: str,
+        amount: Decimal,
+        description: str,
+        timestamp: datetime,
+    ):
+        return cls(
+            account,
+            amount,
+            description,
+            timestamp,
+        )
+
+    def __str__(self) -> str:
+        return f"Withdrawal(account={self.account},amount={self.amount},description={self.description},timestamp={self.timestamp})"
 
 
 class AccountPermissions(Struct, omit_defaults=True):
@@ -970,6 +1185,77 @@ class SnapshotOrUpdateForStringAndString2(Struct, omit_defaults=True):
 SnapshotOrUpdateForStringAndString = Union[
     SnapshotOrUpdateForStringAndString1, SnapshotOrUpdateForStringAndString2
 ]
+
+
+class TakeThrough1(Struct, omit_defaults=True):
+    Fraction: Decimal
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        Fraction: Decimal,
+    ):
+        return cls(
+            Fraction,
+        )
+
+    def __str__(self) -> str:
+        return f"TakeThrough1(Fraction={self.Fraction})"
+
+
+class TakeThrough2(Struct, omit_defaults=True):
+    Percent: Decimal
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        Percent: Decimal,
+    ):
+        return cls(
+            Percent,
+        )
+
+    def __str__(self) -> str:
+        return f"TakeThrough2(Percent={self.Percent})"
+
+
+class TakeThrough3(Struct, omit_defaults=True):
+    Price: Decimal
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        Price: Decimal,
+    ):
+        return cls(
+            Price,
+        )
+
+    def __str__(self) -> str:
+        return f"TakeThrough3(Price={self.Price})"
+
+
+class TakeThrough4(Struct, omit_defaults=True):
+    Ticks: Decimal
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        Ticks: Decimal,
+    ):
+        return cls(
+            Ticks,
+        )
+
+    def __str__(self) -> str:
+        return f"TakeThrough4(Ticks={self.Ticks})"
+
+
+TakeThrough = Union[TakeThrough1, TakeThrough2, TakeThrough3, TakeThrough4]
 
 
 class SimpleDecimal(Struct, omit_defaults=True):
@@ -1950,6 +2236,53 @@ class AberrantFill(Struct, omit_defaults=True):
         self.xid = value
 
 
+class AlgoOrderForNull(Struct, omit_defaults=True):
+    create_time: datetime
+    id: OrderId
+    params: None
+    status: AlgoOrderStatus
+    status_details: None
+    trader: UserId
+    display_symbols: Optional[List[str]] = None
+    finish_time: Optional[datetime] = None
+    parent_id: Optional[OrderId] = None
+    reject_reason: Optional[str] = None
+    working_progress: Optional[float] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        create_time: datetime,
+        id: OrderId,
+        params: None,
+        status: AlgoOrderStatus,
+        status_details: None,
+        trader: UserId,
+        display_symbols: Optional[List[str]] = None,
+        finish_time: Optional[datetime] = None,
+        parent_id: Optional[OrderId] = None,
+        reject_reason: Optional[str] = None,
+        working_progress: Optional[float] = None,
+    ):
+        return cls(
+            create_time,
+            id,
+            params,
+            status,
+            status_details,
+            trader,
+            display_symbols,
+            finish_time,
+            parent_id,
+            reject_reason,
+            working_progress,
+        )
+
+    def __str__(self) -> str:
+        return f"AlgoOrderForNull(create_time={self.create_time},id={self.id},params={self.params},status={self.status},status_details={self.status_details},trader={self.trader},display_symbols={self.display_symbols},finish_time={self.finish_time},parent_id={self.parent_id},reject_reason={self.reject_reason},working_progress={self.working_progress})"
+
+
 class CancelReject(Struct, omit_defaults=True):
     id: OrderId
     xid: str
@@ -2654,13 +2987,27 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo = Uni
 
 class TwapParams(Struct, omit_defaults=True):
     dir: OrderDir
-    end_time: datetime
+    end_time: Annotated[
+        datetime,
+        Meta(description="The TWAP will finish within 1 interval of the end time."),
+    ]
+    """
+    The TWAP will finish within 1 interval of the end time.
+    """
     execution_venue: str
     interval: HumanDuration
+    marketdata_venue: str
     quantity: Decimal
     reject_lockout: HumanDuration
     symbol: str
-    take_through_frac: Optional[Decimal] = None
+    take_through: Annotated[
+        TakeThrough,
+        Meta(description="When placing an order, how aggressively to take."),
+    ]
+    """
+    When placing an order, how aggressively to take.
+    """
+    account: Optional[AccountIdOrName] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -2670,24 +3017,28 @@ class TwapParams(Struct, omit_defaults=True):
         end_time: datetime,
         execution_venue: str,
         interval: HumanDuration,
+        marketdata_venue: str,
         quantity: Decimal,
         reject_lockout: HumanDuration,
         symbol: str,
-        take_through_frac: Optional[Decimal] = None,
+        take_through: TakeThrough,
+        account: Optional[AccountIdOrName] = None,
     ):
         return cls(
             dir,
             end_time,
             execution_venue,
             interval,
+            marketdata_venue,
             quantity,
             reject_lockout,
             symbol,
-            take_through_frac,
+            take_through,
+            account,
         )
 
     def __str__(self) -> str:
-        return f"TwapParams(dir={self.dir},end_time={self.end_time},execution_venue={self.execution_venue},interval={self.interval},quantity={self.quantity},reject_lockout={self.reject_lockout},symbol={self.symbol},take_through_frac={self.take_through_frac})"
+        return f"TwapParams(dir={self.dir},end_time={self.end_time},execution_venue={self.execution_venue},interval={self.interval},marketdata_venue={self.marketdata_venue},quantity={self.quantity},reject_lockout={self.reject_lockout},symbol={self.symbol},take_through={self.take_through},account={self.account})"
 
 
 class Account(Struct, omit_defaults=True):
@@ -2856,6 +3207,53 @@ class AccountWithPermissions(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader})"
+
+
+class AlgoOrderForTwap(Struct, omit_defaults=True):
+    create_time: datetime
+    id: OrderId
+    params: TwapParams
+    status: AlgoOrderStatus
+    status_details: TwapStatus
+    trader: UserId
+    display_symbols: Optional[List[str]] = None
+    finish_time: Optional[datetime] = None
+    parent_id: Optional[OrderId] = None
+    reject_reason: Optional[str] = None
+    working_progress: Optional[float] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        create_time: datetime,
+        id: OrderId,
+        params: TwapParams,
+        status: AlgoOrderStatus,
+        status_details: TwapStatus,
+        trader: UserId,
+        display_symbols: Optional[List[str]] = None,
+        finish_time: Optional[datetime] = None,
+        parent_id: Optional[OrderId] = None,
+        reject_reason: Optional[str] = None,
+        working_progress: Optional[float] = None,
+    ):
+        return cls(
+            create_time,
+            id,
+            params,
+            status,
+            status_details,
+            trader,
+            display_symbols,
+            finish_time,
+            parent_id,
+            reject_reason,
+            working_progress,
+        )
+
+    def __str__(self) -> str:
+        return f"AlgoOrderForTwap(create_time={self.create_time},id={self.id},params={self.params},status={self.status},status_details={self.status_details},trader={self.trader},display_symbols={self.display_symbols},finish_time={self.finish_time},parent_id={self.parent_id},reject_reason={self.reject_reason},working_progress={self.working_progress})"
 
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(
