@@ -9,43 +9,53 @@ from architect_py.client import Client
 
 @dataclass
 class Config:
-    host: str
     api_key: str
     api_secret: str
-    use_tls: bool
+    paper_trading: bool
+    endpoint: str
 
 
 def load_config() -> Config:
-    load_dotenv()
-    host = os.environ["ARCHITECT_HOST"]
+    loaded = load_dotenv()
+    if not loaded:
+        raise ValueError(
+            "⚠️  .env file not found or had no new variables\n"
+            "Please create a .env file with the following variables:\n"
+            "ARCHITECT_ENDPOINT=your_endpoint (e.g. app.architect.co)\n"
+            "ARCHITECT_API_KEY=your_api_key (get from https://app.architect.co/user/account)\n"
+            "ARCHITECT_API_SECRET=your_api_secret\n"
+            "ARCHITECT_PAPER_TRADING=true/false\n"
+        )
+    endpoint = os.environ["ARCHITECT_ENDPOINT"]
     api_key = os.getenv("ARCHITECT_API_KEY")
     api_secret = os.getenv("ARCHITECT_API_SECRET")
-    implicit_use_tls = api_key is not None or api_secret is not None
-    explicit_use_tls = os.getenv("ARCHITECT_USE_TLS")
-    use_tls = False
-
-    if explicit_use_tls == "true" or explicit_use_tls == "1":
-        use_tls = True
-    elif explicit_use_tls is None:
-        use_tls = implicit_use_tls
+    paper_trading_str = os.getenv("ARCHITECT_PAPER_TRADING")
+    paper_trading: bool = paper_trading_str is not None and (
+        paper_trading_str.lower() == "true"
+    )
 
     if api_key is None:
-        raise ValueError("API key is required")
+        raise ValueError("API key is required in .env file")
 
     if api_secret is None:
-        raise ValueError("API secret is required")
+        raise ValueError("API secret is required in .env file")
 
-    return Config(host, api_key, api_secret, use_tls)
+    return Config(
+        api_key,
+        api_secret,
+        paper_trading,
+        endpoint,
+    )
 
 
 def connect_client():
     config = load_config()
 
     c = Client(
-        host=config.host,
+        endpoint=config.endpoint,
         api_key=config.api_key,
         api_secret=config.api_secret,
-        use_tls=config.use_tls,
+        paper_trading=config.paper_trading,
     )
     return c
 
@@ -53,11 +63,10 @@ def connect_client():
 async def connect_async_client():
     config = load_config()
     c = await AsyncClient.connect(
-        host=config.host,
+        endpoint=config.endpoint,
         api_key=config.api_key,
         api_secret=config.api_secret,
-        paper_trading=True,
-        use_tls=config.use_tls,
+        paper_trading=config.paper_trading,
     )
     return c
 

@@ -1,5 +1,5 @@
 {
-  "include": ["architect_py"],
+  "include": ["architect_py", "examples", "scripts"],
   "exclude": [],
-  "typeCheckingMode": "basic"
+  "typeCheckingMode": "standard"
 }

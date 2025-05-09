@@ -1895,24 +1895,16 @@
     }
   },
   "CandleWidth": {
-    "type": "string",
-    "x-enumNames": [
-      "OneSecond",
-      "FiveSecond",
-      "OneMinute",
-      "FifteenMinute",
-      "OneHour",
-      "OneDay"
-    ],
-    "old_enum": [
-      1,
-      2,
-      4,
-      8,
-      16,
-      32
-    ],
+    "type": "integer",
     "enum": [
+      1,
+      5,
+      60,
+      900,
+      3600,
+      86400
+    ],
+    "x-enumNames": [
       "OneSecond",
       "FiveSecond",
       "OneMinute",
@@ -2041,35 +2033,11 @@
   },
   "OrderId": {
     "description": "System-unique, persistent order identifiers",
-    "type": "object",
-    "required": [
-      "seqid",
-      "seqno"
-    ],
-    "properties": {
-      "seqid": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "seqno": {
-        "type": "integer",
-        "format": "default",
-        "minimum": 0.0
-      }
-    }
+    "type": "string"
   },
   "OrderSource": {
-    "type": "string",
-    "x-enumNames": [
-      "API",
-      "GUI",
-      "Algo",
-      "Reconciled",
-      "CLI",
-      "Telegram",
-      "Other"
-    ],
-    "old_enum": [
+    "type": "integer",
+    "enum": [
       0,
       1,
       2,
@@ -2078,7 +2046,7 @@
       5,
       255
     ],
-    "enum": [
+    "x-enumNames": [
       "API",
       "GUI",
       "Algo",
@@ -2152,9 +2120,15 @@
         "$ref": "#/OrderId"
       },
       "r": {
-        "$ref": "#/OrderRejectReason"
+        "title": "reject_reason",
+        "allOf": [
+          {
+            "$ref": "#/OrderRejectReason"
+          }
+        ]
       },
       "rm": {
+        "title": "message",
         "type": [
           "string",
           "null"
@@ -2550,20 +2524,14 @@
     }
   },
   "CancelStatus": {
-    "type": "string",
-    "x-enumNames": [
-      "Pending",
-      "Acked",
-      "Rejected",
-      "Out"
-    ],
-    "old_enum": [
+    "type": "integer",
+    "enum": [
       0,
       1,
       2,
       127
     ],
-    "enum": [
+    "x-enumNames": [
       "Pending",
       "Acked",
       "Rejected",
@@ -2571,18 +2539,13 @@
     ]
   },
   "FillKind": {
-    "type": "string",
-    "x-enumNames": [
-      "Normal",
-      "Reversal",
-      "Correction"
-    ],
-    "old_enum": [
+    "type": "integer",
+    "enum": [
       0,
       1,
       2
     ],
-    "enum": [
+    "x-enumNames": [
       "Normal",
       "Reversal",
       "Correction"
@@ -2605,19 +2568,8 @@
     ]
   },
   "OrderStatus": {
-    "type": "string",
-    "x-enumNames": [
-      "Pending",
-      "Open",
-      "Rejected",
-      "Out",
-      "Canceling",
-      "Canceled",
-      "ReconciledOut",
-      "Stale",
-      "Unknown"
-    ],
-    "old_enum": [
+    "type": "integer",
+    "enum": [
       0,
       1,
       2,
@@ -2628,7 +2580,7 @@
       254,
       255
     ],
-    "enum": [
+    "x-enumNames": [
       "Pending",
       "Open",
       "Rejected",

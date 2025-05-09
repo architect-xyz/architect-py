@@ -11,27 +11,41 @@
   ],
   "properties": {
     "id": {
-      "$ref": "../definitions.json#/OrderId"
+      "title": "order_id",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        }
+      ]
     },
     "o": {
-      "$ref": "../definitions.json#/CancelStatus"
+      "title": "status",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/CancelStatus"
+        }
+      ]
     },
     "r": {
+      "title": "reject_reason",
       "type": [
         "string",
         "null"
       ]
     },
     "tn": {
+      "title": "recv_time_ns",
       "type": "integer",
       "format": "default",
       "minimum": 0.0
     },
     "ts": {
+      "title": "recv_time",
       "type": "integer",
       "format": "int64"
     },
     "xid": {
+      "title": "cancel_id",
       "type": "string",
       "format": "uuid"
     }

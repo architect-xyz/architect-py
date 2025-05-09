@@ -1,9 +1,9 @@
 import asyncio
 
 from architect_py.async_client import AsyncClient
+from architect_py.common_types.tradable_product import TradableProduct
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from architect_py.grpc_client.definitions import CandleWidth
-from architect_py.scalars import TradableProduct
+from architect_py.grpc.models.definitions import CandleWidth
 
 from .common import connect_async_client
 
@@ -15,7 +15,7 @@ async def main():
     tradable_product = TradableProduct(symbol, quote)
     venue = "CME"
     try:
-        stream = c.subscribe_candles_stream(
+        stream = c.stream_candles(
             tradable_product,
             venue,
             candle_widths=[CandleWidth.OneHour],

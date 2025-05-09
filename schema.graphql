@@ -144,7 +144,10 @@ scalar ExecutionVenue
 "A venue that provides marketdata, e.g. COINBASE, DATABENTO, XIGNITE, etc."
 scalar MarketdataVenue
 
-"System-unique, persistent order identifiers"
+"""
+  System-unique, persistent order identifiers
+  <!-- py: type=string -->
+"""
 scalar OrderId
 
 scalar Product

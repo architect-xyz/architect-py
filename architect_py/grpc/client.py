@@ -51,14 +51,17 @@ class GrpcClient:
         decoder: msgspec.json.Decoder[ResponseTypeGeneric] = self.get_decoder(
             request.get_unannotated_response_type()
         )
-        stub = self.channel.unary_unary(
+        stub: grpc.aio.UnaryUnaryMultiCallable[
+            RequestType[ResponseTypeGeneric], ResponseTypeGeneric
+        ] = self.channel.unary_unary(
             request.get_route(),
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        metadata = ()
         if self.jwt is not None:
             metadata = (("authorization", f"Bearer {self.jwt}"),)
+        else:
+            metadata = ()
         return await stub(request, metadata=metadata)
 
     async def unary_stream(
@@ -73,14 +76,19 @@ class GrpcClient:
         decoder: msgspec.json.Decoder[ResponseTypeGeneric] = self.get_decoder(
             request.get_unannotated_response_type()
         )
-        stub = self.channel.unary_stream(
+        stub: grpc.aio.UnaryStreamMultiCallable[
+            RequestType[ResponseTypeGeneric], ResponseTypeGeneric
+        ] = self.channel.unary_stream(
             request.get_route(),
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        metadata = ()
         if self.jwt is not None:
             metadata = (("authorization", f"Bearer {self.jwt}"),)
-        call = stub(request, metadata=metadata)
+        else:
+            metadata = ()
+        call: grpc.aio._base_call.UnaryStreamCall[
+            RequestType[ResponseTypeGeneric], ResponseTypeGeneric
+        ] = stub(request, metadata=metadata)
         async for update in call:
             yield update

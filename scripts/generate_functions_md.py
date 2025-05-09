@@ -79,13 +79,15 @@ def get_asyncclient_methods(filename):
                             decorator_name = (
                                 decorator.func.attr
                                 if isinstance(decorator.func, ast.Attribute)
-                                else decorator.func.id
+                                else getattr(decorator.func, "id", "")
                             )
                         else:
                             decorator_name = (
                                 decorator.attr
                                 if isinstance(decorator, ast.Attribute)
                                 else decorator.id
+                                if isinstance(decorator, ast.Name)
+                                else ""
                             )
                         if decorator_name == "overload":
                             is_fn_overload = True

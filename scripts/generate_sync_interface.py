@@ -3,7 +3,7 @@ import inspect
 import types
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Sequence, Union, get_args, get_origin
+from typing import Annotated, Any, Sequence, Union, get_args, get_origin
 
 from architect_py.async_client import AsyncClient
 from architect_py.graphql_client.base_model import UnsetType
@@ -18,6 +18,12 @@ def format_type_hint_with_generics(type_hint) -> str:
         return "Any"
 
     origin = get_origin(type_hint)
+
+    if origin is Annotated:
+        annotated_args = get_args(type_hint)
+        if annotated_args:
+            return format_type_hint_with_generics(annotated_args[0])
+        return "Any"
 
     # Handle `|` unions (Python 3.10+)
     if isinstance(
@@ -88,9 +94,9 @@ def autogenerate_protocol(cls, protocol_name: str) -> str:
     Returns:
         A string representing the Protocol definition.
     """
-    methods = {}
-    method_decorators = {}
-    attributes = {}
+    methods: dict[str, inspect.Signature] = {}
+    method_decorators: dict[str, list[str]] = {}
+    attributes: dict[str, Any] = {}
 
     # Inspect class members
     for name, member in inspect.getmembers(cls):
@@ -139,7 +145,7 @@ def autogenerate_protocol(cls, protocol_name: str) -> str:
         "from typing import Any, Union",
         "from .graphql_client import *",
         "from .async_client import *",
-        "\n",
+        "from .grpc.models.definitions import *",
         f"class {protocol_name}:",
     ]
 
@@ -151,12 +157,13 @@ def autogenerate_protocol(cls, protocol_name: str) -> str:
 
     # Add methods
     for name, signature in methods.items():
-        if (
-            name.startswith("subscribe")
-            or name.startswith("stream")
-            or name.startswith("unsubscribe")
-            or name == "connect"
+        if any(
+            keyword in name
+            for keyword in ("subscribe", "stream", "unsubscribe", "connect")
         ):
+            continue
+
+        if "async" in str(signature).lower():
             continue
 
         # for decorators like @staticmethod and @classmethod

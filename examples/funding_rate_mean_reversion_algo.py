@@ -7,20 +7,20 @@ from decimal import Decimal
 from typing import AsyncIterator, Optional
 
 from architect_py.async_client import AsyncClient
+from architect_py.common_types.order_dir import OrderDir
+from architect_py.common_types.tradable_product import TradableProduct
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from architect_py.grpc_client.definitions import TimeInForceEnum
-from architect_py.grpc_client.Marketdata.TickerRequest import TickerRequest
-from architect_py.grpc_client.Oms.PlaceOrderRequest import PlaceOrderRequestType
-from architect_py.grpc_client.Orderflow.Orderflow import (
+from architect_py.grpc.models.definitions import TimeInForceEnum
+from architect_py.grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequestType
+from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedOrderAck,
     TaggedOrderOut,
     TaggedOrderReject,
 )
-from architect_py.grpc_client.Orderflow.OrderflowRequest import (
+from architect_py.grpc.models.Orderflow.OrderflowRequest import (
     OrderflowRequest,
     PlaceOrder,
 )
-from architect_py.scalars import OrderDir, TradableProduct
 
 from .common import connect_async_client
 
@@ -52,9 +52,8 @@ class OrderflowRequester:
 
 
 async def update_marketdata(c: AsyncClient):
-    ticker_request = TickerRequest(symbol=tradable_product)
-    s = c.grpc_client.subscribe(ticker_request)
-    async for ticker in s:
+    while True:
+        ticker = await c.get_ticker(tradable_product, venue)
         if ticker.funding_rate:
             global current_funding_rate
             global target_position
@@ -76,13 +75,14 @@ async def update_marketdata(c: AsyncClient):
         if ticker.ask_price:
             global best_ask_price
             best_ask_price = ticker.ask_price
+        await asyncio.sleep(1)
 
 
 async def subscribe_and_print_orderflow(
     c: AsyncClient, orderflow_requester: OrderflowRequester
 ):
     try:
-        stream = c.grpc_client.subscribe_orderflow_stream(orderflow_requester)
+        stream = c.orderflow(orderflow_requester)
         """
         subscribe_orderflow_stream is a duplex_stream meaning that it is a stream that can be read from and written to.
         This is a stream that will be used to send orders to the Architect and receive order updates from the Architect.
@@ -159,14 +159,9 @@ async def print_info(c: AsyncClient):
         )
         pos = Decimal(0)
         for account in account_summaries:
-            for balance in account.balances:
-                if balance.product is None:
-                    name = "UNKNOWN NAME"
-                else:
-                    name = balance.product
-                print(f"balance for {name}: {balance.balance}")
-                if name and balance.balance is not None:
-                    pos += balance.balance
+            for name, balance in account.balances.items():
+                print(f"balance for {name}: {balance}")
+                pos += balance
         global current_position
         current_position = pos
         print("---")

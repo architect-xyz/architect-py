@@ -14,8 +14,22 @@ class L1BookSnapshot(Struct, omit_defaults=True):
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
     ts: Annotated[int, Meta(title="timestamp")]
-    a: Optional[Annotated[List[Decimal], Meta(title="best_ask")]] = None
-    b: Optional[Annotated[List[Decimal], Meta(title="best_bid")]] = None
+    a: Optional[
+        Annotated[
+            List[Decimal], Meta(description="(price, quantity)", title="best_ask")
+        ]
+    ] = None
+    """
+    (price, quantity)
+    """
+    b: Optional[
+        Annotated[
+            List[Decimal], Meta(description="(price, quantity)", title="best_bid")
+        ]
+    ] = None
+    """
+    (price, quantity)
+    """
     rt: Optional[
         Annotated[
             Optional[int],

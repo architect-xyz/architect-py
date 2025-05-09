@@ -2,8 +2,8 @@ import asyncio
 from decimal import Decimal
 
 from architect_py.async_client import OrderDir
+from architect_py.common_types.tradable_product import TradableProduct
 from architect_py.graphql_client.enums import OrderStatus
-from architect_py.scalars import TradableProduct
 from examples.common import connect_async_client
 
 
@@ -19,8 +19,8 @@ async def main():
     print()
     print(f"Market snapshot for {market}")
     market_snapshot = await c.get_market_snapshot(symbol=market, venue=execution_venue)
-    print(f"Best bid: {market_snapshot.bid_price}")
-    print(f"Best ask: {market_snapshot.ask_price}")
+    print(f"Best bid: {market_snapshot.best_bid}")
+    print(f"Best ask: {market_snapshot.best_ask}")
 
     # List your FCM accounts
     print()
@@ -32,10 +32,12 @@ async def main():
     account_id = accounts[0].account.id
 
     # Place a limit order $100 below the best bid
-    best_bid = market_snapshot.bid_price
-    if best_bid is None:
+    if (best_bid := market_snapshot.best_bid) is not None:
+        bid_px = best_bid[0]
+    else:
         raise ValueError("No bid price available")
-    limit_price = best_bid - Decimal(100)
+
+    limit_price = bid_px - Decimal(100)
     quantity = Decimal(1)
     account = accounts[0]
     order = None
@@ -46,7 +48,7 @@ async def main():
         )
         == "y"
     ):
-        order = await c.send_limit_order(
+        order = await c.place_limit_order(
             symbol=market,
             execution_venue=execution_venue,
             odir=OrderDir.BUY,

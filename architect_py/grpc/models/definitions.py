@@ -171,20 +171,20 @@ class AlgoOrderStatus(str, Enum):
     stopping = "stopping"
 
 
-class CancelStatus(str, Enum):
-    Pending = "Pending"
-    Acked = "Acked"
-    Rejected = "Rejected"
-    Out = "Out"
+class CancelStatus(int, Enum):
+    Pending = 0
+    Acked = 1
+    Rejected = 2
+    Out = 127
 
 
-class CandleWidth(str, Enum):
-    OneSecond = "OneSecond"
-    FiveSecond = "FiveSecond"
-    OneMinute = "OneMinute"
-    FifteenMinute = "FifteenMinute"
-    OneHour = "OneHour"
-    OneDay = "OneDay"
+class CandleWidth(int, Enum):
+    OneSecond = 1
+    FiveSecond = 5
+    OneMinute = 60
+    FifteenMinute = 900
+    OneHour = 3600
+    OneDay = 86400
 
 
 class CptyLogoutRequest(Struct, omit_defaults=True):
@@ -385,28 +385,9 @@ class L2BookDiff(Struct, omit_defaults=True):
         return datetime.fromtimestamp(self.ts)
 
 
-class OrderId(Struct, omit_defaults=True):
-    """
-    System-unique, persistent order identifiers
-    """
-
-    seqid: str
-    seqno: Annotated[int, Meta(ge=0)]
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        seqid: str,
-        seqno: int,
-    ):
-        return cls(
-            seqid,
-            seqno,
-        )
-
-    def __str__(self) -> str:
-        return f"OrderId(seqid={self.seqid},seqno={self.seqno})"
+OrderId = Annotated[
+    str, Meta(description="System-unique, persistent order identifiers")
+]
 
 
 class OrderOut(Struct, omit_defaults=True):
@@ -440,14 +421,14 @@ class OrderRejectReason(str, Enum):
     Unknown = "Unknown"
 
 
-class OrderSource(str, Enum):
-    API = "API"
-    GUI = "GUI"
-    Algo = "Algo"
-    Reconciled = "Reconciled"
-    CLI = "CLI"
-    Telegram = "Telegram"
-    Other = "Other"
+class OrderSource(int, Enum):
+    API = 0
+    GUI = 1
+    Algo = 2
+    Reconciled = 3
+    CLI = 4
+    Telegram = 5
+    Other = 255
 
 
 class OrderStale(Struct, omit_defaults=True):
@@ -467,16 +448,16 @@ class OrderStale(Struct, omit_defaults=True):
         return f"OrderStale(id={self.id})"
 
 
-class OrderStatus(str, Enum):
-    Pending = "Pending"
-    Open = "Open"
-    Rejected = "Rejected"
-    Out = "Out"
-    Canceling = "Canceling"
-    Canceled = "Canceled"
-    ReconciledOut = "ReconciledOut"
-    Stale = "Stale"
-    Unknown = "Unknown"
+class OrderStatus(int, Enum):
+    Pending = 0
+    Open = 1
+    Rejected = 2
+    Out = 127
+    Canceling = 128
+    Canceled = 129
+    ReconciledOut = 130
+    Stale = 254
+    Unknown = 255
 
 
 class ProductCatalogInfo(Struct, omit_defaults=True):
@@ -887,10 +868,10 @@ class DerivativeKind(str, Enum):
     Quanto = "Quanto"
 
 
-class FillKind(str, Enum):
-    Normal = "Normal"
-    Reversal = "Reversal"
-    Correction = "Correction"
+class FillKind(int, Enum):
+    Normal = 0
+    Reversal = 1
+    Correction = 2
 
 
 HumanDuration = str
@@ -2825,25 +2806,41 @@ class OrderCanceling(Struct, omit_defaults=True):
 
 class OrderReject(Struct, omit_defaults=True):
     id: OrderId
-    r: OrderRejectReason
-    rm: Optional[str] = None
+    r: Annotated[OrderRejectReason, Meta(title="reject_reason")]
+    rm: Optional[Annotated[Optional[str], Meta(title="message")]] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         id: OrderId,
-        r: OrderRejectReason,
-        rm: Optional[str] = None,
+        reject_reason: OrderRejectReason,
+        message: Optional[str] = None,
     ):
         return cls(
             id,
-            r,
-            rm,
+            reject_reason,
+            message,
         )
 
     def __str__(self) -> str:
-        return f"OrderReject(id={self.id},r={self.r},rm={self.rm})"
+        return f"OrderReject(id={self.id},reject_reason={self.r},message={self.rm})"
+
+    @property
+    def reject_reason(self) -> OrderRejectReason:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: OrderRejectReason) -> None:
+        self.r = value
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.rm
+
+    @message.setter
+    def message(self, value: Optional[str]) -> None:
+        self.rm = value
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(

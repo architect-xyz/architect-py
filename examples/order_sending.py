@@ -1,31 +1,21 @@
 import asyncio
 import logging
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from architect_py.async_client import AsyncClient
-from architect_py.graphql_client.enums import OrderType, TimeInForce
-from architect_py.scalars import OrderDir, TradableProduct
+from architect_py.common_types.order_dir import OrderDir
+from architect_py.common_types.tradable_product import TradableProduct
+from architect_py.grpc.models.definitions import GoodTilDate, TimeInForceEnum
+from architect_py.grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequestType
+from examples.common import connect_async_client
 
 LOGGER = logging.getLogger(__name__)
 
-api_key = None
-api_secret = None
-HOST = None
-ACCOUNT = None
 
-
-if api_key is None or api_secret is None or HOST is None or ACCOUNT is None:
-    raise ValueError(
-        "Please set the api_key, api_secret, HOST, and ACCOUNT variables before running this script"
-    )
-
-
-client = AsyncClient(host=HOST, api_key=api_key, api_secret=api_secret)
-
-
-async def search_symbol() -> tuple[str, TradableProduct]:
+async def search_symbol(c: AsyncClient) -> tuple[str, TradableProduct]:
     venue = "CME"
-    markets = await client.search_symbols(
+    markets = await c.search_symbols(
         search_string="ES",
         execution_venue=venue,
     )
@@ -33,27 +23,32 @@ async def search_symbol() -> tuple[str, TradableProduct]:
     return venue, market
 
 
-async def test_send_order():
-    venue, symbol = await search_symbol()
+async def test_send_order(client: AsyncClient, account: str):
+    venue, symbol = await search_symbol(client)
 
     snapshot = await client.get_market_snapshot(symbol=symbol, venue=venue)
     if snapshot is None:
         return ValueError(f"Market snapshot for {symbol} is None")
 
-    if snapshot.ask_price is None or snapshot.bid_price is None:
+    if snapshot.best_ask is None or snapshot.best_bid is None:
         return ValueError(f"Market snapshot for {symbol} is None")
 
-    order = await client.send_limit_order(
+    best_bid_price, best_bid_quantity = snapshot.best_bid
+
+    d = datetime.now(tz=timezone.utc) + timedelta(days=1)
+    gtd = GoodTilDate(d)
+
+    order = await client.place_limit_order(
         symbol=symbol,
         odir=OrderDir.BUY,
-        quantity=Decimal(1),
-        order_type=OrderType.LIMIT,
+        quantity=best_bid_quantity,
+        order_type=PlaceOrderRequestType.LIMIT,
         execution_venue="CME",
         post_only=True,
-        limit_price=snapshot.bid_price
-        - (snapshot.ask_price - snapshot.bid_price) * Decimal(10),
-        account=ACCOUNT,
-        time_in_force=TimeInForce.IOC,
+        limit_price=best_bid_price
+        - (snapshot.best_ask[0] - best_bid_price) * Decimal(10),
+        account=account,
+        time_in_force=gtd,
     )
     logging.critical(f"ORDER TEST: {order}")
 
@@ -64,12 +59,12 @@ async def test_send_order():
     return cancel
 
 
-async def test_cancel_all_orders():
+async def test_cancel_all_orders(client: AsyncClient):
     await client.cancel_all_orders()
 
 
-async def test_send_market_pro_order():
-    venue, symbol = await search_symbol()
+async def test_send_market_pro_order(client: AsyncClient, account: str):
+    venue, symbol = await search_symbol(client)
     print(symbol)
 
     await client.send_market_pro_order(
@@ -77,13 +72,18 @@ async def test_send_market_pro_order():
         execution_venue=venue,
         odir=OrderDir.BUY,
         quantity=Decimal(1),
-        account=ACCOUNT,
-        time_in_force=TimeInForce.IOC,
+        account=account,
+        time_in_force=TimeInForceEnum.IOC,
     )
 
 
 async def main():
-    await test_send_market_pro_order()
+    client: AsyncClient = await connect_async_client()
+    accounts = await client.list_accounts()
+    account: str = accounts[0].account.name
+
+    await test_send_order(client, account)
+    await test_send_market_pro_order(client, account)
 
 
 if __name__ == "__main__":

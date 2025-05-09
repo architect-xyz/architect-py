@@ -12,6 +12,7 @@ dependencies = [
     "gql[httpx]>=3.5.0,<4",
     "grpcio>=1.66.1",
     "msgspec>=0.19,<0.20",
+    "pandas>=2",
     "pydantic~=2.10",
     "websockets>=11",
     "dnspython>=2.0",
@@ -23,15 +24,12 @@ readme = "README.md"
 requires-python = ">=3.10,<4"
 version = "5.0.0b1"
 
-[project.optional-dependencies]
-pandas = ["pandas>=2"]
-
 [dependency-groups]
 dev = [
     "ariadne-codegen[subscriptions]>=0.13.0",
     "black>=24",
     "datamodel-code-generator>=0.28.0",
-    "pandas>=2",
+    "jupyterlab",
     "pyright>=1.1.399",
     "pytest>=8,<9",
     "pytest-asyncio>=0.24",

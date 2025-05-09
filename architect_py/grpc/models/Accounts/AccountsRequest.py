@@ -12,6 +12,7 @@ from .. import definitions
 
 
 class AccountsRequest(Struct, omit_defaults=True):
+    paper: Optional[bool] = False
     trader: Optional[
         Annotated[
             Optional[definitions.TraderIdOrEmail],
@@ -28,14 +29,16 @@ class AccountsRequest(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        paper: Optional[bool] = False,
         trader: Optional[definitions.TraderIdOrEmail] = None,
     ):
         return cls(
+            paper,
             trader,
         )
 
     def __str__(self) -> str:
-        return f"AccountsRequest(trader={self.trader})"
+        return f"AccountsRequest(paper={self.paper},trader={self.trader})"
 
     @staticmethod
     def get_response_type():

@@ -1,7 +1,7 @@
 import asyncio
 
 from architect_py.async_client import AsyncClient
-from architect_py.scalars import TradableProduct
+from architect_py.common_types.tradable_product import TradableProduct
 
 from .common import connect_async_client
 
@@ -9,7 +9,7 @@ from .common import connect_async_client
 async def main():
     c: AsyncClient = await connect_async_client()
 
-    async for snap in c.subscribe_l1_book_stream(
+    async for snap in c.stream_l1_book_snapshots(
         symbols=[TradableProduct("ES 20250620 CME Future/USD")],
         venue="CME",
     ):

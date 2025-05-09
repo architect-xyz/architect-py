@@ -89,7 +89,7 @@ async def test_stream_l1_book_snapshots(
     async_client: AsyncClient, venue: str, symbol: str
 ):
     i = 0
-    async for snap in await async_client.stream_l1_book_snapshots([symbol], venue):
+    async for snap in async_client.stream_l1_book_snapshots([symbol], venue):
         assert snap is not None
         assert snap.best_bid is not None
         assert snap.best_ask is not None
@@ -113,7 +113,7 @@ async def test_stream_l2_book_updates(
     i = 0
     sid = None
     sn = None
-    async for up in await async_client.stream_l2_book_updates(symbol, venue):
+    async for up in async_client.stream_l2_book_updates(symbol, venue):
         assert up is not None
         if isinstance(up, Snapshot):
             assert len(up.bids) > 0
@@ -143,7 +143,7 @@ async def test_stream_l2_book_updates(
 )
 async def test_stream_trades(async_client: AsyncClient, venue: str, symbol: str):
     i = 0
-    async for trade in await async_client.stream_trades(symbol, venue):
+    async for trade in async_client.stream_trades(symbol, venue):
         assert trade is not None
         i += 1
         if i > 20:
@@ -159,7 +159,7 @@ async def test_stream_trades(async_client: AsyncClient, venue: str, symbol: str)
 )
 async def test_stream_candles(async_client: AsyncClient, venue: str, symbol: str):
     i = 0
-    async for candle in await async_client.stream_candles(
+    async for candle in async_client.stream_candles(
         symbol, venue, [CandleWidth.OneSecond]
     ):
         assert candle is not None

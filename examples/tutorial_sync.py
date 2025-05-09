@@ -2,8 +2,8 @@ import pprint
 import time
 from decimal import Decimal
 
+from architect_py.common_types.order_dir import OrderDir
 from architect_py.graphql_client.enums import OrderStatus
-from architect_py.scalars import OrderDir
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from .common import confirm, connect_client, print_book, print_open_orders
@@ -56,10 +56,10 @@ orders = c.get_open_orders()
 print_open_orders(orders)
 
 # Place a limit order 20% below the best bid
-best_bid = market_snapshot.bid_price
+best_bid = market_snapshot.best_bid
 assert best_bid is not None
-limit_price = best_bid * Decimal(0.8)
-quantity = Decimal(1)
+best_bid_price, best_bid_quantity = best_bid
+limit_price = best_bid_price * Decimal(0.8)
 account = accounts[0]
 order = None
 
@@ -70,7 +70,7 @@ if confirm(
         symbol=symbol,
         execution_venue=venue,
         odir=OrderDir.BUY,
-        quantity=quantity,
+        quantity=best_bid_quantity,
         limit_price=limit_price,
         account=account.account.name,
         price_round_method=TickRoundMethod.ROUND,

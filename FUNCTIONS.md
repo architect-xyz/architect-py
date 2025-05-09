@@ -37,7 +37,7 @@
 - **`stream_l1_book_snapshots`**: Subscribe to the stream of L1BookSnapshots for a symbol.
 - **`stream_l2_book_updates`**: Subscribe to the stream of L2BookUpdates for a symbol.
 - **`subscribe_l1_book`**: Subscribe to the L1 stream for a symbol in the background.
-- **`unsubscribe_l1_book`**
+- **`unsubscribe_l1_book`**: Unsubscribe from the L1 stream for a symbol, ie undoes subscribe_l1_book.
 - **`subscribe_l2_book`**: Subscribe to the L2 stream for a symbol in the background.
 - **`stream_trades`**: Subscribe to a stream of trades for a symbol.
 - **`stream_candles`**: Subscribe to a stream of candles for a symbol.

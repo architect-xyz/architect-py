@@ -2,7 +2,8 @@
 
 - refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
 - as a consequence, many marketdata methods require a `venue` argument
-- some methods renamed
+- some methods renamed:
+  - send_limit_order -> place_limit_order
 - moved some directories around, esp auto-generated files
 - added justfile and switched to ruff for linting and formatting
 - switched to pyright for typechecking

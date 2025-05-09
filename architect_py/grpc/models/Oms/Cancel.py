@@ -11,32 +11,80 @@ from .. import definitions
 
 
 class Cancel(Struct, omit_defaults=True):
-    id: definitions.OrderId
-    o: definitions.CancelStatus
-    tn: Annotated[int, Meta(ge=0)]
-    ts: int
-    xid: str
-    r: Optional[str] = None
+    id: Annotated[definitions.OrderId, Meta(title="order_id")]
+    o: Annotated[definitions.CancelStatus, Meta(title="status")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    xid: Annotated[str, Meta(title="cancel_id")]
+    r: Optional[Annotated[Optional[str], Meta(title="reject_reason")]] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        id: definitions.OrderId,
-        o: definitions.CancelStatus,
-        tn: int,
-        ts: int,
-        xid: str,
-        r: Optional[str] = None,
+        order_id: definitions.OrderId,
+        status: definitions.CancelStatus,
+        recv_time_ns: int,
+        recv_time: int,
+        cancel_id: str,
+        reject_reason: Optional[str] = None,
     ):
         return cls(
-            id,
-            o,
-            tn,
-            ts,
-            xid,
-            r,
+            order_id,
+            status,
+            recv_time_ns,
+            recv_time,
+            cancel_id,
+            reject_reason,
         )
 
     def __str__(self) -> str:
-        return f"Cancel(id={self.id},o={self.o},tn={self.tn},ts={self.ts},xid={self.xid},r={self.r})"
+        return f"Cancel(order_id={self.id},status={self.o},recv_time_ns={self.tn},recv_time={self.ts},cancel_id={self.xid},reject_reason={self.r})"
+
+    @property
+    def order_id(self) -> definitions.OrderId:
+        return self.id
+
+    @order_id.setter
+    def order_id(self, value: definitions.OrderId) -> None:
+        self.id = value
+
+    @property
+    def status(self) -> definitions.CancelStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: definitions.CancelStatus) -> None:
+        self.o = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def cancel_id(self) -> str:
+        return self.xid
+
+    @cancel_id.setter
+    def cancel_id(self, value: str) -> None:
+        self.xid = value
+
+    @property
+    def reject_reason(self) -> Optional[str]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[str]) -> None:
+        self.r = value

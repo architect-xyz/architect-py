@@ -10,6 +10,7 @@
   "properties": {
     "a": {
       "title": "best_ask",
+      "description": "(price, quantity)",
       "type": [
         "array",
         "null"
@@ -27,6 +28,7 @@
     },
     "b": {
       "title": "best_bid",
+      "description": "(price, quantity)",
       "type": [
         "array",
         "null"
