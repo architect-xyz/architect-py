@@ -626,7 +626,7 @@ type SymbologyQueryRoot {
   productCatalogInfos(exchangeProducts: [String!]): [ProductCatalogInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(searchString: String, executionVenue: ExecutionVenue, offset: Int, limit: Int): [TradableProduct!]!
+  searchSymbols(searchString: String, executionVenue: ExecutionVenue, executionVenues: [ExecutionVenue!], offset: Int, limit: Int): [TradableProduct!]!
 }
 
 type Ticker {
