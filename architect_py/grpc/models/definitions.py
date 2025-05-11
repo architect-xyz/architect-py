@@ -555,9 +555,9 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
     day_trading_buying_power: Optional[Decimal] = None
     day_trading_buying_power_high_water_mark: Optional[Decimal] = None
     day_trading_buying_power_maintenance_margin_multiplier: Optional[Decimal] = None
-    day_trading_house_minimum_equity_marign_call_amount: Optional[Decimal] = None
+    day_trading_house_minimum_equity_margin_call_amount: Optional[Decimal] = None
     day_trading_margin_call_amount: Optional[Decimal] = None
-    day_trading_minimum_equity_marign_call_amount: Optional[Decimal] = None
+    day_trading_minimum_equity_margin_call_amount: Optional[Decimal] = None
     excess_sma_amount: Optional[Decimal] = None
     house_initial_margin_requirement_adjustment_factor: Optional[Decimal] = None
     house_margin_call_amount: Optional[Decimal] = None
@@ -574,8 +574,8 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
     overall_current_sma_balance: Optional[Decimal] = None
     overnight_buying_power: Optional[Decimal] = None
     reg_t_initial_margin_requirement: Optional[Decimal] = None
+    reg_t_maintenance_margin_requirement_adjustment_factor: Optional[str] = None
     reg_t_margin_call_amount: Optional[Decimal] = None
-    reg_t_mentainance_margin_requirement_adjustment_factor: Optional[str] = None
     settlement_date_cash_balance: Optional[Decimal] = None
     settlement_date_long_market_value: Optional[Decimal] = None
     settlement_date_option_long_market_value: Optional[Decimal] = None
@@ -609,9 +609,9 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
         day_trading_buying_power_maintenance_margin_multiplier: Optional[
             Decimal
         ] = None,
-        day_trading_house_minimum_equity_marign_call_amount: Optional[Decimal] = None,
+        day_trading_house_minimum_equity_margin_call_amount: Optional[Decimal] = None,
         day_trading_margin_call_amount: Optional[Decimal] = None,
-        day_trading_minimum_equity_marign_call_amount: Optional[Decimal] = None,
+        day_trading_minimum_equity_margin_call_amount: Optional[Decimal] = None,
         excess_sma_amount: Optional[Decimal] = None,
         house_initial_margin_requirement_adjustment_factor: Optional[Decimal] = None,
         house_margin_call_amount: Optional[Decimal] = None,
@@ -628,8 +628,8 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
         overall_current_sma_balance: Optional[Decimal] = None,
         overnight_buying_power: Optional[Decimal] = None,
         reg_t_initial_margin_requirement: Optional[Decimal] = None,
+        reg_t_maintenance_margin_requirement_adjustment_factor: Optional[str] = None,
         reg_t_margin_call_amount: Optional[Decimal] = None,
-        reg_t_mentainance_margin_requirement_adjustment_factor: Optional[str] = None,
         settlement_date_cash_balance: Optional[Decimal] = None,
         settlement_date_long_market_value: Optional[Decimal] = None,
         settlement_date_option_long_market_value: Optional[Decimal] = None,
@@ -660,9 +660,9 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
             day_trading_buying_power,
             day_trading_buying_power_high_water_mark,
             day_trading_buying_power_maintenance_margin_multiplier,
-            day_trading_house_minimum_equity_marign_call_amount,
+            day_trading_house_minimum_equity_margin_call_amount,
             day_trading_margin_call_amount,
-            day_trading_minimum_equity_marign_call_amount,
+            day_trading_minimum_equity_margin_call_amount,
             excess_sma_amount,
             house_initial_margin_requirement_adjustment_factor,
             house_margin_call_amount,
@@ -679,8 +679,8 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
             overall_current_sma_balance,
             overnight_buying_power,
             reg_t_initial_margin_requirement,
+            reg_t_maintenance_margin_requirement_adjustment_factor,
             reg_t_margin_call_amount,
-            reg_t_mentainance_margin_requirement_adjustment_factor,
             settlement_date_cash_balance,
             settlement_date_long_market_value,
             settlement_date_option_long_market_value,
@@ -701,7 +701,7 @@ class RqdAccountStatistics(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"RqdAccountStatistics(account_number={self.account_number},account_type={self.account_type},as_of_date={self.as_of_date},available_cash_balance={self.available_cash_balance},cash_available_for_withdrawal={self.cash_available_for_withdrawal},cumulative_day_trade_pnl={self.cumulative_day_trade_pnl},day_trading_buying_power={self.day_trading_buying_power},day_trading_buying_power_high_water_mark={self.day_trading_buying_power_high_water_mark},day_trading_buying_power_maintenance_margin_multiplier={self.day_trading_buying_power_maintenance_margin_multiplier},day_trading_house_minimum_equity_marign_call_amount={self.day_trading_house_minimum_equity_marign_call_amount},day_trading_margin_call_amount={self.day_trading_margin_call_amount},day_trading_minimum_equity_marign_call_amount={self.day_trading_minimum_equity_marign_call_amount},excess_sma_amount={self.excess_sma_amount},house_initial_margin_requirement_adjustment_factor={self.house_initial_margin_requirement_adjustment_factor},house_margin_call_amount={self.house_margin_call_amount},house_margin_requirement={self.house_margin_requirement},house_margin_requirement_adjustment_factor={self.house_margin_requirement_adjustment_factor},is_day_trader={self.is_day_trader},maintenance_margin_requirement={self.maintenance_margin_requirement},margin_call_amount={self.margin_call_amount},marginable_equity={self.marginable_equity},market_value_adjustment_factor={self.market_value_adjustment_factor},number_open_day_trading_margin_calls={self.number_open_day_trading_margin_calls},option_only_maintenance_margin_requirement={self.option_only_maintenance_margin_requirement},option_trade_date_short_market_value={self.option_trade_date_short_market_value},overall_current_sma_balance={self.overall_current_sma_balance},overnight_buying_power={self.overnight_buying_power},reg_t_initial_margin_requirement={self.reg_t_initial_margin_requirement},reg_t_margin_call_amount={self.reg_t_margin_call_amount},reg_t_mentainance_margin_requirement_adjustment_factor={self.reg_t_mentainance_margin_requirement_adjustment_factor},settlement_date_cash_balance={self.settlement_date_cash_balance},settlement_date_long_market_value={self.settlement_date_long_market_value},settlement_date_option_long_market_value={self.settlement_date_option_long_market_value},settlement_date_option_short_market_value={self.settlement_date_option_short_market_value},settlement_date_short_market_value={self.settlement_date_short_market_value},start_of_day_day_trading_buying_power={self.start_of_day_day_trading_buying_power},start_of_day_day_trading_buying_power_margin_call_amount={self.start_of_day_day_trading_buying_power_margin_call_amount},start_of_day_house_margin_call_amount={self.start_of_day_house_margin_call_amount},start_of_day_maintenance_margin_call_amount={self.start_of_day_maintenance_margin_call_amount},start_of_day_reg_t_margin_call_amount={self.start_of_day_reg_t_margin_call_amount},strategy_based_relief_adjustment_factor={self.strategy_based_relief_adjustment_factor},total_equity={self.total_equity},trade_date_cash_balance={self.trade_date_cash_balance},trade_date_option_long_market_value={self.trade_date_option_long_market_value},trade_date_total_long_market_value={self.trade_date_total_long_market_value},trade_date_total_short_market_value={self.trade_date_total_short_market_value},usable_sma_balance={self.usable_sma_balance})"
+        return f"RqdAccountStatistics(account_number={self.account_number},account_type={self.account_type},as_of_date={self.as_of_date},available_cash_balance={self.available_cash_balance},cash_available_for_withdrawal={self.cash_available_for_withdrawal},cumulative_day_trade_pnl={self.cumulative_day_trade_pnl},day_trading_buying_power={self.day_trading_buying_power},day_trading_buying_power_high_water_mark={self.day_trading_buying_power_high_water_mark},day_trading_buying_power_maintenance_margin_multiplier={self.day_trading_buying_power_maintenance_margin_multiplier},day_trading_house_minimum_equity_margin_call_amount={self.day_trading_house_minimum_equity_margin_call_amount},day_trading_margin_call_amount={self.day_trading_margin_call_amount},day_trading_minimum_equity_margin_call_amount={self.day_trading_minimum_equity_margin_call_amount},excess_sma_amount={self.excess_sma_amount},house_initial_margin_requirement_adjustment_factor={self.house_initial_margin_requirement_adjustment_factor},house_margin_call_amount={self.house_margin_call_amount},house_margin_requirement={self.house_margin_requirement},house_margin_requirement_adjustment_factor={self.house_margin_requirement_adjustment_factor},is_day_trader={self.is_day_trader},maintenance_margin_requirement={self.maintenance_margin_requirement},margin_call_amount={self.margin_call_amount},marginable_equity={self.marginable_equity},market_value_adjustment_factor={self.market_value_adjustment_factor},number_open_day_trading_margin_calls={self.number_open_day_trading_margin_calls},option_only_maintenance_margin_requirement={self.option_only_maintenance_margin_requirement},option_trade_date_short_market_value={self.option_trade_date_short_market_value},overall_current_sma_balance={self.overall_current_sma_balance},overnight_buying_power={self.overnight_buying_power},reg_t_initial_margin_requirement={self.reg_t_initial_margin_requirement},reg_t_maintenance_margin_requirement_adjustment_factor={self.reg_t_maintenance_margin_requirement_adjustment_factor},reg_t_margin_call_amount={self.reg_t_margin_call_amount},settlement_date_cash_balance={self.settlement_date_cash_balance},settlement_date_long_market_value={self.settlement_date_long_market_value},settlement_date_option_long_market_value={self.settlement_date_option_long_market_value},settlement_date_option_short_market_value={self.settlement_date_option_short_market_value},settlement_date_short_market_value={self.settlement_date_short_market_value},start_of_day_day_trading_buying_power={self.start_of_day_day_trading_buying_power},start_of_day_day_trading_buying_power_margin_call_amount={self.start_of_day_day_trading_buying_power_margin_call_amount},start_of_day_house_margin_call_amount={self.start_of_day_house_margin_call_amount},start_of_day_maintenance_margin_call_amount={self.start_of_day_maintenance_margin_call_amount},start_of_day_reg_t_margin_call_amount={self.start_of_day_reg_t_margin_call_amount},strategy_based_relief_adjustment_factor={self.strategy_based_relief_adjustment_factor},total_equity={self.total_equity},trade_date_cash_balance={self.trade_date_cash_balance},trade_date_option_long_market_value={self.trade_date_option_long_market_value},trade_date_total_long_market_value={self.trade_date_total_long_market_value},trade_date_total_short_market_value={self.trade_date_total_short_market_value},usable_sma_balance={self.usable_sma_balance})"
 
 
 class SortTickersBy(str, Enum):

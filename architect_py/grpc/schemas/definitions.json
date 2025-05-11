@@ -3195,7 +3195,7 @@
           }
         ]
       },
-      "day_trading_house_minimum_equity_marign_call_amount": {
+      "day_trading_house_minimum_equity_margin_call_amount": {
         "anyOf": [
           {
             "type": "number",
@@ -3217,7 +3217,7 @@
           }
         ]
       },
-      "day_trading_minimum_equity_marign_call_amount": {
+      "day_trading_minimum_equity_margin_call_amount": {
         "anyOf": [
           {
             "type": "number",
@@ -3399,6 +3399,12 @@
           }
         ]
       },
+      "reg_t_maintenance_margin_requirement_adjustment_factor": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
       "reg_t_margin_call_amount": {
         "anyOf": [
           {
@@ -3408,12 +3414,6 @@
           {
             "type": "null"
           }
-        ]
-      },
-      "reg_t_mentainance_margin_requirement_adjustment_factor": {
-        "type": [
-          "string",
-          "null"
         ]
       },
       "settlement_date_cash_balance": {

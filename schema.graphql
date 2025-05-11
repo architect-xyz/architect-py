@@ -553,8 +553,8 @@ type RqdAccountStatistics {
   dayTradingBuyingPowerHighWaterMark: Decimal
   startOfDayDayTradingBuyingPower: Decimal
   dayTradingBuyingPowerMaintenanceMarginMultiplier: Decimal
-  dayTradingMinimumEquityMarignCallAmount: Decimal
-  dayTradingHouseMinimumEquityMarignCallAmount: Decimal
+  dayTradingMinimumEquityMarginCallAmount: Decimal
+  dayTradingHouseMinimumEquityMarginCallAmount: Decimal
   totalEquity: Decimal
   houseMarginRequirementAdjustmentFactor: Decimal
   marginCallAmount: Decimal
@@ -577,7 +577,7 @@ type RqdAccountStatistics {
   usableSmaBalance: Decimal
   optionOnlyMaintenanceMarginRequirement: Decimal
   optionTradeDateShortMarketValue: Decimal
-  regTMentainanceMarginRequirementAdjustmentFactor: String
+  regTMaintenanceMarginRequirementAdjustmentFactor: String
   strategyBasedReliefAdjustmentFactor: Decimal
   settlementDateCashBalance: Decimal
   settlementDateLongMarketValue: Decimal
