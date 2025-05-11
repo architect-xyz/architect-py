@@ -161,14 +161,11 @@ class AccountStatistics(Struct, omit_defaults=True):
         return f"AccountStatistics(cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
 
 
-class AlgoOrderStatus(str, Enum):
-    pending = "pending"
-    working = "working"
-    rejected = "rejected"
-    paused = "paused"
-    pausing = "pausing"
-    stopped = "stopped"
-    stopping = "stopping"
+class AlgoOrderStatus(int, Enum):
+    Working = 1
+    Rejected = 2
+    Paused = 63
+    Stopped = 127
 
 
 class CancelStatus(int, Enum):
@@ -775,26 +772,6 @@ TimeInForce = Union[GoodTilDate, TimeInForceEnum]
 TraderIdOrEmail = str
 
 
-class TwapStatus(Struct, omit_defaults=True):
-    quantity_filled: Decimal
-    realized_twap: Optional[Decimal] = None
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        quantity_filled: Decimal,
-        realized_twap: Optional[Decimal] = None,
-    ):
-        return cls(
-            quantity_filled,
-            realized_twap,
-        )
-
-    def __str__(self) -> str:
-        return f"TwapStatus(quantity_filled={self.quantity_filled},realized_twap={self.realized_twap})"
-
-
 UserId = str
 
 
@@ -872,9 +849,6 @@ class FillKind(int, Enum):
     Normal = 0
     Reversal = 1
     Correction = 2
-
-
-HumanDuration = str
 
 
 class Unit(str, Enum):
@@ -1166,77 +1140,6 @@ class SnapshotOrUpdateForStringAndString2(Struct, omit_defaults=True):
 SnapshotOrUpdateForStringAndString = Union[
     SnapshotOrUpdateForStringAndString1, SnapshotOrUpdateForStringAndString2
 ]
-
-
-class TakeThrough1(Struct, omit_defaults=True):
-    Fraction: Decimal
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        Fraction: Decimal,
-    ):
-        return cls(
-            Fraction,
-        )
-
-    def __str__(self) -> str:
-        return f"TakeThrough1(Fraction={self.Fraction})"
-
-
-class TakeThrough2(Struct, omit_defaults=True):
-    Percent: Decimal
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        Percent: Decimal,
-    ):
-        return cls(
-            Percent,
-        )
-
-    def __str__(self) -> str:
-        return f"TakeThrough2(Percent={self.Percent})"
-
-
-class TakeThrough3(Struct, omit_defaults=True):
-    Price: Decimal
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        Price: Decimal,
-    ):
-        return cls(
-            Price,
-        )
-
-    def __str__(self) -> str:
-        return f"TakeThrough3(Price={self.Price})"
-
-
-class TakeThrough4(Struct, omit_defaults=True):
-    Ticks: Decimal
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        Ticks: Decimal,
-    ):
-        return cls(
-            Ticks,
-        )
-
-    def __str__(self) -> str:
-        return f"TakeThrough4(Ticks={self.Ticks})"
-
-
-TakeThrough = Union[TakeThrough1, TakeThrough2, TakeThrough3, TakeThrough4]
 
 
 class SimpleDecimal(Struct, omit_defaults=True):
@@ -1615,53 +1518,6 @@ class AberrantFill(Struct, omit_defaults=True):
     @exchange_fill_id.setter
     def exchange_fill_id(self, value: Optional[str]) -> None:
         self.xid = value
-
-
-class AlgoOrderForNull(Struct, omit_defaults=True):
-    create_time: datetime
-    id: OrderId
-    params: None
-    status: AlgoOrderStatus
-    status_details: None
-    trader: UserId
-    display_symbols: Optional[List[str]] = None
-    finish_time: Optional[datetime] = None
-    parent_id: Optional[OrderId] = None
-    reject_reason: Optional[str] = None
-    working_progress: Optional[float] = None
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        create_time: datetime,
-        id: OrderId,
-        params: None,
-        status: AlgoOrderStatus,
-        status_details: None,
-        trader: UserId,
-        display_symbols: Optional[List[str]] = None,
-        finish_time: Optional[datetime] = None,
-        parent_id: Optional[OrderId] = None,
-        reject_reason: Optional[str] = None,
-        working_progress: Optional[float] = None,
-    ):
-        return cls(
-            create_time,
-            id,
-            params,
-            status,
-            status_details,
-            trader,
-            display_symbols,
-            finish_time,
-            parent_id,
-            reject_reason,
-            working_progress,
-        )
-
-    def __str__(self) -> str:
-        return f"AlgoOrderForNull(create_time={self.create_time},id={self.id},params={self.params},status={self.status},status_details={self.status_details},trader={self.trader},display_symbols={self.display_symbols},finish_time={self.finish_time},parent_id={self.parent_id},reject_reason={self.reject_reason},working_progress={self.working_progress})"
 
 
 class CancelReject(Struct, omit_defaults=True):
@@ -2382,62 +2238,6 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo = Uni
 ]
 
 
-class TwapParams(Struct, omit_defaults=True):
-    dir: OrderDir
-    end_time: Annotated[
-        datetime,
-        Meta(description="The TWAP will finish within 1 interval of the end time."),
-    ]
-    """
-    The TWAP will finish within 1 interval of the end time.
-    """
-    execution_venue: str
-    interval: HumanDuration
-    marketdata_venue: str
-    quantity: Decimal
-    reject_lockout: HumanDuration
-    symbol: str
-    take_through: Annotated[
-        TakeThrough,
-        Meta(description="When placing an order, how aggressively to take."),
-    ]
-    """
-    When placing an order, how aggressively to take.
-    """
-    account: Optional[AccountIdOrName] = None
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        dir: OrderDir,
-        end_time: datetime,
-        execution_venue: str,
-        interval: HumanDuration,
-        marketdata_venue: str,
-        quantity: Decimal,
-        reject_lockout: HumanDuration,
-        symbol: str,
-        take_through: TakeThrough,
-        account: Optional[AccountIdOrName] = None,
-    ):
-        return cls(
-            dir,
-            end_time,
-            execution_venue,
-            interval,
-            marketdata_venue,
-            quantity,
-            reject_lockout,
-            symbol,
-            take_through,
-            account,
-        )
-
-    def __str__(self) -> str:
-        return f"TwapParams(dir={self.dir},end_time={self.end_time},execution_venue={self.execution_venue},interval={self.interval},marketdata_venue={self.marketdata_venue},quantity={self.quantity},reject_lockout={self.reject_lockout},symbol={self.symbol},take_through={self.take_through},account={self.account})"
-
-
 class Account(Struct, omit_defaults=True):
     id: str
     name: AccountName
@@ -2604,53 +2404,6 @@ class AccountWithPermissions(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader})"
-
-
-class AlgoOrderForTwap(Struct, omit_defaults=True):
-    create_time: datetime
-    id: OrderId
-    params: TwapParams
-    status: AlgoOrderStatus
-    status_details: TwapStatus
-    trader: UserId
-    display_symbols: Optional[List[str]] = None
-    finish_time: Optional[datetime] = None
-    parent_id: Optional[OrderId] = None
-    reject_reason: Optional[str] = None
-    working_progress: Optional[float] = None
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        create_time: datetime,
-        id: OrderId,
-        params: TwapParams,
-        status: AlgoOrderStatus,
-        status_details: TwapStatus,
-        trader: UserId,
-        display_symbols: Optional[List[str]] = None,
-        finish_time: Optional[datetime] = None,
-        parent_id: Optional[OrderId] = None,
-        reject_reason: Optional[str] = None,
-        working_progress: Optional[float] = None,
-    ):
-        return cls(
-            create_time,
-            id,
-            params,
-            status,
-            status_details,
-            trader,
-            display_symbols,
-            finish_time,
-            parent_id,
-            reject_reason,
-            working_progress,
-        )
-
-    def __str__(self) -> str:
-        return f"AlgoOrderForTwap(create_time={self.create_time},id={self.id},params={self.params},status={self.status},status_details={self.status_details},trader={self.trader},display_symbols={self.display_symbols},finish_time={self.finish_time},parent_id={self.parent_id},reject_reason={self.reject_reason},working_progress={self.working_progress})"
 
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(

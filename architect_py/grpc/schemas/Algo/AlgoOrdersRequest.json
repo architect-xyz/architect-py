@@ -1,8 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AlgoOrdersRequest",
+  "description": "Find all algo orders matching the given criteria.\n\nIf limit is not specified, it will default to 100.",
   "type": "object",
   "properties": {
+    "algo": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "display_symbol": {
       "type": [
         "string",
@@ -60,8 +67,8 @@
       ]
     }
   },
-  "route": "/json.architect.Algo/TwapOrders",
+  "route": "/json.architect.Algo/AlgoOrders",
   "rpc_method": "unary",
   "service": "Algo",
-  "response_type": "AlgoOrdersResponseForTwap"
+  "response_type": "AlgoOrdersResponse"
 }

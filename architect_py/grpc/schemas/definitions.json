@@ -126,66 +126,6 @@
     "type": "string",
     "format": "uuid"
   },
-  "DerivativeKind": {
-    "enum": [
-      "Linear",
-      "Inverse",
-      "Quanto"
-    ],
-    "type": "string"
-  },
-  "EventContractSeriesInstance": {
-    "oneOf": [
-      {
-        "type": "object",
-        "required": [
-          "Enumerated"
-        ],
-        "properties": {
-          "Enumerated": {
-            "type": "object",
-            "required": [
-              "outcome"
-            ],
-            "properties": {
-              "outcome": {
-                "$ref": "#/Outcome"
-              }
-            }
-          }
-        },
-        "additionalProperties": false
-      },
-      {
-        "type": "object",
-        "required": [
-          "OptionLike"
-        ],
-        "properties": {
-          "OptionLike": {
-            "type": "object",
-            "required": [
-              "strike"
-            ],
-            "properties": {
-              "expiration": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "format": "date-time"
-              },
-              "strike": {
-                "type": "string",
-                "format": "decimal"
-              }
-            }
-          }
-        },
-        "additionalProperties": false
-      }
-    ]
-  },
   "ExecutionInfo": {
     "description": "Information about a symbol related to its execution route.",
     "type": "object",
@@ -256,6 +196,121 @@
         ]
       }
     }
+  },
+  "TickSize": {
+    "oneOf": [
+      {
+        "title": "Simple|Decimal",
+        "type": "object",
+        "required": [
+          "simple"
+        ],
+        "properties": {
+          "simple": {
+            "type": "string",
+            "format": "decimal"
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "title": "Varying",
+        "description": "List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.",
+        "type": "object",
+        "required": [
+          "varying"
+        ],
+        "properties": {
+          "varying": {
+            "type": "object",
+            "required": [
+              "thresholds"
+            ],
+            "properties": {
+              "thresholds": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string",
+                      "format": "decimal"
+                    },
+                    {
+                      "type": "string",
+                      "format": "decimal"
+                    }
+                  ],
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
+  },
+  "DerivativeKind": {
+    "enum": [
+      "Linear",
+      "Inverse",
+      "Quanto"
+    ],
+    "type": "string"
+  },
+  "EventContractSeriesInstance": {
+    "oneOf": [
+      {
+        "type": "object",
+        "required": [
+          "Enumerated"
+        ],
+        "properties": {
+          "Enumerated": {
+            "type": "object",
+            "required": [
+              "outcome"
+            ],
+            "properties": {
+              "outcome": {
+                "$ref": "#/Outcome"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "OptionLike"
+        ],
+        "properties": {
+          "OptionLike": {
+            "type": "object",
+            "required": [
+              "strike"
+            ],
+            "properties": {
+              "expiration": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "strike": {
+                "type": "string",
+                "format": "decimal"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
   },
   "OptionsExerciseType": {
     "type": "string",
@@ -748,61 +803,6 @@
         "format": "decimal"
       }
     }
-  },
-  "TickSize": {
-    "oneOf": [
-      {
-        "title": "Simple|Decimal",
-        "type": "object",
-        "required": [
-          "simple"
-        ],
-        "properties": {
-          "simple": {
-            "type": "string",
-            "format": "decimal"
-          }
-        },
-        "additionalProperties": false
-      },
-      {
-        "title": "Varying",
-        "description": "List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.",
-        "type": "object",
-        "required": [
-          "varying"
-        ],
-        "properties": {
-          "varying": {
-            "type": "object",
-            "required": [
-              "thresholds"
-            ],
-            "properties": {
-              "thresholds": {
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "string",
-                      "format": "decimal"
-                    },
-                    {
-                      "type": "string",
-                      "format": "decimal"
-                    }
-                  ],
-                  "maxItems": 2,
-                  "minItems": 2
-                }
-              }
-            }
-          }
-        },
-        "additionalProperties": false
-      }
-    ]
   },
   "AliasKind": {
     "type": "string",
@@ -2097,297 +2097,19 @@
     }
   },
   "AlgoOrderStatus": {
-    "type": "string",
+    "type": "integer",
     "enum": [
-      "pending",
-      "working",
-      "rejected",
-      "paused",
-      "pausing",
-      "stopped",
-      "stopping"
+      1,
+      2,
+      63,
+      127
+    ],
+    "x-enumNames": [
+      "Working",
+      "Rejected",
+      "Paused",
+      "Stopped"
     ]
-  },
-  "AlgoOrder_for_Null": {
-    "type": "object",
-    "required": [
-      "create_time",
-      "id",
-      "params",
-      "status",
-      "status_details",
-      "trader"
-    ],
-    "properties": {
-      "create_time": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "display_symbols": {
-        "type": [
-          "array",
-          "null"
-        ],
-        "items": {
-          "type": "string"
-        }
-      },
-      "finish_time": {
-        "type": [
-          "string",
-          "null"
-        ],
-        "format": "date-time"
-      },
-      "id": {
-        "$ref": "#/OrderId"
-      },
-      "params": {
-        "type": "null"
-      },
-      "parent_id": {
-        "anyOf": [
-          {
-            "$ref": "#/OrderId"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "reject_reason": {
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "status": {
-        "$ref": "#/AlgoOrderStatus"
-      },
-      "status_details": {
-        "type": "null"
-      },
-      "trader": {
-        "$ref": "#/UserId"
-      },
-      "working_progress": {
-        "type": [
-          "number",
-          "null"
-        ],
-        "format": "double"
-      }
-    }
-  },
-  "HumanDuration": {
-    "type": "string"
-  },
-  "TakeThrough": {
-    "oneOf": [
-      {
-        "type": "object",
-        "required": [
-          "Fraction"
-        ],
-        "properties": {
-          "Fraction": {
-            "type": "string",
-            "format": "decimal"
-          }
-        },
-        "additionalProperties": false
-      },
-      {
-        "type": "object",
-        "required": [
-          "Percent"
-        ],
-        "properties": {
-          "Percent": {
-            "type": "string",
-            "format": "decimal"
-          }
-        },
-        "additionalProperties": false
-      },
-      {
-        "type": "object",
-        "required": [
-          "Price"
-        ],
-        "properties": {
-          "Price": {
-            "type": "string",
-            "format": "decimal"
-          }
-        },
-        "additionalProperties": false
-      },
-      {
-        "type": "object",
-        "required": [
-          "Ticks"
-        ],
-        "properties": {
-          "Ticks": {
-            "type": "string",
-            "format": "decimal"
-          }
-        },
-        "additionalProperties": false
-      }
-    ]
-  },
-  "TwapParams": {
-    "type": "object",
-    "required": [
-      "dir",
-      "end_time",
-      "execution_venue",
-      "interval",
-      "marketdata_venue",
-      "quantity",
-      "reject_lockout",
-      "symbol",
-      "take_through"
-    ],
-    "properties": {
-      "account": {
-        "anyOf": [
-          {
-            "$ref": "#/AccountIdOrName"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "dir": {
-        "$ref": "#/Dir"
-      },
-      "end_time": {
-        "description": "The TWAP will finish within 1 interval of the end time.",
-        "type": "string",
-        "format": "date-time"
-      },
-      "execution_venue": {
-        "type": "string"
-      },
-      "interval": {
-        "$ref": "#/HumanDuration"
-      },
-      "marketdata_venue": {
-        "type": "string"
-      },
-      "quantity": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "reject_lockout": {
-        "$ref": "#/HumanDuration"
-      },
-      "symbol": {
-        "type": "string"
-      },
-      "take_through": {
-        "description": "When placing an order, how aggressively to take.",
-        "allOf": [
-          {
-            "$ref": "#/TakeThrough"
-          }
-        ]
-      }
-    }
-  },
-  "TwapStatus": {
-    "type": "object",
-    "required": [
-      "quantity_filled"
-    ],
-    "properties": {
-      "quantity_filled": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "realized_twap": {
-        "type": [
-          "string",
-          "null"
-        ],
-        "format": "decimal"
-      }
-    }
-  },
-  "AlgoOrder_for_Twap": {
-    "type": "object",
-    "required": [
-      "create_time",
-      "id",
-      "params",
-      "status",
-      "status_details",
-      "trader"
-    ],
-    "properties": {
-      "create_time": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "display_symbols": {
-        "type": [
-          "array",
-          "null"
-        ],
-        "items": {
-          "type": "string"
-        }
-      },
-      "finish_time": {
-        "type": [
-          "string",
-          "null"
-        ],
-        "format": "date-time"
-      },
-      "id": {
-        "$ref": "#/OrderId"
-      },
-      "params": {
-        "$ref": "#/TwapParams"
-      },
-      "parent_id": {
-        "anyOf": [
-          {
-            "$ref": "#/OrderId"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "reject_reason": {
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "status": {
-        "$ref": "#/AlgoOrderStatus"
-      },
-      "status_details": {
-        "$ref": "#/TwapStatus"
-      },
-      "trader": {
-        "$ref": "#/UserId"
-      },
-      "working_progress": {
-        "type": [
-          "number",
-          "null"
-        ],
-        "format": "double"
-      }
-    }
   },
   "Statement": {
     "type": "object",

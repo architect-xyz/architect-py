@@ -1,11 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "CreateAlgoOrderRequestForTwap",
+  "title": "CreateAlgoOrderRequest",
   "type": "object",
   "required": [
+    "algo",
     "params"
   ],
   "properties": {
+    "algo": {
+      "type": "string"
+    },
     "id": {
       "anyOf": [
         {
@@ -16,9 +20,7 @@
         }
       ]
     },
-    "params": {
-      "$ref": "../definitions.json#/TwapParams"
-    },
+    "params": true,
     "parent_id": {
       "anyOf": [
         {
@@ -40,8 +42,8 @@
       ]
     }
   },
-  "route": "/json.architect.Algo/CreateTwapOrder",
+  "route": "/json.architect.Algo/CreateAlgoOrder",
   "rpc_method": "unary",
   "service": "Algo",
-  "response_type": "AlgoOrderForTwap"
+  "response_type": "AlgoOrder"
 }

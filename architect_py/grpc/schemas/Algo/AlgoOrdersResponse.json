@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AlgoOrdersResponseForTwap",
+  "title": "AlgoOrdersResponse",
   "type": "object",
   "required": [
     "algo_orders"
@@ -9,7 +9,7 @@
     "algo_orders": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/AlgoOrder_for_Twap"
+        "$ref": "../Algo/AlgoOrder.json/#"
       }
     }
   }

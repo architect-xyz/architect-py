@@ -436,6 +436,8 @@ def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
     if "properties" in schema:
         properties = schema["properties"]
         for prop_def in properties.values():
+            if isinstance(prop_def, bool):
+                continue
             if "type" in prop_def and "null" in prop_def["type"]:
                 for constraint in constraints:
                     if constraint in prop_def:
@@ -446,6 +448,8 @@ def correct_null_types_with_constraints(schema: Dict[str, Any]) -> None:
         for definition in definitions.values():
             properties = definition.get("properties", {})
             for prop_def in properties.values():
+                if isinstance(prop_def, bool):
+                    continue
                 if "type" in prop_def and "null" in prop_def["type"]:
                     for constraint in constraints:
                         if constraint in prop_def:

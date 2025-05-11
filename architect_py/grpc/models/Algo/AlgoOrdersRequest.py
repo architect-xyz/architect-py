@@ -2,9 +2,7 @@
 #   filename:  Algo/AlgoOrdersRequest.json
 
 from __future__ import annotations
-from architect_py.grpc.models.Algo.AlgoOrdersResponseForTwap import (
-    AlgoOrdersResponseForTwap,
-)
+from architect_py.grpc.models.Algo.AlgoOrdersResponse import AlgoOrdersResponse
 
 from datetime import datetime
 from typing import List, Optional
@@ -15,6 +13,13 @@ from .. import definitions
 
 
 class AlgoOrdersRequest(Struct, omit_defaults=True):
+    """
+    Find all algo orders matching the given criteria.
+
+    If limit is not specified, it will default to 100.
+    """
+
+    algo: Optional[str] = None
     display_symbol: Optional[str] = None
     from_inclusive: Optional[datetime] = None
     limit: Optional[int] = None
@@ -27,6 +32,7 @@ class AlgoOrdersRequest(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        algo: Optional[str] = None,
         display_symbol: Optional[str] = None,
         from_inclusive: Optional[datetime] = None,
         limit: Optional[int] = None,
@@ -36,6 +42,7 @@ class AlgoOrdersRequest(Struct, omit_defaults=True):
         trader: Optional[definitions.TraderIdOrEmail] = None,
     ):
         return cls(
+            algo,
             display_symbol,
             from_inclusive,
             limit,
@@ -46,19 +53,19 @@ class AlgoOrdersRequest(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"AlgoOrdersRequest(display_symbol={self.display_symbol},from_inclusive={self.from_inclusive},limit={self.limit},parent_order_id={self.parent_order_id},status={self.status},to_exclusive={self.to_exclusive},trader={self.trader})"
+        return f"AlgoOrdersRequest(algo={self.algo},display_symbol={self.display_symbol},from_inclusive={self.from_inclusive},limit={self.limit},parent_order_id={self.parent_order_id},status={self.status},to_exclusive={self.to_exclusive},trader={self.trader})"
 
     @staticmethod
     def get_response_type():
-        return AlgoOrdersResponseForTwap
+        return AlgoOrdersResponse
 
     @staticmethod
     def get_unannotated_response_type():
-        return AlgoOrdersResponseForTwap
+        return AlgoOrdersResponse
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Algo/TwapOrders"
+        return "/json.architect.Algo/AlgoOrders"
 
     @staticmethod
     def get_rpc_method():

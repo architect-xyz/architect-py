@@ -11,8 +11,8 @@
       "$ref": "../definitions.json#/OrderId"
     }
   },
-  "route": "/json.architect.Algo/TwapOrder",
+  "route": "/json.architect.Algo/AlgoOrder",
   "rpc_method": "unary",
   "service": "Algo",
-  "response_type": "AlgoOrderForTwap"
+  "response_type": "AlgoOrder"
 }

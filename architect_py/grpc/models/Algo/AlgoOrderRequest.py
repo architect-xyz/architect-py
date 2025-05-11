@@ -2,7 +2,7 @@
 #   filename:  Algo/AlgoOrderRequest.json
 
 from __future__ import annotations
-from architect_py.grpc.models.Algo.AlgoOrderForTwap import AlgoOrderForTwap
+from architect_py.grpc.models.Algo.AlgoOrder import AlgoOrder
 
 from msgspec import Struct
 
@@ -31,15 +31,15 @@ class AlgoOrderRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_response_type():
-        return AlgoOrderForTwap
+        return AlgoOrder
 
     @staticmethod
     def get_unannotated_response_type():
-        return AlgoOrderForTwap
+        return AlgoOrder
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Algo/TwapOrder"
+        return "/json.architect.Algo/AlgoOrder"
 
     @staticmethod
     def get_rpc_method():

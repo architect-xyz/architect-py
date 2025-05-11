@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlgoOrder",
+  "type": "object",
+  "required": [
+    "algo",
+    "create_time",
+    "id",
+    "num_errors",
+    "num_open_orders",
+    "num_rejects",
+    "num_sent_orders",
+    "params",
+    "status",
+    "status_details",
+    "trader"
+  ],
+  "properties": {
+    "algo": {
+      "type": "string"
+    },
+    "create_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "display_symbols": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "finish_success": {
+      "description": "If the algo order is stopped, whether the stop was successful.",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "finish_time": {
+      "description": "If the algo order is stopped, the time at which it was stopped.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "id": {
+      "$ref": "../definitions.json#/OrderId"
+    },
+    "num_errors": {
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "num_open_orders": {
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "num_rejects": {
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "num_sent_orders": {
+      "type": "integer",
+      "format": "default",
+      "minimum": 0.0
+    },
+    "params": true,
+    "parent_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reject_or_error_reason": {
+      "description": "If algo order status is rejected, contains the reject reason; for algo orders that finished unsuccessfully, contains the error reason.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "$ref": "../definitions.json#/AlgoOrderStatus"
+    },
+    "status_details": true,
+    "trader": {
+      "$ref": "../definitions.json#/UserId"
+    },
+    "working_progress": {
+      "description": "Progress of the algo, 0.0 to 1.0, if computable",
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double"
+    }
+  }
+}
