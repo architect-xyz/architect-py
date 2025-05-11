@@ -21,12 +21,12 @@
     },
     "p": {
       "title": "price",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "q": {
       "title": "size",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "s": {

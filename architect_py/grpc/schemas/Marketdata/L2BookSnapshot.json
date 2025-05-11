@@ -19,11 +19,11 @@
         "type": "array",
         "items": [
           {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           },
           {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         ],
@@ -38,11 +38,11 @@
         "type": "array",
         "items": [
           {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           },
           {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         ],

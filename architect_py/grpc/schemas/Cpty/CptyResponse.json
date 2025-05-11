@@ -76,7 +76,7 @@
             "null"
           ],
           "additionalProperties": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         },

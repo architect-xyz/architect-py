@@ -64,7 +64,7 @@
     },
     "q": {
       "title": "quantity",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "r": {
@@ -137,24 +137,20 @@
     },
     "xp": {
       "title": "average_fill_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "xq": {
       "title": "filled_quantity",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "p": {
       "title": "limit_price",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "po": {
@@ -163,7 +159,7 @@
     },
     "tp": {
       "title": "trigger_price",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "k": {

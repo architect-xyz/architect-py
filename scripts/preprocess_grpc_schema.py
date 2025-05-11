@@ -1,21 +1,16 @@
 import argparse
 import json
+import logging
 import os
 import re
 from typing import Any, Dict, List, Tuple
+
+logging.basicConfig(level=logging.WARN)
 
 # ---------------------------------------------------------------------
 # Constants and Regular Expressions
 # ---------------------------------------------------------------------
 
-DECIMAL_RE = re.compile(r'(^\s*)"\$ref": "#/definitions/Decimal"', flags=re.MULTILINE)
-SINGLE_ALL_OF_DECIMAL = re.compile(
-    r'"allOf":\s*\[\s*\{\s*'
-    r'(?P<indent>[ \t]*)"type":\s*"number",\s*'
-    r'(?P=indent)"format":\s*"decimal"\s*'
-    r"\}\s*\]",
-    flags=re.MULTILINE,
-)
 CAMEL_CASE_RE = re.compile(r"(?<!^)(?=[A-Z])")
 EXTRACT_REF_RE = re.compile(r'("\$ref":\s*"#/definitions/)([^"]+)(")')
 
@@ -36,18 +31,6 @@ def _apply_type_fixes_to_text(
     """
     Perform string replacements and regex substitutions on the JSON text.
     """
-    replacements = {
-        "uint32": "default",
-        "uint64": "default",
-        '"format": "int"': '"format": "default"',
-        '"format": "partial-date-time"': '"format": "time"',
-    }
-    for old, new in replacements.items():
-        text = text.replace(old, new)
-
-    # Fix Decimal references with proper indenting.
-    text = DECIMAL_RE.sub(replace_and_indent, text)
-    text = SINGLE_ALL_OF_DECIMAL.sub(replace_and_indent, text)
 
     def replace_ref(match: re.Match) -> str:
         prefix, class_title, suffix = match.groups()
@@ -196,8 +179,7 @@ def correct_variant_types(
     }
     """
 
-    one_of_key = "oneOf"
-    if one_of_key not in schema or "required" in schema:
+    if "oneOf" not in schema or "required" in schema:
         return
 
     description = schema.get("description", "")
@@ -209,7 +191,7 @@ def correct_variant_types(
 
     tag_field = metadata["tag"]
     new_one_of: List[Dict[str, Any]] = []
-    for item in schema[one_of_key]:
+    for item in schema["oneOf"]:
         item["required"].remove(tag_field)
         [tag_value] = item["properties"].pop(tag_field)["enum"]
         title = item.pop("title")
@@ -248,7 +230,7 @@ def correct_variant_types(
 
         new_one_of.append(enum_ref)
 
-    schema[one_of_key] = new_one_of
+    schema["oneOf"] = new_one_of
     schema["tag_field"] = tag_field
 
 
@@ -527,14 +509,7 @@ def process_schema_definitions(
 ) -> None:
     """
     Extract and process definitions from a schema.
-    Updates the "Decimal" format and applies enum corrections.
     """
-    if "definitions" not in schema:
-        return
-
-    if "Decimal" in schema["definitions"]:
-        schema["definitions"]["Decimal"]["format"] = "decimal"
-
     correct_enums_with_multiple_titles(schema)
     # correct_repr_enums_with_x_enumNames(schema)
     correct_enums_with_descriptions(schema)
@@ -542,6 +517,9 @@ def process_schema_definitions(
     correct_flattened_types(schema)
     correct_null_types_with_constraints(schema)
     correct_type_from_description(schema)
+
+    if "definitions" not in schema:
+        return
 
     new_defs: dict[str, Any] = schema.pop("definitions")
     for t, definition in new_defs.items():
@@ -565,8 +543,7 @@ def add_info_to_schema(services: List[Dict[str, Any]]) -> Dict[str, str]:
     """
     type_to_json_file: Dict[str, str] = {}
     for service in services:
-        service_name = service["name"].replace(" ", "_")
-        service["service_name"] = service_name
+        service_name = service["name"]
 
         for rpc in service["rpcs"]:
             req_schema = rpc["request_type"]
@@ -602,7 +579,7 @@ def write_json_file(data: Dict[Any, Any], path: str) -> None:
         json.dump(data, out_file, indent=2)
 
 
-def process_schema(
+def preprocess_rpc_schema(
     schema: Dict[str, Any],
     definitions: Dict[str, Any],
     type_to_json_file: Dict[str, str],
@@ -615,23 +592,26 @@ def process_schema(
     return apply_type_fixes(schema, is_definitions_file, type_to_json_file)
 
 
-def process_service(
+def preprocess_service_schemas(
     service: Dict[str, Any],
     output_dir: str,
     definitions: Dict[str, Any],
     type_to_json_file: Dict[str, str],
 ) -> None:
     """
+    Pre-process each service schema.
     Process each RPC within a service (both request and response) and write the resulting schema files.
     """
-    service_name = service["service_name"]
+    service_name = service["name"]
     service_dir = os.path.join(output_dir, service_name)
     os.makedirs(service_dir, exist_ok=True)
 
     for rpc in service["rpcs"]:
+        logging.debug(f"Processing {service_name} {rpc['type']} RPC: {rpc['route']}")
         for key in ["request_type", "response_type"]:
             schema = rpc[key]
-            processed_schema = process_schema(
+            logging.debug(f"Processing {schema['title']}")
+            processed_schema = preprocess_rpc_schema(
                 schema, definitions, type_to_json_file, False
             )
             schema_title = processed_schema["title"]
@@ -639,20 +619,47 @@ def process_service(
             write_json_file(processed_schema, file_path)
 
 
-def preprocess_json(input_file: str, output_dir: str) -> None:
+def preprocess_schemas(input_file: str, output_dir: str) -> None:
     """
-    Preprocess the gRPC JSON file by splitting each RPC's request and response schemas
-    into separate JSON files and creating a unified definitions file.
+    Rust build generates a JSON file containing RPC definitions and schemas
+    for each service.  The top level object is an array of service definitions.
+
+    We split out each service and each schema within each service into separate
+    JSON schema files for post-processing.  Simple corrections to the schema
+    are made here as well.
     """
     os.makedirs(output_dir, exist_ok=True)
+
     with open(input_file, "r") as f:
-        services = json.load(f)
+        input_s = f.read()
+
+    replacements = {
+        # Suppress UserWarning: format of 'uint32' not understood for 'integer' - using default
+        "uint32": "default",
+        "uint64": "default",
+        # Suppress UserWarning: format of 'int' not understood for 'integer' - using default
+        '"format": "int",': '"format": "default",',
+        '"format": "int"': '"format": "default"',
+        # Manually map partial-date-time format to time format (python str -> datetime.time)
+        '"format": "partial-date-time",': '"format": "time",',
+        '"format": "partial-date-time"': '"format": "time"',
+        # Add decimal format hint to all regex patterns that look like decimals;
+        # drop the original string pattern validation as redundant.
+        '"pattern": "^-?[0-9]+(\\\\.[0-9]+)?$",': '"format": "decimal",',
+        '"pattern": "^-?[0-9]+(\\\\.[0-9]+)?$"': '"format": "decimal"',
+    }
+
+    for old, new in replacements.items():
+        input_s = input_s.replace(old, new)
+
+    services = json.loads(input_s)
 
     type_to_json_file = add_info_to_schema(services)
     definitions: Dict[str, Any] = {}
 
     for service in services:
-        process_service(service, output_dir, definitions, type_to_json_file)
+        logging.debug(f"Processing service {service['name']}")
+        preprocess_service_schemas(service, output_dir, definitions, type_to_json_file)
 
     # we look at the line level to fix definitions
     fixed_definitions = apply_type_fixes(definitions, True, type_to_json_file)
@@ -665,30 +672,20 @@ def preprocess_json(input_file: str, output_dir: str) -> None:
     write_json_file(fixed_definitions, definitions_path)
 
 
-# ---------------------------------------------------------------------
-# Main Entry Point
-# ---------------------------------------------------------------------
-
-
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Process a gRPC JSON schema file.")
+    parser = argparse.ArgumentParser(description="Preprocess gRPC JSON schema file.")
     parser.add_argument(
-        "--architect_dir",
-        type=str,
-        default="~/architect",
-        help="Path to the architect directory containing the api/schema.json file.",
+        "--schema", type=str, required=True, help="JSON schema file to preprocess."
     )
     parser.add_argument(
-        "--output_dir",
+        "--output-dir",
         type=str,
-        default="processed_schema",
-        help="Path to output the extracted schema files.",
+        required=True,
+        help="Output path for preprocessed schema.",
     )
     args = parser.parse_args()
-
-    architect_dir = os.path.expanduser(args.architect_dir)
-    input_file = os.path.join(architect_dir, "api/schema.json")
-    preprocess_json(input_file, args.output_dir)
+    schema_file = os.path.expanduser(args.schema)
+    preprocess_schemas(schema_file, args.output_dir)
 
 
 if __name__ == "__main__":

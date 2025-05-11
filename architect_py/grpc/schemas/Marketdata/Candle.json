@@ -14,205 +14,141 @@
   "properties": {
     "ac": {
       "title": "ask_close",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "ah": {
       "title": "ask_high",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "al": {
       "title": "ask_low",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "ao": {
       "title": "ask_open",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "av": {
       "title": "sell_volume",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "bc": {
       "title": "bid_close",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "bh": {
       "title": "bid_high",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "bl": {
       "title": "bid_low",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "bo": {
       "title": "bid_open",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "bv": {
       "title": "buy_volume",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "c": {
       "title": "close",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "h": {
       "title": "high",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "l": {
       "title": "low",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "mc": {
       "title": "mid_close",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "mh": {
       "title": "mid_high",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "ml": {
       "title": "mid_low",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "mo": {
       "title": "mid_open",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "o": {
       "title": "open",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "s": {
       "title": "symbol",
@@ -231,7 +167,7 @@
     },
     "v": {
       "title": "volume",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "w": {

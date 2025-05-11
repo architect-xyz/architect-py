@@ -54,8 +54,8 @@ MODELS_DIR="architect_py/grpc/models"
 printf "\nPre-processing gRPC schema...\n"
 rm -rf "${SCHEMAS_DIR:?}"/*
 uv run scripts/preprocess_grpc_schema.py \
-    --architect_dir "$ARCHITECT_ROOT" \
-    --output_dir "$SCHEMAS_DIR"
+    --schema "$ARCHITECT_ROOT/api/schema.json" \
+    --output-dir "$SCHEMAS_DIR"
 
 if [[ ! -d "$SCHEMAS_DIR" ]]; then
     printf "Error: directory $SCHEMAS_DIR does not exist."

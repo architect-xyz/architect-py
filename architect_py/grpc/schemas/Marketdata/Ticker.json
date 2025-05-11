@@ -11,96 +11,64 @@
   "properties": {
     "ap": {
       "title": "ask_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "as": {
       "title": "ask_size",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "bp": {
       "title": "bid_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "bs": {
       "title": "bid_size",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "dividend": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "dividend_yield": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "eps_adj": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "fr": {
       "title": "funding_rate",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "ft": {
       "title": "next_funding_time",
@@ -112,121 +80,81 @@
     },
     "h": {
       "title": "high_24h",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "ip": {
       "title": "index_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "l": {
       "title": "low_24h",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "market_cap": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "mp": {
       "title": "mark_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "o": {
       "title": "open_24h",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "oi": {
       "title": "open_interest",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "p": {
       "title": "last_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "price_to_earnings": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "q": {
       "title": "last_size",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "s": {
       "title": "symbol",
@@ -241,27 +169,19 @@
       "format": "date"
     },
     "shares_outstanding_weighted_adj": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "sp": {
       "title": "last_settlement_price",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "tn": {
       "title": "timestamp_ns",
@@ -276,15 +196,11 @@
     },
     "v": {
       "title": "volume_24h",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "ve": {
       "title": "venue",
@@ -292,63 +208,43 @@
     },
     "vm": {
       "title": "volume_30d",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "xh": {
       "title": "session_high",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "xl": {
       "title": "session_low",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "xo": {
       "title": "session_open",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "xv": {
       "title": "session_volume",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     }
   }
 }

@@ -55,7 +55,7 @@
     },
     "q": {
       "title": "quantity",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "s": {
@@ -104,7 +104,7 @@
     },
     "p": {
       "title": "limit_price",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "po": {
@@ -113,7 +113,7 @@
     },
     "tp": {
       "title": "trigger_price",
-      "type": "number",
+      "type": "string",
       "format": "decimal"
     },
     "k": {

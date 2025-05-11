@@ -17,11 +17,11 @@
       ],
       "items": [
         {
-          "type": "number",
+          "type": "string",
           "format": "decimal"
         },
         {
-          "type": "number",
+          "type": "string",
           "format": "decimal"
         }
       ]
@@ -35,11 +35,11 @@
       ],
       "items": [
         {
-          "type": "number",
+          "type": "string",
           "format": "decimal"
         },
         {
-          "type": "number",
+          "type": "string",
           "format": "decimal"
         }
       ]

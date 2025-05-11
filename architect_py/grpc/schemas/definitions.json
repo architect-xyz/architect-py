@@ -126,10 +126,6 @@
     "type": "string",
     "format": "uuid"
   },
-  "Decimal": {
-    "type": "string",
-    "format": "decimal"
-  },
   "DerivativeKind": {
     "enum": [
       "Linear",
@@ -180,7 +176,7 @@
                 "format": "date-time"
               },
               "strike": {
-                "type": "number",
+                "type": "string",
                 "format": "decimal"
               }
             }
@@ -213,39 +209,31 @@
         "type": "string"
       },
       "initial_margin": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "is_delisted": {
         "type": "boolean"
       },
       "maintenance_margin": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "min_order_quantity": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "min_order_quantity_unit": {
         "$ref": "#/MinOrderQuantityUnit"
       },
       "step_size": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "tick_size": {
@@ -303,13 +291,13 @@
         "format": "time"
       },
       "expiration_time_zone": {
-        "$ref": "#/TimeZone"
+        "type": "string"
       },
       "is_cash_settled": {
         "type": "boolean"
       },
       "multiplier": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "options_series": {
@@ -323,7 +311,7 @@
         "additionalProperties": {
           "type": "array",
           "items": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           },
           "uniqueItems": true
@@ -357,7 +345,7 @@
         "$ref": "#/PutOrCall"
       },
       "strike": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       }
     }
@@ -418,15 +406,11 @@
       },
       "multiplier": {
         "description": "For derivatives contracts, the multiplier",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "price_display_format": {
         "type": [
@@ -603,7 +587,7 @@
             "format": "date"
           },
           "multiplier": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           },
           "product_type": {
@@ -661,7 +645,7 @@
             "$ref": "#/DerivativeKind"
           },
           "multiplier": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           },
           "product_type": {
@@ -760,7 +744,7 @@
       },
       "quantity": {
         "description": "Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C; We would represent that with quantities in the legs: 1, -2, 1",
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       }
     }
@@ -775,7 +759,7 @@
         ],
         "properties": {
           "simple": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         },
@@ -801,11 +785,11 @@
                   "type": "array",
                   "items": [
                     {
-                      "type": "number",
+                      "type": "string",
                       "format": "decimal"
                     },
                     {
-                      "type": "number",
+                      "type": "string",
                       "format": "decimal"
                     }
                   ],
@@ -818,608 +802,6 @@
         },
         "additionalProperties": false
       }
-    ]
-  },
-  "TimeZone": {
-    "type": "string",
-    "enum": [
-      "Africa/Abidjan",
-      "Africa/Accra",
-      "Africa/Addis_Ababa",
-      "Africa/Algiers",
-      "Africa/Asmara",
-      "Africa/Asmera",
-      "Africa/Bamako",
-      "Africa/Bangui",
-      "Africa/Banjul",
-      "Africa/Bissau",
-      "Africa/Blantyre",
-      "Africa/Brazzaville",
-      "Africa/Bujumbura",
-      "Africa/Cairo",
-      "Africa/Casablanca",
-      "Africa/Ceuta",
-      "Africa/Conakry",
-      "Africa/Dakar",
-      "Africa/Dar_es_Salaam",
-      "Africa/Djibouti",
-      "Africa/Douala",
-      "Africa/El_Aaiun",
-      "Africa/Freetown",
-      "Africa/Gaborone",
-      "Africa/Harare",
-      "Africa/Johannesburg",
-      "Africa/Juba",
-      "Africa/Kampala",
-      "Africa/Khartoum",
-      "Africa/Kigali",
-      "Africa/Kinshasa",
-      "Africa/Lagos",
-      "Africa/Libreville",
-      "Africa/Lome",
-      "Africa/Luanda",
-      "Africa/Lubumbashi",
-      "Africa/Lusaka",
-      "Africa/Malabo",
-      "Africa/Maputo",
-      "Africa/Maseru",
-      "Africa/Mbabane",
-      "Africa/Mogadishu",
-      "Africa/Monrovia",
-      "Africa/Nairobi",
-      "Africa/Ndjamena",
-      "Africa/Niamey",
-      "Africa/Nouakchott",
-      "Africa/Ouagadougou",
-      "Africa/Porto-Novo",
-      "Africa/Sao_Tome",
-      "Africa/Timbuktu",
-      "Africa/Tripoli",
-      "Africa/Tunis",
-      "Africa/Windhoek",
-      "America/Adak",
-      "America/Anchorage",
-      "America/Anguilla",
-      "America/Antigua",
-      "America/Araguaina",
-      "America/Argentina/Buenos_Aires",
-      "America/Argentina/Catamarca",
-      "America/Argentina/ComodRivadavia",
-      "America/Argentina/Cordoba",
-      "America/Argentina/Jujuy",
-      "America/Argentina/La_Rioja",
-      "America/Argentina/Mendoza",
-      "America/Argentina/Rio_Gallegos",
-      "America/Argentina/Salta",
-      "America/Argentina/San_Juan",
-      "America/Argentina/San_Luis",
-      "America/Argentina/Tucuman",
-      "America/Argentina/Ushuaia",
-      "America/Aruba",
-      "America/Asuncion",
-      "America/Atikokan",
-      "America/Atka",
-      "America/Bahia",
-      "America/Bahia_Banderas",
-      "America/Barbados",
-      "America/Belem",
-      "America/Belize",
-      "America/Blanc-Sablon",
-      "America/Boa_Vista",
-      "America/Bogota",
-      "America/Boise",
-      "America/Buenos_Aires",
-      "America/Cambridge_Bay",
-      "America/Campo_Grande",
-      "America/Cancun",
-      "America/Caracas",
-      "America/Catamarca",
-      "America/Cayenne",
-      "America/Cayman",
-      "America/Chicago",
-      "America/Chihuahua",
-      "America/Ciudad_Juarez",
-      "America/Coral_Harbour",
-      "America/Cordoba",
-      "America/Costa_Rica",
-      "America/Coyhaique",
-      "America/Creston",
-      "America/Cuiaba",
-      "America/Curacao",
-      "America/Danmarkshavn",
-      "America/Dawson",
-      "America/Dawson_Creek",
-      "America/Denver",
-      "America/Detroit",
-      "America/Dominica",
-      "America/Edmonton",
-      "America/Eirunepe",
-      "America/El_Salvador",
-      "America/Ensenada",
-      "America/Fort_Nelson",
-      "America/Fort_Wayne",
-      "America/Fortaleza",
-      "America/Glace_Bay",
-      "America/Godthab",
-      "America/Goose_Bay",
-      "America/Grand_Turk",
-      "America/Grenada",
-      "America/Guadeloupe",
-      "America/Guatemala",
-      "America/Guayaquil",
-      "America/Guyana",
-      "America/Halifax",
-      "America/Havana",
-      "America/Hermosillo",
-      "America/Indiana/Indianapolis",
-      "America/Indiana/Knox",
-      "America/Indiana/Marengo",
-      "America/Indiana/Petersburg",
-      "America/Indiana/Tell_City",
-      "America/Indiana/Vevay",
-      "America/Indiana/Vincennes",
-      "America/Indiana/Winamac",
-      "America/Indianapolis",
-      "America/Inuvik",
-      "America/Iqaluit",
-      "America/Jamaica",
-      "America/Jujuy",
-      "America/Juneau",
-      "America/Kentucky/Louisville",
-      "America/Kentucky/Monticello",
-      "America/Knox_IN",
-      "America/Kralendijk",
-      "America/La_Paz",
-      "America/Lima",
-      "America/Los_Angeles",
-      "America/Louisville",
-      "America/Lower_Princes",
-      "America/Maceio",
-      "America/Managua",
-      "America/Manaus",
-      "America/Marigot",
-      "America/Martinique",
-      "America/Matamoros",
-      "America/Mazatlan",
-      "America/Mendoza",
-      "America/Menominee",
-      "America/Merida",
-      "America/Metlakatla",
-      "America/Mexico_City",
-      "America/Miquelon",
-      "America/Moncton",
-      "America/Monterrey",
-      "America/Montevideo",
-      "America/Montreal",
-      "America/Montserrat",
-      "America/Nassau",
-      "America/New_York",
-      "America/Nipigon",
-      "America/Nome",
-      "America/Noronha",
-      "America/North_Dakota/Beulah",
-      "America/North_Dakota/Center",
-      "America/North_Dakota/New_Salem",
-      "America/Nuuk",
-      "America/Ojinaga",
-      "America/Panama",
-      "America/Pangnirtung",
-      "America/Paramaribo",
-      "America/Phoenix",
-      "America/Port-au-Prince",
-      "America/Port_of_Spain",
-      "America/Porto_Acre",
-      "America/Porto_Velho",
-      "America/Puerto_Rico",
-      "America/Punta_Arenas",
-      "America/Rainy_River",
-      "America/Rankin_Inlet",
-      "America/Recife",
-      "America/Regina",
-      "America/Resolute",
-      "America/Rio_Branco",
-      "America/Rosario",
-      "America/Santa_Isabel",
-      "America/Santarem",
-      "America/Santiago",
-      "America/Santo_Domingo",
-      "America/Sao_Paulo",
-      "America/Scoresbysund",
-      "America/Shiprock",
-      "America/Sitka",
-      "America/St_Barthelemy",
-      "America/St_Johns",
-      "America/St_Kitts",
-      "America/St_Lucia",
-      "America/St_Thomas",
-      "America/St_Vincent",
-      "America/Swift_Current",
-      "America/Tegucigalpa",
-      "America/Thule",
-      "America/Thunder_Bay",
-      "America/Tijuana",
-      "America/Toronto",
-      "America/Tortola",
-      "America/Vancouver",
-      "America/Virgin",
-      "America/Whitehorse",
-      "America/Winnipeg",
-      "America/Yakutat",
-      "America/Yellowknife",
-      "Antarctica/Casey",
-      "Antarctica/Davis",
-      "Antarctica/DumontDUrville",
-      "Antarctica/Macquarie",
-      "Antarctica/Mawson",
-      "Antarctica/McMurdo",
-      "Antarctica/Palmer",
-      "Antarctica/Rothera",
-      "Antarctica/South_Pole",
-      "Antarctica/Syowa",
-      "Antarctica/Troll",
-      "Antarctica/Vostok",
-      "Arctic/Longyearbyen",
-      "Asia/Aden",
-      "Asia/Almaty",
-      "Asia/Amman",
-      "Asia/Anadyr",
-      "Asia/Aqtau",
-      "Asia/Aqtobe",
-      "Asia/Ashgabat",
-      "Asia/Ashkhabad",
-      "Asia/Atyrau",
-      "Asia/Baghdad",
-      "Asia/Bahrain",
-      "Asia/Baku",
-      "Asia/Bangkok",
-      "Asia/Barnaul",
-      "Asia/Beirut",
-      "Asia/Bishkek",
-      "Asia/Brunei",
-      "Asia/Calcutta",
-      "Asia/Chita",
-      "Asia/Choibalsan",
-      "Asia/Chongqing",
-      "Asia/Chungking",
-      "Asia/Colombo",
-      "Asia/Dacca",
-      "Asia/Damascus",
-      "Asia/Dhaka",
-      "Asia/Dili",
-      "Asia/Dubai",
-      "Asia/Dushanbe",
-      "Asia/Famagusta",
-      "Asia/Gaza",
-      "Asia/Harbin",
-      "Asia/Hebron",
-      "Asia/Ho_Chi_Minh",
-      "Asia/Hong_Kong",
-      "Asia/Hovd",
-      "Asia/Irkutsk",
-      "Asia/Istanbul",
-      "Asia/Jakarta",
-      "Asia/Jayapura",
-      "Asia/Jerusalem",
-      "Asia/Kabul",
-      "Asia/Kamchatka",
-      "Asia/Karachi",
-      "Asia/Kashgar",
-      "Asia/Kathmandu",
-      "Asia/Katmandu",
-      "Asia/Khandyga",
-      "Asia/Kolkata",
-      "Asia/Krasnoyarsk",
-      "Asia/Kuala_Lumpur",
-      "Asia/Kuching",
-      "Asia/Kuwait",
-      "Asia/Macao",
-      "Asia/Macau",
-      "Asia/Magadan",
-      "Asia/Makassar",
-      "Asia/Manila",
-      "Asia/Muscat",
-      "Asia/Nicosia",
-      "Asia/Novokuznetsk",
-      "Asia/Novosibirsk",
-      "Asia/Omsk",
-      "Asia/Oral",
-      "Asia/Phnom_Penh",
-      "Asia/Pontianak",
-      "Asia/Pyongyang",
-      "Asia/Qatar",
-      "Asia/Qostanay",
-      "Asia/Qyzylorda",
-      "Asia/Rangoon",
-      "Asia/Riyadh",
-      "Asia/Saigon",
-      "Asia/Sakhalin",
-      "Asia/Samarkand",
-      "Asia/Seoul",
-      "Asia/Shanghai",
-      "Asia/Singapore",
-      "Asia/Srednekolymsk",
-      "Asia/Taipei",
-      "Asia/Tashkent",
-      "Asia/Tbilisi",
-      "Asia/Tehran",
-      "Asia/Tel_Aviv",
-      "Asia/Thimbu",
-      "Asia/Thimphu",
-      "Asia/Tokyo",
-      "Asia/Tomsk",
-      "Asia/Ujung_Pandang",
-      "Asia/Ulaanbaatar",
-      "Asia/Ulan_Bator",
-      "Asia/Urumqi",
-      "Asia/Ust-Nera",
-      "Asia/Vientiane",
-      "Asia/Vladivostok",
-      "Asia/Yakutsk",
-      "Asia/Yangon",
-      "Asia/Yekaterinburg",
-      "Asia/Yerevan",
-      "Atlantic/Azores",
-      "Atlantic/Bermuda",
-      "Atlantic/Canary",
-      "Atlantic/Cape_Verde",
-      "Atlantic/Faeroe",
-      "Atlantic/Faroe",
-      "Atlantic/Jan_Mayen",
-      "Atlantic/Madeira",
-      "Atlantic/Reykjavik",
-      "Atlantic/South_Georgia",
-      "Atlantic/St_Helena",
-      "Atlantic/Stanley",
-      "Australia/ACT",
-      "Australia/Adelaide",
-      "Australia/Brisbane",
-      "Australia/Broken_Hill",
-      "Australia/Canberra",
-      "Australia/Currie",
-      "Australia/Darwin",
-      "Australia/Eucla",
-      "Australia/Hobart",
-      "Australia/LHI",
-      "Australia/Lindeman",
-      "Australia/Lord_Howe",
-      "Australia/Melbourne",
-      "Australia/NSW",
-      "Australia/North",
-      "Australia/Perth",
-      "Australia/Queensland",
-      "Australia/South",
-      "Australia/Sydney",
-      "Australia/Tasmania",
-      "Australia/Victoria",
-      "Australia/West",
-      "Australia/Yancowinna",
-      "Brazil/Acre",
-      "Brazil/DeNoronha",
-      "Brazil/East",
-      "Brazil/West",
-      "CET",
-      "CST6CDT",
-      "Canada/Atlantic",
-      "Canada/Central",
-      "Canada/Eastern",
-      "Canada/Mountain",
-      "Canada/Newfoundland",
-      "Canada/Pacific",
-      "Canada/Saskatchewan",
-      "Canada/Yukon",
-      "Chile/Continental",
-      "Chile/EasterIsland",
-      "Cuba",
-      "EET",
-      "EST",
-      "EST5EDT",
-      "Egypt",
-      "Eire",
-      "Etc/GMT",
-      "Etc/GMT+0",
-      "Etc/GMT+1",
-      "Etc/GMT+10",
-      "Etc/GMT+11",
-      "Etc/GMT+12",
-      "Etc/GMT+2",
-      "Etc/GMT+3",
-      "Etc/GMT+4",
-      "Etc/GMT+5",
-      "Etc/GMT+6",
-      "Etc/GMT+7",
-      "Etc/GMT+8",
-      "Etc/GMT+9",
-      "Etc/GMT-0",
-      "Etc/GMT-1",
-      "Etc/GMT-10",
-      "Etc/GMT-11",
-      "Etc/GMT-12",
-      "Etc/GMT-13",
-      "Etc/GMT-14",
-      "Etc/GMT-2",
-      "Etc/GMT-3",
-      "Etc/GMT-4",
-      "Etc/GMT-5",
-      "Etc/GMT-6",
-      "Etc/GMT-7",
-      "Etc/GMT-8",
-      "Etc/GMT-9",
-      "Etc/GMT0",
-      "Etc/Greenwich",
-      "Etc/UCT",
-      "Etc/UTC",
-      "Etc/Universal",
-      "Etc/Zulu",
-      "Europe/Amsterdam",
-      "Europe/Andorra",
-      "Europe/Astrakhan",
-      "Europe/Athens",
-      "Europe/Belfast",
-      "Europe/Belgrade",
-      "Europe/Berlin",
-      "Europe/Bratislava",
-      "Europe/Brussels",
-      "Europe/Bucharest",
-      "Europe/Budapest",
-      "Europe/Busingen",
-      "Europe/Chisinau",
-      "Europe/Copenhagen",
-      "Europe/Dublin",
-      "Europe/Gibraltar",
-      "Europe/Guernsey",
-      "Europe/Helsinki",
-      "Europe/Isle_of_Man",
-      "Europe/Istanbul",
-      "Europe/Jersey",
-      "Europe/Kaliningrad",
-      "Europe/Kiev",
-      "Europe/Kirov",
-      "Europe/Kyiv",
-      "Europe/Lisbon",
-      "Europe/Ljubljana",
-      "Europe/London",
-      "Europe/Luxembourg",
-      "Europe/Madrid",
-      "Europe/Malta",
-      "Europe/Mariehamn",
-      "Europe/Minsk",
-      "Europe/Monaco",
-      "Europe/Moscow",
-      "Europe/Nicosia",
-      "Europe/Oslo",
-      "Europe/Paris",
-      "Europe/Podgorica",
-      "Europe/Prague",
-      "Europe/Riga",
-      "Europe/Rome",
-      "Europe/Samara",
-      "Europe/San_Marino",
-      "Europe/Sarajevo",
-      "Europe/Saratov",
-      "Europe/Simferopol",
-      "Europe/Skopje",
-      "Europe/Sofia",
-      "Europe/Stockholm",
-      "Europe/Tallinn",
-      "Europe/Tirane",
-      "Europe/Tiraspol",
-      "Europe/Ulyanovsk",
-      "Europe/Uzhgorod",
-      "Europe/Vaduz",
-      "Europe/Vatican",
-      "Europe/Vienna",
-      "Europe/Vilnius",
-      "Europe/Volgograd",
-      "Europe/Warsaw",
-      "Europe/Zagreb",
-      "Europe/Zaporozhye",
-      "Europe/Zurich",
-      "GB",
-      "GB-Eire",
-      "GMT",
-      "GMT+0",
-      "GMT-0",
-      "GMT0",
-      "Greenwich",
-      "HST",
-      "Hongkong",
-      "Iceland",
-      "Indian/Antananarivo",
-      "Indian/Chagos",
-      "Indian/Christmas",
-      "Indian/Cocos",
-      "Indian/Comoro",
-      "Indian/Kerguelen",
-      "Indian/Mahe",
-      "Indian/Maldives",
-      "Indian/Mauritius",
-      "Indian/Mayotte",
-      "Indian/Reunion",
-      "Iran",
-      "Israel",
-      "Jamaica",
-      "Japan",
-      "Kwajalein",
-      "Libya",
-      "MET",
-      "MST",
-      "MST7MDT",
-      "Mexico/BajaNorte",
-      "Mexico/BajaSur",
-      "Mexico/General",
-      "NZ",
-      "NZ-CHAT",
-      "Navajo",
-      "PRC",
-      "PST8PDT",
-      "Pacific/Apia",
-      "Pacific/Auckland",
-      "Pacific/Bougainville",
-      "Pacific/Chatham",
-      "Pacific/Chuuk",
-      "Pacific/Easter",
-      "Pacific/Efate",
-      "Pacific/Enderbury",
-      "Pacific/Fakaofo",
-      "Pacific/Fiji",
-      "Pacific/Funafuti",
-      "Pacific/Galapagos",
-      "Pacific/Gambier",
-      "Pacific/Guadalcanal",
-      "Pacific/Guam",
-      "Pacific/Honolulu",
-      "Pacific/Johnston",
-      "Pacific/Kanton",
-      "Pacific/Kiritimati",
-      "Pacific/Kosrae",
-      "Pacific/Kwajalein",
-      "Pacific/Majuro",
-      "Pacific/Marquesas",
-      "Pacific/Midway",
-      "Pacific/Nauru",
-      "Pacific/Niue",
-      "Pacific/Norfolk",
-      "Pacific/Noumea",
-      "Pacific/Pago_Pago",
-      "Pacific/Palau",
-      "Pacific/Pitcairn",
-      "Pacific/Pohnpei",
-      "Pacific/Ponape",
-      "Pacific/Port_Moresby",
-      "Pacific/Rarotonga",
-      "Pacific/Saipan",
-      "Pacific/Samoa",
-      "Pacific/Tahiti",
-      "Pacific/Tarawa",
-      "Pacific/Tongatapu",
-      "Pacific/Truk",
-      "Pacific/Wake",
-      "Pacific/Wallis",
-      "Pacific/Yap",
-      "Poland",
-      "Portugal",
-      "ROC",
-      "ROK",
-      "Singapore",
-      "Turkey",
-      "UCT",
-      "US/Alaska",
-      "US/Aleutian",
-      "US/Arizona",
-      "US/Central",
-      "US/East-Indiana",
-      "US/Eastern",
-      "US/Hawaii",
-      "US/Indiana-Starke",
-      "US/Michigan",
-      "US/Mountain",
-      "US/Pacific",
-      "US/Samoa",
-      "UTC",
-      "Universal",
-      "W-SU",
-      "WET",
-      "Zulu"
     ]
   },
   "AliasKind": {
@@ -1837,11 +1219,11 @@
           "type": "array",
           "items": [
             {
-              "type": "number",
+              "type": "string",
               "format": "decimal"
             },
             {
-              "type": "number",
+              "type": "string",
               "format": "decimal"
             }
           ],
@@ -1857,11 +1239,11 @@
           "type": "array",
           "items": [
             {
-              "type": "number",
+              "type": "string",
               "format": "decimal"
             },
             {
-              "type": "number",
+              "type": "string",
               "format": "decimal"
             }
           ],
@@ -1958,7 +1340,7 @@
         "$ref": "#/PutOrCall"
       },
       "strike": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "ticker": {
@@ -1986,7 +1368,7 @@
     ],
     "properties": {
       "delta": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "expiration": {
@@ -1994,36 +1376,36 @@
         "format": "date"
       },
       "gamma": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "implied_volatility": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "put_or_call": {
         "$ref": "#/PutOrCall"
       },
       "rho": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "strike": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "symbol": {
         "type": "string"
       },
       "theta": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "underlying": {
         "type": "string"
       },
       "vega": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       }
     }
@@ -2271,15 +1653,11 @@
       },
       "f": {
         "title": "fee",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "fu": {
         "title": "fee_currency",
@@ -2315,12 +1693,12 @@
       },
       "p": {
         "title": "price",
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "q": {
         "title": "quantity",
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "s": {
@@ -2408,15 +1786,11 @@
       },
       "f": {
         "title": "fee",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "fu": {
         "title": "fee_currency",
@@ -2454,27 +1828,19 @@
       },
       "p": {
         "title": "price",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "q": {
         "title": "quantity",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "s": {
         "title": "symbol",
@@ -2599,41 +1965,29 @@
     ],
     "properties": {
       "break_even_price": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "cost_basis": {
         "description": "Cost basis of the position, if known.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "liquidation_price": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "quantity": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "trade_time": {
@@ -2646,15 +2000,11 @@
       },
       "unrealized_pnl": {
         "description": "Unrealized PNL of the position, if known.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       }
     }
   },
@@ -2684,97 +2034,65 @@
     "properties": {
       "cash_excess": {
         "description": "Cash available to withdraw.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "equity": {
         "description": "Total account equity; net liquidation value.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "position_margin": {
         "description": "Margin requirement based on current positions only.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "purchasing_power": {
         "description": "Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "realized_pnl": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "total_margin": {
         "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "unrealized_pnl": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "yesterday_equity": {
         "description": "Yesterday total account equity.",
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       }
     }
   },
@@ -2873,7 +2191,7 @@
         ],
         "properties": {
           "Fraction": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         },
@@ -2886,7 +2204,7 @@
         ],
         "properties": {
           "Percent": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         },
@@ -2899,7 +2217,7 @@
         ],
         "properties": {
           "Price": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         },
@@ -2912,7 +2230,7 @@
         ],
         "properties": {
           "Ticks": {
-            "type": "number",
+            "type": "string",
             "format": "decimal"
           }
         },
@@ -2962,7 +2280,7 @@
         "type": "string"
       },
       "quantity": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "reject_lockout": {
@@ -2988,19 +2306,15 @@
     ],
     "properties": {
       "quantity_filled": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "realized_twap": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       }
     }
   },
@@ -3130,158 +2444,102 @@
         ]
       },
       "available_cash_balance": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "cash_available_for_withdrawal": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "cumulative_day_trade_pnl": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "day_trading_buying_power": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "day_trading_buying_power_high_water_mark": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "day_trading_buying_power_maintenance_margin_multiplier": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "day_trading_house_minimum_equity_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "day_trading_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "day_trading_minimum_equity_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "excess_sma_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "house_initial_margin_requirement_adjustment_factor": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "house_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "house_margin_requirement": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "house_margin_requirement_adjustment_factor": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "is_day_trader": {
         "type": [
@@ -3290,114 +2548,74 @@
         ]
       },
       "maintenance_margin_requirement": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "marginable_equity": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "market_value_adjustment_factor": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "number_open_day_trading_margin_calls": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "option_only_maintenance_margin_requirement": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "option_trade_date_short_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "overall_current_sma_balance": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "overnight_buying_power": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "reg_t_initial_margin_requirement": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "reg_t_maintenance_margin_requirement_adjustment_factor": {
         "type": [
@@ -3406,202 +2624,130 @@
         ]
       },
       "reg_t_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "settlement_date_cash_balance": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "settlement_date_long_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "settlement_date_option_long_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "settlement_date_option_short_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "settlement_date_short_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "start_of_day_day_trading_buying_power": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "start_of_day_day_trading_buying_power_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "start_of_day_house_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "start_of_day_maintenance_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "start_of_day_reg_t_margin_call_amount": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "strategy_based_relief_adjustment_factor": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "total_equity": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "trade_date_cash_balance": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "trade_date_option_long_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "trade_date_total_long_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "trade_date_total_short_market_value": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       },
       "usable_sma_balance": {
-        "anyOf": [
-          {
-            "type": "number",
-            "format": "decimal"
-          },
-          {
-            "type": "null"
-          }
-        ]
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
       }
     }
   },
@@ -3618,7 +2764,7 @@
         "type": "string"
       },
       "amount": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "description": {
@@ -3643,7 +2789,7 @@
         "type": "string"
       },
       "amount": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       },
       "description": {

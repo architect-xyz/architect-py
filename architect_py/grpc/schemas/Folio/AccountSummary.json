@@ -16,45 +16,33 @@
     "balances": {
       "type": "object",
       "additionalProperties": {
-        "type": "number",
+        "type": "string",
         "format": "decimal"
       }
     },
     "cash_excess": {
       "description": "Cash available to withdraw.",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "equity": {
       "description": "Total account equity; net liquidation value.",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "position_margin": {
       "description": "Margin requirement based on current positions only.",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "positions": {
       "type": "object",
@@ -67,26 +55,18 @@
     },
     "purchasing_power": {
       "description": "Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "realized_pnl": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "timestamp": {
       "type": "string",
@@ -94,38 +74,26 @@
     },
     "total_margin": {
       "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "unrealized_pnl": {
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     },
     "yesterday_equity": {
       "description": "Yesterday total account equity.",
-      "anyOf": [
-        {
-          "type": "number",
-          "format": "decimal"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
     }
   }
 }
