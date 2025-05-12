@@ -64,4 +64,7 @@ async def resolve_endpoint(endpoint: str) -> Tuple[str, int, bool]:
 
     record = cast(SRV, srv_records[0])
     logging.info(f"Found {endpoint}: {record.target}:{record.port}")
-    return str(record.target), record.port, use_ssl
+
+    host = str(record.target).rstrip(".")  # strips the period off of FQDNs
+
+    return host, record.port, use_ssl
