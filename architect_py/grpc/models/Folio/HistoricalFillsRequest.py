@@ -24,6 +24,7 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
     Default maximum is 1000.
     """
     order_id: Optional[definitions.OrderId] = None
+    symbol: Optional[str] = None
     to_exclusive: Optional[datetime] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
@@ -36,6 +37,7 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
         from_inclusive: Optional[datetime] = None,
         limit: Optional[int] = None,
         order_id: Optional[definitions.OrderId] = None,
+        symbol: Optional[str] = None,
         to_exclusive: Optional[datetime] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         venue: Optional[str] = None,
@@ -45,13 +47,14 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
             from_inclusive,
             limit,
             order_id,
+            symbol,
             to_exclusive,
             trader,
             venue,
         )
 
     def __str__(self) -> str:
-        return f"HistoricalFillsRequest(account={self.account},from_inclusive={self.from_inclusive},limit={self.limit},order_id={self.order_id},to_exclusive={self.to_exclusive},trader={self.trader},venue={self.venue})"
+        return f"HistoricalFillsRequest(account={self.account},from_inclusive={self.from_inclusive},limit={self.limit},order_id={self.order_id},symbol={self.symbol},to_exclusive={self.to_exclusive},trader={self.trader},venue={self.venue})"
 
     @staticmethod
     def get_response_type():

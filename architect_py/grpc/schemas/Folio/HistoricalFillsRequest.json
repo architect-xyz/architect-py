@@ -38,6 +38,12 @@
         }
       ]
     },
+    "symbol": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "to_exclusive": {
       "type": [
         "string",
