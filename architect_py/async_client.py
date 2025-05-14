@@ -4,6 +4,7 @@ import re
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import (
+    Any,
     AsyncGenerator,
     AsyncIterator,
     List,
@@ -24,7 +25,6 @@ from architect_py.grpc.models.Oms.OpenOrdersRequest import OpenOrdersRequest
 from architect_py.grpc.models.Oms.Order import Order
 from architect_py.grpc.models.Oms.PlaceOrderRequest import (
     PlaceOrderRequest,
-    PlaceOrderRequestType,
 )
 from architect_py.grpc.models.Orderflow.Orderflow import Orderflow
 from architect_py.grpc.models.Orderflow.OrderflowRequest import (
@@ -45,7 +45,6 @@ from .graphql_client.fragments import (
 )
 from .grpc import *
 from .grpc.client import GrpcClient
-from .grpc.models import definitions as grpc_definitions
 from .utils.nearest_tick import TickRoundMethod
 from .utils.orderbook import update_orderbook_side
 from .utils.pandas import candles_to_dataframe
@@ -79,6 +78,7 @@ class AsyncClient:
         paper_trading: bool,
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
+        **kwargs: Any,
     ) -> "AsyncClient":
         """
         Connect to an Architect installation.
@@ -89,6 +89,17 @@ class AsyncClient:
             COLOR = "\033[30;43m"
             RESET = "\033[0m"
             print(f"🧻 {COLOR} YOU ARE IN PAPER TRADING MODE {RESET}")
+
+        if "grpc_endpoint" in kwargs:
+            logging.warning(
+                "as of v5.0.0: grpc_endpoint parameter is deprecated; ignored"
+            )
+        if "host" in kwargs:
+            logging.warning(
+                "as of v5.0.0: host parameter is deprecated, use endpoint instead; setting endpoint to %s",
+                kwargs["endpoint"],
+            )
+            endpoint = kwargs["endpoint"]
 
         grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
         logging.info(
@@ -313,6 +324,14 @@ class AsyncClient:
         res = await self.graphql_client.user_id_query()
         return res.user_id, res.user_email
 
+    def enable_orderflow(self):
+        """
+        @deprecated(reason="No longer needed; orderflow is enabled by default")
+        """
+        logging.warning(
+            "as of v5.0.0: enable_orderflow is deprecated; orderflow is enabled by default"
+        )
+
     # ------------------------------------------------------------
     # Symbology
     # ------------------------------------------------------------
@@ -458,6 +477,13 @@ class AsyncClient:
             return None
         return res.product_info.first_notice_date
 
+    async def get_future_series(self, series_symbol: str) -> list[str]:
+        """
+        @deprecated(reason="Use get_futures_series instead")
+        """
+        futures = await self.get_futures_series(series_symbol)
+        return futures
+
     async def get_futures_series(self, series_symbol: str) -> list[str]:
         """
         List all futures in a given series.
@@ -502,11 +528,14 @@ class AsyncClient:
             the symbol for each future in the series
 
             e.g.
-            [(datetime.date(2025, 3, 21), 'ES 20250321 CME Future'),
-             (datetime.date(2025, 6, 20), 'ES 20250620 CME Future'),
-             (datetime.date(2025, 9, 19), 'ES 20250919 CME Future'),
-             ...
+            ```
+            [
+                (datetime.date(2025, 3, 21), 'ES 20250321 CME Future'),
+                (datetime.date(2025, 6, 20), 'ES 20250620 CME Future'),
+                (datetime.date(2025, 9, 19), 'ES 20250919 CME Future'),
+                # ...
             ]
+            ```
         """
         futures = await self.get_futures_series(series)
         exp_and_futures = []
@@ -572,7 +601,7 @@ class AsyncClient:
             symbol: the symbol to get the market snapshot for, e.g. "ES 20250321 CME Future/USD"
             venue: the venue that the symbol is traded at, e.g. CME
         Returns:
-            MarketTickerFields for the symbol
+            L1BookSnapshot for the symbol
         """
         return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
@@ -948,7 +977,7 @@ class AsyncClient:
     # Portfolio management
     # ------------------------------------------------------------
 
-    async def list_accounts(self) -> List[grpc_definitions.AccountWithPermissions]:
+    async def list_accounts(self) -> List[AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.
 
@@ -1033,12 +1062,12 @@ class AsyncClient:
 
     async def get_open_orders(
         self,
-        order_ids: Optional[list[grpc_definitions.OrderId]] = None,
+        order_ids: Optional[list[OrderId]] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
         symbol: Optional[str] = None,
-        parent_order_id: Optional[grpc_definitions.OrderId] = None,
+        parent_order_id: Optional[OrderId] = None,
     ) -> list[Order]:
         """
         Returns a list of open orders for the user that match the filters.
@@ -1077,12 +1106,12 @@ class AsyncClient:
 
     async def get_historical_orders(
         self,
-        order_ids: Optional[list[grpc_definitions.OrderId]] = None,
+        order_ids: Optional[list[OrderId]] = None,
         from_inclusive: Optional[datetime] = None,
         to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
-        parent_order_id: Optional[grpc_definitions.OrderId] = None,
+        parent_order_id: Optional[OrderId] = None,
     ) -> list[Order]:
         """
         Returns a list of all historical orders that match the filters.
@@ -1130,7 +1159,7 @@ class AsyncClient:
         orders = await grpc_client.unary_unary(historical_orders_request)
         return orders.orders
 
-    async def get_order(self, order_id: grpc_definitions.OrderId) -> Optional[Order]:
+    async def get_order(self, order_id: OrderId) -> Optional[Order]:
         """
         Returns the specified order.  Useful for looking at past sent orders.
         Queries open_orders first, then queries historical_orders.
@@ -1154,9 +1183,7 @@ class AsyncClient:
         if res.orders and len(res.orders) == 1:
             return res.orders[0]
 
-    async def get_orders(
-        self, order_ids: list[grpc_definitions.OrderId]
-    ) -> list[Optional[Order]]:
+    async def get_orders(self, order_ids: list[OrderId]) -> list[Optional[Order]]:
         """
         Returns the specified orders.  Useful for looking at past sent orders.
         Plural form of get_order.
@@ -1165,7 +1192,7 @@ class AsyncClient:
             order_ids: a list of order ids to get
         """
         grpc_client = await self.core()
-        orders_dict: dict[grpc_definitions.OrderId, Optional[Order]] = {
+        orders_dict: dict[OrderId, Optional[Order]] = {
             order_id: None for order_id in order_ids
         }
         req = OpenOrdersRequest.new(
@@ -1195,7 +1222,7 @@ class AsyncClient:
         to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
-        order_id: Optional[grpc_definitions.OrderId] = None,
+        order_id: Optional[OrderId] = None,
         limit: Optional[int] = None,
     ) -> HistoricalFillsResponse:
         """
@@ -1262,9 +1289,9 @@ class AsyncClient:
 
     async def stream_orderflow(
         self,
-        account: Optional[grpc_definitions.AccountIdOrName] = None,
+        account: Optional[AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
-        trader: Optional[grpc_definitions.TraderIdOrEmail] = None,
+        trader: Optional[TraderIdOrEmail] = None,
     ) -> AsyncGenerator[Orderflow, None]:
         """
         A stream for listening to order updates (fills, acks, outs, etc.).
@@ -1301,22 +1328,33 @@ class AsyncClient:
     # Order entry
     # ------------------------------------------------------------
 
+    async def send_limit_order(
+        self,
+        *args,
+        **kwargs,
+    ) -> Order:
+        """
+        @deprecated(reason="Use place_limit_order instead")
+        """
+        return await self.place_limit_order(*args, **kwargs)
+
     async def place_limit_order(
         self,
         *,
-        id: Optional[grpc_definitions.OrderId] = None,
+        id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
-        execution_venue: Optional[str],
-        odir: OrderDir,
+        execution_venue: Optional[str] = None,
+        dir: Optional[OrderDir] = None,
         quantity: Decimal,
         limit_price: Decimal,
-        order_type: PlaceOrderRequestType = PlaceOrderRequestType.LIMIT,
-        time_in_force: grpc_definitions.TimeInForce = grpc_definitions.TimeInForceEnum.DAY,
+        order_type: OrderType = OrderType.LIMIT,
+        time_in_force: TimeInForce = TimeInForceEnum.DAY,
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
         post_only: bool = False,
         trigger_price: Optional[Decimal] = None,
+        **kwargs: Any,
     ) -> Order:
         """
         Sends a regular limit order.
@@ -1327,7 +1365,7 @@ class AsyncClient:
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
                 the primary_exchange can be deduced from `get_product_info`
-            odir: the direction of the order
+            dir: the direction of the order, BUY or SELL
             quantity: the quantity of the order
             limit_price: the limit price of the order
                 It is highly recommended to make this a Decimal object from the decimal module to avoid floating point errors
@@ -1348,6 +1386,13 @@ class AsyncClient:
         """
         grpc_client = await self.core()
         assert quantity > 0, "quantity must be positive"
+
+        if dir is None:
+            if "odir" in kwargs and isinstance(kwargs["odir"], OrderDir):
+                logging.warning("odir is deprecated, use dir instead")
+                dir = kwargs["odir"]
+            else:
+                raise ValueError("dir is required")
 
         if price_round_method is not None:
             if execution_venue is None:
@@ -1375,16 +1420,16 @@ class AsyncClient:
                 raise ValueError(f"Could not find market information for {symbol}")
 
         req: PlaceOrderRequest = PlaceOrderRequest.new(
-            dir=odir,
+            dir=dir,
             quantity=quantity,
             symbol=symbol,
             time_in_force=time_in_force,
             limit_price=limit_price,
-            place_order_request_type=order_type,
+            order_type=order_type,
             account=account,
             id=id,
             parent_id=None,
-            source=grpc_definitions.OrderSource.API,
+            source=OrderSource.API,
             trader=trader,
             execution_venue=execution_venue,
             post_only=post_only,
@@ -1396,12 +1441,12 @@ class AsyncClient:
     async def send_market_pro_order(
         self,
         *,
-        id: Optional[grpc_definitions.OrderId] = None,
+        id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
         execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,
-        time_in_force: grpc_definitions.TimeInForce = grpc_definitions.TimeInForceEnum.DAY,
+        time_in_force: TimeInForce = TimeInForceEnum.DAY,
         account: Optional[str] = None,
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> Order:
@@ -1477,12 +1522,12 @@ class AsyncClient:
             odir=odir,
             quantity=quantity,
             account=account,
-            order_type=PlaceOrderRequestType.LIMIT,
+            order_type=OrderType.LIMIT,
             limit_price=limit_price,
             time_in_force=time_in_force,
         )
 
-    async def cancel_order(self, order_id: grpc_definitions.OrderId) -> Cancel:
+    async def cancel_order(self, order_id: OrderId) -> Cancel:
         """
         Cancels an order by order id.
 
@@ -1498,9 +1543,9 @@ class AsyncClient:
 
     async def cancel_all_orders(
         self,
-        account: Optional[grpc_definitions.AccountIdOrName] = None,
+        account: Optional[AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
-        trader: Optional[grpc_definitions.TraderIdOrEmail] = None,
+        trader: Optional[TraderIdOrEmail] = None,
     ) -> bool:
         """
         Cancels all open orders.

@@ -1,3 +1,4 @@
+import argparse
 import collections.abc
 import inspect
 import types
@@ -211,4 +212,15 @@ def autogenerate_protocol(cls, protocol_name: str) -> str:
 
 
 if __name__ == "__main__":
-    print(autogenerate_protocol(AsyncClient, "ClientProtocol"))
+    parser = argparse.ArgumentParser(description="Process gRPC service definitions")
+    parser.add_argument(
+        "--file_path",
+        type=str,
+        default="architect_py/grpc_client",
+        help="Path to the Python folder with the gRPC service definitions",
+    )
+    args = parser.parse_args()
+    protocol: str = autogenerate_protocol(AsyncClient, "ClientProtocol")
+
+    with open(args.file_path, "w") as f:
+        f.write(protocol)

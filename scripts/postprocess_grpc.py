@@ -207,6 +207,9 @@ def create_tagged_subtypes_for_variant_types(content: str, json_data: dict) -> s
     if tag_field is None:
         return content
 
+    if "oneOf" not in json_data:
+        return content
+
     # Build a mapping from base type name to its variants.
     tag_field_map: dict[str, List[Tuple[str, str]]] = defaultdict(list)
     for p in json_data["oneOf"]:
@@ -319,30 +322,35 @@ def fix_lines(content: str) -> str:
     return content
 
 
-def add_post_processing_to_loosened_types(content: str, json_data: dict) -> str:
+def add_post_processing_to_unflattened_types(content: str, json_data: dict) -> str:
     """
     Adds a __post_init__ method to the flattened types to enforce field requirements.
     """
-    enum_tag = json_data.get("enum_tag")
-    if enum_tag is None:
+    enum_variant_to_other_required_keys: dict[str, List[str]] = json_data.get(
+        "enum_variant_to_other_required_keys", {}
+    )
+    if len(enum_variant_to_other_required_keys) == 0:
         return content
+
+    enum_tag = json_data[
+        "tag_field"
+    ]  # should not be empty if enum_variant_to_other_required_keys is not empty
 
     class_title = json_data["title"]
 
     properties = json_data["properties"]
-    enum_tag_to_other_required_keys: dict[str, List[str]] = json_data[
-        "enum_tag_to_other_required_keys"
-    ]
 
     lines = content.splitlines(keepends=True)
     # Append __post_init__ method at the end
     lines.append("\n    def __post_init__(self):\n")
 
-    common_keys = set.intersection(*map(set, enum_tag_to_other_required_keys.values()))
-    union_keys = set.union(*map(set, enum_tag_to_other_required_keys.values()))
+    common_keys = set.intersection(
+        *map(set, enum_variant_to_other_required_keys.values())
+    )
+    union_keys = set.union(*map(set, enum_variant_to_other_required_keys.values()))
 
     for i, (enum_value, required_keys) in enumerate(
-        enum_tag_to_other_required_keys.items()
+        enum_variant_to_other_required_keys.items()
     ):
         conditional = "if" if i == 0 else "elif"
         title = properties[enum_tag]["title"]
@@ -429,7 +437,9 @@ def generate_stub(content: str, json_data: dict) -> str:
 """
 
     # If this is a Request file, append additional gRPC info.
-    if json_data.get("tag_field") is not None:
+    if (json_data.get("tag_field") is not None) and (
+        json_data.get("enum_variant_to_other_required_keys") is None
+    ):
         service = json_data["service"]
         rpc_method = json_data["rpc_method"]
         response_type = json_data["response_type"]
@@ -556,7 +566,7 @@ def part_1(py_file_path: str, json_data: dict) -> None:
     content = create_tagged_subtypes_for_variant_types(content, json_data)
     content = fix_lines(content)
     if not py_file_path.endswith("definitions.py"):
-        content = add_post_processing_to_loosened_types(content, json_data)
+        content = add_post_processing_to_unflattened_types(content, json_data)
 
     content = fix_enum_member_names(content, json_data)
 

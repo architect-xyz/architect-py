@@ -91,18 +91,18 @@ uv run scripts/postprocess_grpc.py \
     --file_path "$MODELS_DIR" \
     --json_folder "$SCHEMAS_DIR"
 
-printf "\nGenerating sync client interface from async...\n"
-uv run scripts/generate_sync_interface.py > architect_py/client_interface.py
 
 # restore ./architect_py/__init__.py
 mv ./architect_py/__init__.py.bak ./architect_py/__init__.py
 
+printf "\nFormatting code...\n"
 # format generated code 
 uv run ruff format ./architect_py/grpc/models
 
-# -----------------------------
 # Update FUNCTIONS.md
-# -----------------------------
-
 uv run scripts/generate_functions_md.py architect_py/async_client.py \
     > FUNCTIONS.md
+
+printf "\nGenerating sync client interface from async...\n"
+uv run scripts/generate_sync_interface.py --file_path architect_py/client_interface.py
+

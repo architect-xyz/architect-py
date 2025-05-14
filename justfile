@@ -4,6 +4,9 @@ check-format:
 check-version:
     ./scripts/check_version.sh
 
+fix:
+    uv run ruff check --fix
+
 format:
     uv run ruff format
 
