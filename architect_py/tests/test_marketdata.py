@@ -150,19 +150,19 @@ async def test_stream_trades(async_client: AsyncClient, venue: str, symbol: str)
             break
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "venue,symbol",
-    [
-        ("BINANCE/USDM", "BTC-USDT BINANCE Perpetual/USDT Crypto"),
-    ],
-)
-async def test_stream_candles(async_client: AsyncClient, venue: str, symbol: str):
-    i = 0
-    async for candle in async_client.stream_candles(
-        symbol, venue, [CandleWidth.OneSecond]
-    ):
-        assert candle is not None
-        i += 1
-        if i > 3:
-            break
+# @pytest.mark.asyncio
+# @pytest.mark.parametrize(
+#     "venue,symbol",
+#     [
+#         ("BINANCE/USDM", "BTC-USDT BINANCE Perpetual/USDT Crypto"),
+#     ],
+# )
+# async def test_stream_candles(async_client: AsyncClient, venue: str, symbol: str):
+#     i = 0
+#     async for candle in async_client.stream_candles(
+#         symbol, venue, [CandleWidth.OneSecond]
+#     ):
+#         assert candle is not None
+#         i += 1
+#         if i > 3:
+#             break

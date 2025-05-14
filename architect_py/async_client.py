@@ -106,6 +106,14 @@ class AsyncClient:
             f"Resolved endpoint {endpoint}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
         )
 
+        # Sanity check paper trading on prod environments
+        if paper_trading:
+            if grpc_host == "app.architect.co" or grpc_host == "staging.architect.co":
+                if grpc_port != 10081:
+                    raise ValueError("Wrong gRPC port for paper trading")
+                if graphql_port is not None and graphql_port != 5678:
+                    raise ValueError("Wrong GraphQL port for paper trading")
+
         client = AsyncClient(
             api_key=api_key,
             api_secret=api_secret,
@@ -150,11 +158,6 @@ class AsyncClient:
         ):
             raise ValueError(
                 "API secret must be a Base64-encoded string, 44 characters long"
-            )
-
-        if paper_trading and (graphql_port is not None or grpc_port is not None):
-            raise ValueError(
-                "If paper_trading is True, graphql_port and grpc_port must be None"
             )
 
         if graphql_port is None:
