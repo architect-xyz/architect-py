@@ -14,6 +14,8 @@ lint:
     uv run ruff check
 
 publish:
+    rm -rf build
+    rm -rf dist
     uv build
     uv publish
 
