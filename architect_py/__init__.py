@@ -1,4 +1,4 @@
-__version__ = "5.0.0b1"
+__version__ = "5.0.0b2"
 
 from .async_client import AsyncClient
 from .client import Client
