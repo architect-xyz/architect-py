@@ -6,8 +6,7 @@ from decimal import Decimal
 from architect_py.async_client import AsyncClient
 from architect_py.common_types.order_dir import OrderDir
 from architect_py.common_types.tradable_product import TradableProduct
-from architect_py.grpc.models.definitions import GoodTilDate, TimeInForceEnum
-from architect_py.grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequestType
+from architect_py.grpc.models.definitions import GoodTilDate, OrderType, TimeInForceEnum
 from examples.common import connect_async_client
 
 LOGGER = logging.getLogger(__name__)
@@ -42,7 +41,7 @@ async def test_send_order(client: AsyncClient, account: str):
         symbol=symbol,
         odir=OrderDir.BUY,
         quantity=best_bid_quantity,
-        order_type=PlaceOrderRequestType.LIMIT,
+        order_type=OrderType.LIMIT,
         execution_venue="CME",
         post_only=True,
         limit_price=best_bid_price

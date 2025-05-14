@@ -5,18 +5,11 @@ from __future__ import annotations
 from architect_py.common_types import OrderDir
 
 from decimal import Decimal
-from enum import Enum
 from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
 from .. import definitions
-
-
-class OrderType(str, Enum):
-    LIMIT = "LIMIT"
-    STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
-    TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
 
 
 class Order(Struct, omit_defaults=True):
@@ -34,7 +27,7 @@ class Order(Struct, omit_defaults=True):
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]
     p: Annotated[Decimal, Meta(title="limit_price")]
-    k: Annotated[OrderType, Meta(title="order_type")]
+    k: Annotated[definitions.OrderType, Meta(title="order_type")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
         None
@@ -66,7 +59,7 @@ class Order(Struct, omit_defaults=True):
         execution_venue: str,
         filled_quantity: Decimal,
         limit_price: Decimal,
-        order_type: OrderType,
+        order_type: definitions.OrderType,
         exchange_order_id: Optional[str] = None,
         parent_id: Optional[definitions.OrderId] = None,
         reject_reason: Optional[definitions.OrderRejectReason] = None,
@@ -210,11 +203,11 @@ class Order(Struct, omit_defaults=True):
         self.p = value
 
     @property
-    def order_type(self) -> OrderType:
+    def order_type(self) -> definitions.OrderType:
         return self.k
 
     @order_type.setter
-    def order_type(self, value: OrderType) -> None:
+    def order_type(self, value: definitions.OrderType) -> None:
         self.k = value
 
     @property

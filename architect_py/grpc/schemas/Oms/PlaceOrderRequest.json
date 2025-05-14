@@ -117,21 +117,16 @@
       "format": "decimal"
     },
     "k": {
-      "type": "string",
-      "title": "place_order_request_type",
-      "enum": [
-        "LIMIT",
-        "STOP_LOSS_LIMIT",
-        "TAKE_PROFIT_LIMIT"
-      ]
+      "title": "order_type",
+      "$ref": "../definitions.json#/OrderType"
     }
   },
   "route": "/json.architect.Oms/PlaceOrder",
   "rpc_method": "unary",
   "service": "Oms",
   "response_type": "Order",
-  "enum_tag": "k",
-  "enum_tag_to_other_required_keys": {
+  "tag_field": "k",
+  "enum_variant_to_other_required_keys": {
     "LIMIT": [
       "k",
       "p",

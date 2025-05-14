@@ -6,22 +6,28 @@ class OrderDir(str, Enum):
     BUY = "BUY"
     SELL = "SELL"
 
-    def __int__(self):
-        if self == OrderDir.BUY:
-            return 1
-        elif self == OrderDir.SELL:
-            return -1
-        else:
-            raise ValueError(f"Unknown Dir: {self}")
-
-    def get_opposite(self) -> "OrderDir":
+    def flip(self) -> "OrderDir":
         """
-        NOTE: ENUMS ARE IMMUTABLE SO THIS DOES NOT MUTATE THE STATE OF THE ENUM
+        Returns the opposite direction.
         """
         if self == OrderDir.BUY:
             return OrderDir.SELL
         elif self == OrderDir.SELL:
             return OrderDir.BUY
+        else:
+            raise ValueError(f"Unknown Dir: {self}")
+
+    def get_opposite(self) -> "OrderDir":
+        """
+        @deprecated(reason="Use flip instead")
+        """
+        return self.flip()
+
+    def __int__(self):
+        if self == OrderDir.BUY:
+            return 1
+        elif self == OrderDir.SELL:
+            return -1
         else:
             raise ValueError(f"Unknown Dir: {self}")
 
