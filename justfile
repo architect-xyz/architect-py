@@ -13,6 +13,10 @@ format:
 lint:
     uv run ruff check
 
+publish:
+    uv build
+    uv publish
+
 test:
     uv run pytest --cov
 
