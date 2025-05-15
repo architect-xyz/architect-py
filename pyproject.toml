@@ -5,7 +5,7 @@ authors = [
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
 ]
 dependencies = [
     "asyncio>=3",
@@ -22,7 +22,7 @@ license = "Apache-2.0"
 name = "architect-py"
 readme = "README.md"
 requires-python = ">=3.10,<4"
-version = "5.0.0b3"
+version = "5.0.0"
 
 [dependency-groups]
 dev = [
