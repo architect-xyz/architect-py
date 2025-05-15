@@ -442,7 +442,7 @@ class AsyncClient:
 
     async def get_execution_infos(
         self,
-        symbols: Optional[list[TradableProduct]],
+        symbols: Optional[list[TradableProduct | str]],
         execution_venue: Optional[str] = None,
     ) -> Sequence[ExecutionInfoFields]:
         """
@@ -458,9 +458,11 @@ class AsyncClient:
             that were asked for, or in the same order; any duplicates or invalid
             symbols will be ignored.
         """
-        res = await self.graphql_client.get_execution_infos_query(
-            symbols, execution_venue
-        )
+        if symbols is not None:
+            tps = [TradableProduct(symbol) for symbol in symbols]
+        else:
+            tps = None
+        res = await self.graphql_client.get_execution_infos_query(tps, execution_venue)
         return res.execution_infos
 
     async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
