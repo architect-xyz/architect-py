@@ -8,13 +8,11 @@ from datetime import datetime, timezone
 from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
 from .Marketdata.Ticker import Ticker
-
-Model = Any
 
 
 AccountIdOrName = str

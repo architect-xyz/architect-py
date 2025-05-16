@@ -6,7 +6,6 @@ from functools import partial
 from typing import Any, Awaitable, Callable, Coroutine, Optional, TypeVar
 
 from .async_client import AsyncClient
-from .client_interface import ClientProtocol
 
 T = TypeVar("T")
 
@@ -17,7 +16,7 @@ def is_async_function(obj):
     return callable(obj) and hasattr(obj, "__code__") and obj.__code__.co_flags & 0x80
 
 
-class Client(ClientProtocol):
+class Client:
     """
     This class is a wrapper around the AsyncClient class that allows you to call async methods synchronously.
     This does not work for subscription based methods.

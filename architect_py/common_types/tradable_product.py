@@ -1,5 +1,7 @@
 from typing import Optional
 
+import msgspec
+
 
 class TradableProduct(str):
     """
@@ -50,6 +52,13 @@ class TradableProduct(str):
 
     def quote(self) -> str:
         return self.split("/", 1)[1]
+
+    def serialize(self) -> msgspec.Raw:
+        return msgspec.Raw(self.encode())
+
+    @staticmethod
+    def deserialize(s: str) -> "TradableProduct":
+        return TradableProduct(s)
 
 
 def parse_tradable_product(value: str) -> TradableProduct:

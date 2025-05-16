@@ -504,6 +504,33 @@ class AsyncClient:
         res = await self.graphql_client.get_future_series_query(series_symbol)
         return res.futures_series
 
+    async def get_front_future(
+        self, series_symbol: str, venue: str, by_volume: bool = True
+    ) -> str:
+        """
+        Gets the future with the most volume in a series.
+
+        Args:
+            series_symbol: the futures series
+                e.g. "ES CME Futures" would yield the lead future for the ES series
+            venue: the venue to get the lead future for, e.g. "CME"
+            by_volume: if True, sort by volume; otherwise sort by expiration date
+
+        Returns:
+            The lead future symbol
+        """
+        futures = await self.get_futures_series(series_symbol)
+        if not by_volume:
+            futures.sort()
+            return futures[0]
+        else:
+            grpc_client = await self.marketdata(venue)
+            req = TickersRequest(
+                symbols=futures, k=SortTickersBy.VOLUME_DESC, venue=venue
+            )
+            res: TickersResponse = await grpc_client.unary_unary(req)
+            return res.tickers[0].symbol
+
     @staticmethod
     def get_expiration_from_CME_name(name: str) -> Optional[date]:
         """
@@ -1307,8 +1334,6 @@ class AsyncClient:
             async for of in client.subscribe_orderflow_stream(request):
                 print(of)
             ```
-
-        This WILL block the event loop until the stream is closed.
         """
         grpc_client = await self.core()
         request: SubscribeOrderflowRequest = SubscribeOrderflowRequest(

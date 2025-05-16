@@ -1,4 +1,12 @@
-# 5.0.0b (WORK IN PROGRESS--DO NOT UPSTREAM)
+# 5.0.0
+- Fixed client_interface to use mypy stubgen and use a pyi file instead of a protocol
+- Remove no_pandas
+- TickersRequest, added titles for the fields
+- Removed unused graphql queries and types
+- TradableProduct improvement and comment fixes
+- Add `get_front_future` method to async client
+
+# 5.0.0b
 
 - refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
 - as a consequence, many marketdata methods require a `venue` argument
