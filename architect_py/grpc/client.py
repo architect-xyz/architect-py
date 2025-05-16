@@ -8,6 +8,11 @@ from . import *
 from .utils import RequestType, ResponseTypeGeneric, decoders, encoder
 
 
+def dec_hook(type, obj):
+    # type should have a static method deserialize
+    return type.deserialize(obj)
+
+
 class GrpcClient:
     endpoint: str
     channel: grpc.aio.Channel
@@ -35,7 +40,7 @@ class GrpcClient:
         try:
             return decoders[response_type]
         except KeyError:
-            decoder = msgspec.json.Decoder(type=response_type)
+            decoder = msgspec.json.Decoder(type=response_type, dec_hook=dec_hook)
             decoders[response_type] = decoder
             return decoder
 

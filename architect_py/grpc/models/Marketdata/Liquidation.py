@@ -10,7 +10,6 @@ from typing import Annotated
 
 from msgspec import Meta, Struct
 
-from .. import definitions
 
 
 class Liquidation(Struct, omit_defaults=True):

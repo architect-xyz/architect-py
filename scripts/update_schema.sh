@@ -104,5 +104,10 @@ uv run scripts/generate_functions_md.py architect_py/async_client.py \
     > FUNCTIONS.md
 
 printf "\nGenerating sync client interface from async...\n"
-uv run scripts/generate_sync_interface.py --file_path architect_py/client_interface.py
+uv run stubgen architect_py/async_client.py -o temp --include-docstrings
+uv run scripts/correct_sync_interface.py --file_path temp/architect_py/async_client.pyi
+mv temp/architect_py/async_client.pyi architect_py/client.pyi
+rm -rf temp
+uv run ruff format
 
+uv run ruff check . --select F401 --fix --isolated

@@ -389,6 +389,8 @@ def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
 
     If a enum value has a description, the json gets separated
 
+    This renames the enum to the description and adds a new enum
+
     See TimeInForce for an example
     """
     if "definitions" not in schema:

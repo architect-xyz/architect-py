@@ -3,12 +3,9 @@ from typing import Any, Protocol, Type, TypeVar
 
 import msgspec
 
-from architect_py.common_types import TradableProduct
-
 
 def enc_hook(obj: Any) -> Any:
-    if isinstance(obj, TradableProduct):
-        return str(obj)
+    return obj.serialize()
 
 
 encoder = msgspec.json.Encoder(enc_hook=enc_hook)

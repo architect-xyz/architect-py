@@ -4,6 +4,7 @@
   "type": "object",
   "properties": {
     "i": {
+      "title": "offset",
       "type": [
         "integer",
         "null"
@@ -11,6 +12,7 @@
       "format": "int32"
     },
     "k": {
+      "title": "sort_by",
       "anyOf": [
         {
           "$ref": "../definitions.json#/SortTickersBy"
@@ -21,6 +23,7 @@
       ]
     },
     "n": {
+      "title": "limit",
       "type": [
         "integer",
         "null"

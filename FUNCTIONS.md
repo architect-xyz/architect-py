@@ -22,6 +22,7 @@
 - **`get_execution_info`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_execution_infos`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_futures_series`**: List all futures in a given series.
+- **`get_front_future`**: Gets the future with the most volume in a series.
 - **`get_cme_future_from_root_month_year`**: Get the symbol for a CME future from the root, month, and year.
 
 ---

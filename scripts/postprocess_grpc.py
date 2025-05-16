@@ -304,6 +304,8 @@ def create_tagged_subtypes_for_variant_types(content: str, json_data: dict) -> s
 def fix_lines(content: str) -> str:
     """
     Fixes type annotations and adds necessary imports.
+
+    Replaces OrderDir with its handrolled versions.
     """
     lines = content.splitlines(keepends=True)
 
@@ -312,10 +314,12 @@ def fix_lines(content: str) -> str:
 
     lines = [line.replace("Dir", "OrderDir") for line in lines]
     lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
-    lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
 
-    if any("OrderDir" in line for line in lines):
+    order_dir_exists = any("OrderDir" in line for line in lines)
+    if order_dir_exists:
         lines.insert(4, "from architect_py.common_types import OrderDir\n")
+
+    lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
 
     content = "".join(lines)
     content = REMOVE_ORDERDIR_RE.sub("", content)
@@ -575,13 +579,14 @@ def part_1(py_file_path: str, json_data: dict) -> None:
 
 def part_2(py_file_path: str, json_data: dict) -> None:
     content = read_file(py_file_path)
-    if not py_file_path.endswith("definitions.py"):
+    if py_file_path.endswith("definitions.py"):
         """
         we write and then read the same file because we need to update the content for when we do the import for the variant types
         """
-        content = generate_stub(content, json_data)
-    else:
         content = content.replace('    "SENTINAL_VALUE"', "")
+        content = content.replace("Model = Any", "")
+    else:
+        content = generate_stub(content, json_data)
 
     write_file(py_file_path, content)
 
