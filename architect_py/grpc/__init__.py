@@ -23,8 +23,6 @@ from .models.definitions import (
     OrderStatus,
     OrderType,
     SortTickersBy,
-    TimeInForce,
-    TimeInForceEnum,
     TraderIdOrEmail,
 )
 from .models.Folio.AccountHistoryRequest import AccountHistoryRequest
@@ -135,8 +133,6 @@ __all__ = [
     "TickersRequest",
     "TickersResponse",
     "TickerUpdate",
-    "TimeInForce",
-    "TimeInForceEnum",
     "Trade",
     "TraderIdOrEmail",
     "resolve_endpoint",

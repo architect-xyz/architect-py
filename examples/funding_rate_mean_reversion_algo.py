@@ -8,9 +8,10 @@ from typing import AsyncIterator, Optional
 
 from architect_py.async_client import AsyncClient
 from architect_py.common_types.order_dir import OrderDir
+from architect_py.common_types.time_in_force import TimeInForce
 from architect_py.common_types.tradable_product import TradableProduct
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from architect_py.grpc.models.definitions import OrderType, TimeInForceEnum
+from architect_py.grpc.models.definitions import OrderType
 from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedOrderAck,
     TaggedOrderOut,
@@ -124,7 +125,7 @@ async def step_to_target_position(
                     quantity=Decimal(1),
                     execution_venue=None,
                     limit_price=best_ask_price,
-                    time_in_force=TimeInForceEnum.DAY,
+                    time_in_force=TimeInForce.DAY,
                     order_type=OrderType.LIMIT,
                 )
 
@@ -139,7 +140,7 @@ async def step_to_target_position(
                     quantity=Decimal(1),
                     execution_venue=None,
                     limit_price=best_bid_price,
-                    time_in_force=TimeInForceEnum.DAY,
+                    time_in_force=TimeInForce.DAY,
                     order_type=OrderType.LIMIT,
                 )
 

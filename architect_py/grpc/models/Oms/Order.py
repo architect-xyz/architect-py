@@ -2,7 +2,7 @@
 #   filename:  Oms/Order.json
 
 from __future__ import annotations
-from architect_py.common_types import OrderDir
+from architect_py.common_types import OrderDir, TimeInForce
 
 from decimal import Decimal
 from typing import Annotated, Optional
@@ -20,7 +20,7 @@ class Order(Struct, omit_defaults=True):
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     src: Annotated[definitions.OrderSource, Meta(title="source")]
-    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tif: Annotated[TimeInForce, Meta(title="time_in_force")]
     tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
     ts: Annotated[int, Meta(title="recv_time")]
     u: Annotated[definitions.UserId, Meta(title="trader")]
@@ -52,7 +52,7 @@ class Order(Struct, omit_defaults=True):
         quantity: Decimal,
         symbol: str,
         source: definitions.OrderSource,
-        time_in_force: definitions.TimeInForce,
+        time_in_force: TimeInForce,
         recv_time_ns: int,
         recv_time: int,
         trader: definitions.UserId,
@@ -147,11 +147,11 @@ class Order(Struct, omit_defaults=True):
         self.src = value
 
     @property
-    def time_in_force(self) -> definitions.TimeInForce:
+    def time_in_force(self) -> TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: definitions.TimeInForce) -> None:
+    def time_in_force(self, value: TimeInForce) -> None:
         self.tif = value
 
     @property
@@ -280,9 +280,9 @@ class Order(Struct, omit_defaults=True):
                 raise ValueError(
                     f"When field k (order_type) is of value MARKET, class Order requires fields []"
                 )
-            elif any(getattr(self, key) is not None for key in ["tp", "p", "po"]):
+            elif any(getattr(self, key) is not None for key in ["p", "po", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value MARKET, class Order should not have fields ['tp', 'p', 'po']"
+                    f"When field k (order_type) is of value MARKET, class Order should not have fields ['p', 'po', 'tp']"
                 )
         elif self.k == "LIMIT":
             if not all(getattr(self, key) is not None for key in ["p", "po"]):

@@ -19,9 +19,6 @@ from typing import Annotated, List, Tuple, Union, get_args, get_origin
 # Regular Expressions (Constants)
 # --------------------------------------------------------------------
 
-REMOVE_ORDERDIR_RE = re.compile(
-    r"^class\s+OrderDir\b.*?(?=^class\s+\w|\Z)", re.DOTALL | re.MULTILINE
-)
 IMPORT_FIX_RE = re.compile(r"^from\s+(\.+)(\w*)\s+import\s+(.+)$")
 CLASS_HEADER_RE = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
 MEMBER_RE = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
@@ -305,7 +302,7 @@ def fix_lines(content: str) -> str:
     """
     Fixes type annotations and adds necessary imports.
 
-    Replaces OrderDir with its handrolled versions.
+    Replaces OrderDir and TimeInForce with its handrolled versions.
     """
     lines = content.splitlines(keepends=True)
 
@@ -314,15 +311,23 @@ def fix_lines(content: str) -> str:
 
     lines = [line.replace("Dir", "OrderDir") for line in lines]
     lines = [line.replace("definitions.OrderDir", "OrderDir") for line in lines]
+    lines = [line.replace("definitions.TimeInForce", "TimeInForce") for line in lines]
 
     order_dir_exists = any("OrderDir" in line for line in lines)
+    time_in_force_exists = any("TimeInForce" in line for line in lines)
     if order_dir_exists:
-        lines.insert(4, "from architect_py.common_types import OrderDir\n")
+        if not time_in_force_exists:
+            lines.insert(4, "from architect_py.common_types import OrderDir\n")
+        else:
+            lines.insert(
+                4, "from architect_py.common_types import OrderDir, TimeInForce\n"
+            )
 
     lines = [line.replace("(Struct)", "(Struct, omit_defaults=True)") for line in lines]
+    delete_class(["OrderDir", "TimeInForceEnum", "GoodTilDate"], lines)
 
     content = "".join(lines)
-    content = REMOVE_ORDERDIR_RE.sub("", content)
+
     return content
 
 
@@ -360,6 +365,8 @@ def add_post_processing_to_unflattened_types(content: str, json_data: dict) -> s
         title = properties[enum_tag]["title"]
         req_keys_subset = [key for key in required_keys if key not in common_keys]
         should_be_empty_keys = list(union_keys - set(required_keys))
+        required_keys.sort()
+        should_be_empty_keys.sort()
         lines.append(
             f'        {conditional} self.{enum_tag} == "{enum_value}":\n'
             f"            if not all(getattr(self, key) is not None for key in {req_keys_subset}):\n"
@@ -461,6 +468,38 @@ def generate_stub(content: str, json_data: dict) -> str:
 
     lines.insert(4, response_import_str)
     return "".join(lines)
+
+
+def delete_class(names: list[str], lines: list[str]) -> list[str]:
+    """
+    Delete a method and its docstring from the lines of a file if the method name
+    contains any of the names in the provided list.
+    """
+    class_keywords = ["class", "Union"]
+
+    i = 0
+    delete_bool = False
+    while i < len(lines):
+        line = lines[i]
+        if any(word in line for word in class_keywords) and "@" not in line:
+            delete_bool = False
+        elif lines[i : i + 2] == ["\n", "\n"]:
+            delete_bool = False
+
+        if delete_bool:
+            del lines[i]
+        else:
+            if any(c in line for c in class_keywords) and (
+                any(word in line for word in names)
+            ):
+                delete_bool = True
+                del lines[i]
+                if "@" in lines[i - 1]:
+                    i = -1
+                    del lines[i]
+            else:
+                i += 1
+    return lines
 
 
 def fix_enum_member_names(content: str, json_data: dict) -> str:
