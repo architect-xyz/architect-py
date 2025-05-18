@@ -36,7 +36,7 @@ from architect_py.grpc.models.Orderflow.SubscribeOrderflowRequest import (
     SubscribeOrderflowRequest,
 )
 
-from .common_types import OrderDir, TradableProduct, Venue
+from .common_types import OrderDir, TimeInForce, TradableProduct, Venue
 from .graphql_client import GraphQLClient
 from .graphql_client.exceptions import GraphQLClientGraphQLMultiError
 from .graphql_client.fragments import (
@@ -1189,6 +1189,12 @@ class AsyncClient:
             to_exclusive=to_exclusive,
         )
         orders = await grpc_client.unary_unary(historical_orders_request)
+        if orders is None:
+            raise ValueError(
+                "No orders found for the given filters. "
+                "If order_ids is not specified, then from_inclusive and to_exclusive "
+                "MUST be specified."
+            )
         return orders.orders
 
     async def get_order(self, order_id: OrderId) -> Optional[Order]:
@@ -1378,7 +1384,7 @@ class AsyncClient:
         quantity: Decimal,
         limit_price: Decimal,
         order_type: OrderType = OrderType.LIMIT,
-        time_in_force: TimeInForce = TimeInForceEnum.DAY,
+        time_in_force: TimeInForce = TimeInForce.DAY,
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
@@ -1476,7 +1482,7 @@ class AsyncClient:
         execution_venue: str,
         odir: OrderDir,
         quantity: Decimal,
-        time_in_force: TimeInForce = TimeInForceEnum.DAY,
+        time_in_force: TimeInForce = TimeInForce.DAY,
         account: Optional[str] = None,
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> Order:

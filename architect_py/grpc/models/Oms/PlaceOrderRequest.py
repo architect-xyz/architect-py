@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 from architect_py.grpc.models.Oms.Order import Order
-from architect_py.common_types import OrderDir
+from architect_py.common_types import OrderDir, TimeInForce
 
 from decimal import Decimal
 from typing import Annotated, Optional
@@ -17,7 +17,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     d: Annotated[OrderDir, Meta(title="dir")]
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
-    tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
+    tif: Annotated[TimeInForce, Meta(title="time_in_force")]
     k: Annotated[definitions.OrderType, Meta(title="order_type")]
     a: Optional[
         Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
@@ -54,7 +54,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         dir: OrderDir,
         quantity: Decimal,
         symbol: str,
-        time_in_force: definitions.TimeInForce,
+        time_in_force: TimeInForce,
         order_type: definitions.OrderType,
         account: Optional[definitions.AccountIdOrName] = None,
         id: Optional[definitions.OrderId] = None,
@@ -111,11 +111,11 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         self.s = value
 
     @property
-    def time_in_force(self) -> definitions.TimeInForce:
+    def time_in_force(self) -> TimeInForce:
         return self.tif
 
     @time_in_force.setter
-    def time_in_force(self, value: definitions.TimeInForce) -> None:
+    def time_in_force(self, value: TimeInForce) -> None:
         self.tif = value
 
     @property

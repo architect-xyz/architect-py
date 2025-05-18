@@ -1,4 +1,5 @@
-# 5.0.0
+# 5.1.0
+- Added a type-checker-friendly way to get enum-like constants + a payload-carrying variant (GTD) in one class for TimeInForce
 - Fixed client_interface to use mypy stubgen and use a pyi file instead of a protocol
 - Remove no_pandas
 - TickersRequest, added titles for the fields
@@ -6,7 +7,7 @@
 - TradableProduct improvement and comment fixes
 - Add `get_front_future` method to async client
 
-# 5.0.0b
+# 5.0.0
 
 - refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
 - as a consequence, many marketdata methods require a `venue` argument

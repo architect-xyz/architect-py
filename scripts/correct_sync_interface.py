@@ -20,6 +20,31 @@ INIT_BLOCK_RE = re.compile(
 )
 
 
+def delete_method_and_docstring(names: list[str], lines: list[str]) -> list[str]:
+    """
+    Delete a method and its docstring from the lines of a file if the method name
+    contains any of the names in the provided list.
+    """
+    i = 0
+    delete_bool = False
+    while i < len(lines):
+        line = lines[i]
+        if "def" in line:
+            delete_bool = False
+        if delete_bool:
+            del lines[i]
+        else:
+            if "def" in line and (any(word in line for word in names)):
+                delete_bool = True
+                del lines[i]
+                if "@" in lines[i - 1]:
+                    i = -1
+                    del lines[i]
+            else:
+                i += 1
+    return lines
+
+
 def correct_sync_interface(content: str):
     """
     Correct the sync interface in the gRPC service definitions.
@@ -33,26 +58,7 @@ def correct_sync_interface(content: str):
 
     # Remove all stream, orderflow, and subscribe methods
     lines = content.splitlines()
-    i = 0
-    delete_bool = False
-    while i < len(lines):
-        if "def" in lines[i]:
-            delete_bool = False
-
-        if delete_bool:
-            del lines[i]
-        else:
-            line = lines[i]
-            if "def" in line and (
-                "stream" in line or "orderflow" in line or "subscribe" in line
-            ):
-                delete_bool = True
-                del lines[i]
-                if "@" in lines[i - 1]:
-                    i = -1
-                    del lines[i]
-            else:
-                i += 1
+    delete_method_and_docstring(["stream", "orderflow", "subscribe"], lines)
     content = "\n".join(lines)
 
     # Remove the @staticmethod decorator that precedes connect()

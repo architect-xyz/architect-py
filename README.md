@@ -27,6 +27,6 @@ See the [Getting started with Python](https://docs.architect.co/getting-started-
 
 Go to [FUNCTIONS.md](FUNCTIONS.md) file to see a catalog of methods.
 
----
+## Examples
 
-### Running examples from this package
+Go to the [Examples](examples) to see examples of a variety of common use cases.

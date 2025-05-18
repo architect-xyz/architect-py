@@ -4,7 +4,7 @@
 from .grpc import *
 import asyncio
 import pandas as pd
-from .common_types import OrderDir as OrderDir, TradableProduct as TradableProduct, Venue as Venue
+from .common_types import OrderDir as OrderDir, TimeInForce as TimeInForce, TradableProduct as TradableProduct, Venue as Venue
 from .graphql_client import GraphQLClient as GraphQLClient
 from .graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from .graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields

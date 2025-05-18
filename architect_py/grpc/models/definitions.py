@@ -745,35 +745,6 @@ class Statement(Struct, omit_defaults=True):
         return f"Statement(account={self.account},clearing_firm={self.clearing_firm},filename={self.filename},statement_date={self.statement_date},statement_type={self.statement_type},statement_uuid={self.statement_uuid})"
 
 
-class GoodTilDate(Struct, omit_defaults=True):
-    GTD: datetime
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        GTD: datetime,
-    ):
-        return cls(
-            GTD,
-        )
-
-    def __str__(self) -> str:
-        return f"GoodTilDate(GTD={self.GTD})"
-
-
-class TimeInForceEnum(str, Enum):
-    GTC = "GTC"
-    DAY = "DAY"
-    IOC = "IOC"
-    FOK = "FOK"
-    ATO = "ATO"
-    ATC = "ATC"
-
-
-TimeInForce = Union[GoodTilDate, TimeInForceEnum]
-
-
 TraderIdOrEmail = str
 
 
