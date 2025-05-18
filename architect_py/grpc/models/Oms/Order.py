@@ -26,7 +26,6 @@ class Order(Struct, omit_defaults=True):
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]
-    p: Annotated[Decimal, Meta(title="limit_price")]
     k: Annotated[definitions.OrderType, Meta(title="order_type")]
     eid: Optional[Annotated[Optional[str], Meta(title="exchange_order_id")]] = None
     pid: Optional[Annotated[Optional[definitions.OrderId], Meta(title="parent_id")]] = (
@@ -38,6 +37,7 @@ class Order(Struct, omit_defaults=True):
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     ss: Optional[Annotated[Optional[bool], Meta(title="is_short_sale")]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
+    p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
@@ -58,7 +58,6 @@ class Order(Struct, omit_defaults=True):
         trader: definitions.UserId,
         execution_venue: str,
         filled_quantity: Decimal,
-        limit_price: Decimal,
         order_type: definitions.OrderType,
         exchange_order_id: Optional[str] = None,
         parent_id: Optional[definitions.OrderId] = None,
@@ -66,6 +65,7 @@ class Order(Struct, omit_defaults=True):
         reject_message: Optional[str] = None,
         is_short_sale: Optional[bool] = None,
         average_fill_price: Optional[Decimal] = None,
+        limit_price: Optional[Decimal] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
     ):
@@ -83,7 +83,6 @@ class Order(Struct, omit_defaults=True):
             trader,
             execution_venue,
             filled_quantity,
-            limit_price,
             order_type,
             exchange_order_id,
             parent_id,
@@ -91,12 +90,13 @@ class Order(Struct, omit_defaults=True):
             reject_message,
             is_short_sale,
             average_fill_price,
+            limit_price,
             post_only,
             trigger_price,
         )
 
     def __str__(self) -> str:
-        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},limit_price={self.p},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},is_short_sale={self.ss},average_fill_price={self.xp},post_only={self.po},trigger_price={self.tp})"
+        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},is_short_sale={self.ss},average_fill_price={self.xp},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
 
     @property
     def account(self) -> str:
@@ -195,14 +195,6 @@ class Order(Struct, omit_defaults=True):
         self.xq = value
 
     @property
-    def limit_price(self) -> Decimal:
-        return self.p
-
-    @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
-        self.p = value
-
-    @property
     def order_type(self) -> definitions.OrderType:
         return self.k
 
@@ -259,6 +251,14 @@ class Order(Struct, omit_defaults=True):
         self.xp = value
 
     @property
+    def limit_price(self) -> Optional[Decimal]:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Optional[Decimal]) -> None:
+        self.p = value
+
+    @property
     def post_only(self) -> Optional[bool]:
         return self.po
 
@@ -275,28 +275,37 @@ class Order(Struct, omit_defaults=True):
         self.tp = value
 
     def __post_init__(self):
-        if self.k == "LIMIT":
-            if not all(getattr(self, key) is not None for key in ["po"]):
+        if self.k == "MARKET":
+            if not all(getattr(self, key) is not None for key in []):
                 raise ValueError(
-                    f"When field k (order_type) is of value LIMIT, class Order requires fields ['po']"
+                    f"When field k (order_type) is of value MARKET, class Order requires fields []"
+                )
+            elif any(getattr(self, key) is not None for key in ["tp", "p", "po"]):
+                raise ValueError(
+                    f"When field k (order_type) is of value MARKET, class Order should not have fields ['tp', 'p', 'po']"
+                )
+        elif self.k == "LIMIT":
+            if not all(getattr(self, key) is not None for key in ["p", "po"]):
+                raise ValueError(
+                    f"When field k (order_type) is of value LIMIT, class Order requires fields ['p', 'po']"
                 )
             elif any(getattr(self, key) is not None for key in ["tp"]):
                 raise ValueError(
                     f"When field k (order_type) is of value LIMIT, class Order should not have fields ['tp']"
                 )
         elif self.k == "STOP_LOSS_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
+            if not all(getattr(self, key) is not None for key in ["p", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class Order requires fields ['tp']"
+                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class Order requires fields ['p', 'tp']"
                 )
             elif any(getattr(self, key) is not None for key in ["po"]):
                 raise ValueError(
                     f"When field k (order_type) is of value STOP_LOSS_LIMIT, class Order should not have fields ['po']"
                 )
         elif self.k == "TAKE_PROFIT_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
+            if not all(getattr(self, key) is not None for key in ["p", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class Order requires fields ['tp']"
+                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class Order requires fields ['p', 'tp']"
                 )
             elif any(getattr(self, key) is not None for key in ["po"]):
                 raise ValueError(

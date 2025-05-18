@@ -1962,6 +1962,7 @@
     "type": "string",
     "title": "order_type",
     "enum": [
+      "MARKET",
       "LIMIT",
       "STOP_LOSS_LIMIT",
       "TAKE_PROFIT_LIMIT"

@@ -18,7 +18,6 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     q: Annotated[Decimal, Meta(title="quantity")]
     s: Annotated[str, Meta(title="symbol")]
     tif: Annotated[definitions.TimeInForce, Meta(title="time_in_force")]
-    p: Annotated[Decimal, Meta(title="limit_price")]
     k: Annotated[definitions.OrderType, Meta(title="order_type")]
     a: Optional[
         Annotated[Optional[definitions.AccountIdOrName], Meta(title="account")]
@@ -44,6 +43,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
     x: Optional[Annotated[Optional[str], Meta(title="execution_venue")]] = None
+    p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
@@ -55,7 +55,6 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         quantity: Decimal,
         symbol: str,
         time_in_force: definitions.TimeInForce,
-        limit_price: Decimal,
         order_type: definitions.OrderType,
         account: Optional[definitions.AccountIdOrName] = None,
         id: Optional[definitions.OrderId] = None,
@@ -63,6 +62,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         source: Optional[definitions.OrderSource] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         execution_venue: Optional[str] = None,
+        limit_price: Optional[Decimal] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
     ):
@@ -71,7 +71,6 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
             quantity,
             symbol,
             time_in_force,
-            limit_price,
             order_type,
             account,
             id,
@@ -79,12 +78,13 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
             source,
             trader,
             execution_venue,
+            limit_price,
             post_only,
             trigger_price,
         )
 
     def __str__(self) -> str:
-        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},limit_price={self.p},order_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},trader={self.u},execution_venue={self.x},post_only={self.po},trigger_price={self.tp})"
+        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},order_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},trader={self.u},execution_venue={self.x},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
 
     @property
     def dir(self) -> OrderDir:
@@ -117,14 +117,6 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     @time_in_force.setter
     def time_in_force(self, value: definitions.TimeInForce) -> None:
         self.tif = value
-
-    @property
-    def limit_price(self) -> Decimal:
-        return self.p
-
-    @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
-        self.p = value
 
     @property
     def order_type(self) -> definitions.OrderType:
@@ -175,6 +167,14 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         self.x = value
 
     @property
+    def limit_price(self) -> Optional[Decimal]:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Optional[Decimal]) -> None:
+        self.p = value
+
+    @property
     def post_only(self) -> Optional[bool]:
         return self.po
 
@@ -207,28 +207,37 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         return "unary"
 
     def __post_init__(self):
-        if self.k == "LIMIT":
-            if not all(getattr(self, key) is not None for key in ["po"]):
+        if self.k == "MARKET":
+            if not all(getattr(self, key) is not None for key in []):
                 raise ValueError(
-                    f"When field k (order_type) is of value LIMIT, class PlaceOrderRequest requires fields ['po']"
+                    f"When field k (order_type) is of value MARKET, class PlaceOrderRequest requires fields []"
+                )
+            elif any(getattr(self, key) is not None for key in ["p", "po", "tp"]):
+                raise ValueError(
+                    f"When field k (order_type) is of value MARKET, class PlaceOrderRequest should not have fields ['p', 'po', 'tp']"
+                )
+        elif self.k == "LIMIT":
+            if not all(getattr(self, key) is not None for key in ["p", "po"]):
+                raise ValueError(
+                    f"When field k (order_type) is of value LIMIT, class PlaceOrderRequest requires fields ['p', 'po']"
                 )
             elif any(getattr(self, key) is not None for key in ["tp"]):
                 raise ValueError(
                     f"When field k (order_type) is of value LIMIT, class PlaceOrderRequest should not have fields ['tp']"
                 )
         elif self.k == "STOP_LOSS_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
+            if not all(getattr(self, key) is not None for key in ["p", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest requires fields ['tp']"
+                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest requires fields ['p', 'tp']"
                 )
             elif any(getattr(self, key) is not None for key in ["po"]):
                 raise ValueError(
                     f"When field k (order_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest should not have fields ['po']"
                 )
         elif self.k == "TAKE_PROFIT_LIMIT":
-            if not all(getattr(self, key) is not None for key in ["tp"]):
+            if not all(getattr(self, key) is not None for key in ["p", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest requires fields ['tp']"
+                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest requires fields ['p', 'tp']"
                 )
             elif any(getattr(self, key) is not None for key in ["po"]):
                 raise ValueError(
