@@ -16,8 +16,7 @@
     "u",
     "ve",
     "xq",
-    "k",
-    "p"
+    "k"
   ],
   "properties": {
     "a": {
@@ -169,6 +168,9 @@
   },
   "tag_field": "k",
   "enum_variant_to_other_required_keys": {
+    "MARKET": [
+      "k"
+    ],
     "LIMIT": [
       "k",
       "p",

@@ -7,8 +7,7 @@
     "q",
     "s",
     "tif",
-    "k",
-    "p"
+    "k"
   ],
   "properties": {
     "a": {
@@ -127,6 +126,9 @@
   "response_type": "Order",
   "tag_field": "k",
   "enum_variant_to_other_required_keys": {
+    "MARKET": [
+      "k"
+    ],
     "LIMIT": [
       "k",
       "p",

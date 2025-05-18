@@ -456,6 +456,7 @@ class OrderStatus(int, Enum):
 
 
 class OrderType(str, Enum):
+    MARKET = "MARKET"
     LIMIT = "LIMIT"
     STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"

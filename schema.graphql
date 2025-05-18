@@ -54,6 +54,7 @@ enum OrderStatus {
 }
 
 enum OrderType {
+  MARKET
   LIMIT
   STOP_LOSS_LIMIT
   TAKE_PROFIT_LIMIT
