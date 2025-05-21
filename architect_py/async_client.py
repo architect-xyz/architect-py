@@ -18,38 +18,37 @@ from typing import (
 import grpc
 import pandas as pd
 
-from architect_py.grpc.models.Oms.Cancel import Cancel
-from architect_py.grpc.models.Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
-from architect_py.grpc.models.Oms.CancelOrderRequest import CancelOrderRequest
-from architect_py.grpc.models.Oms.OpenOrdersRequest import OpenOrdersRequest
-from architect_py.grpc.models.Oms.Order import Order
-from architect_py.grpc.models.Oms.PlaceOrderRequest import (
-    PlaceOrderRequest,
-)
-from architect_py.grpc.models.Orderflow.Orderflow import Orderflow
-from architect_py.grpc.models.Orderflow.OrderflowRequest import (
-    OrderflowRequest,
-    OrderflowRequest_route,
-    OrderflowRequestUnannotatedResponseType,
-)
-from architect_py.grpc.models.Orderflow.SubscribeOrderflowRequest import (
-    SubscribeOrderflowRequest,
-)
-
-from .common_types import OrderDir, TimeInForce, TradableProduct, Venue
-from .graphql_client import GraphQLClient
-from .graphql_client.exceptions import GraphQLClientGraphQLMultiError
-from .graphql_client.fragments import (
+# cannot do architect_py import * due to circular import
+from architect_py.common_types import OrderDir, TimeInForce, TradableProduct, Venue
+from architect_py.graphql_client import GraphQLClient
+from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError
+from architect_py.graphql_client.fragments import (
     ExecutionInfoFields,
     ProductInfoFields,
 )
-from .grpc import *
-from .grpc.client import GrpcClient
-from .utils.nearest_tick import TickRoundMethod
-from .utils.orderbook import update_orderbook_side
-from .utils.pandas import candles_to_dataframe
-from .utils.price_bands import price_band_pairs
-from .utils.symbol_parsing import nominative_expiration
+from architect_py.grpc.client import GrpcClient
+from architect_py.grpc.models import *
+from architect_py.grpc.models.definitions import (
+    AccountIdOrName,
+    AccountWithPermissions,
+    CandleWidth,
+    L2BookDiff,
+    OrderId,
+    OrderSource,
+    OrderType,
+    SortTickersBy,
+    TraderIdOrEmail,
+)
+from architect_py.grpc.models.Orderflow.OrderflowRequest import (
+    OrderflowRequest_route,
+    OrderflowRequestUnannotatedResponseType,
+)
+from architect_py.grpc.resolve_endpoint import resolve_endpoint
+from architect_py.utils.nearest_tick import TickRoundMethod
+from architect_py.utils.orderbook import update_orderbook_side
+from architect_py.utils.pandas import candles_to_dataframe
+from architect_py.utils.price_bands import price_band_pairs
+from architect_py.utils.symbol_parsing import nominative_expiration
 
 
 class AsyncClient:
@@ -73,8 +72,8 @@ class AsyncClient:
     @staticmethod
     async def connect(
         *,
-        api_key: Optional[str] = None,
-        api_secret: Optional[str] = None,
+        api_key: str,
+        api_secret: str,
         paper_trading: bool,
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
@@ -82,6 +81,8 @@ class AsyncClient:
     ) -> "AsyncClient":
         """
         Connect to an Architect installation.
+
+        An `api_key` and `api_secret` can be created at https://app.architect.co/api-keys
 
         Raises ValueError if the API key and secret are not the correct length or contain invalid characters.
         """

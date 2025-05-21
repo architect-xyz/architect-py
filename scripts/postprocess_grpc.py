@@ -364,9 +364,11 @@ def add_post_processing_to_unflattened_types(content: str, json_data: dict) -> s
         conditional = "if" if i == 0 else "elif"
         title = properties[enum_tag]["title"]
         req_keys_subset = [key for key in required_keys if key not in common_keys]
-        should_be_empty_keys = list(union_keys - set(required_keys))
-        required_keys.sort()
+        should_be_empty_keys: list[str] = list(union_keys - set(required_keys))
+
+        req_keys_subset.sort()
         should_be_empty_keys.sort()
+
         lines.append(
             f'        {conditional} self.{enum_tag} == "{enum_value}":\n'
             f"            if not all(getattr(self, key) is not None for key in {req_keys_subset}):\n"

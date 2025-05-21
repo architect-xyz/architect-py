@@ -1,33 +1,42 @@
 # fmt: off
 # mypy: ignore-errors
 # ruff: noqa
-from .grpc import *
+from architect_py.grpc.models import *
 import asyncio
 import pandas as pd
-from .common_types import OrderDir as OrderDir, TimeInForce as TimeInForce, TradableProduct as TradableProduct, Venue as Venue
-from .graphql_client import GraphQLClient as GraphQLClient
-from .graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
-from .graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
-from .grpc.client import GrpcClient as GrpcClient
-from .utils.nearest_tick import TickRoundMethod as TickRoundMethod
-from .utils.orderbook import update_orderbook_side as update_orderbook_side
-from .utils.pandas import candles_to_dataframe as candles_to_dataframe
-from .utils.price_bands import price_band_pairs as price_band_pairs
-from .utils.symbol_parsing import nominative_expiration as nominative_expiration
-from architect_py.grpc.models.Oms.Cancel import Cancel as Cancel
-from architect_py.grpc.models.Oms.CancelAllOrdersRequest import CancelAllOrdersRequest as CancelAllOrdersRequest
-from architect_py.grpc.models.Oms.CancelOrderRequest import CancelOrderRequest as CancelOrderRequest
-from architect_py.grpc.models.Oms.OpenOrdersRequest import OpenOrdersRequest as OpenOrdersRequest
-from architect_py.grpc.models.Oms.Order import Order as Order
-from architect_py.grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequest as PlaceOrderRequest
-from architect_py.grpc.models.Orderflow.Orderflow import Orderflow as Orderflow
-from architect_py.grpc.models.Orderflow.OrderflowRequest import OrderflowRequest as OrderflowRequest, OrderflowRequestUnannotatedResponseType as OrderflowRequestUnannotatedResponseType, OrderflowRequest_route as OrderflowRequest_route
-from architect_py.grpc.models.Orderflow.SubscribeOrderflowRequest import SubscribeOrderflowRequest as SubscribeOrderflowRequest
+from architect_py.common_types import OrderDir as OrderDir, TimeInForce as TimeInForce, TradableProduct as TradableProduct, Venue as Venue
+from architect_py.graphql_client import GraphQLClient as GraphQLClient
+from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
+from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
+from architect_py.grpc.client import GrpcClient as GrpcClient
+from architect_py.grpc.models.Orderflow.OrderflowRequest import OrderflowRequestUnannotatedResponseType as OrderflowRequestUnannotatedResponseType, OrderflowRequest_route as OrderflowRequest_route
+from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, TraderIdOrEmail as TraderIdOrEmail
+from architect_py.grpc.resolve_endpoint import resolve_endpoint as resolve_endpoint
+from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
+from architect_py.utils.orderbook import update_orderbook_side as update_orderbook_side
+from architect_py.utils.pandas import candles_to_dataframe as candles_to_dataframe
+from architect_py.utils.price_bands import price_band_pairs as price_band_pairs
+from architect_py.utils.symbol_parsing import nominative_expiration as nominative_expiration
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, AsyncGenerator, AsyncIterator, Literal, Sequence, overload
 
 class Client:
+    """
+    This class is a wrapper around the AsyncClient class that allows you to call async methods synchronously.
+    This does not work for subscription based methods.
+
+    This Client takes control of the event loop, which you can pass in.
+
+    One can find the function definition in the AsyncClient class.
+
+    The AsyncClient is more performant and powerful, so it is recommended to use that class if possible.
+
+    Avoid adding functions or other attributes to this class unless you know what you are doing, because
+    the __getattribute__ method changes the behavior of the class in a way that is not intuitive.
+
+    Instead, add them to the AsyncClient class.
+    """
     api_key: str | None
     api_secret: str | None
     paper_trading: bool
@@ -38,13 +47,16 @@ class Client:
     jwt: str | None
     jwt_expiration: datetime | None
     l1_books: dict[Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]]
-    l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]]
-    def __init__(self, *, api_key: str | None = None, api_secret: str | None = None, paper_trading: bool, endpoint: str = 'https://app.architect.co', graphql_port: int | None = None, **kwargs: Any) -> None:
+    def __init__(self, *, api_key: str, api_secret: str, paper_trading: bool, endpoint: str = 'https://app.architect.co', graphql_port: int | None = None, event_loop: asyncio.events.AbstractEventLoop | None = None) -> None:
         """
-        Connect to an Architect installation.
+        Create a new Client instance.
 
-        Raises ValueError if the API key and secret are not the correct length or contain invalid characters.
+        An `api_key` and `api_secret` can be created at https://app.architect.co/api-keys
+
+        Pass in an `event_loop` if you want to use your own; otherwise, this class
+        will use the default asyncio event loop.
         """
+    l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]]
     def refresh_jwt(self, force: bool = False):
         """
         Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).

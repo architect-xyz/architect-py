@@ -5,8 +5,7 @@ from typing import Iterator
 
 import grpc
 
-from architect_py.grpc.models.Cpty.CptyResponse import Symbology
-from architect_py.grpc.models.definitions import (
+from architect_py import (
     CptyLoginRequest,
     CptyLogoutRequest,
     ExecutionInfo,
@@ -14,6 +13,7 @@ from architect_py.grpc.models.definitions import (
     SimpleDecimal,
     Unit,
 )
+from architect_py.grpc.models.Cpty.CptyResponse import Symbology
 from architect_py.grpc.models.Orderflow.OrderflowRequest import CancelOrder, PlaceOrder
 from architect_py.grpc.server import (
     CptyServicer,

@@ -3,8 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from architect_py import AsyncClient, OrderDir
-from architect_py.utils.nearest_tick_2 import TickRoundMethod
+from architect_py import AsyncClient, OrderDir, TickRoundMethod
 
 
 @pytest.mark.asyncio

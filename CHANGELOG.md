@@ -6,6 +6,7 @@
 - Removed unused graphql queries and types
 - TradableProduct improvement and comment fixes
 - Add `get_front_future` method to async client
+- Fixed import story, you don't need to do `from architect_py.grpc.models.AccountsRequest import AccountsRequest`, you can just do `from architect_py.grpc
 
 # 5.0.0
 

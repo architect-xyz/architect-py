@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import ClassVar, Literal, Optional
+from typing import ClassVar, Literal, Optional, overload
 
 import msgspec
 
@@ -32,6 +32,17 @@ class TimeInForce:
     ATO: ClassVar["TimeInForce"]
     ATC: ClassVar["TimeInForce"]
 
+    _CACHE: ClassVar[dict[str, "TimeInForce"]] = {}
+
+    @overload
+    def __init__(self, kind: Literal["GTD"], date: datetime) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        kind: Literal["GTC", "DAY", "IOC", "FOK", "ATO", "ATC"],
+    ) -> None: ...
+
     def __init__(
         self,
         kind: Literal["GTC", "DAY", "IOC", "FOK", "ATO", "ATC", "GTD"],
@@ -39,6 +50,18 @@ class TimeInForce:
     ) -> None:
         self.kind = kind
         self.date = date
+
+    def __new__(cls, kind: str, date: Optional[datetime] = None):
+        # all singletons will be pointer-identical, useful for comparison and hashing
+        if date is None and kind != "GTD":
+            # return / create singleton
+            if kind in cls._CACHE:
+                return cls._CACHE[kind]
+            self = super().__new__(cls)
+            cls._CACHE[kind] = self
+            return self
+        # GTD or non-cached path
+        return super().__new__(cls)
 
     @classmethod
     def GTD(cls, when: datetime) -> "TimeInForce":
@@ -48,7 +71,7 @@ class TimeInForce:
         if self.kind == "GTD":
             assert self.date is not None
             return msgspec.Raw(f'{{"GTD": "{self.date.isoformat()}"}}'.encode())
-        return msgspec.Raw('"{self.kind}"'.encode())
+        return msgspec.Raw(f'"{self.kind}"'.encode())
 
     @staticmethod
     def deserialize(s) -> "TimeInForce":
