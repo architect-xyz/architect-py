@@ -22,18 +22,16 @@ if [[ ! -d "$ARCHITECT_ROOT" ]]; then
     exit 1
 fi
 
+
+cp $ARCHITECT_ROOT/gql/schema.graphql full_schema.graphql
+
 # --------------------------------
-# Check graphql schema for changes
+# Clean unused GraphQL types
 # --------------------------------
 
-if ! cmp -s schema.graphql $ARCHITECT_ROOT/gql/schema.graphql; then
-    printf "GraphQL schema has changed. Update schema (y/n)? "
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        cp $ARCHITECT_ROOT/gql/schema.graphql schema.graphql
-        printf "GraphQL schema updated.\n"
-    fi
-fi
+uv run scripts/prune_graphql_schema.py full_schema.graphql queries.graphql schema.graphql
+rm full_schema.graphql
+
 
 # --------------------------------
 # Generate GraphQL client 
@@ -86,6 +84,7 @@ touch ./architect_py/__init__.py
 export PYTHONPATH="$BASE_DIR"
 printf "PYTHONPATH: $PYTHONPATH\n"
 
+
 printf "Post-processing gRPC client code...\n"
 uv run scripts/postprocess_grpc.py \
     --file_path "$MODELS_DIR" \
@@ -103,6 +102,11 @@ uv run ruff format ./architect_py/grpc/models
 uv run scripts/generate_functions_md.py architect_py/async_client.py \
     > FUNCTIONS.md
 
+# Add imports to __init__ files
+printf "\nAdding imports to __init__ files...\n"
+uv run scripts/add_imports_to_inits.py --architect-path architect_py
+
+# Update the client interface
 printf "\nGenerating sync client interface from async...\n"
 uv run stubgen architect_py/async_client.py -o temp --include-docstrings
 uv run scripts/correct_sync_interface.py --file_path temp/architect_py/async_client.pyi

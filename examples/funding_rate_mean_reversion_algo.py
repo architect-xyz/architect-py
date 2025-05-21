@@ -6,12 +6,14 @@ import asyncio
 from decimal import Decimal
 from typing import AsyncIterator, Optional
 
-from architect_py.async_client import AsyncClient
-from architect_py.common_types.order_dir import OrderDir
-from architect_py.common_types.time_in_force import TimeInForce
-from architect_py.common_types.tradable_product import TradableProduct
+from architect_py import (
+    AsyncClient,
+    OrderDir,
+    OrderType,
+    TimeInForce,
+    TradableProduct,
+)
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from architect_py.grpc.models.definitions import OrderType
 from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedOrderAck,
     TaggedOrderOut,

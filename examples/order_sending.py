@@ -3,10 +3,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from architect_py.async_client import AsyncClient
-from architect_py.common_types import OrderDir, TimeInForce
-from architect_py.common_types.tradable_product import TradableProduct
-from architect_py.grpc.models.definitions import OrderType
+from architect_py import AsyncClient, OrderDir, OrderType, TimeInForce, TradableProduct
 from examples.common import connect_async_client
 
 LOGGER = logging.getLogger(__name__)

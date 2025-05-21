@@ -40,14 +40,22 @@ class Client:
     def __init__(
         self,
         *,
-        api_key: Optional[str] = None,
-        api_secret: Optional[str] = None,
+        api_key: str,
+        api_secret: str,
         paper_trading: bool,
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
         event_loop: Optional[AbstractEventLoop] = None,
         **kwargs,
     ):
+        """
+        Create a new Client instance.
+
+        An `api_key` and `api_secret` can be created at https://app.architect.co/api-keys
+
+        Pass in an `event_loop` if you want to use your own; otherwise, this class
+        will use the default asyncio event loop.
+        """
         if event_loop is None:
             try:
                 event_loop = asyncio.get_running_loop()

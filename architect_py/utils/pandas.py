@@ -1,9 +1,10 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import msgspec
 import pandas as pd
 
-from ..grpc import Candle
+if TYPE_CHECKING:
+    from .. import Candle
 
 CANDLES_FIELD_MAP = {
     "av": "sell_volume",
@@ -30,7 +31,7 @@ CANDLES_FIELD_MAP = {
 }
 
 
-def candles_to_dataframe(candles: List[Candle]) -> pd.DataFrame:
+def candles_to_dataframe(candles: List["Candle"]) -> pd.DataFrame:
     records = msgspec.to_builtins(candles)
     df = pd.DataFrame.from_records(records)
     df.rename(columns=CANDLES_FIELD_MAP, inplace=True)

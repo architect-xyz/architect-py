@@ -21,3 +21,9 @@ To run tests:
 We want ZERO Pyright/Pylance errors.
 One important note: occassionally, Pylance will throw a fake error. To remove the error, just delete one letter in the error and then add it back.
 This is generally on the Unannotated types.
+
+
+## Extra Packages Used In Update Schema
+
+- datamodel-codegen: used for generating the grpc classes
+- mypy stubgen: used to generate the sync client stubs
