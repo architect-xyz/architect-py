@@ -94,6 +94,14 @@
       ],
       "format": "decimal"
     },
+    "isp": {
+      "title": "indicative_settlement_price",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
     "l": {
       "title": "low_24h",
       "type": [
