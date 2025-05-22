@@ -1535,7 +1535,7 @@ class AsyncClient:
             limit_price = ticker.bid_price * (1 - fraction_through_market)
             if price_band and ticker.last_price:
                 price_band_reference_price = ticker.last_price - price_band
-                limit_price = min(limit_price, price_band_reference_price)
+                limit_price = max(limit_price, price_band_reference_price)
 
         # Conservatively round price to nearest tick
         tick_round_method = (
