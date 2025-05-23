@@ -1481,7 +1481,7 @@ class AsyncClient:
         id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
         execution_venue: str,
-        odir: OrderDir,
+        dir: OrderDir,
         quantity: Decimal,
         time_in_force: TimeInForce = TimeInForce.DAY,
         account: Optional[str] = None,
@@ -1495,7 +1495,7 @@ class AsyncClient:
             id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to
-            odir: the direction of the order
+            dir: the direction of the order
             quantity: the quantity of the order
             time_in_force: the time in force of the order
             account: the account to send the order for
@@ -1516,7 +1516,7 @@ class AsyncClient:
 
         price_band = price_band_pairs.get(symbol, None)
 
-        if odir == OrderDir.BUY:
+        if dir == OrderDir.BUY:
             if ticker.ask_price is None:
                 raise ValueError(
                     f"Failed to send market order with reason: no ask price for {symbol}"
@@ -1539,7 +1539,7 @@ class AsyncClient:
 
         # Conservatively round price to nearest tick
         tick_round_method = (
-            TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
+            TickRoundMethod.FLOOR if dir == OrderDir.BUY else TickRoundMethod.CEIL
         )
 
         execution_info = await self.get_execution_info(
@@ -1556,7 +1556,7 @@ class AsyncClient:
             id=id,
             symbol=symbol,
             execution_venue=execution_venue,
-            odir=odir,
+            dir=dir,
             quantity=quantity,
             account=account,
             order_type=OrderType.LIMIT,

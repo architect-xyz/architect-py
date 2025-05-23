@@ -68,7 +68,7 @@ if confirm(
     order = c.send_limit_order(
         symbol=symbol,
         execution_venue=venue,
-        odir=OrderDir.BUY,
+        dir=OrderDir.BUY,
         quantity=best_bid_quantity,
         limit_price=limit_price,
         account=account.account.name,
