@@ -36,7 +36,7 @@ async def test_send_order(client: AsyncClient, account: str):
 
     order = await client.place_limit_order(
         symbol=symbol,
-        odir=OrderDir.BUY,
+        dir=OrderDir.BUY,
         quantity=best_bid_quantity,
         order_type=OrderType.LIMIT,
         execution_venue="CME",
@@ -67,7 +67,7 @@ async def test_send_market_pro_order(client: AsyncClient, account: str):
     await client.send_market_pro_order(
         symbol=symbol,
         execution_venue=venue,
-        odir=OrderDir.BUY,
+        dir=OrderDir.BUY,
         quantity=Decimal(1),
         account=account,
         time_in_force=TimeInForce.IOC,
@@ -84,7 +84,7 @@ async def send_NQ_buy_for_mid(client: AsyncClient, account: str):
 
     order = await client.place_limit_order(
         symbol=NQ_lead_future,
-        odir=OrderDir.BUY,
+        dir=OrderDir.BUY,
         quantity=Decimal(1),
         order_type=OrderType.LIMIT,
         execution_venue=CME,

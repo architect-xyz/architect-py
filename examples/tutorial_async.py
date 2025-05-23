@@ -49,7 +49,7 @@ async def main():
         order = await c.place_limit_order(
             symbol=market,
             execution_venue=execution_venue,
-            odir=OrderDir.BUY,
+            dir=OrderDir.BUY,
             quantity=quantity,
             limit_price=limit_price,
             account=str(account_id),

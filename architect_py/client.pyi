@@ -464,7 +464,7 @@ class Client:
 
             If the order is rejected, the order.reject_reason and order.reject_message will be set
         '''
-    def send_market_pro_order(self, *, id: OrderId | None = None, symbol: TradableProduct | str, execution_venue: str, odir: OrderDir, quantity: Decimal, time_in_force: TimeInForce = ..., account: str | None = None, fraction_through_market: Decimal = ...) -> Order:
+    def send_market_pro_order(self, *, id: OrderId | None = None, symbol: TradableProduct | str, execution_venue: str, dir: OrderDir, quantity: Decimal, time_in_force: TimeInForce = ..., account: str | None = None, fraction_through_market: Decimal = ...) -> Order:
         '''
         Sends a market-order like limit price based on the BBO.
         Meant to behave as a market order but with more protections.
@@ -473,7 +473,7 @@ class Client:
             id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to
-            odir: the direction of the order
+            dir: the direction of the order
             quantity: the quantity of the order
             time_in_force: the time in force of the order
             account: the account to send the order for
