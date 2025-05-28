@@ -67,6 +67,15 @@ scalar Dir
 "A venue that provides execution, e.g. CME, CBOE, NYSE, etc."
 scalar ExecutionVenue
 
+"""
+  Combined date and time (without time zone) in `yyyy-MM-dd HH:mm:ss` format.
+  
+  See also [`chrono::NaiveDateTime`][1] for details.
+  
+  [1]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDateTime.html
+"""
+scalar LocalDateTime
+
 "A venue that provides marketdata, e.g. COINBASE, DATABENTO, XIGNITE, etc."
 scalar MarketdataVenue
 
