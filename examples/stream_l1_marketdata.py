@@ -1,7 +1,6 @@
 import asyncio
 
-from architect_py.async_client import AsyncClient
-from architect_py.common_types.tradable_product import TradableProduct
+from architect_py import AsyncClient, TradableProduct
 
 from .common import connect_async_client
 

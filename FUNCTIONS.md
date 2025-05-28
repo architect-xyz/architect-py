@@ -1,6 +1,7 @@
 ### 🚀 Initialization and configuration
 
 - **`connect`**: Connect to an Architect installation.
+- **`close`**: Close the gRPC channel and GraphQL client.
 - **`refresh_jwt`**: Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
 - **`set_jwt`**: Manually set the JWT for gRPC authentication.
 - **`discover_marketdata`**: Load marketdata endpoints from the server config.
@@ -22,6 +23,7 @@
 - **`get_execution_info`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_execution_infos`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_futures_series`**: List all futures in a given series.
+- **`get_front_future`**: Gets the future with the most volume in a series.
 - **`get_cme_future_from_root_month_year`**: Get the symbol for a CME future from the root, month, and year.
 
 ---

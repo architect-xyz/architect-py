@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 logging.basicConfig(level=logging.WARN)
 
@@ -11,8 +11,10 @@ logging.basicConfig(level=logging.WARN)
 # Constants and Regular Expressions
 # ---------------------------------------------------------------------
 
-CAMEL_CASE_RE = re.compile(r"(?<!^)(?=[A-Z])")
+SNAKE_CASE_RE = re.compile(r"(?<!^)(?=[A-Z])")
 EXTRACT_REF_RE = re.compile(r'("\$ref":\s*"#/definitions/)([^"]+)(")')
+
+TAG_PATTERN = re.compile(r"<!--\s*py:\s*(.*?)\s*-->")
 
 
 def replace_and_indent(match: re.Match) -> str:
@@ -69,15 +71,31 @@ def apply_type_fixes(
 # ---------------------------------------------------------------------
 
 
-def parse_class_description(text: str) -> Tuple[Dict[str, str], str]:
+def clean_metadata_from_description(schema: Dict):
+    text = schema.get("description", "")
+    new_description = TAG_PATTERN.sub("", text).strip()
+
+    if new_description:
+        schema["description"] = new_description
+    else:
+        schema.pop("description", None)
+
+    for definitions in schema.get("definitions", {}).values():
+        definitions["description"] = TAG_PATTERN.sub(
+            "", definitions.get("description", "")
+        ).strip()
+        if not definitions["description"]:
+            definitions.pop("description", None)
+
+
+def parse_class_description(text: str) -> Dict[str, str]:
     """
     Parse metadata from a special comment in the description.
     Expected format: <!-- py: key1=value1, key2=value2 -->
     """
-    pattern = r"<!--\s*py:\s*(.*?)\s*-->"
-    match = re.search(pattern, text, re.DOTALL)
+    match = TAG_PATTERN.search(text)
     if not match:
-        raise ValueError("No valid 'py:' comment found in the text.")
+        return {}
 
     metadata_str = match.group(1)
     metadata: Dict[str, str] = {}
@@ -90,8 +108,7 @@ def parse_class_description(text: str) -> Tuple[Dict[str, str], str]:
         key, value = map(str.strip, pair.split("=", 1))
         metadata[key] = value
 
-    cleaned_text = re.sub(pattern, "", text, flags=re.DOTALL)
-    return metadata, cleaned_text
+    return metadata
 
 
 def correct_flattened_types(schema: Dict[str, Any]) -> None:
@@ -103,6 +120,9 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
     while we want 1 type.
 
     Removes the oneOf list and merges common keys and additional properties.
+
+    if the flatten field is not the tag, enum_variant_to_other_required_keys
+    will be in the json but will be empty.
     """
     if "oneOf" not in schema or "required" not in schema:
         return
@@ -110,12 +130,19 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
     one_of: List[Dict[str, Any]] = schema.pop("oneOf")
     additional_properties: Dict[str, Any] = {}
 
-    enum_tag: str = ""
     enum_value_to_required: Dict[str, List[str]] = {}
-    enum_tag_title = CAMEL_CASE_RE.sub("_", schema["title"]).lower()
+
+    description = schema.get("description", "")
+    metadata = parse_class_description(description)
+
+    try:
+        field_name, field_title, enum_type_name = metadata["unflatten"].split("/")
+    except KeyError:
+        raise KeyError(f"Missing 'flatten' metadata in {schema['title']}")
+
     enum_tag_property: Dict[str, Any] = {
         "type": "string",
-        "title": f"{enum_tag_title}_type",
+        "title": field_title,
         "enum": [],
     }
 
@@ -127,10 +154,6 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
         required = item.get("required", [])
         for key, prop in properties.items():
             if "enum" in prop:
-                if not enum_tag:
-                    enum_tag = key
-                else:
-                    assert enum_tag == key, f"Enum field mismatch in {schema['title']}"
                 [enum_value] = prop["enum"]
                 enum_tag_property["enum"].append(enum_value)
                 enum_value_to_required[enum_value] = required
@@ -142,18 +165,25 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
                 else:
                     additional_properties[key] = prop
 
-    if not enum_tag:
+    if not field_name:
         raise ValueError(f"Enum value not found in {schema['title']}")
 
-    sets = [set(group["required"]) for group in one_of]
+    sets: list[set[str]] = [set(group["required"]) for group in one_of]
     common_keys: list[str] = list(set.intersection(*sets)) if sets else []
     common_keys.sort()
     schema["required"].extend(common_keys)
 
+    if tag_field := metadata.get("tag"):
+        schema["tag_field"] = tag_field
+
     schema["properties"].update(additional_properties)
-    schema["properties"][enum_tag] = enum_tag_property
-    schema["enum_tag"] = enum_tag
-    schema["enum_tag_to_other_required_keys"] = enum_value_to_required
+    schema["properties"][field_name] = {
+        "title": field_title,
+        "$ref": f"#/definitions/{enum_type_name}",
+    }
+
+    schema["definitions"][enum_type_name] = enum_tag_property
+    schema["enum_variant_to_other_required_keys"] = enum_value_to_required
 
 
 def correct_variant_types(
@@ -183,13 +213,9 @@ def correct_variant_types(
         return
 
     description = schema.get("description", "")
-    metadata, new_description = parse_class_description(description)
-    if new_description.strip():
-        schema["description"] = new_description.strip()
-    else:
-        schema.pop("description", None)
+    metadata = parse_class_description(description)
 
-    tag_field = metadata["tag"]
+    tag_field: str = metadata["tag"]
     new_one_of: List[Dict[str, Any]] = []
     for item in schema["oneOf"]:
         item["required"].remove(tag_field)
@@ -342,15 +368,7 @@ def correct_repr_enums_with_x_enumNames(schema: Dict[str, Any]) -> None:
         if "x-enumNames" not in definition:
             continue
         description = definition.get("description", "")
-        try:
-            metadata, new_description = parse_class_description(description)
-        except ValueError:
-            return
-
-        if new_description.strip():
-            definition["description"] = new_description.strip()
-        else:
-            definition.pop("description", None)
+        metadata = parse_class_description(description)
 
         if metadata.get("schema") == "repr":
             assert definition["type"] == "integer"
@@ -370,6 +388,8 @@ def correct_enums_with_descriptions(schema: Dict[str, Any]) -> None:
     Process enums that have descriptions in the schema.
 
     If a enum value has a description, the json gets separated
+
+    This renames the enum to the description and adds a new enum
 
     See TimeInForce for an example
     """
@@ -489,15 +509,7 @@ def correct_type_from_description(schema: Dict[str, Any]) -> None:
     definitions: dict[str, Any] = schema["definitions"]
     for t, definition in definitions.items():
         description = definition.get("description", "")
-        try:
-            metadata, new_description = parse_class_description(description)
-        except ValueError:
-            continue
-
-        if new_description.strip():
-            definition["description"] = new_description.strip()
-        else:
-            definition.pop("description", None)
+        metadata = parse_class_description(description)
 
         new_type = metadata.get("type")
         if new_type is not None:
@@ -521,6 +533,8 @@ def process_schema_definitions(
     correct_flattened_types(schema)
     correct_null_types_with_constraints(schema)
     correct_type_from_description(schema)
+
+    clean_metadata_from_description(schema)
 
     if "definitions" not in schema:
         return

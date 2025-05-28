@@ -4,6 +4,7 @@ import re
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import (
+    Any,
     AsyncGenerator,
     AsyncIterator,
     List,
@@ -17,40 +18,37 @@ from typing import (
 import grpc
 import pandas as pd
 
-from architect_py.grpc.models.Oms.Cancel import Cancel
-from architect_py.grpc.models.Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
-from architect_py.grpc.models.Oms.CancelOrderRequest import CancelOrderRequest
-from architect_py.grpc.models.Oms.OpenOrdersRequest import OpenOrdersRequest
-from architect_py.grpc.models.Oms.Order import Order
-from architect_py.grpc.models.Oms.PlaceOrderRequest import (
-    PlaceOrderRequest,
-    PlaceOrderRequestType,
-)
-from architect_py.grpc.models.Orderflow.Orderflow import Orderflow
-from architect_py.grpc.models.Orderflow.OrderflowRequest import (
-    OrderflowRequest,
-    OrderflowRequest_route,
-    OrderflowRequestUnannotatedResponseType,
-)
-from architect_py.grpc.models.Orderflow.SubscribeOrderflowRequest import (
-    SubscribeOrderflowRequest,
-)
-
-from .common_types import OrderDir, TradableProduct, Venue
-from .graphql_client import GraphQLClient
-from .graphql_client.exceptions import GraphQLClientGraphQLMultiError
-from .graphql_client.fragments import (
+# cannot do architect_py import * due to circular import
+from architect_py.common_types import OrderDir, TimeInForce, TradableProduct, Venue
+from architect_py.graphql_client import GraphQLClient
+from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError
+from architect_py.graphql_client.fragments import (
     ExecutionInfoFields,
     ProductInfoFields,
 )
-from .grpc import *
-from .grpc.client import GrpcClient
-from .grpc.models import definitions as grpc_definitions
-from .utils.nearest_tick import TickRoundMethod
-from .utils.orderbook import update_orderbook_side
-from .utils.pandas import candles_to_dataframe
-from .utils.price_bands import price_band_pairs
-from .utils.symbol_parsing import nominative_expiration
+from architect_py.grpc.client import GrpcClient
+from architect_py.grpc.models import *
+from architect_py.grpc.models.definitions import (
+    AccountIdOrName,
+    AccountWithPermissions,
+    CandleWidth,
+    L2BookDiff,
+    OrderId,
+    OrderSource,
+    OrderType,
+    SortTickersBy,
+    TraderIdOrEmail,
+)
+from architect_py.grpc.models.Orderflow.OrderflowRequest import (
+    OrderflowRequest_route,
+    OrderflowRequestUnannotatedResponseType,
+)
+from architect_py.grpc.resolve_endpoint import resolve_endpoint
+from architect_py.utils.nearest_tick import TickRoundMethod
+from architect_py.utils.orderbook import update_orderbook_side
+from architect_py.utils.pandas import candles_to_dataframe
+from architect_py.utils.price_bands import price_band_pairs
+from architect_py.utils.symbol_parsing import nominative_expiration
 
 
 class AsyncClient:
@@ -74,14 +72,17 @@ class AsyncClient:
     @staticmethod
     async def connect(
         *,
-        api_key: Optional[str] = None,
-        api_secret: Optional[str] = None,
+        api_key: str,
+        api_secret: str,
         paper_trading: bool,
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
+        **kwargs: Any,
     ) -> "AsyncClient":
         """
         Connect to an Architect installation.
+
+        An `api_key` and `api_secret` can be created at https://app.architect.co/api-keys
 
         Raises ValueError if the API key and secret are not the correct length or contain invalid characters.
         """
@@ -90,10 +91,31 @@ class AsyncClient:
             RESET = "\033[0m"
             print(f"🧻 {COLOR} YOU ARE IN PAPER TRADING MODE {RESET}")
 
-        grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+        if "grpc_endpoint" in kwargs:
+            logging.warning(
+                "as of v5.0.0: grpc_endpoint parameter is deprecated; ignored"
+            )
+        if "host" in kwargs:
+            logging.warning(
+                "as of v5.0.0: host parameter is deprecated, use endpoint instead; setting endpoint to %s",
+                kwargs["endpoint"],
+            )
+            endpoint = kwargs["endpoint"]
+
+        grpc_host, grpc_port, use_ssl = await resolve_endpoint(
+            endpoint, paper_trading=paper_trading
+        )
         logging.info(
             f"Resolved endpoint {endpoint}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
         )
+
+        # Sanity check paper trading on prod environments
+        if paper_trading:
+            if grpc_host == "app.architect.co" or grpc_host == "staging.architect.co":
+                if grpc_port != 10081:
+                    raise ValueError("Wrong gRPC port for paper trading")
+                if graphql_port is not None and graphql_port != 5678:
+                    raise ValueError("Wrong GraphQL port for paper trading")
 
         client = AsyncClient(
             api_key=api_key,
@@ -141,11 +163,6 @@ class AsyncClient:
                 "API secret must be a Base64-encoded string, 44 characters long"
             )
 
-        if paper_trading and (graphql_port is not None or grpc_port is not None):
-            raise ValueError(
-                "If paper_trading is True, graphql_port and grpc_port must be None"
-            )
-
         if graphql_port is None:
             if paper_trading:
                 graphql_port = 5678
@@ -163,6 +180,22 @@ class AsyncClient:
             api_secret=api_secret,
         )
         self.grpc_core = GrpcClient(host=grpc_host, port=grpc_port, use_ssl=use_ssl)
+
+    async def close(self):
+        """
+        Close the gRPC channel and GraphQL client.
+        """
+        if self.grpc_core is not None:
+            await self.grpc_core.close()
+
+        for grpc_client in self.grpc_marketdata.values():
+            await grpc_client.close()
+
+        self.grpc_marketdata.clear()
+        # NB: this line removes the "Error in sys.excepthook:" on close
+
+        if self.graphql_client is not None:
+            await self.graphql_client.close()
 
     async def refresh_jwt(self, force: bool = False):
         """
@@ -244,6 +277,9 @@ class AsyncClient:
             self.grpc_marketdata[venue] = GrpcClient(
                 host=grpc_host, port=grpc_port, use_ssl=use_ssl
             )
+            logging.debug(
+                f"Setting marketdata endpoint for {venue}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
+            )
         except Exception as e:
             logging.error("Failed to set marketdata endpoint: %s", e)
 
@@ -312,6 +348,14 @@ class AsyncClient:
         """
         res = await self.graphql_client.user_id_query()
         return res.user_id, res.user_email
+
+    def enable_orderflow(self):
+        """
+        @deprecated(reason="No longer needed; orderflow is enabled by default")
+        """
+        logging.warning(
+            "as of v5.0.0: enable_orderflow is deprecated; orderflow is enabled by default"
+        )
 
     # ------------------------------------------------------------
     # Symbology
@@ -420,7 +464,7 @@ class AsyncClient:
 
     async def get_execution_infos(
         self,
-        symbols: Optional[list[TradableProduct]],
+        symbols: Optional[list[TradableProduct | str]],
         execution_venue: Optional[str] = None,
     ) -> Sequence[ExecutionInfoFields]:
         """
@@ -436,9 +480,11 @@ class AsyncClient:
             that were asked for, or in the same order; any duplicates or invalid
             symbols will be ignored.
         """
-        res = await self.graphql_client.get_execution_infos_query(
-            symbols, execution_venue
-        )
+        if symbols is not None:
+            tps = [TradableProduct(symbol) for symbol in symbols]
+        else:
+            tps = None
+        res = await self.graphql_client.get_execution_infos_query(tps, execution_venue)
         return res.execution_infos
 
     async def get_cme_first_notice_date(self, symbol: str) -> Optional[date]:
@@ -458,6 +504,13 @@ class AsyncClient:
             return None
         return res.product_info.first_notice_date
 
+    async def get_future_series(self, series_symbol: str) -> list[str]:
+        """
+        @deprecated(reason="Use get_futures_series instead")
+        """
+        futures = await self.get_futures_series(series_symbol)
+        return futures
+
     async def get_futures_series(self, series_symbol: str) -> list[str]:
         """
         List all futures in a given series.
@@ -472,6 +525,33 @@ class AsyncClient:
             raise ValueError("series_symbol must end with 'Futures'")
         res = await self.graphql_client.get_future_series_query(series_symbol)
         return res.futures_series
+
+    async def get_front_future(
+        self, series_symbol: str, venue: str, by_volume: bool = True
+    ) -> str:
+        """
+        Gets the future with the most volume in a series.
+
+        Args:
+            series_symbol: the futures series
+                e.g. "ES CME Futures" would yield the lead future for the ES series
+            venue: the venue to get the lead future for, e.g. "CME"
+            by_volume: if True, sort by volume; otherwise sort by expiration date
+
+        Returns:
+            The lead future symbol
+        """
+        futures = await self.get_futures_series(series_symbol)
+        if not by_volume:
+            futures.sort()
+            return futures[0]
+        else:
+            grpc_client = await self.marketdata(venue)
+            req = TickersRequest(
+                symbols=futures, k=SortTickersBy.VOLUME_DESC, venue=venue
+            )
+            res: TickersResponse = await grpc_client.unary_unary(req)
+            return res.tickers[0].symbol
 
     @staticmethod
     def get_expiration_from_CME_name(name: str) -> Optional[date]:
@@ -502,11 +582,14 @@ class AsyncClient:
             the symbol for each future in the series
 
             e.g.
-            [(datetime.date(2025, 3, 21), 'ES 20250321 CME Future'),
-             (datetime.date(2025, 6, 20), 'ES 20250620 CME Future'),
-             (datetime.date(2025, 9, 19), 'ES 20250919 CME Future'),
-             ...
+            ```
+            [
+                (datetime.date(2025, 3, 21), 'ES 20250321 CME Future'),
+                (datetime.date(2025, 6, 20), 'ES 20250620 CME Future'),
+                (datetime.date(2025, 9, 19), 'ES 20250919 CME Future'),
+                # ...
             ]
+            ```
         """
         futures = await self.get_futures_series(series)
         exp_and_futures = []
@@ -572,7 +655,7 @@ class AsyncClient:
             symbol: the symbol to get the market snapshot for, e.g. "ES 20250321 CME Future/USD"
             venue: the venue that the symbol is traded at, e.g. CME
         Returns:
-            MarketTickerFields for the symbol
+            L1BookSnapshot for the symbol
         """
         return await self.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
@@ -948,7 +1031,7 @@ class AsyncClient:
     # Portfolio management
     # ------------------------------------------------------------
 
-    async def list_accounts(self) -> List[grpc_definitions.AccountWithPermissions]:
+    async def list_accounts(self) -> List[AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.
 
@@ -1033,12 +1116,12 @@ class AsyncClient:
 
     async def get_open_orders(
         self,
-        order_ids: Optional[list[grpc_definitions.OrderId]] = None,
+        order_ids: Optional[list[OrderId]] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
         symbol: Optional[str] = None,
-        parent_order_id: Optional[grpc_definitions.OrderId] = None,
+        parent_order_id: Optional[OrderId] = None,
     ) -> list[Order]:
         """
         Returns a list of open orders for the user that match the filters.
@@ -1077,12 +1160,12 @@ class AsyncClient:
 
     async def get_historical_orders(
         self,
-        order_ids: Optional[list[grpc_definitions.OrderId]] = None,
+        order_ids: Optional[list[OrderId]] = None,
         from_inclusive: Optional[datetime] = None,
         to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
-        parent_order_id: Optional[grpc_definitions.OrderId] = None,
+        parent_order_id: Optional[OrderId] = None,
     ) -> list[Order]:
         """
         Returns a list of all historical orders that match the filters.
@@ -1128,9 +1211,15 @@ class AsyncClient:
             to_exclusive=to_exclusive,
         )
         orders = await grpc_client.unary_unary(historical_orders_request)
+        if orders is None:
+            raise ValueError(
+                "No orders found for the given filters. "
+                "If order_ids is not specified, then from_inclusive and to_exclusive "
+                "MUST be specified."
+            )
         return orders.orders
 
-    async def get_order(self, order_id: grpc_definitions.OrderId) -> Optional[Order]:
+    async def get_order(self, order_id: OrderId) -> Optional[Order]:
         """
         Returns the specified order.  Useful for looking at past sent orders.
         Queries open_orders first, then queries historical_orders.
@@ -1154,9 +1243,7 @@ class AsyncClient:
         if res.orders and len(res.orders) == 1:
             return res.orders[0]
 
-    async def get_orders(
-        self, order_ids: list[grpc_definitions.OrderId]
-    ) -> list[Optional[Order]]:
+    async def get_orders(self, order_ids: list[OrderId]) -> list[Optional[Order]]:
         """
         Returns the specified orders.  Useful for looking at past sent orders.
         Plural form of get_order.
@@ -1165,7 +1252,7 @@ class AsyncClient:
             order_ids: a list of order ids to get
         """
         grpc_client = await self.core()
-        orders_dict: dict[grpc_definitions.OrderId, Optional[Order]] = {
+        orders_dict: dict[OrderId, Optional[Order]] = {
             order_id: None for order_id in order_ids
         }
         req = OpenOrdersRequest.new(
@@ -1195,7 +1282,7 @@ class AsyncClient:
         to_exclusive: Optional[datetime] = None,
         venue: Optional[str] = None,
         account: Optional[str] = None,
-        order_id: Optional[grpc_definitions.OrderId] = None,
+        order_id: Optional[OrderId] = None,
         limit: Optional[int] = None,
     ) -> HistoricalFillsResponse:
         """
@@ -1262,9 +1349,9 @@ class AsyncClient:
 
     async def stream_orderflow(
         self,
-        account: Optional[grpc_definitions.AccountIdOrName] = None,
+        account: Optional[AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
-        trader: Optional[grpc_definitions.TraderIdOrEmail] = None,
+        trader: Optional[TraderIdOrEmail] = None,
     ) -> AsyncGenerator[Orderflow, None]:
         """
         A stream for listening to order updates (fills, acks, outs, etc.).
@@ -1275,8 +1362,6 @@ class AsyncClient:
             async for of in client.subscribe_orderflow_stream(request):
                 print(of)
             ```
-
-        This WILL block the event loop until the stream is closed.
         """
         grpc_client = await self.core()
         request: SubscribeOrderflowRequest = SubscribeOrderflowRequest(
@@ -1301,22 +1386,33 @@ class AsyncClient:
     # Order entry
     # ------------------------------------------------------------
 
+    async def send_limit_order(
+        self,
+        *args,
+        **kwargs,
+    ) -> Order:
+        """
+        @deprecated(reason="Use place_limit_order instead")
+        """
+        return await self.place_limit_order(*args, **kwargs)
+
     async def place_limit_order(
         self,
         *,
-        id: Optional[grpc_definitions.OrderId] = None,
+        id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
-        execution_venue: Optional[str],
-        odir: OrderDir,
+        execution_venue: Optional[str] = None,
+        dir: Optional[OrderDir] = None,
         quantity: Decimal,
         limit_price: Decimal,
-        order_type: PlaceOrderRequestType = PlaceOrderRequestType.LIMIT,
-        time_in_force: grpc_definitions.TimeInForce = grpc_definitions.TimeInForceEnum.DAY,
+        order_type: OrderType = OrderType.LIMIT,
+        time_in_force: TimeInForce = TimeInForce.DAY,
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
         post_only: bool = False,
         trigger_price: Optional[Decimal] = None,
+        **kwargs: Any,
     ) -> Order:
         """
         Sends a regular limit order.
@@ -1327,7 +1423,7 @@ class AsyncClient:
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
                 the primary_exchange can be deduced from `get_product_info`
-            odir: the direction of the order
+            dir: the direction of the order, BUY or SELL
             quantity: the quantity of the order
             limit_price: the limit price of the order
                 It is highly recommended to make this a Decimal object from the decimal module to avoid floating point errors
@@ -1349,6 +1445,13 @@ class AsyncClient:
         grpc_client = await self.core()
         assert quantity > 0, "quantity must be positive"
 
+        if dir is None:
+            if "odir" in kwargs and isinstance(kwargs["odir"], OrderDir):
+                logging.warning("odir is deprecated, use dir instead")
+                dir = kwargs["odir"]
+            else:
+                raise ValueError("dir is required")
+
         if price_round_method is not None:
             if execution_venue is None:
                 product_info = await self.get_product_info(symbol)
@@ -1366,7 +1469,7 @@ class AsyncClient:
             )
             if execution_info is None:
                 raise ValueError(
-                    "Could not find execution information for {symbol} for rounding price for limit order. Please round price manually."
+                    f"Could not find execution information for {symbol} for rounding price for limit order. Please round price manually."
                 )
             if (tick_size := execution_info.tick_size) is not None:
                 if tick_size:
@@ -1375,16 +1478,16 @@ class AsyncClient:
                 raise ValueError(f"Could not find market information for {symbol}")
 
         req: PlaceOrderRequest = PlaceOrderRequest.new(
-            dir=odir,
+            dir=dir,
             quantity=quantity,
             symbol=symbol,
             time_in_force=time_in_force,
             limit_price=limit_price,
-            place_order_request_type=order_type,
+            order_type=order_type,
             account=account,
             id=id,
             parent_id=None,
-            source=grpc_definitions.OrderSource.API,
+            source=OrderSource.API,
             trader=trader,
             execution_venue=execution_venue,
             post_only=post_only,
@@ -1396,12 +1499,12 @@ class AsyncClient:
     async def send_market_pro_order(
         self,
         *,
-        id: Optional[grpc_definitions.OrderId] = None,
+        id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
         execution_venue: str,
-        odir: OrderDir,
+        dir: OrderDir,
         quantity: Decimal,
-        time_in_force: grpc_definitions.TimeInForce = grpc_definitions.TimeInForceEnum.DAY,
+        time_in_force: TimeInForce = TimeInForce.DAY,
         account: Optional[str] = None,
         fraction_through_market: Decimal = Decimal("0.001"),
     ) -> Order:
@@ -1413,7 +1516,7 @@ class AsyncClient:
             id: in case user wants to generate their own order id, otherwise it will be generated automatically
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to
-            odir: the direction of the order
+            dir: the direction of the order
             quantity: the quantity of the order
             time_in_force: the time in force of the order
             account: the account to send the order for
@@ -1434,7 +1537,7 @@ class AsyncClient:
 
         price_band = price_band_pairs.get(symbol, None)
 
-        if odir == OrderDir.BUY:
+        if dir == OrderDir.BUY:
             if ticker.ask_price is None:
                 raise ValueError(
                     f"Failed to send market order with reason: no ask price for {symbol}"
@@ -1453,11 +1556,11 @@ class AsyncClient:
             limit_price = ticker.bid_price * (1 - fraction_through_market)
             if price_band and ticker.last_price:
                 price_band_reference_price = ticker.last_price - price_band
-                limit_price = min(limit_price, price_band_reference_price)
+                limit_price = max(limit_price, price_band_reference_price)
 
         # Conservatively round price to nearest tick
         tick_round_method = (
-            TickRoundMethod.FLOOR if odir == OrderDir.BUY else TickRoundMethod.CEIL
+            TickRoundMethod.FLOOR if dir == OrderDir.BUY else TickRoundMethod.CEIL
         )
 
         execution_info = await self.get_execution_info(
@@ -1474,15 +1577,15 @@ class AsyncClient:
             id=id,
             symbol=symbol,
             execution_venue=execution_venue,
-            odir=odir,
+            dir=dir,
             quantity=quantity,
             account=account,
-            order_type=PlaceOrderRequestType.LIMIT,
+            order_type=OrderType.LIMIT,
             limit_price=limit_price,
             time_in_force=time_in_force,
         )
 
-    async def cancel_order(self, order_id: grpc_definitions.OrderId) -> Cancel:
+    async def cancel_order(self, order_id: OrderId) -> Cancel:
         """
         Cancels an order by order id.
 
@@ -1498,9 +1601,9 @@ class AsyncClient:
 
     async def cancel_all_orders(
         self,
-        account: Optional[grpc_definitions.AccountIdOrName] = None,
+        account: Optional[AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
-        trader: Optional[grpc_definitions.TraderIdOrEmail] = None,
+        trader: Optional[TraderIdOrEmail] = None,
     ) -> bool:
         """
         Cancels all open orders.

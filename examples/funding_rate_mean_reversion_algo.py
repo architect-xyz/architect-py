@@ -6,12 +6,14 @@ import asyncio
 from decimal import Decimal
 from typing import AsyncIterator, Optional
 
-from architect_py.async_client import AsyncClient
-from architect_py.common_types.order_dir import OrderDir
-from architect_py.common_types.tradable_product import TradableProduct
+from architect_py import (
+    AsyncClient,
+    OrderDir,
+    OrderType,
+    TimeInForce,
+    TradableProduct,
+)
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
-from architect_py.grpc.models.definitions import TimeInForceEnum
-from architect_py.grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequestType
 from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedOrderAck,
     TaggedOrderOut,
@@ -125,8 +127,8 @@ async def step_to_target_position(
                     quantity=Decimal(1),
                     execution_venue=None,
                     limit_price=best_ask_price,
-                    time_in_force=TimeInForceEnum.DAY,
-                    place_order_request_type=PlaceOrderRequestType.LIMIT,
+                    time_in_force=TimeInForce.DAY,
+                    order_type=OrderType.LIMIT,
                 )
 
         elif current_position > target_position:
@@ -140,8 +142,8 @@ async def step_to_target_position(
                     quantity=Decimal(1),
                     execution_venue=None,
                     limit_price=best_bid_price,
-                    time_in_force=TimeInForceEnum.DAY,
-                    place_order_request_type=PlaceOrderRequestType.LIMIT,
+                    time_in_force=TimeInForce.DAY,
+                    order_type=OrderType.LIMIT,
                 )
 
         if order is not None:

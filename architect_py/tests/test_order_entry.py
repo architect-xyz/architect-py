@@ -3,8 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from architect_py import AsyncClient, OrderDir
-from architect_py.utils.nearest_tick_2 import TickRoundMethod
+from architect_py import AsyncClient, OrderDir, TickRoundMethod
 
 
 @pytest.mark.asyncio
@@ -27,7 +26,7 @@ async def test_place_limit_order(async_client: AsyncClient):
     order = await async_client.place_limit_order(
         symbol=symbol,
         execution_venue=venue,
-        odir=OrderDir.BUY,
+        dir=OrderDir.BUY,
         quantity=Decimal(1),
         limit_price=limit_price,
         account=str(account.account.id),

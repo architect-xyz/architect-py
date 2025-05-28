@@ -3,8 +3,7 @@ from dataclasses import dataclass
 
 from dotenv import load_dotenv
 
-from architect_py.async_client import AsyncClient
-from architect_py.client import Client
+from architect_py import AsyncClient, Client
 
 
 @dataclass

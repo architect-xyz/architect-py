@@ -17,6 +17,7 @@ Environment variables may be set in a `.env` file.
 """
 
 import os
+from datetime import datetime, timedelta
 
 import pytest_asyncio
 from dotenv import load_dotenv
@@ -95,14 +96,20 @@ async def async_client() -> AsyncClient:
     return async_client
 
 
+async def get_front_ES_future(async_client: AsyncClient) -> str:
+    series = await async_client.get_cme_futures_series("ES CME Futures")
+    series.sort()
+    today = datetime.now() + timedelta(days=30)
+    unexpired = list(filter(lambda item: item[0] > today.date(), series))
+    return unexpired[0][1]
+
+
 @pytest_asyncio.fixture
 async def front_ES_future(async_client: AsyncClient) -> str:
     """
     Fixture for getting the name of the front month ES CME future.
     """
-    series = await async_client.get_cme_futures_series("ES CME Futures")
-    series.sort()
-    return series[-1][1]
+    return await get_front_ES_future(async_client)
 
 
 @pytest_asyncio.fixture
@@ -110,10 +117,5 @@ async def front_ES_future_usd(async_client: AsyncClient) -> str:
     """
     Fixture for getting the name of the front month ES CME future/USD pair.
     """
-    series = await async_client.get_cme_futures_series("ES CME Futures")
-    series.sort()
-    future = series[-1][1]
+    future = await get_front_ES_future(async_client)
     return f"{future}/USD"
-
-
-# CR alee: add sync Client tests

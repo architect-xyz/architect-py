@@ -2,8 +2,7 @@ import pprint
 import time
 from decimal import Decimal
 
-from architect_py.common_types.order_dir import OrderDir
-from architect_py.graphql_client.enums import OrderStatus
+from architect_py import OrderDir, OrderStatus
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from .common import confirm, connect_client, print_book, print_open_orders
@@ -69,7 +68,7 @@ if confirm(
     order = c.send_limit_order(
         symbol=symbol,
         execution_venue=venue,
-        odir=OrderDir.BUY,
+        dir=OrderDir.BUY,
         quantity=best_bid_quantity,
         limit_price=limit_price,
         account=account.account.name,
@@ -79,17 +78,17 @@ assert order is not None
 print(f"\nOrder placed with ID: {order.id}")
 
 # Poll order status until rejected or fully executed
-while order.status is OrderStatus.OPEN:
+while order.status is OrderStatus.Open:
     time.sleep(1)
     print(f"...order state: {order.status}")
     order = c.get_order(order.id)
     assert order is not None
 
 # Print final order state
-if order.status is OrderStatus.REJECTED:
+if order.status is OrderStatus.Rejected:
     print(f"Order was rejected: {order.reject_reason}")
-elif order.status is OrderStatus.CANCELED:
+elif order.status is OrderStatus.Canceled:
     print("Order was canceled")
-elif order.status is OrderStatus.OUT:
+elif order.status is OrderStatus.Out:
     print(f"Order was filled for qty: {order.filled_quantity}")
     print(f"Average execution price: {order.average_fill_price}")

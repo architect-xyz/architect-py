@@ -1644,7 +1644,7 @@
         "format": "int64"
       },
       "d": {
-        "title": "direction",
+        "title": "dir",
         "allOf": [
           {
             "$ref": "#/Dir"
@@ -1774,7 +1774,7 @@
         "format": "int64"
       },
       "d": {
-        "title": "direction",
+        "title": "dir",
         "anyOf": [
           {
             "$ref": "#/Dir"
@@ -1956,6 +1956,16 @@
       "ReconciledOut",
       "Stale",
       "Unknown"
+    ]
+  },
+  "OrderType": {
+    "type": "string",
+    "title": "order_type",
+    "enum": [
+      "MARKET",
+      "LIMIT",
+      "STOP_LOSS_LIMIT",
+      "TAKE_PROFIT_LIMIT"
     ]
   },
   "AccountPosition": {

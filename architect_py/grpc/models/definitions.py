@@ -8,13 +8,11 @@ from datetime import datetime, timezone
 from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
 from .Marketdata.Ticker import Ticker
-
-Model = Any
 
 
 AccountIdOrName = str
@@ -457,6 +455,13 @@ class OrderStatus(int, Enum):
     Unknown = 255
 
 
+class OrderType(str, Enum):
+    MARKET = "MARKET"
+    LIMIT = "LIMIT"
+    STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
+    TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
+
+
 class ProductCatalogInfo(Struct, omit_defaults=True):
     """
     Loosely normalized information about exchange products; used to seed symbology loaders and populate extended product info;
@@ -738,35 +743,6 @@ class Statement(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"Statement(account={self.account},clearing_firm={self.clearing_firm},filename={self.filename},statement_date={self.statement_date},statement_type={self.statement_type},statement_uuid={self.statement_uuid})"
-
-
-class GoodTilDate(Struct, omit_defaults=True):
-    GTD: datetime
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        GTD: datetime,
-    ):
-        return cls(
-            GTD,
-        )
-
-    def __str__(self) -> str:
-        return f"GoodTilDate(GTD={self.GTD})"
-
-
-class TimeInForceEnum(str, Enum):
-    GTC = "GTC"
-    DAY = "DAY"
-    IOC = "IOC"
-    FOK = "FOK"
-    ATO = "ATO"
-    ATC = "ATC"
-
-
-TimeInForce = Union[GoodTilDate, TimeInForceEnum]
 
 
 TraderIdOrEmail = str
@@ -1325,7 +1301,7 @@ class AberrantFill(Struct, omit_defaults=True):
     a: Optional[Annotated[Optional[str], Meta(title="account")]] = None
     atn: Optional[Annotated[Optional[int], Meta(title="recv_time_ns")]] = None
     ats: Optional[Annotated[Optional[int], Meta(title="recv_time")]] = None
-    d: Optional[Annotated[Optional[OrderDir], Meta(title="direction")]] = None
+    d: Optional[Annotated[Optional[OrderDir], Meta(title="dir")]] = None
     f: Optional[Annotated[Optional[Decimal], Meta(title="fee")]] = None
     fu: Optional[Annotated[Optional[str], Meta(title="fee_currency")]] = None
     k: Optional[Annotated[Optional[FillKind], Meta(title="fill_kind")]] = None
@@ -1347,7 +1323,7 @@ class AberrantFill(Struct, omit_defaults=True):
         account: Optional[str] = None,
         recv_time_ns: Optional[int] = None,
         recv_time: Optional[int] = None,
-        direction: Optional[OrderDir] = None,
+        dir: Optional[OrderDir] = None,
         fee: Optional[Decimal] = None,
         fee_currency: Optional[str] = None,
         fill_kind: Optional[FillKind] = None,
@@ -1366,7 +1342,7 @@ class AberrantFill(Struct, omit_defaults=True):
             account,
             recv_time_ns,
             recv_time,
-            direction,
+            dir,
             fee,
             fee_currency,
             fill_kind,
@@ -1381,7 +1357,7 @@ class AberrantFill(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"AberrantFill(fill_id={self.id},execution_venue={self.x},account={self.a},recv_time_ns={self.atn},recv_time={self.ats},direction={self.d},fee={self.f},fee_currency={self.fu},fill_kind={self.k},order_id={self.oid},price={self.p},quantity={self.q},symbol={self.s},trade_time_ns={self.tn},trade_time={self.ts},trader={self.u},exchange_fill_id={self.xid})"
+        return f"AberrantFill(fill_id={self.id},execution_venue={self.x},account={self.a},recv_time_ns={self.atn},recv_time={self.ats},dir={self.d},fee={self.f},fee_currency={self.fu},fill_kind={self.k},order_id={self.oid},price={self.p},quantity={self.q},symbol={self.s},trade_time_ns={self.tn},trade_time={self.ts},trader={self.u},exchange_fill_id={self.xid})"
 
     @property
     def fill_id(self) -> str:
@@ -1424,11 +1400,11 @@ class AberrantFill(Struct, omit_defaults=True):
         self.ats = value
 
     @property
-    def direction(self) -> Optional[OrderDir]:
+    def dir(self) -> Optional[OrderDir]:
         return self.d
 
-    @direction.setter
-    def direction(self, value: Optional[OrderDir]) -> None:
+    @dir.setter
+    def dir(self, value: Optional[OrderDir]) -> None:
         self.d = value
 
     @property
@@ -1619,7 +1595,7 @@ class ExecutionInfo(Struct, omit_defaults=True):
 
 
 class Fill(Struct, omit_defaults=True):
-    d: Annotated[OrderDir, Meta(title="direction")]
+    d: Annotated[OrderDir, Meta(title="dir")]
     id: Annotated[str, Meta(title="fill_id")]
     k: Annotated[FillKind, Meta(title="fill_kind")]
     p: Annotated[Decimal, Meta(title="price")]
@@ -1670,7 +1646,7 @@ class Fill(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
-        direction: OrderDir,
+        dir: OrderDir,
         fill_id: str,
         fill_kind: FillKind,
         price: Decimal,
@@ -1690,7 +1666,7 @@ class Fill(Struct, omit_defaults=True):
         exchange_fill_id: Optional[str] = None,
     ):
         return cls(
-            direction,
+            dir,
             fill_id,
             fill_kind,
             price,
@@ -1711,14 +1687,14 @@ class Fill(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"Fill(direction={self.d},fill_id={self.id},fill_kind={self.k},price={self.p},quantity={self.q},symbol={self.s},trade_time_ns={self.tn},trade_time={self.ts},execution_venue={self.x},account={self.a},is_taker={self.agg},recv_time_ns={self.atn},recv_time={self.ats},fee={self.f},fee_currency={self.fu},order_id={self.oid},trader={self.u},exchange_fill_id={self.xid})"
+        return f"Fill(dir={self.d},fill_id={self.id},fill_kind={self.k},price={self.p},quantity={self.q},symbol={self.s},trade_time_ns={self.tn},trade_time={self.ts},execution_venue={self.x},account={self.a},is_taker={self.agg},recv_time_ns={self.atn},recv_time={self.ats},fee={self.f},fee_currency={self.fu},order_id={self.oid},trader={self.u},exchange_fill_id={self.xid})"
 
     @property
-    def direction(self) -> OrderDir:
+    def dir(self) -> OrderDir:
         return self.d
 
-    @direction.setter
-    def direction(self, value: OrderDir) -> None:
+    @dir.setter
+    def dir(self, value: OrderDir) -> None:
         self.d = value
 
     @property

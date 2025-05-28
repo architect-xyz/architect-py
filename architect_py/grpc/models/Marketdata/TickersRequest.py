@@ -4,17 +4,19 @@
 from __future__ import annotations
 from architect_py.grpc.models.Marketdata.TickersResponse import TickersResponse
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from msgspec import Struct
+from msgspec import Meta, Struct
 
 from .. import definitions
 
 
 class TickersRequest(Struct, omit_defaults=True):
-    i: Optional[int] = None
-    k: Optional[definitions.SortTickersBy] = None
-    n: Optional[int] = None
+    i: Optional[Annotated[Optional[int], Meta(title="offset")]] = None
+    k: Optional[
+        Annotated[Optional[definitions.SortTickersBy], Meta(title="sort_by")]
+    ] = None
+    n: Optional[Annotated[Optional[int], Meta(title="limit")]] = None
     symbols: Optional[List[str]] = None
     venue: Optional[str] = None
 
@@ -22,22 +24,46 @@ class TickersRequest(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
-        i: Optional[int] = None,
-        k: Optional[definitions.SortTickersBy] = None,
-        n: Optional[int] = None,
+        offset: Optional[int] = None,
+        sort_by: Optional[definitions.SortTickersBy] = None,
+        limit: Optional[int] = None,
         symbols: Optional[List[str]] = None,
         venue: Optional[str] = None,
     ):
         return cls(
-            i,
-            k,
-            n,
+            offset,
+            sort_by,
+            limit,
             symbols,
             venue,
         )
 
     def __str__(self) -> str:
-        return f"TickersRequest(i={self.i},k={self.k},n={self.n},symbols={self.symbols},venue={self.venue})"
+        return f"TickersRequest(offset={self.i},sort_by={self.k},limit={self.n},symbols={self.symbols},venue={self.venue})"
+
+    @property
+    def offset(self) -> Optional[int]:
+        return self.i
+
+    @offset.setter
+    def offset(self, value: Optional[int]) -> None:
+        self.i = value
+
+    @property
+    def sort_by(self) -> Optional[definitions.SortTickersBy]:
+        return self.k
+
+    @sort_by.setter
+    def sort_by(self, value: Optional[definitions.SortTickersBy]) -> None:
+        self.k = value
+
+    @property
+    def limit(self) -> Optional[int]:
+        return self.n
+
+    @limit.setter
+    def limit(self, value: Optional[int]) -> None:
+        self.n = value
 
     @staticmethod
     def get_response_type():

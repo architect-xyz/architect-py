@@ -10,7 +10,6 @@ from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
-from .. import definitions
 
 
 class Trade(Struct, omit_defaults=True):

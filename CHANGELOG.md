@@ -1,4 +1,21 @@
-# 5.0.0b (WORK IN PROGRESS--DO NOT UPSTREAM)
+# 5.1.1
+This patch contains only fixes:
+- paper trading mode now sets the port automatically
+- fixed the sync client instantiation in scripts
+- fixed sys.excepthook when a script closes via the Client.close() function. This is cosmetic though and is for reducing log lines.
+- fix serializing TradableProduct vs str
+
+# 5.1.0
+- Added a type-checker-friendly way to get enum-like constants + a payload-carrying variant (GTD) in one class for TimeInForce
+- Fixed client_interface to use mypy stubgen and use a pyi file instead of a protocol
+- Remove no_pandas
+- TickersRequest, added titles for the fields
+- Removed unused graphql queries and types
+- TradableProduct improvement and comment fixes
+- Add `get_front_future` method to async client
+- Fixed import story, you don't need to do `from architect_py.grpc.models.AccountsRequest import AccountsRequest`, you can just do `from architect_py.grpc
+
+# 5.0.0
 
 - refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
 - as a consequence, many marketdata methods require a `venue` argument
@@ -9,6 +26,24 @@
 - switched to pyright for typechecking
 - in AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
 - Moved around some of the subscription stream types (e.g. orderflow) from the grpc_client to the AsyncClient 
+
+Migration from v3.2.2:
+
+- In `cancel_order`, return field `recv_time` is no longer a `datetime`; instead, `recv_time` and `recv_time_ns` are integers representing epoch seconds, and nanoseconds part respectively. Return field `status` is now an integer enum instead of a string enum.
+- In `list_accounts`, returned field `account.id` is now a string in UUID format instead of a `uuid.UUID`.
+- In `get_account_summary`, `get_account_summaries` and `get_account_history`, return field `account` is now a string in UUID format instead of a `uuid.UUID`. Return field `balances` is now a `dict[str, Decimal]` instead of a list. Return field `positions` is now a `dict[str, list[AccountPosition]]` instead of a list.
+- In `send_limit_order`, `place_limit_order`, `get_order`, `get_orders`, `get_open_orders` and `get_historical_orders`; returned field `recv_time` is no longer a `datetime`; instead, `recv_time` and `recv_time_ns` are integers representing epoch seconds, and nanoseconds part respectively. Return field `status` is now an integer enum instead of a string enum. Return field `account` is now a string in UUID format instead of a `uuid.UUID`. Return field `time_in_force`, in addition to being a string enum, can now be a `GoodTilDate` as well. Return field `good_til_date` is removed; see `time_in_force`. Return field `order_source` is now an integer enum instead of a string enum.
+- In `place_limit_order`, `odir` is now deprecated, use `dir` instead.
+- In `get_market_snapshot`, `get_market_snapshots`, `get_l1_book_snapshot`, and `get_l1_book_snapshots`; returned field `timestamp` is no longer a `datetime`; instead, `timestamp` and `timestamp_ns` are integers representing epoch seconds, and nanoseconds part respectively. Return fields `bid_price`, `bid_size`, `ask_price`, and `ask_size` are now `best_bid` and `best_ask` respectively, of type `list[Decimal]` whose elements are `[price, size]`. Return fields `last_price`, `last_size` have been removed.
+- In `get_l2_book_snapshot`, return field `timestamp` is no longer a `datetime`; instead, `timestamp` and `timestamp_ns` are integers representing epoch seconds, and nanoseconds part respectively. Return field `bids` and `asks` are now lists of `[price, size]`.
+- In `get_historical_candles`, parameter `venue` is now required. It's return type is now a `list[Candle]` directly instead of an object containing a `candles` field.
+- In `get_fills`, return field `recv_time` is no longer a `datetime`; instead, `recv_time` and `recv_time_ns` are integers representing epoch seconds, and nanoseconds part respectively. Return field `trade_time` is no longer a `datetime`; instead, `trade_time` and `trade_time_ns` are integers representing epoch seconds, and nanoseconds part respectively. Return fields `fill_id`, `account` are now strings in UUID format instead of `uuid.UUID`s. Return field `fill_kind` is now an integer enum instead of a string enum.
+- Renamed `subscribe_l1_book_stream`, use `stream_l1_book_snapshots` instead.
+- Renamed `subscribe_l2_book_stream`, use `stream_l2_book_snapshots` instead.
+- `subscribe_l1_book` only takes a single symbols and venue now; to subscribe to multiple symbols, call `subscribe_l1_book` multiple times.
+- In `subscribe_l1_book` and `subscribe_l2_book`, `venue` is now required.
+- Renamed `subscribe_trades_stream`, use `stream_trades` instead.
+- Renamed `subscribe_candles_stream`, use `stream_candles` instead.
 
 # 3.2.2
 Fixes:

@@ -1,29 +1,5 @@
 schema {
   query: QueryRoot
-  mutation: MutationRoot
-  subscription: SubscriptionRoot
-}
-
-enum CancelStatus {
-  PENDING
-  ACKED
-  REJECTED
-  OUT
-}
-
-enum CandleWidth {
-  ONE_SECOND
-  FIVE_SECOND
-  ONE_MINUTE
-  FIFTEEN_MINUTE
-  ONE_HOUR
-  ONE_DAY
-}
-
-enum FillKind {
-  NORMAL
-  REVERSAL
-  CORRECTION
 }
 
 enum MinOrderQuantityUnit {
@@ -31,68 +7,18 @@ enum MinOrderQuantityUnit {
   QUOTE
 }
 
-enum OrderSource {
-  API
-  GUI
-  ALGO
-  RECONCILED
-  CLI
-  TELEGRAM
-  OTHER
-}
-
-enum OrderStatus {
-  PENDING
-  OPEN
-  REJECTED
-  OUT
-  CANCELING
-  CANCELED
-  RECONCILED_OUT
-  STALE
-  UNKNOWN
-}
-
-enum OrderType {
-  LIMIT
-  STOP_LOSS_LIMIT
-  TAKE_PROFIT_LIMIT
-}
-
-enum PutOrCall {
-  PUT
-  CALL
-}
-
-enum SortTickersBy {
-  VOLUME_DESC
-  CHANGE_ASC
-  CHANGE_DESC
-  ABS_CHANGE_DESC
-}
-
-enum TimeInForce {
-  GTC
-  GTD
-  DAY
-  IOC
-  FOK
-  ATO
-  ATC
-}
-
 scalar AccountName
 
 """
   Date in the proleptic Gregorian calendar (without time zone).
-
+  
   Represents a description of the date (as used for birthdays, for example).
   It cannot represent an instant on the time-line.
-
+  
   [`Date` scalar][1] compliant.
-
+  
   See also [`chrono::NaiveDate`][2] for details.
-
+  
   [1]: https://graphql-scalars.dev/docs/scalars/date
   [2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveDate.html
 """
@@ -100,14 +26,14 @@ scalar Date
 
 """
   Combined date and time (with time zone) in [RFC 3339][0] format.
-
+  
   Represents a description of an exact instant on the time-line (such as the
   instant that a user account was created).
-
+  
   [`DateTime` scalar][1] compliant.
-
+  
   See also [`chrono::DateTime`][2] for details.
-
+  
   [0]: https://datatracker.ietf.org/doc/html/rfc3339#section-5
   [1]: https://graphql-scalars.dev/docs/scalars/date-time
   [2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
@@ -116,18 +42,18 @@ scalar DateTime
 
 """
   128 bit representation of a fixed-precision decimal number.
-
+  
   The finite set of values of `Decimal` scalar are of the form
   m / 10<sup>e</sup>, where m is an integer such that
   -2<sup>96</sup> < m < 2<sup>96</sup>, and e is an integer between 0 and 28
   inclusive.
-
+  
   Always serializes as `String`. But may be deserialized from `Int` and
   `Float` values too. It's not recommended to deserialize from a `Float`
   directly, as the floating point representation may be unexpected.
-
+  
   See also [`rust_decimal`] crate for details.
-
+  
   [`rust_decimal`]: https://docs.rs/rust_decimal
 """
 scalar Decimal
@@ -163,153 +89,6 @@ scalar UserId
 
 scalar Uuid
 
-type AberrantFill {
-  fillId: Uuid!
-  fillKind: FillKind
-  executionVenue: ExecutionVenue!
-  exchangeFillId: String
-  orderId: OrderId
-  trader: UserId
-  account: Uuid
-  symbol: String
-  dir: Dir
-  quantity: Decimal
-  price: Decimal
-  fee: Decimal
-  feeCurrency: String
-  recvTime: DateTime
-  tradeTime: DateTime
-}
-
-type Account {
-  id: Uuid!
-  name: AccountName!
-}
-
-type AccountBalance {
-  product: Product!
-  balance: Decimal!
-}
-
-"Set of flags for account permissions"
-type AccountPermissions {
-  list: Boolean!
-  view: Boolean!
-  trade: Boolean!
-  reduceOrClose: Boolean!
-  setLimits: Boolean!
-}
-
-type AccountPosition {
-  symbol: TradableProduct!
-  quantity: Decimal!
-  tradeTime: DateTime
-  costBasis: Decimal
-  breakEvenPrice: Decimal
-  liquidationPrice: Decimal
-}
-
-type AccountSummary {
-  account: Uuid!
-  timestamp: DateTime!
-  balances: [AccountBalance!]!
-  positions: [AccountPosition!]!
-  unrealizedPnl: Decimal
-  realizedPnl: Decimal
-  equity: Decimal
-  yesterdayEquity: Decimal
-  cashExcess: Decimal
-  purchasingPower: Decimal
-  totalMargin: Decimal
-  positionMargin: Decimal
-}
-
-type AccountWithPermissions {
-  account: Account!
-  trader: UserId!
-  permissions: AccountPermissions!
-}
-
-type AdminMutationRoot {
-  debugAsUser(user: String!): Boolean!
-  stopDebuggingAsUser: Boolean!
-}
-
-type ApiKey {
-  subject: String!
-  created: DateTime!
-  apiKey: String!
-  apiSecret: String!
-}
-
-type BackOfficeQueryRoot {
-  statements(accountId: Uuid!): [Statement!]!
-  statementUrl(statementUuid: Uuid!): String!
-  deposits(accountId: Uuid!): [Deposit!]!
-  withdrawals(accountId: Uuid!): [Withdrawal!]!
-  rqdAccountStatistics(accountId: Uuid!): RqdAccountStatistics!
-}
-
-type Cancel {
-  cancelId: Uuid!
-  orderId: OrderId!
-  recvTime: DateTime
-  status: CancelStatus!
-  rejectReason: String
-}
-
-type CancelReject {
-  cancelId: Uuid!
-  orderId: OrderId!
-  message: String
-}
-
-type Candle {
-  symbol: String!
-  timestamp: DateTime
-  width: CandleWidth!
-  open: Decimal
-  high: Decimal
-  low: Decimal
-  close: Decimal
-  volume: Decimal!
-  buyVolume: Decimal!
-  sellVolume: Decimal!
-  midOpen: Decimal
-  midClose: Decimal
-  midHigh: Decimal
-  midLow: Decimal
-  bidOpen: Decimal
-  bidClose: Decimal
-  bidHigh: Decimal
-  bidLow: Decimal
-  askOpen: Decimal
-  askClose: Decimal
-  askHigh: Decimal
-  askLow: Decimal
-}
-
-type ConfigQueryRoot {
-  "List marketdata venues that are configured"
-  marketdataVenues: [MarketdataVenue!]!
-}
-
-type CptyStatus {
-  kind: String!
-  instance: String
-  connected: Boolean!
-  loggedIn: Boolean!
-  lastHeartbeat: DateTime
-  lastHeartbeatStaleThresholdInSeconds: Int
-}
-
-type Deposit {
-  account: String!
-  amount: Decimal!
-  timestamp: DateTime!
-  description: String!
-}
-
 type ExecutionInfo {
   symbol: String!
   executionVenue: ExecutionVenue!
@@ -322,203 +101,11 @@ type ExecutionInfo {
   maintenanceMargin: Decimal
 }
 
-type Fill {
-  fillId: Uuid!
-  fillKind: FillKind!
-  executionVenue: ExecutionVenue!
-  exchangeFillId: String
-  orderId: OrderId
-  trader: UserId
-  account: Uuid
-  symbol: String!
-  dir: Dir!
-  quantity: Decimal!
-  price: Decimal!
-  fee: Decimal
-  feeCurrency: String
-  recvTime: DateTime
-  tradeTime: DateTime
-}
-
-type FolioQueryRoot {
-  accountSummary(account: String!): AccountSummary!
-  accountSummaries(trader: String, accounts: [String!]): [AccountSummary!]!
-  accountHistory(account: String!, fromInclusive: DateTime, toExclusive: DateTime): [AccountSummary!]!
-  historicalFills(venue: ExecutionVenue, account: String, trader: String, orderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): HistoricalFillsResponse!
-  historicalOrders(orderIds: [OrderId!], venue: ExecutionVenue, account: String, trader: String, parentOrderId: OrderId, fromInclusive: DateTime, toExclusive: DateTime, limit: Int): [Order!]!
-}
-
-type GqlOrderReject {
-  orderId: OrderId!
-  reason: String!
-  message: String
-}
-
-type HistoricalFillsResponse {
-  fills: [Fill!]!
-  aberrantFills: [AberrantFill!]!
-}
-
-type L2Book {
-  timestamp: DateTime
-  bids: [L2BookLevel!]!
-  asks: [L2BookLevel!]!
-}
-
-type L2BookLevel {
-  price: Decimal!
-  size: Decimal!
-}
-
-type MarketStatus {
-  symbol: String!
-  isTrading: Boolean
-  isQuoting: Boolean
-}
-
-type MarketdataQueryRoot {
-  historicalCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, start: DateTime!, end: DateTime!): [Candle!]!
-  l2BookSnapshot(venue: MarketdataVenue, symbol: String!, numLevels: Int): L2Book!
-  ticker(venue: MarketdataVenue, symbol: String!): Ticker!
-  tickers(venue: MarketdataVenue!, symbols: [String!], offset: Int, limit: Int, sortBy: SortTickersBy): [Ticker!]!
-  marketStatus(venue: MarketdataVenue, symbol: String!): MarketStatus!
-  optionsExpirations(venue: MarketdataVenue, underlying: String!): [Date!]!
-  optionsChain(venue: MarketdataVenue, underlying: String!, expiration: Date!): OptionsChain!
-  optionsChainGreeks(venue: MarketdataVenue, underlying: String!, expiration: Date!): OptionsChainGreeks!
-}
-
-type MutationRoot {
-  admin: AdminMutationRoot!
-  user: UserMutationRoot!
-  oms: OmsMutationRoot!
-}
-
-type OmsMutationRoot {
-  placeOrder(id: OrderId, symbol: String!, dir: Dir!, quantity: Decimal!, trader: String, account: String, orderType: OrderType!, limitPrice: Decimal, postOnly: Boolean, triggerPrice: Decimal, timeInForce: TimeInForce!, goodTilDate: DateTime, executionVenue: ExecutionVenue): Order!
-  cancelOrder(orderId: OrderId!): Cancel!
-  cancelAllOrders(trader: String, account: String, executionVenue: String): Boolean!
-}
-
-type OmsQueryRoot {
-  openOrders(venue: ExecutionVenue, account: String, trader: String, symbol: String, parentOrderId: OrderId, orderIds: [OrderId!]): [Order!]!
-  pendingCancels(venue: ExecutionVenue, account: String, trader: String, symbol: String, cancelIds: [Uuid!]): [Cancel!]!
-}
-
-type OptionsChain {
-  calls: [OptionsContract!]!
-  puts: [OptionsContract!]!
-}
-
-type OptionsChainGreeks {
-  calls: [OptionsGreeks!]!
-  puts: [OptionsGreeks!]!
-}
-
-type OptionsContract {
-  ticker: Ticker!
-  underlying: String!
-  expiration: Date!
-  strike: Decimal!
-  putOrCall: PutOrCall!
-  inTheMoney: Boolean
-}
-
-type OptionsGreeks {
-  symbol: String!
-  underlying: String!
-  strike: Decimal!
-  expiration: Date!
-  putOrCall: PutOrCall!
-  delta: Decimal!
-  gamma: Decimal!
-  theta: Decimal!
-  vega: Decimal!
-  rho: Decimal!
-  impliedVolatility: Decimal!
-}
-
-type Order {
-  id: OrderId!
-  parentId: OrderId
-  recvTime: DateTime
-  status: OrderStatus!
-  rejectReason: String
-  rejectMessage: String
-  symbol: String!
-  trader: UserId!
-  account: Uuid!
-  dir: Dir!
-  quantity: Decimal!
-  filledQuantity: Decimal!
-  averageFillPrice: Decimal
-  orderType: OrderType!
-  limitPrice: Decimal
-  postOnly: Boolean
-  triggerPrice: Decimal
-  timeInForce: TimeInForce!
-  "Only set for GTD orders"
-  goodTilDate: DateTime
-  source: OrderSource!
-  executionVenue: ExecutionVenue!
-  isShortSale: Boolean
-}
-
-type OrderAck {
-  orderId: OrderId!
-  exchangeOrderId: String
-}
-
-type OrderCanceled {
-  orderId: OrderId!
-  cancelId: Uuid
-}
-
-type OrderCanceling {
-  orderId: OrderId!
-  cancelId: Uuid
-}
-
-type OrderOut {
-  orderId: OrderId!
-}
-
-type OrderStale {
-  orderId: OrderId!
-}
-
-"""
-  Loosely normalized information about exchange products; used to
-  seed symbology loaders and populate extended product info;
-
-  Symbology loaders will use catalog fields to augment and/or
-  cross-check any other load source.
-"""
-type ProductCatalogInfo {
-  exchange: ExecutionVenue!
-  "Could be anything really"
-  exchangeProduct: String!
-  quoteCurrency: Product
-  "For derivatives contracts, the multiplier"
-  multiplier: Decimal
-  category: String
-  subCategory: String
-  "Short description of the product, suitable for display in a bubble, for example"
-  shortDescription: String
-  longDescription: String
-  scheduleDescription: String
-  settleMethod: String
-  priceDisplayFormat: String
-  "URL to more product info"
-  infoUrl: String
-  cqgContractSymbol: String
-}
-
 type ProductInfo {
   symbol: String!
   productType: String!
   underlying: Product
   multiplier: Decimal
-  expiration: DateTime
   derivativeKind: String
   firstNoticeDate: Date
   primaryVenue: String
@@ -529,92 +116,18 @@ type ProductInfo {
 
 type QueryRoot {
   version: String!
-  config: ConfigQueryRoot!
   "Information about current authenticated user, API keys, etc."
   user: UserQueryRoot!
   symbology: SymbologyQueryRoot!
-  marketdata: MarketdataQueryRoot!
-  middleBackOffice: BackOfficeQueryRoot!
-  oms: OmsQueryRoot!
-  folio: FolioQueryRoot!
-  cptys: [CptyStatus!]!
-}
-
-type RqdAccountStatistics {
-  accountNumber: String!
-  availableCashBalance: Decimal
-  accountType: String
-  overnightBuyingPower: Decimal
-  cashAvailableForWithdrawal: Decimal
-  cumulativeDayTradePnl: Decimal
-  isDayTrader: String
-  dayTradingBuyingPower: Decimal
-  dayTradingMarginCallAmount: Decimal
-  dayTradingBuyingPowerHighWaterMark: Decimal
-  startOfDayDayTradingBuyingPower: Decimal
-  dayTradingBuyingPowerMaintenanceMarginMultiplier: Decimal
-  dayTradingMinimumEquityMarginCallAmount: Decimal
-  dayTradingHouseMinimumEquityMarginCallAmount: Decimal
-  totalEquity: Decimal
-  houseMarginRequirementAdjustmentFactor: Decimal
-  marginCallAmount: Decimal
-  maintenanceMarginRequirement: Decimal
-  excessSmaAmount: Decimal
-  regTMarginCallAmount: Decimal
-  regTInitialMarginRequirement: Decimal
-  houseInitialMarginRequirementAdjustmentFactor: Decimal
-  houseMarginCallAmount: Decimal
-  houseMarginRequirement: Decimal
-  tradeDateTotalLongMarketValue: Decimal
-  marketValueAdjustmentFactor: Decimal
-  marginableEquity: Decimal
-  tradeDateOptionLongMarketValue: Decimal
-  numberOpenDayTradingMarginCalls: Decimal
-  startOfDayDayTradingBuyingPowerMarginCallAmount: Decimal
-  startOfDayMaintenanceMarginCallAmount: Decimal
-  startOfDayRegTMarginCallAmount: Decimal
-  startOfDayHouseMarginCallAmount: Decimal
-  usableSmaBalance: Decimal
-  optionOnlyMaintenanceMarginRequirement: Decimal
-  optionTradeDateShortMarketValue: Decimal
-  regTMaintenanceMarginRequirementAdjustmentFactor: String
-  strategyBasedReliefAdjustmentFactor: Decimal
-  settlementDateCashBalance: Decimal
-  settlementDateLongMarketValue: Decimal
-  settlementDateOptionLongMarketValue: Decimal
-  settlementDateOptionShortMarketValue: Decimal
-  settlementDateShortMarketValue: Decimal
-  overallCurrentSmaBalance: Decimal
-  tradeDateTotalShortMarketValue: Decimal
-  asOfDate: String
-  tradeDateCashBalance: Decimal
 }
 
 type SpreadLeg {
   product: Product!
   """
-    Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C;
-    We would represent that with quantities in the legs: 1, -2, 1
+  Some spreads have different ratios for their legs, like buy 1 A, sell 2 B, buy 1 C;
+  We would represent that with quantities in the legs: 1, -2, 1
   """
   quantity: Decimal!
-}
-
-type Statement {
-  statementUuid: Uuid!
-  account: String!
-  statementType: String!
-  clearingFirm: String!
-  statementDate: Date!
-  filename: String!
-}
-
-type SubscriptionRoot {
-  candles(venue: MarketdataVenue!, symbol: String!, candleWidths: [CandleWidth!]): Candle!
-  "Subscribe to only the current candle.  The candle will update on every trade, or every `tick_period_ms` if specified."
-  currentCandles(venue: MarketdataVenue!, symbol: String!, candleWidth: CandleWidth!, tickPeriodMs: Int): Candle!
-  "Listen to orderflow events."
-  orderflow(executionVenue: ExecutionVenue, trader: String, account: String): Orderflow!
-  trades(venue: MarketdataVenue!, symbol: String!): Trade!
 }
 
 type SymbologyQueryRoot {
@@ -622,58 +135,9 @@ type SymbologyQueryRoot {
   futuresSeries(seriesSymbol: String!): [String!]!
   executionInfo(symbol: TradableProduct!, executionVenue: ExecutionVenue!): ExecutionInfo!
   executionInfos(symbols: [TradableProduct!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
-  productCatalogInfo(exchangeProduct: String!): ProductCatalogInfo
-  productCatalogInfos(exchangeProducts: [String!]): [ProductCatalogInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
   searchSymbols(searchString: String, executionVenue: ExecutionVenue, executionVenues: [ExecutionVenue!], offset: Int, limit: Int): [TradableProduct!]!
-}
-
-type Ticker {
-  symbol: String!
-  timestamp: DateTime
-  bidPrice: Decimal
-  bidSize: Decimal
-  askPrice: Decimal
-  askSize: Decimal
-  lastPrice: Decimal
-  lastSize: Decimal
-  sessionOpen: Decimal
-  sessionLow: Decimal
-  sessionHigh: Decimal
-  sessionVolume: Decimal
-  open24h: Decimal
-  low24h: Decimal
-  high24h: Decimal
-  volume24h: Decimal
-  volume30d: Decimal
-  openInterest: Decimal
-  lastSettlementPrice: Decimal
-  lastSettlementDate: Date
-  marketCap: Decimal
-  priceToEarnings: Decimal
-  epsAdj: Decimal
-  sharesOutstandingWeightedAdj: Decimal
-  dividend: Decimal
-  dividendYield: Decimal
-}
-
-type Trade {
-  symbol: String!
-  timestamp: DateTime
-  direction: Dir
-  price: Decimal!
-  size: Decimal!
-}
-
-type UserMutationRoot {
-  "Create a session JWT to use for authentication with upstream gRPC services.  Requires the server to be configured for Architect auth federation."
-  createJwt: String!
-  "Create a new API key"
-  createApiKey: ApiKey!
-  "Remove an API key"
-  removeApiKey(apiKey: String!): Boolean!
-  enablePaperTrading: Boolean!
 }
 
 type UserQueryRoot {
@@ -681,19 +145,4 @@ type UserQueryRoot {
   userEmail: String!
   canDebugAsUser: Boolean!
   debuggingAsUser: String
-  "Get account details by id or name"
-  account(id: Uuid, name: AccountName): AccountWithPermissions
-  "List user's accounts"
-  accounts: [AccountWithPermissions!]!
-  "List user's API keys"
-  apiKeys: [ApiKey!]!
 }
-
-type Withdrawal {
-  account: String!
-  amount: Decimal!
-  timestamp: DateTime!
-  description: String!
-}
-
-union Orderflow = Order | OrderAck | GqlOrderReject | OrderOut | OrderStale | Cancel | CancelReject | OrderCanceling | OrderCanceled | Fill | AberrantFill

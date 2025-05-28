@@ -91,6 +91,10 @@ class JuniperBaseClient:
         exc_tb: object,
     ) -> None:
         await self.http_client.aclose()
+    
+    async def close(self) -> None:
+        """Close the HTTP client connection."""
+        await self.http_client.aclose()
 
     async def execute(
         self,

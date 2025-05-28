@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RestartCptyRequest",
+  "type": "object",
+  "required": [
+    "cpty"
+  ],
+  "properties": {
+    "cpty": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Core/RestartCpty",
+  "rpc_method": "unary",
+  "service": "Core",
+  "response_type": "RestartCptyResponse"
+}

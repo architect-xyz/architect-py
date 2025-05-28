@@ -3,7 +3,7 @@ import asyncio
 
 import pytest
 
-from architect_py.async_client import AsyncClient
+from architect_py import AsyncClient
 from architect_py.grpc.models.Orderflow.OrderflowRequest import OrderflowRequest
 
 
