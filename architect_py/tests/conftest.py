@@ -119,6 +119,3 @@ async def front_ES_future_usd(async_client: AsyncClient) -> str:
     """
     future = await get_front_ES_future(async_client)
     return f"{future}/USD"
-
-
-# CR alee: add sync Client tests

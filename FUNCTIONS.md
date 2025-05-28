@@ -1,6 +1,7 @@
 ### 🚀 Initialization and configuration
 
 - **`connect`**: Connect to an Architect installation.
+- **`close`**: Close the gRPC channel and GraphQL client.
 - **`refresh_jwt`**: Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
 - **`set_jwt`**: Manually set the JWT for gRPC authentication.
 - **`discover_marketdata`**: Load marketdata endpoints from the server config.

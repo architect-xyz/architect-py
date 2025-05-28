@@ -1,3 +1,10 @@
+# 5.1.1
+This patch contains only fixes:
+- paper trading mode now sets the port automatically
+- fixed the sync client instantiation in scripts
+- fixed sys.excepthook when a script closes via the Client.close() function. This is cosmetic though and is for reducing log lines.
+- fix serializing TradableProduct vs str
+
 # 5.1.0
 - Added a type-checker-friendly way to get enum-like constants + a payload-carrying variant (GTD) in one class for TimeInForce
 - Fixed client_interface to use mypy stubgen and use a pyi file instead of a protocol

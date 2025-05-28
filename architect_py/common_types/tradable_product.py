@@ -54,7 +54,7 @@ class TradableProduct(str):
         return self.split("/", 1)[1]
 
     def serialize(self) -> msgspec.Raw:
-        return msgspec.Raw(self.encode())
+        return msgspec.Raw(msgspec.json.encode(str(self)))
 
     @staticmethod
     def deserialize(s: str) -> "TradableProduct":

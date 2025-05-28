@@ -48,7 +48,9 @@ uv run ariadne-codegen --config ariadne-codegen.toml > /dev/null
 SCHEMAS_DIR="architect_py/grpc/schemas"
 MODELS_DIR="architect_py/grpc/models"
 
+# --------------------------------
 # Preprocess the gRPC JSON schema
+# --------------------------------
 printf "\nPre-processing gRPC schema...\n"
 rm -rf "${SCHEMAS_DIR:?}"/*
 uv run scripts/preprocess_grpc_schema.py \
@@ -91,22 +93,32 @@ uv run scripts/postprocess_grpc.py \
     --json_folder "$SCHEMAS_DIR"
 
 
+# --------------------------------
 # restore ./architect_py/__init__.py
+# --------------------------------
 mv ./architect_py/__init__.py.bak ./architect_py/__init__.py
 
-printf "\nFormatting code...\n"
+# --------------------------------
 # format generated code 
+# --------------------------------
+printf "\nFormatting code...\n"
 uv run ruff format ./architect_py/grpc/models
 
+# --------------------------------
 # Update FUNCTIONS.md
+# --------------------------------
 uv run scripts/generate_functions_md.py architect_py/async_client.py \
     > FUNCTIONS.md
 
+# --------------------------------
 # Add imports to __init__ files
+# --------------------------------
 printf "\nAdding imports to __init__ files...\n"
 uv run scripts/add_imports_to_inits.py --architect-path architect_py
 
+# --------------------------------
 # Update the client interface
+# --------------------------------
 printf "\nGenerating sync client interface from async...\n"
 uv run stubgen architect_py/async_client.py -o temp --include-docstrings
 uv run scripts/correct_sync_interface.py --file_path temp/architect_py/async_client.pyi
@@ -115,3 +127,7 @@ rm -rf temp
 uv run ruff format
 
 uv run ruff check . --select F401 --fix --isolated
+
+
+cd $ARCHITECT_ROOT/docs/gitbook
+uv lock

@@ -8,7 +8,9 @@ import dns.resolver
 from dns.rdtypes.IN.SRV import SRV
 
 
-async def resolve_endpoint(endpoint: str) -> Tuple[str, int, bool]:
+async def resolve_endpoint(
+    endpoint: str, paper_trading: bool = True
+) -> Tuple[str, int, bool]:
     """
     From a gRPC endpoint, resolve the host, port and whether or not the endpoint
     should use SSL.  If the port is specified explicitly, it will be used.  Otherwise,
@@ -67,4 +69,9 @@ async def resolve_endpoint(endpoint: str) -> Tuple[str, int, bool]:
 
     host = str(record.target).rstrip(".")  # strips the period off of FQDNs
 
-    return host, record.port, use_ssl
+    port = record.port
+    if paper_trading:
+        if "app.architect.co" in host or "staging.architect.co" in host:
+            port = 10080
+
+    return host, port, use_ssl

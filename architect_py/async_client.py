@@ -102,7 +102,9 @@ class AsyncClient:
             )
             endpoint = kwargs["endpoint"]
 
-        grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
+        grpc_host, grpc_port, use_ssl = await resolve_endpoint(
+            endpoint, paper_trading=paper_trading
+        )
         logging.info(
             f"Resolved endpoint {endpoint}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
         )
@@ -178,6 +180,22 @@ class AsyncClient:
             api_secret=api_secret,
         )
         self.grpc_core = GrpcClient(host=grpc_host, port=grpc_port, use_ssl=use_ssl)
+
+    async def close(self):
+        """
+        Close the gRPC channel and GraphQL client.
+        """
+        if self.grpc_core is not None:
+            await self.grpc_core.close()
+
+        for grpc_client in self.grpc_marketdata.values():
+            await grpc_client.close()
+
+        self.grpc_marketdata.clear()
+        # NB: this line removes the "Error in sys.excepthook:" on close
+
+        if self.graphql_client is not None:
+            await self.graphql_client.close()
 
     async def refresh_jwt(self, force: bool = False):
         """
@@ -258,6 +276,9 @@ class AsyncClient:
             grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
             self.grpc_marketdata[venue] = GrpcClient(
                 host=grpc_host, port=grpc_port, use_ssl=use_ssl
+            )
+            logging.debug(
+                f"Setting marketdata endpoint for {venue}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
             )
         except Exception as e:
             logging.error("Failed to set marketdata endpoint: %s", e)
@@ -1448,7 +1469,7 @@ class AsyncClient:
             )
             if execution_info is None:
                 raise ValueError(
-                    "Could not find execution information for {symbol} for rounding price for limit order. Please round price manually."
+                    f"Could not find execution information for {symbol} for rounding price for limit order. Please round price manually."
                 )
             if (tick_size := execution_info.tick_size) is not None:
                 if tick_size:

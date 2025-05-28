@@ -65,6 +65,7 @@ class TimeInForce:
 
     @classmethod
     def GTD(cls, when: datetime) -> "TimeInForce":
+        assert when.tzinfo is not None, "GTD requires a timezone-aware datetime"
         return cls("GTD", when)
 
     def serialize(self) -> msgspec.Raw:

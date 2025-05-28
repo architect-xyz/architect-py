@@ -30,6 +30,9 @@ class GrpcClient:
     def set_jwt(self, jwt: str | None):
         self.jwt = jwt
 
+    async def close(self):
+        await self.channel.close()
+
     @staticmethod
     def encoder() -> msgspec.json.Encoder:
         return encoder

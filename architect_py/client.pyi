@@ -23,19 +23,16 @@ from typing import Any, AsyncGenerator, AsyncIterator, Literal, Sequence, overlo
 
 class Client:
     """
+    One can find the function definition in the AsyncClient class and in the pyi file.
+
     This class is a wrapper around the AsyncClient class that allows you to call async methods synchronously.
     This does not work for subscription based methods.
 
     This Client takes control of the event loop, which you can pass in.
 
-    One can find the function definition in the AsyncClient class.
 
     The AsyncClient is more performant and powerful, so it is recommended to use that class if possible.
-
-    Avoid adding functions or other attributes to this class unless you know what you are doing, because
-    the __getattribute__ method changes the behavior of the class in a way that is not intuitive.
-
-    Instead, add them to the AsyncClient class.
+    Avoid adding functions or other attributes to this class unless you know what you are doing.
     """
     api_key: str | None
     api_secret: str | None
@@ -57,6 +54,10 @@ class Client:
         will use the default asyncio event loop.
         """
     l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]]
+    def close(self) -> None:
+        """
+        Close the gRPC channel and GraphQL client.
+        """
     def refresh_jwt(self, force: bool = False):
         """
         Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).

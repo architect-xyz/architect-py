@@ -13,8 +13,7 @@ Important files:
 In addition, any new function should have a test included in test.py
 
 To run tests:
-`export $(cat pytest.env | xargs)`
-`pytest tests/*`
+`uv run pytest`
 
 ## Type Linting
 
