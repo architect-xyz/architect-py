@@ -4,14 +4,19 @@
   "type": "object",
   "required": [
     "connected",
+    "connections",
     "kind",
-    "last_heartbeat",
-    "last_heartbeat_stale_threshold",
-    "logged_in"
+    "stale"
   ],
   "properties": {
     "connected": {
       "type": "boolean"
+    },
+    "connections": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../definitions.json#/ConnectionStatus"
+      }
     },
     "instance": {
       "type": [
@@ -22,17 +27,14 @@
     "kind": {
       "type": "string"
     },
-    "last_heartbeat": {
-      "description": "UNIX epoch time or -1 for never",
-      "type": "integer",
-      "format": "int64"
-    },
-    "last_heartbeat_stale_threshold": {
-      "description": "Stale threshold in seconds, or -1 for never stale",
-      "type": "integer",
-      "format": "int64"
-    },
     "logged_in": {
+      "description": "Not applicable to cpty if None",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "stale": {
       "type": "boolean"
     }
   }

@@ -22,7 +22,18 @@ class Order(Struct, omit_defaults=True):
     src: Annotated[definitions.OrderSource, Meta(title="source")]
     tif: Annotated[TimeInForce, Meta(title="time_in_force")]
     tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
-    ts: Annotated[int, Meta(title="recv_time")]
+    ts: Annotated[
+        int,
+        Meta(
+            description="Timestamp that the Architect OMS first received the order.\n\nFor reconciled orders, this could be very far in the future relative to the exchange order timestamp.",
+            title="recv_time",
+        ),
+    ]
+    """
+    Timestamp that the Architect OMS first received the order.
+
+    For reconciled orders, this could be very far in the future relative to the exchange order timestamp.
+    """
     u: Annotated[definitions.UserId, Meta(title="trader")]
     ve: Annotated[str, Meta(title="execution_venue")]
     xq: Annotated[Decimal, Meta(title="filled_quantity")]

@@ -3,46 +3,45 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Optional
+from typing import Annotated, Dict, Optional
 
 from msgspec import Meta, Struct
+
+from .. import definitions
 
 
 class CptyStatus(Struct, omit_defaults=True):
     connected: bool
+    connections: Dict[str, definitions.ConnectionStatus]
     kind: str
-    last_heartbeat: Annotated[int, Meta(description="UNIX epoch time or -1 for never")]
-    """
-    UNIX epoch time or -1 for never
-    """
-    last_heartbeat_stale_threshold: Annotated[
-        int, Meta(description="Stale threshold in seconds, or -1 for never stale")
-    ]
-    """
-    Stale threshold in seconds, or -1 for never stale
-    """
-    logged_in: bool
+    stale: bool
     instance: Optional[str] = None
+    logged_in: Optional[
+        Annotated[Optional[bool], Meta(description="Not applicable to cpty if None")]
+    ] = None
+    """
+    Not applicable to cpty if None
+    """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         connected: bool,
+        connections: Dict[str, definitions.ConnectionStatus],
         kind: str,
-        last_heartbeat: int,
-        last_heartbeat_stale_threshold: int,
-        logged_in: bool,
+        stale: bool,
         instance: Optional[str] = None,
+        logged_in: Optional[bool] = None,
     ):
         return cls(
             connected,
+            connections,
             kind,
-            last_heartbeat,
-            last_heartbeat_stale_threshold,
-            logged_in,
+            stale,
             instance,
+            logged_in,
         )
 
     def __str__(self) -> str:
-        return f"CptyStatus(connected={self.connected},kind={self.kind},last_heartbeat={self.last_heartbeat},last_heartbeat_stale_threshold={self.last_heartbeat_stale_threshold},logged_in={self.logged_in},instance={self.instance})"
+        return f"CptyStatus(connected={self.connected},connections={self.connections},kind={self.kind},stale={self.stale},instance={self.instance},logged_in={self.logged_in})"

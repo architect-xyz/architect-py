@@ -182,6 +182,47 @@ class CandleWidth(int, Enum):
     OneDay = 86400
 
 
+class ConnectionStatus(Struct, omit_defaults=True):
+    connected: bool
+    last_heartbeat: Annotated[int, Meta(description="UNIX epoch time or -1 for never")]
+    """
+    UNIX epoch time or -1 for never
+    """
+    last_heartbeat_stale_threshold: Annotated[
+        int, Meta(description="Stale threshold in seconds, or -1 for never stale")
+    ]
+    """
+    Stale threshold in seconds, or -1 for never stale
+    """
+    logged_in: Optional[
+        Annotated[
+            Optional[bool], Meta(description="Not applicable to connection if None")
+        ]
+    ] = None
+    """
+    Not applicable to connection if None
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        connected: bool,
+        last_heartbeat: int,
+        last_heartbeat_stale_threshold: int,
+        logged_in: Optional[bool] = None,
+    ):
+        return cls(
+            connected,
+            last_heartbeat,
+            last_heartbeat_stale_threshold,
+            logged_in,
+        )
+
+    def __str__(self) -> str:
+        return f"ConnectionStatus(connected={self.connected},last_heartbeat={self.last_heartbeat},last_heartbeat_stale_threshold={self.last_heartbeat_stale_threshold},logged_in={self.logged_in})"
+
+
 class CptyLogoutRequest(Struct, omit_defaults=True):
     pass
 

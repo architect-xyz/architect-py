@@ -2106,6 +2106,36 @@
       }
     }
   },
+  "ConnectionStatus": {
+    "type": "object",
+    "required": [
+      "connected",
+      "last_heartbeat",
+      "last_heartbeat_stale_threshold"
+    ],
+    "properties": {
+      "connected": {
+        "type": "boolean"
+      },
+      "last_heartbeat": {
+        "description": "UNIX epoch time or -1 for never",
+        "type": "integer",
+        "format": "int64"
+      },
+      "last_heartbeat_stale_threshold": {
+        "description": "Stale threshold in seconds, or -1 for never stale",
+        "type": "integer",
+        "format": "int64"
+      },
+      "logged_in": {
+        "description": "Not applicable to connection if None",
+        "type": [
+          "boolean",
+          "null"
+        ]
+      }
+    }
+  },
   "AlgoOrderStatus": {
     "type": "integer",
     "enum": [

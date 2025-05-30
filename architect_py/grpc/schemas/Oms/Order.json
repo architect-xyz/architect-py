@@ -119,6 +119,7 @@
     },
     "ts": {
       "title": "recv_time",
+      "description": "Timestamp that the Architect OMS first received the order.\n\nFor reconciled orders, this could be very far in the future relative to the exchange order timestamp.",
       "type": "integer",
       "format": "int64"
     },
