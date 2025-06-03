@@ -2,7 +2,8 @@ import asyncio
 from decimal import Decimal
 
 from architect_py import OrderDir, OrderStatus, TradableProduct
-from examples.common import connect_async_client
+
+from .config import connect_async_client
 
 
 async def main():

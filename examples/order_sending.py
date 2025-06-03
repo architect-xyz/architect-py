@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from architect_py import AsyncClient, OrderDir, OrderType, TimeInForce, TradableProduct
-from examples.common import connect_async_client
+from examples.config import connect_async_client
 
 LOGGER = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from architect_py import AsyncClient, TradableProduct
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 
-from .common import connect_async_client
+from .config import connect_async_client
 
 buy_columns = "{:>15} {:>15} {:>15}"
 sell_columns = "{:<15} {:<15} {:<15}"

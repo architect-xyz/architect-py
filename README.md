@@ -23,7 +23,7 @@ Go to [FUNCTIONS.md](FUNCTIONS.md) file to see a catalog of methods.
 
 ## Examples
 
-Go to the [Examples](./examples) to see examples of a variety of common use cases.
+Go to the [Examples](./examples) to see examples of a variety of common use cases.  To run a specific example, use e.g. `python -m examples.orderflow_streaming`.
 
 ## Documentation 
 

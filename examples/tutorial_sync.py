@@ -5,7 +5,8 @@ from decimal import Decimal
 from architect_py import OrderDir, OrderStatus
 from architect_py.utils.nearest_tick import TickRoundMethod
 
-from .common import confirm, connect_client, print_book, print_open_orders
+from .config import connect_client
+from .termutils import confirm, print_book, print_open_orders
 
 c = connect_client()
 

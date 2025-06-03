@@ -3,7 +3,7 @@ import asyncio
 from architect_py import AsyncClient, CandleWidth, TradableProduct
 from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 
-from .common import connect_async_client
+from .config import connect_async_client
 
 
 async def main():

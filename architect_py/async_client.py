@@ -1382,28 +1382,16 @@ class AsyncClient:
 
         Example:
             ```python
-            async for of in client.stream_orderflow(account, execution_venue, trader):
-                print(of)
+            async for event in client.stream_orderflow(account, execution_venue, trader):
+                print(event)
             ```
         """
         grpc_client = await self.core()
-        request: SubscribeOrderflowRequest = SubscribeOrderflowRequest(
+        req: SubscribeOrderflowRequest = SubscribeOrderflowRequest(
             account=account, execution_venue=execution_venue, trader=trader
         )
-        grpc_client = await self.core()
-        decoder = grpc_client.get_decoder(SubscribeOrderflowRequest)
-        stub: grpc.aio.UnaryStreamMultiCallable[
-            SubscribeOrderflowRequest, Orderflow
-        ] = grpc_client.channel.unary_stream(
-            SubscribeOrderflowRequest.get_route(),
-            request_serializer=grpc_client.encoder().encode,
-            response_deserializer=decoder.decode,
-        )
-        call: grpc.aio._base_call.UnaryStreamCall[
-            SubscribeOrderflowRequest, Orderflow
-        ] = stub(request, metadata=(("authorization", f"Bearer {grpc_client.jwt}"),))
-        async for update in call:
-            yield update
+        async for res in grpc_client.unary_stream(req):  # type: ignore
+            yield res
 
     # ------------------------------------------------------------
     # Order entry

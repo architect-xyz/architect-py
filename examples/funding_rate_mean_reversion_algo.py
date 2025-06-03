@@ -24,7 +24,7 @@ from architect_py.grpc.models.Orderflow.OrderflowRequest import (
     PlaceOrder,
 )
 
-from .common import connect_async_client
+from .config import connect_async_client
 
 venue = "BINANCE"
 product = "BTC-USDT Perpetual"
