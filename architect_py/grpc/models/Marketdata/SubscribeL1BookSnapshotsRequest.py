@@ -10,6 +10,17 @@ from msgspec import Meta, Struct
 
 
 class SubscribeL1BookSnapshotsRequest(Struct, omit_defaults=True):
+    send_initial_snapshots: Optional[
+        Annotated[
+            bool,
+            Meta(
+                description="If true, send an initial snapshot to subscribers on symbol subscription"
+            ),
+        ]
+    ] = False
+    """
+    If true, send an initial snapshot to subscribers on symbol subscription
+    """
     symbols: Optional[
         Annotated[
             List[str],
@@ -25,16 +36,18 @@ class SubscribeL1BookSnapshotsRequest(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        send_initial_snapshots: Optional[bool] = False,
         symbols: Optional[List[str]] = None,
         venue: Optional[str] = None,
     ):
         return cls(
+            send_initial_snapshots,
             symbols,
             venue,
         )
 
     def __str__(self) -> str:
-        return f"SubscribeL1BookSnapshotsRequest(symbols={self.symbols},venue={self.venue})"
+        return f"SubscribeL1BookSnapshotsRequest(send_initial_snapshots={self.send_initial_snapshots},symbols={self.symbols},venue={self.venue})"
 
     @staticmethod
     def get_response_type():
