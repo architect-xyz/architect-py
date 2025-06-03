@@ -1,7 +1,7 @@
 # 5.1.2
 - paper trading mode now CORRECTLY sets the port automatically
 - fixed get_front_future
-- place_orders is a new low level function oto place multple orders in a single function
+- place_orders is a new low level function oto place multiple orders in a single function
 
 
 # 5.1.1
