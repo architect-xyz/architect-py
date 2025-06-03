@@ -46,6 +46,8 @@ async def main():
     except ValidationError as e:
         print(e)
 
+    await c.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

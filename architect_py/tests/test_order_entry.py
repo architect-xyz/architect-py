@@ -34,3 +34,5 @@ async def test_place_limit_order(async_client: AsyncClient):
     assert order is not None
     await asyncio.sleep(1)
     await async_client.cancel_order(order.id)
+
+    await async_client.close()

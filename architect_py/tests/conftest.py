@@ -29,7 +29,7 @@ def is_truthy(value: str | None) -> bool:
     return value is not None and value.lower() in ("1", "true", "yes")
 
 
-class TestEnvironment:
+class GetEnvironment:
     @classmethod
     def from_env(cls):
         endpoint = os.getenv("ARCHITECT_ENDPOINT")
@@ -80,7 +80,7 @@ class TestEnvironment:
 @pytest_asyncio.fixture
 async def async_client() -> AsyncClient:
     load_dotenv()
-    test_env = TestEnvironment.from_env()
+    test_env = GetEnvironment.from_env()
     async_client = await AsyncClient.connect(
         api_key=test_env.api_key,
         api_secret=test_env.api_secret,

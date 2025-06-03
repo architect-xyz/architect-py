@@ -24,5 +24,7 @@ async def main():
         print(e.status_code)
         print(e.response.json())
 
+    await c.close()
+
 
 asyncio.run(main())

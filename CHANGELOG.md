@@ -1,7 +1,12 @@
+# 5.1.2
+- paper trading mode now CORRECTLY sets the port automatically
+- fixed get_front_future
+- place_orders is a new low level function oto place multple orders in a single function
+
+
 # 5.1.1
 This patch contains only fixes:
 - paper trading mode now sets the port automatically
-- fixed the sync client instantiation in scripts
 - fixed sys.excepthook when a script closes via the Client.close() function. This is cosmetic though and is for reducing log lines.
 - fix serializing TradableProduct vs str
 

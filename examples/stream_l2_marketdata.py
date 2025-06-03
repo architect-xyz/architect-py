@@ -33,5 +33,7 @@ async def main():
     venue = "CME"
     await print_l2_book(c, market_symbol, venue=venue)
 
+    await c.close()
+
 
 asyncio.run(main())

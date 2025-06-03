@@ -43,7 +43,7 @@ from architect_py.grpc.models.Orderflow.OrderflowRequest import (
     OrderflowRequest_route,
     OrderflowRequestUnannotatedResponseType,
 )
-from architect_py.grpc.resolve_endpoint import resolve_endpoint
+from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT, resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side
 from architect_py.utils.pandas import candles_to_dataframe
@@ -112,7 +112,7 @@ class AsyncClient:
         # Sanity check paper trading on prod environments
         if paper_trading:
             if grpc_host == "app.architect.co" or grpc_host == "staging.architect.co":
-                if grpc_port != 10081:
+                if grpc_port != PAPER_GRPC_PORT:
                     raise ValueError("Wrong gRPC port for paper trading")
                 if graphql_port is not None and graphql_port != 5678:
                     raise ValueError("Wrong GraphQL port for paper trading")
@@ -184,6 +184,13 @@ class AsyncClient:
     async def close(self):
         """
         Close the gRPC channel and GraphQL client.
+
+        This fixes the:
+        Error in sys.excepthook:
+
+        Original exception was:
+
+        One might get when closing the client
         """
         if self.grpc_core is not None:
             await self.grpc_core.close()
@@ -524,34 +531,51 @@ class AsyncClient:
         if not series_symbol.endswith("Futures"):
             raise ValueError("series_symbol must end with 'Futures'")
         res = await self.graphql_client.get_future_series_query(series_symbol)
-        return res.futures_series
+
+        today = date.today()
+
+        futures = [
+            future
+            for future in res.futures_series
+            if (exp := nominative_expiration(future)) is not None and exp > today
+        ]
+        futures.sort()
+
+        return futures
 
     async def get_front_future(
-        self, series_symbol: str, venue: str, by_volume: bool = True
-    ) -> str:
+        self, series_symbol: str, venue: Optional[str] = None
+    ) -> TradableProduct:
         """
-        Gets the future with the most volume in a series.
+        Gets the front future.
+        ** If the venue is provided, it will return the future with the most volume in that venue**
+        Otherwise, will sort by expiration date and return the earliest future.
+
+        ** Note that this function returns a TradableProduct (ie with a base and a quote)
+
 
         Args:
             series_symbol: the futures series
                 e.g. "ES CME Futures" would yield the lead future for the ES series
             venue: the venue to get the lead future for, e.g. "CME"
-            by_volume: if True, sort by volume; otherwise sort by expiration date
+                ** If the venue is provided, it will return the future with the most volume in that venue**
 
         Returns:
             The lead future symbol
         """
         futures = await self.get_futures_series(series_symbol)
-        if not by_volume:
+        if not venue:
             futures.sort()
-            return futures[0]
+            return TradableProduct(futures[0], "USD")
         else:
             grpc_client = await self.marketdata(venue)
             req = TickersRequest(
-                symbols=futures, k=SortTickersBy.VOLUME_DESC, venue=venue
+                symbols=[TradableProduct(f"{future}/USD") for future in futures],
+                k=SortTickersBy.VOLUME_DESC,
+                venue=venue,
             )
             res: TickersResponse = await grpc_client.unary_unary(req)
-            return res.tickers[0].symbol
+            return TradableProduct(res.tickers[0].symbol)
 
     @staticmethod
     def get_expiration_from_CME_name(name: str) -> Optional[date]:
@@ -1358,8 +1382,7 @@ class AsyncClient:
 
         Example:
             ```python
-            request = SubscribeOrderflowRequest.new()
-            async for of in client.subscribe_orderflow_stream(request):
+            async for of in client.stream_orderflow(account, execution_venue, trader):
                 print(of)
             ```
         """
@@ -1395,6 +1418,48 @@ class AsyncClient:
         @deprecated(reason="Use place_limit_order instead")
         """
         return await self.place_limit_order(*args, **kwargs)
+
+    async def place_orders(
+        self, order_requests: Sequence[PlaceOrderRequest]
+    ) -> list[Order]:
+        """
+        A low level function to place multiple orders in a single function.
+
+        This function does NOT check the validity of the parameters, so it is the user's responsibility
+        to ensure that the orders are valid and will not be rejected by the OMS.
+
+        Args:
+            order_request: the PlaceOrderRequest containing the orders to place
+
+
+        Example of a PlaceOrderRequest:
+            order_request: PlaceOrderRequest = PlaceOrderRequest.new(
+                dir=dir,
+                quantity=quantity,
+                symbol=symbol,
+                time_in_force=time_in_force,
+                limit_price=limit_price,
+                order_type=order_type,
+                account=account,
+                id=id,
+                parent_id=None,
+                source=OrderSource.API,
+                trader=trader,
+                execution_venue=execution_venue,
+                post_only=post_only,
+                trigger_price=trigger_price,
+            )
+        """
+        grpc_client = await self.core()
+
+        res = await asyncio.gather(
+            *[
+                grpc_client.unary_unary(order_request)
+                for order_request in order_requests
+            ]
+        )
+
+        return res
 
     async def place_limit_order(
         self,
@@ -1626,11 +1691,13 @@ class AsyncClient:
             if cancel.reject_reason is not None:
                 return False
         return True
-        grpc_client = await self.core()
-        req = CancelAllOrdersRequest(
-            account=account,
-            execution_venue=execution_venue,
-            trader=trader,
-        )
-        res = await grpc_client.unary_unary(req)
-        return res
+        # grpc_client = await self.core()
+
+        # req = CancelAllOrdersRequest(
+        #     id=str(uuid.uuid4()),  # Unique ID for the request
+        #     account=account,
+        #     execution_venue=execution_venue,
+        #     trader=trader,
+        # )
+        # res = await grpc_client.unary_unary(req)
+        # return True

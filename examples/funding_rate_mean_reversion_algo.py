@@ -184,6 +184,7 @@ async def main():
         print_info(c),
         subscribe_and_print_orderflow(c, orderflow_requester),
     )
+    await c.close()
 
 
 asyncio.run(main())

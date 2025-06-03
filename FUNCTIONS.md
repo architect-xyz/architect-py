@@ -23,7 +23,7 @@
 - **`get_execution_info`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_execution_infos`**: Get information about tradable product execution, e.g. tick_size,
 - **`get_futures_series`**: List all futures in a given series.
-- **`get_front_future`**: Gets the future with the most volume in a series.
+- **`get_front_future`**: Gets the front future.
 - **`get_cme_future_from_root_month_year`**: Get the symbol for a CME future from the root, month, and year.
 
 ---
@@ -69,6 +69,7 @@
 
 ### 📣 Order entry
 
+- **`place_orders`**: A low level function to place multiple orders in a single function.
 - **`place_limit_order`**: Sends a regular limit order.
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.
 - **`cancel_order`**: Cancels an order by order id.

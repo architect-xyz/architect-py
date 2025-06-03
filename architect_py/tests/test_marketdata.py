@@ -18,6 +18,7 @@ async def test_get_market_status(async_client: AsyncClient, venue: str, symbol: 
     assert market_status is not None
     # CR alee: this is broken upstream
     # assert market_status.is_trading
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -35,6 +36,7 @@ async def test_get_historical_candles(
         symbol, venue, CandleWidth.OneHour, start - timedelta(hours=24), start
     )
     assert len(candles) > 0
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -49,6 +51,7 @@ async def test_get_l1_book_snapshot(async_client: AsyncClient, venue: str, symbo
     assert snap is not None
     assert snap.best_bid is not None
     assert snap.best_ask is not None
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -63,6 +66,7 @@ async def test_get_l2_book_snapshot(async_client: AsyncClient, venue: str, symbo
     assert snap is not None
     assert len(snap.bids) > 0
     assert len(snap.asks) > 0
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -76,6 +80,7 @@ async def test_get_ticker(async_client: AsyncClient, venue: str, symbol: str):
     ticker = await async_client.get_ticker(symbol, venue)
     assert ticker is not None
     assert ticker.last_price is not None
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -96,6 +101,7 @@ async def test_stream_l1_book_snapshots(
         i += 1
         if i > 20:
             break
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -132,6 +138,7 @@ async def test_stream_l2_book_updates(
         i += 1
         if i > 20:
             break
+    await async_client.close()
 
 
 @pytest.mark.asyncio
@@ -148,6 +155,8 @@ async def test_stream_trades(async_client: AsyncClient, venue: str, symbol: str)
         i += 1
         if i > 20:
             break
+
+    await async_client.close()
 
 
 # @pytest.mark.asyncio

@@ -79,6 +79,8 @@ async def main():
         print(f"Order was filled for qty: {order.filled_quantity}")
         print(f"Average execution price: {order.average_fill_price}")
 
+    await c.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

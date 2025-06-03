@@ -11,7 +11,7 @@ from architect_py.graphql_client.fragments import ExecutionInfoFields as Executi
 from architect_py.grpc.client import GrpcClient as GrpcClient
 from architect_py.grpc.models.Orderflow.OrderflowRequest import OrderflowRequestUnannotatedResponseType as OrderflowRequestUnannotatedResponseType, OrderflowRequest_route as OrderflowRequest_route
 from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, TraderIdOrEmail as TraderIdOrEmail
-from architect_py.grpc.resolve_endpoint import resolve_endpoint as resolve_endpoint
+from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side as update_orderbook_side
 from architect_py.utils.pandas import candles_to_dataframe as candles_to_dataframe
@@ -57,6 +57,13 @@ class Client:
     def close(self) -> None:
         """
         Close the gRPC channel and GraphQL client.
+
+        This fixes the:
+        Error in sys.excepthook:
+
+        Original exception was:
+
+        One might get when closing the client
         """
     def refresh_jwt(self, force: bool = False):
         """
@@ -210,15 +217,20 @@ class Client:
         Returns:
             List of futures products
         '''
-    def get_front_future(self, series_symbol: str, venue: str, by_volume: bool = True) -> str:
+    def get_front_future(self, series_symbol: str, venue: str | None = None) -> TradableProduct:
         '''
-        Gets the future with the most volume in a series.
+        Gets the front future.
+        ** If the venue is provided, it will return the future with the most volume in that venue**
+        Otherwise, will sort by expiration date and return the earliest future.
+
+        ** Note that this function returns a TradableProduct (ie with a base and a quote)
+
 
         Args:
             series_symbol: the futures series
                 e.g. "ES CME Futures" would yield the lead future for the ES series
             venue: the venue to get the lead future for, e.g. "CME"
-            by_volume: if True, sort by volume; otherwise sort by expiration date
+                ** If the venue is provided, it will return the future with the most volume in that venue**
 
         Returns:
             The lead future symbol
@@ -436,6 +448,35 @@ class Client:
         '''
         @deprecated(reason="Use place_limit_order instead")
         '''
+    def place_orders(self, order_requests: Sequence[PlaceOrderRequest]) -> list[Order]:
+        """
+        A low level function to place multiple orders in a single function.
+
+        This function does NOT check the validity of the parameters, so it is the user's responsibility
+        to ensure that the orders are valid and will not be rejected by the OMS.
+
+        Args:
+            order_request: the PlaceOrderRequest containing the orders to place
+
+
+        Example of a PlaceOrderRequest:
+            order_request: PlaceOrderRequest = PlaceOrderRequest.new(
+                dir=dir,
+                quantity=quantity,
+                symbol=symbol,
+                time_in_force=time_in_force,
+                limit_price=limit_price,
+                order_type=order_type,
+                account=account,
+                id=id,
+                parent_id=None,
+                source=OrderSource.API,
+                trader=trader,
+                execution_venue=execution_venue,
+                post_only=post_only,
+                trigger_price=trigger_price,
+            )
+        """
     def place_limit_order(self, *, id: OrderId | None = None, symbol: TradableProduct | str, execution_venue: str | None = None, dir: OrderDir | None = None, quantity: Decimal, limit_price: Decimal, order_type: OrderType = ..., time_in_force: TimeInForce = ..., price_round_method: TickRoundMethod | None = None, account: str | None = None, trader: str | None = None, post_only: bool = False, trigger_price: Decimal | None = None, **kwargs: Any) -> Order:
         '''
         Sends a regular limit order.

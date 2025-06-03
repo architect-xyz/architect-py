@@ -104,6 +104,8 @@ async def main():
     await test_send_order(client, account)
     await test_send_market_pro_order(client, account)
 
+    await client.close()
+
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()

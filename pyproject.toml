@@ -62,3 +62,9 @@ extend-exclude = [
 [tool.ruff.lint]
 ignore = ["F403", "F405"]
 select = ["E4", "E7", "E9", "F", "I"]
+
+
+[project.urls]
+Homepage = "https://www.architect.co/brokerage/overview"
+Documentation = "https://docs.architect.co"
+Repository = "https://github.com/architect-xyz/architect-py"

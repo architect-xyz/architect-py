@@ -7,6 +7,8 @@ import dns.asyncresolver
 import dns.resolver
 from dns.rdtypes.IN.SRV import SRV
 
+PAPER_GRPC_PORT = 10081
+
 
 async def resolve_endpoint(
     endpoint: str, paper_trading: bool = True
@@ -72,6 +74,6 @@ async def resolve_endpoint(
     port = record.port
     if paper_trading:
         if "app.architect.co" in host or "staging.architect.co" in host:
-            port = 10080
+            port = PAPER_GRPC_PORT
 
     return host, port, use_ssl

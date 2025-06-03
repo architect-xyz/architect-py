@@ -92,3 +92,6 @@ elif order.status is OrderStatus.Canceled:
 elif order.status is OrderStatus.Out:
     print(f"Order was filled for qty: {order.filled_quantity}")
     print(f"Average execution price: {order.average_fill_price}")
+
+
+c.close()

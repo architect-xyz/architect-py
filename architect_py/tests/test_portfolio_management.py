@@ -21,3 +21,5 @@ async def test_get_account_summary(async_client: AsyncClient):
     assert summary.balances is not None
     assert len(summary.balances) > 0
     assert summary.positions is not None
+
+    await async_client.close()

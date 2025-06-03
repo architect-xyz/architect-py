@@ -67,6 +67,26 @@ async def test_get_cme_future_from_root_month_year(async_client: AsyncClient):
         "future base name does not match regex"
     )
 
+    await async_client.close()
+
+
+@pytest.mark.asyncio
+async def test_get_front_future(async_client: AsyncClient):
+    """
+    Test that we can get the front future for a given series.
+    """
+    series_name = "ES CME Futures"
+    front_future = await async_client.get_front_future(series_name, "CME")
+    assert front_future is not None, "front future is None"
+    assert re.match(r"ES \d* CME Future", front_future), (
+        "front future base name does not match regex"
+    )
+    front_future = await async_client.get_front_future(series_name)
+    assert front_future is not None, "front future is None"
+    assert re.match(r"ES \d* CME Future", front_future), (
+        "front future base name does not match regex"
+    )
+
 
 def add_one_month_to_datetime(dt: datetime):
     if dt.month == 12:

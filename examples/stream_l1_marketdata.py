@@ -20,5 +20,7 @@ async def main():
             best_ask_s = f"{snap.best_ask[0]} x {snap.best_ask[1]}"  # price x size
         print(f"{snap.symbol} {snap.timestamp} {best_bid_s} {best_ask_s}")
 
+    await c.close()
+
 
 asyncio.run(main())
