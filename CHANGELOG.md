@@ -1,3 +1,6 @@
+# 5.1.3
+- Fix stream_orderflow endpoint
+
 # 5.1.2
 - paper trading mode now CORRECTLY sets the port automatically
 - fixed get_front_future
