@@ -27,16 +27,21 @@ async def send_orders(client: AsyncClient):
         if snap.best_ask is not None:
             limit_price = snap.best_ask[0]
             print(f"\nPlacing buy order at {limit_price}\n")
-            req = PlaceOrderRequest(
-                symbol=symbol,
-                execution_venue="CME",
-                dir=OrderDir.BUY,
-                quantity=Decimal(1),
-                limit_price=limit_price,
-                post_only=True,
-            )
-            print(f"req={req}")
-            yield PlaceOrder(req)
+            try:
+                req = PlaceOrderRequest.new(
+                    symbol=symbol,
+                    execution_venue="CME",
+                    dir=OrderDir.BUY,
+                    quantity=Decimal(1),
+                    limit_price=limit_price,
+                    post_only=True,
+                    time_in_force="DAY",
+                    order_type="LIMIT",
+                )
+                print(f"req={req}")
+                yield PlaceOrder(req)
+            except Exception as e:
+                print(f"Error placing order: {e}")
         else:
             print("\nNo ask price from snapshot, doing nothing\n")
 
