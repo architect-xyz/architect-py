@@ -39,7 +39,7 @@ async def send_orders(client: AsyncClient):
                     order_type="LIMIT",
                 )
                 print(f"req={req}")
-                yield PlaceOrder(req)
+                yield req
             except Exception as e:
                 print(f"Error placing order: {e}")
         else:
