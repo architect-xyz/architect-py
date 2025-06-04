@@ -364,7 +364,9 @@ class AsyncClient:
             "as of v5.0.0: enable_orderflow is deprecated; orderflow is enabled by default"
         )
 
-    async def cpty_status(self, kind: str, instance: Optional[str] = None) -> CptyStatus:
+    async def cpty_status(
+        self, kind: str, instance: Optional[str] = None
+    ) -> CptyStatus:
         """
         Get cpty status.
         """
