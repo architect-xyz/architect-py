@@ -364,6 +364,15 @@ class AsyncClient:
             "as of v5.0.0: enable_orderflow is deprecated; orderflow is enabled by default"
         )
 
+    async def cpty_status(self, kind: str, instance: Optional[str] = None) -> CptyStatus:
+        """
+        Get cpty status.
+        """
+        grpc_client = await self.core()
+        req = CptyStatusRequest(kind=kind, instance=instance)
+        res: CptyStatus = await grpc_client.unary_unary(req)
+        return res
+
     # ------------------------------------------------------------
     # Symbology
     # ------------------------------------------------------------
