@@ -11,6 +11,7 @@
 - **`hmart`**: Get the hmart (historical marketdata service) client.
 - **`core`**: Get the core client.
 - **`who_am_i`**: Gets the user_id and user_email for the user that the API key belongs to.
+- **`cpty_status`**: Get cpty status.
 
 ---
 

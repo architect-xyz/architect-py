@@ -118,6 +118,10 @@ class Client:
         Returns:
             (user_id, user_email)
         """
+    def cpty_status(self, kind: str, instance: str | None = None) -> CptyStatus:
+        """
+        Get cpty status.
+        """
     def list_symbols(self, *, marketdata: Venue | None = None) -> list[str]:
         """
         List all symbols.
