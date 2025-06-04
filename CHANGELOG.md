@@ -1,5 +1,6 @@
 # 5.1.3
 - Fix stream_orderflow endpoint
+- Add cpty_status endpoint
 
 # 5.1.2
 - paper trading mode now CORRECTLY sets the port automatically
