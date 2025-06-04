@@ -13,6 +13,7 @@ from .. import definitions
 
 class TickersRequest(Struct, omit_defaults=True):
     i: Optional[Annotated[Optional[int], Meta(title="offset")]] = None
+    include_options: Optional[bool] = None
     k: Optional[
         Annotated[Optional[definitions.SortTickersBy], Meta(title="sort_by")]
     ] = None
@@ -25,6 +26,7 @@ class TickersRequest(Struct, omit_defaults=True):
     def new(
         cls,
         offset: Optional[int] = None,
+        include_options: Optional[bool] = None,
         sort_by: Optional[definitions.SortTickersBy] = None,
         limit: Optional[int] = None,
         symbols: Optional[List[str]] = None,
@@ -32,6 +34,7 @@ class TickersRequest(Struct, omit_defaults=True):
     ):
         return cls(
             offset,
+            include_options,
             sort_by,
             limit,
             symbols,
@@ -39,7 +42,7 @@ class TickersRequest(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"TickersRequest(offset={self.i},sort_by={self.k},limit={self.n},symbols={self.symbols},venue={self.venue})"
+        return f"TickersRequest(offset={self.i},include_options={self.include_options},sort_by={self.k},limit={self.n},symbols={self.symbols},venue={self.venue})"
 
     @property
     def offset(self) -> Optional[int]:

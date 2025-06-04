@@ -11,6 +11,12 @@
       ],
       "format": "int32"
     },
+    "include_options": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "k": {
       "title": "sort_by",
       "anyOf": [
