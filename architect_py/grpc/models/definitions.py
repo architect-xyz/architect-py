@@ -454,6 +454,7 @@ class OrderRejectReason(str, Enum):
     InsufficientCash = "InsufficientCash"
     InsufficientMargin = "InsufficientMargin"
     NotEasyToBorrow = "NotEasyToBorrow"
+    InvalidOrder = "InvalidOrder"
     Unknown = "Unknown"
 
 

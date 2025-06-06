@@ -100,6 +100,7 @@ scalar Uuid
 
 type ExecutionInfo {
   symbol: String!
+  exchangeSymbol: String
   executionVenue: ExecutionVenue!
   tickSize: Decimal
   stepSize: Decimal!
