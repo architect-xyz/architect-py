@@ -153,6 +153,8 @@ type SymbologyQueryRoot {
 type UserQueryRoot {
   userId: UserId!
   userEmail: String!
+  firstName: String
+  lastName: String
   canDebugAsUser: Boolean!
   debuggingAsUser: String
 }
