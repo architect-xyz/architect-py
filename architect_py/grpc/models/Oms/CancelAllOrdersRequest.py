@@ -46,7 +46,7 @@ class CancelAllOrdersRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Oms/CancelAllOrders"
+        return "/architect.Oms/CancelAllOrders"
 
     @staticmethod
     def get_rpc_method():

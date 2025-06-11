@@ -33,7 +33,7 @@ class WithdrawalsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Boss/Withdrawals"
+        return "/architect.Boss/Withdrawals"
 
     @staticmethod
     def get_rpc_method():

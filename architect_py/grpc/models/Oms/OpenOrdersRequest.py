@@ -52,7 +52,7 @@ class OpenOrdersRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Oms/OpenOrders"
+        return "/architect.Oms/OpenOrders"
 
     @staticmethod
     def get_rpc_method():

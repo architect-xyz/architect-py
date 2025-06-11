@@ -66,7 +66,7 @@ class HistoricalFillsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Folio/HistoricalFills"
+        return "/architect.Folio/HistoricalFills"
 
     @staticmethod
     def get_rpc_method():

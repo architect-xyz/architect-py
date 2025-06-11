@@ -24,7 +24,7 @@
       "format": "date-time"
     }
   },
-  "route": "/json.architect.Folio/AccountHistory",
+  "route": "/architect.Folio/AccountHistory",
   "rpc_method": "unary",
   "service": "Folio",
   "response_type": "AccountHistoryResponse"

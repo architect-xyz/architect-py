@@ -46,7 +46,7 @@
       ]
     }
   },
-  "route": "/json.architect.Oms/PendingCancels",
+  "route": "/architect.Oms/PendingCancels",
   "rpc_method": "unary",
   "service": "Oms",
   "response_type": "PendingCancelsResponse"

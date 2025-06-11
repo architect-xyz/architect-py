@@ -34,7 +34,7 @@
       ]
     }
   },
-  "route": "/json.architect.Orderflow/SubscribeOrderflow",
+  "route": "/architect.Orderflow/SubscribeOrderflow",
   "rpc_method": "stream",
   "service": "Orderflow",
   "response_type": "Orderflow"

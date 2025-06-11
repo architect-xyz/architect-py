@@ -50,7 +50,7 @@ class AccountsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Accounts/Accounts"
+        return "/architect.Accounts/Accounts"
 
     @staticmethod
     def get_rpc_method():

@@ -35,7 +35,7 @@ class SubscribeLiquidationsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/SubscribeLiquidations"
+        return "/architect.Marketdata/SubscribeLiquidations"
 
     @staticmethod
     def get_rpc_method():

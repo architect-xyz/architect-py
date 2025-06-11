@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "SubscribeSymbology",
   "type": "object",
-  "route": "/json.architect.Symbology/SubscribeSymbology",
+  "route": "/architect.Symbology/SubscribeSymbology",
   "rpc_method": "stream",
   "service": "Symbology",
   "response_type": "SymbologyUpdate"

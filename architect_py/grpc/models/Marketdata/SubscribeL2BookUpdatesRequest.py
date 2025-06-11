@@ -42,7 +42,7 @@ class SubscribeL2BookUpdatesRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/SubscribeL2BookUpdates"
+        return "/architect.Marketdata/SubscribeL2BookUpdates"
 
     @staticmethod
     def get_rpc_method():

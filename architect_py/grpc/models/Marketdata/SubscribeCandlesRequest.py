@@ -51,7 +51,7 @@ class SubscribeCandlesRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/SubscribeCandles"
+        return "/architect.Marketdata/SubscribeCandles"
 
     @staticmethod
     def get_rpc_method():

@@ -40,7 +40,7 @@ class CreateJwtRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Auth/CreateJwt"
+        return "/architect.Auth/CreateJwt"
 
     @staticmethod
     def get_rpc_method():

@@ -17,7 +17,7 @@
       }
     }
   },
-  "route": "/json.architect.Symbology/UploadProductCatalog",
+  "route": "/architect.Symbology/UploadProductCatalog",
   "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "UploadProductCatalogResponse"

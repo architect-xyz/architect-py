@@ -37,7 +37,7 @@
       ]
     }
   },
-  "route": "/json.architect.Oms/CancelAllOrders",
+  "route": "/architect.Oms/CancelAllOrders",
   "rpc_method": "unary",
   "service": "Oms",
   "response_type": "CancelAllOrdersResponse"

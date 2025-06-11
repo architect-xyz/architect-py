@@ -30,7 +30,7 @@ class CptysRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Cpty/Cptys"
+        return "/architect.Cpty/Cptys"
 
     @staticmethod
     def get_rpc_method():

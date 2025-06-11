@@ -44,7 +44,7 @@ class AccountHistoryRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Folio/AccountHistory"
+        return "/architect.Folio/AccountHistory"
 
     @staticmethod
     def get_rpc_method():

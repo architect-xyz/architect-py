@@ -51,7 +51,7 @@ class HistoricalCandlesRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/HistoricalCandles"
+        return "/architect.Marketdata/HistoricalCandles"
 
     @staticmethod
     def get_rpc_method():

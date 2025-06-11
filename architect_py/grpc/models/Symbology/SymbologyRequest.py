@@ -30,7 +30,7 @@ class SymbologyRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Symbology/Symbology"
+        return "/architect.Symbology/Symbology"
 
     @staticmethod
     def get_rpc_method():

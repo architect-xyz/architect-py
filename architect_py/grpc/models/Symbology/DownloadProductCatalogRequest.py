@@ -35,7 +35,7 @@ class DownloadProductCatalogRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Symbology/DownloadProductCatalog"
+        return "/architect.Symbology/DownloadProductCatalog"
 
     @staticmethod
     def get_rpc_method():

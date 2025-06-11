@@ -52,7 +52,7 @@
       ]
     }
   },
-  "route": "/json.architect.Marketdata/Tickers",
+  "route": "/architect.Marketdata/Tickers",
   "rpc_method": "unary",
   "service": "Marketdata",
   "response_type": "TickersResponse"

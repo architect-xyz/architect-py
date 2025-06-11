@@ -139,7 +139,7 @@
       "$ref": "../definitions.json#/OrderType"
     }
   },
-  "route": "/json.architect.Oms/PlaceOrder",
+  "route": "/architect.Oms/PlaceOrder",
   "rpc_method": "unary",
   "service": "Oms",
   "response_type": "Order",

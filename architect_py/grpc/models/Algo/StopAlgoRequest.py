@@ -35,7 +35,7 @@ class StopAlgoRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Algo/StopAlgo"
+        return "/architect.Algo/StopAlgo"
 
     @staticmethod
     def get_rpc_method():

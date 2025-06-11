@@ -72,7 +72,7 @@
       ]
     }
   },
-  "route": "/json.architect.Folio/HistoricalOrders",
+  "route": "/architect.Folio/HistoricalOrders",
   "rpc_method": "unary",
   "service": "Folio",
   "response_type": "HistoricalOrdersResponse"

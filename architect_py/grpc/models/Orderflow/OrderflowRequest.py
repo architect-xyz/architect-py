@@ -62,4 +62,4 @@ OrderflowRequestUnannotatedResponseType = (
     | TaggedFill
     | TaggedAberrantFill
 )
-OrderflowRequest_route = "/json.architect.Orderflow/Orderflow"
+OrderflowRequest_route = "/architect.Orderflow/Orderflow"

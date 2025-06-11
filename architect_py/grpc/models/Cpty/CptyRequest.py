@@ -65,4 +65,4 @@ CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
     Symbology | ReconcileOrder | ReconcileOpenOrders | UpdateAccountSummary
 )
-CptyRequest_route = "/json.architect.Cpty/Cpty"
+CptyRequest_route = "/architect.Cpty/Cpty"

@@ -42,7 +42,7 @@
       ]
     }
   },
-  "route": "/json.architect.Algo/CreateAlgoOrder",
+  "route": "/architect.Algo/CreateAlgoOrder",
   "rpc_method": "unary",
   "service": "Algo",
   "response_type": "AlgoOrder"

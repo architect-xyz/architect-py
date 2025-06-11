@@ -38,7 +38,7 @@ class L2BookSnapshotRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/L2BookSnapshot"
+        return "/architect.Marketdata/L2BookSnapshot"
 
     @staticmethod
     def get_rpc_method():

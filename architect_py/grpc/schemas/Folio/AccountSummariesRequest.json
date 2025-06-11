@@ -24,7 +24,7 @@
       ]
     }
   },
-  "route": "/json.architect.Folio/AccountSummaries",
+  "route": "/architect.Folio/AccountSummaries",
   "rpc_method": "unary",
   "service": "Folio",
   "response_type": "AccountSummariesResponse"

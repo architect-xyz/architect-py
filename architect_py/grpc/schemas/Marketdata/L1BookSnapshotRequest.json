@@ -16,7 +16,7 @@
       ]
     }
   },
-  "route": "/json.architect.Marketdata/L1BookSnapshot",
+  "route": "/architect.Marketdata/L1BookSnapshot",
   "rpc_method": "unary",
   "service": "Marketdata",
   "response_type": "L1BookSnapshot"

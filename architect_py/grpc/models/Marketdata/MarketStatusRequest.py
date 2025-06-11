@@ -38,7 +38,7 @@ class MarketStatusRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Marketdata/MarketStatus"
+        return "/architect.Marketdata/MarketStatus"
 
     @staticmethod
     def get_rpc_method():

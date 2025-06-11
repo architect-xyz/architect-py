@@ -29,7 +29,7 @@
       ]
     }
   },
-  "route": "/json.architect.Marketdata/SubscribeCurrentCandles",
+  "route": "/architect.Marketdata/SubscribeCurrentCandles",
   "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "Candle"

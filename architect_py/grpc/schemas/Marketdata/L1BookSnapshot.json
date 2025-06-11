@@ -46,7 +46,7 @@
     },
     "rt": {
       "title": "recv_time",
-      "description": "Time that Architect feed received the message; only set if streaming from direct L1 feeds",
+      "description": "Time that Architect feed received the message that updated the BBO",
       "type": [
         "integer",
         "null"
@@ -73,6 +73,7 @@
     },
     "ts": {
       "title": "timestamp",
+      "description": "Time that the exchange stamped the message",
       "type": "integer",
       "format": "int64"
     }

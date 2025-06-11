@@ -16,7 +16,7 @@
       "type": "string"
     }
   },
-  "route": "/json.architect.Symbology/ExecutionInfo",
+  "route": "/architect.Symbology/ExecutionInfo",
   "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "ExecutionInfoResponse"

@@ -33,7 +33,7 @@ class DepositsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Boss/Deposits"
+        return "/architect.Boss/Deposits"
 
     @staticmethod
     def get_rpc_method():

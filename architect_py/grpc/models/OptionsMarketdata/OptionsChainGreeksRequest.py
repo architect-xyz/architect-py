@@ -40,7 +40,7 @@ class OptionsChainGreeksRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.OptionsMarketdata/OptionsChainGreeks"
+        return "/architect.OptionsMarketdata/OptionsChainGreeks"
 
     @staticmethod
     def get_rpc_method():

@@ -229,7 +229,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Oms/PlaceOrder"
+        return "/architect.Oms/PlaceOrder"
 
     @staticmethod
     def get_rpc_method():

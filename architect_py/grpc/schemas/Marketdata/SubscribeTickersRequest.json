@@ -15,7 +15,7 @@
       }
     }
   },
-  "route": "/json.architect.Marketdata/SubscribeTickers",
+  "route": "/architect.Marketdata/SubscribeTickers",
   "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "TickerUpdate"

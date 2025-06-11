@@ -35,7 +35,7 @@ class RqdAccountStatisticsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/json.architect.Boss/RqdAccountStatistics"
+        return "/architect.Boss/RqdAccountStatistics"
 
     @staticmethod
     def get_rpc_method():

@@ -13,7 +13,7 @@
       }
     }
   },
-  "route": "/json.architect.Marketdata/SubscribeLiquidations",
+  "route": "/architect.Marketdata/SubscribeLiquidations",
   "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "Liquidation"

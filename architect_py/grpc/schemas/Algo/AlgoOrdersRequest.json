@@ -67,7 +67,7 @@
       ]
     }
   },
-  "route": "/json.architect.Algo/AlgoOrders",
+  "route": "/architect.Algo/AlgoOrders",
   "rpc_method": "unary",
   "service": "Algo",
   "response_type": "AlgoOrdersResponse"

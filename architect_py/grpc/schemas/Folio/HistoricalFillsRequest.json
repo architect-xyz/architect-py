@@ -68,7 +68,7 @@
       ]
     }
   },
-  "route": "/json.architect.Folio/HistoricalFills",
+  "route": "/architect.Folio/HistoricalFills",
   "rpc_method": "unary",
   "service": "Folio",
   "response_type": "HistoricalFillsResponse"

@@ -28,7 +28,7 @@
       ]
     }
   },
-  "route": "/json.architect.Marketdata/HistoricalCandles",
+  "route": "/architect.Marketdata/HistoricalCandles",
   "rpc_method": "unary",
   "service": "Marketdata",
   "response_type": "HistoricalCandlesResponse"
