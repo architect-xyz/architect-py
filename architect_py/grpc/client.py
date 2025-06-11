@@ -1,5 +1,5 @@
 from types import UnionType
-from typing import AsyncIterator
+from typing import Any, AsyncIterator, Sequence, Tuple
 
 import grpc
 import msgspec
@@ -18,14 +18,23 @@ class GrpcClient:
     channel: grpc.aio.Channel
     jwt: str | None = None
 
-    def __init__(self, *, host: str, port: int, use_ssl: bool = False):
+    def __init__(
+        self,
+        *,
+        host: str,
+        port: int,
+        use_ssl: bool = False,
+        options: Sequence[Tuple[str, Any]] | None = None,
+    ):
         scheme = "https" if use_ssl else "http"
         self.endpoint = f"{scheme}://{host}:{port}"
         if use_ssl:
             credentials = grpc.ssl_channel_credentials()
-            self.channel = grpc.aio.secure_channel(f"{host}:{port}", credentials)
+            self.channel = grpc.aio.secure_channel(
+                f"{host}:{port}", credentials, options=options
+            )
         else:
-            self.channel = grpc.aio.insecure_channel(f"{host}:{port}")
+            self.channel = grpc.aio.insecure_channel(f"{host}:{port}", options=options)
 
     def set_jwt(self, jwt: str | None):
         self.jwt = jwt

@@ -1,6 +1,6 @@
 # ruff: noqa:I001
 
-__version__ = "5.1.3"
+__version__ = "5.1.4b1"
 
 from .utils.nearest_tick import TickRoundMethod
 from .async_client import AsyncClient

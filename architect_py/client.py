@@ -4,7 +4,15 @@ import threading
 from asyncio import AbstractEventLoop
 from collections.abc import Callable
 from functools import partial
-from typing import Any, Concatenate, Coroutine, Optional, ParamSpec, TypeVar
+from typing import (
+    Any,
+    Concatenate,
+    Coroutine,
+    Optional,
+    ParamSpec,
+    Sequence,
+    TypeVar,
+)
 
 from .async_client import AsyncClient
 
@@ -50,6 +58,7 @@ class Client:
         paper_trading: bool,
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
+        grpc_options: Sequence[tuple[str, Any]] | None = None,
         event_loop: Optional[AbstractEventLoop] = None,
         **kwargs,
     ):
@@ -78,6 +87,7 @@ class Client:
             paper_trading=paper_trading,
             endpoint=endpoint,
             graphql_port=graphql_port,
+            grpc_options=grpc_options,
             **kwargs,
         )
 

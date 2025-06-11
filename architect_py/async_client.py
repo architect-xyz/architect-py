@@ -11,6 +11,7 @@ from typing import (
     Literal,
     Optional,
     Sequence,
+    Tuple,
     Union,
     overload,
 )
@@ -56,6 +57,7 @@ class AsyncClient:
     api_secret: Optional[str] = None
     paper_trading: bool
     graphql_client: GraphQLClient
+    grpc_options: Sequence[Tuple[str, Any]] | None = None
     grpc_core: Optional[GrpcClient] = None
     grpc_marketdata: dict[Venue, GrpcClient] = {}
     grpc_hmart: Optional[GrpcClient] = None
@@ -77,14 +79,22 @@ class AsyncClient:
         paper_trading: bool,
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
+        grpc_options: Sequence[Tuple[str, Any]] | None = None,
         **kwargs: Any,
     ) -> "AsyncClient":
         """
         Connect to an Architect installation.
 
-        An `api_key` and `api_secret` can be created at https://app.architect.co/api-keys
+        An `api_key` and `api_secret` can be created at https://app.architect.co/api-keys.
 
         Raises ValueError if the API key and secret are not the correct length or contain invalid characters.
+
+        ## Advanced configuration
+
+        ### gRPC channel options
+
+        Use `grpc_options` to configure gRPC channels created by this client.
+        See https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments for reference.
         """
         if paper_trading:
             COLOR = "\033[30;43m"
@@ -123,6 +133,7 @@ class AsyncClient:
             paper_trading=paper_trading,
             grpc_host=grpc_host,
             grpc_port=grpc_port,
+            grpc_options=grpc_options,
             graphql_port=graphql_port,
             use_ssl=use_ssl,
             _i_know_what_i_am_doing=True,
@@ -144,6 +155,7 @@ class AsyncClient:
         paper_trading: bool,
         grpc_host: str = "app.architect.co",
         grpc_port: int,
+        grpc_options: Sequence[Tuple[str, Any]] | None = None,
         graphql_port: Optional[int] = None,
         use_ssl: bool = True,
         _i_know_what_i_am_doing: bool = False,
@@ -179,7 +191,10 @@ class AsyncClient:
             api_key=api_key,
             api_secret=api_secret,
         )
-        self.grpc_core = GrpcClient(host=grpc_host, port=grpc_port, use_ssl=use_ssl)
+        self.grpc_options = grpc_options
+        self.grpc_core = GrpcClient(
+            host=grpc_host, port=grpc_port, use_ssl=use_ssl, options=grpc_options
+        )
 
     async def close(self):
         """
@@ -268,7 +283,10 @@ class AsyncClient:
                         use_ssl,
                     )
                     self.grpc_marketdata[venue] = GrpcClient(
-                        host=grpc_host, port=grpc_port, use_ssl=use_ssl
+                        host=grpc_host,
+                        port=grpc_port,
+                        use_ssl=use_ssl,
+                        options=self.grpc_options,
                     )
                 except Exception as e:
                     logging.error("Failed to set marketdata endpoint: %s", e)
@@ -282,7 +300,10 @@ class AsyncClient:
         try:
             grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
             self.grpc_marketdata[venue] = GrpcClient(
-                host=grpc_host, port=grpc_port, use_ssl=use_ssl
+                host=grpc_host,
+                port=grpc_port,
+                use_ssl=use_ssl,
+                options=self.grpc_options,
             )
             logging.debug(
                 f"Setting marketdata endpoint for {venue}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
@@ -315,7 +336,10 @@ class AsyncClient:
                 use_ssl,
             )
             self.grpc_hmart = GrpcClient(
-                host=grpc_host, port=grpc_port, use_ssl=use_ssl
+                host=grpc_host,
+                port=grpc_port,
+                use_ssl=use_ssl,
+                options=self.grpc_options,
             )
         except Exception as e:
             logging.error("Failed to set hmart endpoint: %s", e)

@@ -65,8 +65,11 @@ def add_correct_docstring_and_correct_the_init(content: str):
         param_parts = [str(p) for p in pos_params]
 
     # turn Optional[Type] into Type | None
-    opt_re = re.compile(r"\b(?:Optional|Option)\[([^]]+)]")
-    param_parts = [opt_re.sub(r"\1 | None", s) for s in param_parts]
+    opt_re = re.compile(r"\b(?:Optional|Option)\[(.+)]", re.DOTALL)
+    param_parts = [
+        opt_re.sub(lambda m: f"{m.group(1)} | None", s)  # Optional[T] → T | None
+        for s in param_parts
+    ]
 
     param_str = ", ".join(param_parts)
 
