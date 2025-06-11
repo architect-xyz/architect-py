@@ -1468,6 +1468,25 @@
       }
     ]
   },
+  "TriggerLimitOrderType": {
+    "type": "object",
+    "required": [
+      "p",
+      "tp"
+    ],
+    "properties": {
+      "p": {
+        "title": "limit_price",
+        "type": "string",
+        "format": "decimal"
+      },
+      "tp": {
+        "title": "trigger_price",
+        "type": "string",
+        "format": "decimal"
+      }
+    }
+  },
   "OrderAck": {
     "type": "object",
     "required": [
@@ -1966,7 +1985,8 @@
       "MARKET",
       "LIMIT",
       "STOP_LOSS_LIMIT",
-      "TAKE_PROFIT_LIMIT"
+      "TAKE_PROFIT_LIMIT",
+      "BRACKET"
     ]
   },
   "AccountPosition": {
