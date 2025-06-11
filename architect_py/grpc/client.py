@@ -75,6 +75,8 @@ class GrpcClient:
     async def unary_unary(
         self,
         request: RequestType[ResponseTypeGeneric],
+        *,
+        no_metadata: bool = False,
     ) -> ResponseTypeGeneric:
         """
         Generic function for making a unary RPC call to the gRPC server.
@@ -91,7 +93,10 @@ class GrpcClient:
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        metadata = self.metadata()
+        if no_metadata:
+            metadata = ()
+        else:
+            metadata = self.metadata()
         return await stub(request, metadata=metadata)
 
     async def unary_stream(

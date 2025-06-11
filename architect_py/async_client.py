@@ -253,7 +253,9 @@ class AsyncClient:
         ):
             try:
                 req = CreateJwtRequest(api_key=self.api_key, api_secret=self.api_secret)
-                res: CreateJwtResponse = await self.grpc_core.unary_unary(req)
+                res: CreateJwtResponse = await self.grpc_core.unary_unary(
+                    req, no_metadata=True
+                )
                 self.jwt = res.jwt
                 # CR alee: actually read the JWT to get the expiration time;
                 # for now, we just "know" that the JWTs are granted for an hour
