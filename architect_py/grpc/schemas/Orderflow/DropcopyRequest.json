@@ -45,7 +45,7 @@
       ]
     }
   },
-  "route": "/architect.Orderflow/Dropcopy",
+  "route": "/json.architect.Orderflow/Dropcopy",
   "rpc_method": "stream",
   "service": "Orderflow",
   "response_type": "Dropcopy"

@@ -38,7 +38,7 @@ class CptyStatusRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Cpty/CptyStatus"
+        return "/json.architect.Cpty/CptyStatus"
 
     @staticmethod
     def get_rpc_method():

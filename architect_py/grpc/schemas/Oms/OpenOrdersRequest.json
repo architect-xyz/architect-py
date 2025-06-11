@@ -55,7 +55,7 @@
       ]
     }
   },
-  "route": "/architect.Oms/OpenOrders",
+  "route": "/json.architect.Oms/OpenOrders",
   "rpc_method": "unary",
   "service": "Oms",
   "response_type": "OpenOrdersResponse"

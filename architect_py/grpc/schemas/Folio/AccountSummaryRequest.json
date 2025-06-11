@@ -10,7 +10,7 @@
       "$ref": "../definitions.json#/AccountIdOrName"
     }
   },
-  "route": "/architect.Folio/AccountSummary",
+  "route": "/json.architect.Folio/AccountSummary",
   "rpc_method": "unary",
   "service": "Folio",
   "response_type": "AccountSummary"

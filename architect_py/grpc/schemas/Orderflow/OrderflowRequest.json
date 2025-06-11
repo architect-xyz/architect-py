@@ -21,7 +21,7 @@
       "variant_name": "CancelAllOrders"
     }
   ],
-  "route": "/architect.Orderflow/Orderflow",
+  "route": "/json.architect.Orderflow/Orderflow",
   "rpc_method": "duplex_stream",
   "service": "Orderflow",
   "response_type": "Orderflow",

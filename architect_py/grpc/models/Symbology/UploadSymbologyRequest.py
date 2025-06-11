@@ -50,7 +50,7 @@ class UploadSymbologyRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Symbology/UploadSymbology"
+        return "/json.architect.Symbology/UploadSymbology"
 
     @staticmethod
     def get_rpc_method():

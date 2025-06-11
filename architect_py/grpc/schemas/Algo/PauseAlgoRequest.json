@@ -10,7 +10,7 @@
       "$ref": "../definitions.json#/OrderId"
     }
   },
-  "route": "/architect.Algo/PauseAlgo",
+  "route": "/json.architect.Algo/PauseAlgo",
   "rpc_method": "unary",
   "service": "Algo",
   "response_type": "PauseAlgoResponse"

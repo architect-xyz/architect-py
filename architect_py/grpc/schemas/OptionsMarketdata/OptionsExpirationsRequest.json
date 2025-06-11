@@ -10,7 +10,7 @@
       "type": "string"
     }
   },
-  "route": "/architect.OptionsMarketdata/OptionsExpirations",
+  "route": "/json.architect.OptionsMarketdata/OptionsExpirations",
   "rpc_method": "unary",
   "service": "OptionsMarketdata",
   "response_type": "OptionsExpirations"

@@ -16,7 +16,7 @@
       ]
     }
   },
-  "route": "/architect.Marketdata/SubscribeL2BookUpdates",
+  "route": "/json.architect.Marketdata/SubscribeL2BookUpdates",
   "rpc_method": "stream",
   "service": "Marketdata",
   "response_type": "L2BookUpdate"

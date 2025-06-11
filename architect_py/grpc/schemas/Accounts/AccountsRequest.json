@@ -19,7 +19,7 @@
       ]
     }
   },
-  "route": "/architect.Accounts/Accounts",
+  "route": "/json.architect.Accounts/Accounts",
   "rpc_method": "unary",
   "service": "Accounts",
   "response_type": "AccountsResponse"

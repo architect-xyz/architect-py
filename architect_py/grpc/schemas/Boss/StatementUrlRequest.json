@@ -11,7 +11,7 @@
       "format": "uuid"
     }
   },
-  "route": "/architect.Boss/StatementUrl",
+  "route": "/json.architect.Boss/StatementUrl",
   "rpc_method": "unary",
   "service": "Boss",
   "response_type": "StatementUrlResponse"

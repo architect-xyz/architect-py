@@ -45,7 +45,7 @@
       "title": "CancelOrder"
     }
   ],
-  "route": "/architect.Cpty/Cpty",
+  "route": "/json.architect.Cpty/Cpty",
   "rpc_method": "duplex_stream",
   "service": "Cpty",
   "response_type": "CptyResponse",

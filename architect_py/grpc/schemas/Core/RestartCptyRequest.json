@@ -10,7 +10,7 @@
       "type": "string"
     }
   },
-  "route": "/architect.Core/RestartCpty",
+  "route": "/json.architect.Core/RestartCpty",
   "rpc_method": "unary",
   "service": "Core",
   "response_type": "RestartCptyResponse"

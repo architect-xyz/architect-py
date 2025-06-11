@@ -11,7 +11,7 @@
       "format": "uuid"
     }
   },
-  "route": "/architect.Boss/Deposits",
+  "route": "/json.architect.Boss/Deposits",
   "rpc_method": "unary",
   "service": "Boss",
   "response_type": "DepositsResponse"

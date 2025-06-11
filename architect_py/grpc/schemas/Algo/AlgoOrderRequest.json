@@ -11,7 +11,7 @@
       "$ref": "../definitions.json#/OrderId"
     }
   },
-  "route": "/architect.Algo/AlgoOrder",
+  "route": "/json.architect.Algo/AlgoOrder",
   "rpc_method": "unary",
   "service": "Algo",
   "response_type": "AlgoOrder"

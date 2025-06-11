@@ -15,7 +15,7 @@
       "type": "string"
     }
   },
-  "route": "/architect.Auth/CreateJwt",
+  "route": "/json.architect.Auth/CreateJwt",
   "rpc_method": "unary",
   "service": "Auth",
   "response_type": "CreateJwtResponse"

@@ -3,7 +3,7 @@
   "title": "SymbolsRequest",
   "description": "List all symbols",
   "type": "object",
-  "route": "/architect.Symbology/Symbols",
+  "route": "/json.architect.Symbology/Symbols",
   "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "SymbolsResponse"

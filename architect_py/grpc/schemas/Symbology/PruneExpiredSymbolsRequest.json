@@ -12,7 +12,7 @@
       "format": "int64"
     }
   },
-  "route": "/architect.Symbology/PruneExpiredSymbols",
+  "route": "/json.architect.Symbology/PruneExpiredSymbols",
   "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "PruneExpiredSymbolsResponse"

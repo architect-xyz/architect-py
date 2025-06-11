@@ -47,7 +47,7 @@ class PruneExpiredSymbolsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Symbology/PruneExpiredSymbols"
+        return "/json.architect.Symbology/PruneExpiredSymbols"
 
     @staticmethod
     def get_rpc_method():

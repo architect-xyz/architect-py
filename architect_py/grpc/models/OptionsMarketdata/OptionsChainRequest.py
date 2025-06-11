@@ -38,7 +38,7 @@ class OptionsChainRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.OptionsMarketdata/OptionsChain"
+        return "/json.architect.OptionsMarketdata/OptionsChain"
 
     @staticmethod
     def get_rpc_method():

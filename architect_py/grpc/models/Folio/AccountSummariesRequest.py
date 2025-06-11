@@ -52,7 +52,7 @@ class AccountSummariesRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Folio/AccountSummaries"
+        return "/json.architect.Folio/AccountSummaries"
 
     @staticmethod
     def get_rpc_method():

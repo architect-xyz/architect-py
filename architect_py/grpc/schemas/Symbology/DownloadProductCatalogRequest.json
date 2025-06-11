@@ -10,7 +10,7 @@
       "type": "string"
     }
   },
-  "route": "/architect.Symbology/DownloadProductCatalog",
+  "route": "/json.architect.Symbology/DownloadProductCatalog",
   "rpc_method": "unary",
   "service": "Symbology",
   "response_type": "DownloadProductCatalogResponse"

@@ -16,7 +16,7 @@
       "type": "string"
     }
   },
-  "route": "/architect.Cpty/CptyStatus",
+  "route": "/json.architect.Cpty/CptyStatus",
   "rpc_method": "unary",
   "service": "Cpty",
   "response_type": "CptyStatus"

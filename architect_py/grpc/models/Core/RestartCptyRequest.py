@@ -33,7 +33,7 @@ class RestartCptyRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Core/RestartCpty"
+        return "/json.architect.Core/RestartCpty"
 
     @staticmethod
     def get_rpc_method():

@@ -65,7 +65,7 @@ class AlgoOrdersRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Algo/AlgoOrders"
+        return "/json.architect.Algo/AlgoOrders"
 
     @staticmethod
     def get_rpc_method():

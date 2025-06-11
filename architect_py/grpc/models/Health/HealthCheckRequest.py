@@ -50,7 +50,7 @@ class HealthCheckRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Health/Check"
+        return "/json.architect.Health/Check"
 
     @staticmethod
     def get_rpc_method():

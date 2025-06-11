@@ -15,7 +15,7 @@
       "type": "string"
     }
   },
-  "route": "/architect.OptionsMarketdata/OptionsChainGreeks",
+  "route": "/json.architect.OptionsMarketdata/OptionsChainGreeks",
   "rpc_method": "unary",
   "service": "OptionsMarketdata",
   "response_type": "OptionsChainGreeks"

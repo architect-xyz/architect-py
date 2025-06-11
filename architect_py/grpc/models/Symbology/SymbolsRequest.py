@@ -32,7 +32,7 @@ class SymbolsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Symbology/Symbols"
+        return "/json.architect.Symbology/Symbols"
 
     @staticmethod
     def get_rpc_method():

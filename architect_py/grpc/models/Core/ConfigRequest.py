@@ -30,7 +30,7 @@ class ConfigRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Core/Config"
+        return "/json.architect.Core/Config"
 
     @staticmethod
     def get_rpc_method():

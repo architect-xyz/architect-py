@@ -74,7 +74,7 @@ class SubscribeOrderflowRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Orderflow/SubscribeOrderflow"
+        return "/json.architect.Orderflow/SubscribeOrderflow"
 
     @staticmethod
     def get_rpc_method():

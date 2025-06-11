@@ -57,7 +57,7 @@ class DropcopyRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Orderflow/Dropcopy"
+        return "/json.architect.Orderflow/Dropcopy"
 
     @staticmethod
     def get_rpc_method():

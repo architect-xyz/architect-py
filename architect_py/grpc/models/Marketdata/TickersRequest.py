@@ -78,7 +78,7 @@ class TickersRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Marketdata/Tickers"
+        return "/json.architect.Marketdata/Tickers"
 
     @staticmethod
     def get_rpc_method():

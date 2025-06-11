@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "CptysRequest",
   "type": "object",
-  "route": "/architect.Cpty/Cptys",
+  "route": "/json.architect.Cpty/Cptys",
   "rpc_method": "unary",
   "service": "Cpty",
   "response_type": "CptysResponse"

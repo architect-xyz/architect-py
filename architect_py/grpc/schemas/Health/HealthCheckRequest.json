@@ -17,7 +17,7 @@
       ]
     }
   },
-  "route": "/architect.Health/Check",
+  "route": "/json.architect.Health/Check",
   "rpc_method": "unary",
   "service": "Health",
   "response_type": "HealthCheckResponse"

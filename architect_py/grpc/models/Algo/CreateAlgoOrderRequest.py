@@ -49,7 +49,7 @@ class CreateAlgoOrderRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Algo/CreateAlgoOrder"
+        return "/json.architect.Algo/CreateAlgoOrder"
 
     @staticmethod
     def get_rpc_method():

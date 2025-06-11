@@ -42,7 +42,7 @@ class UploadProductCatalogRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Symbology/UploadProductCatalog"
+        return "/json.architect.Symbology/UploadProductCatalog"
 
     @staticmethod
     def get_rpc_method():

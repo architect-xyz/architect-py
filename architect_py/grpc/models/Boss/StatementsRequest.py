@@ -33,7 +33,7 @@ class StatementsRequest(Struct, omit_defaults=True):
 
     @staticmethod
     def get_route() -> str:
-        return "/architect.Boss/Statements"
+        return "/json.architect.Boss/Statements"
 
     @staticmethod
     def get_rpc_method():
