@@ -111,6 +111,8 @@ from .grpc.models.Algo.StartAlgoRequest import StartAlgoRequest
 from .grpc.models.Algo.StartAlgoResponse import StartAlgoResponse
 from .grpc.models.Algo.StopAlgoRequest import StopAlgoRequest
 from .grpc.models.Algo.StopAlgoResponse import StopAlgoResponse
+from .grpc.models.Auth.AuthInfoRequest import AuthInfoRequest
+from .grpc.models.Auth.AuthInfoResponse import AuthInfoResponse
 from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
 from .grpc.models.Auth.CreateJwtResponse import CreateJwtResponse
 from .grpc.models.Boss.DepositsRequest import DepositsRequest
@@ -259,6 +261,8 @@ __all__ = [
     "AliasKind",
     "ArrayOfL1BookSnapshot",
     "AsyncClient",
+    "AuthInfoRequest",
+    "AuthInfoResponse",
     "Cancel",
     "CancelAllOrdersRequest",
     "CancelAllOrdersResponse",

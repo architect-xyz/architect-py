@@ -53,6 +53,10 @@
       "SERVICE_UNKNOWN"
     ]
   },
+  "UserId": {
+    "type": "string",
+    "format": "uuid"
+  },
   "TraderIdOrEmail": {
     "type": "string"
   },
@@ -121,10 +125,6 @@
         "$ref": "#/UserId"
       }
     }
-  },
-  "UserId": {
-    "type": "string",
-    "format": "uuid"
   },
   "ExecutionInfo": {
     "description": "Information about a symbol related to its execution route.",

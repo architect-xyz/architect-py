@@ -37,6 +37,8 @@ class Client:
     api_key: str | None
     api_secret: str | None
     paper_trading: bool
+    as_user: str | None
+    as_role: str | None
     graphql_client: GraphQLClient
     grpc_options: Sequence[tuple[str, Any]] | None
     grpc_core: GrpcClient | None
@@ -45,7 +47,7 @@ class Client:
     jwt: str | None
     jwt_expiration: datetime | None
     l1_books: dict[Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]]
-    def __init__(self, *, api_key: str, api_secret: str, paper_trading: bool, endpoint: str = 'https://app.architect.co', graphql_port: int | None = None, grpc_options: Sequence[tuple[str, Any]] | None = None, event_loop: asyncio.events.AbstractEventLoop | None = None) -> None:
+    def __init__(self, *, api_key: str, api_secret: str, paper_trading: bool, as_user: str | None = None, as_role: str | None = None, endpoint: str = 'https://app.architect.co', graphql_port: int | None = None, grpc_options: Sequence[tuple[str, Any]] | None = None, event_loop: asyncio.events.AbstractEventLoop | None = None) -> None:
         """
         Create a new Client instance.
 
@@ -119,6 +121,7 @@ class Client:
         Returns:
             (user_id, user_email)
         """
+    def auth_info(self) -> AuthInfoResponse: ...
     def cpty_status(self, kind: str, instance: str | None = None) -> CptyStatus:
         """
         Get cpty status.

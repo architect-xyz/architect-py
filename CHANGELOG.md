@@ -1,6 +1,7 @@
 # 5.1.4b1
 
 - Add grpc_options to AsyncClient and Client constructors to allow customization of gRPC channels
+- Add as_user and as_role to AsyncClient and Client constructors
 
 # 5.1.3
 - Fix stream_orderflow endpoint

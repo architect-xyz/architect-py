@@ -56,6 +56,8 @@ class AsyncClient:
     api_key: Optional[str] = None
     api_secret: Optional[str] = None
     paper_trading: bool
+    as_user: Optional[str] = None
+    as_role: Optional[str] = None
     graphql_client: GraphQLClient
     grpc_options: Sequence[Tuple[str, Any]] | None = None
     grpc_core: Optional[GrpcClient] = None
@@ -80,6 +82,8 @@ class AsyncClient:
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
         grpc_options: Sequence[Tuple[str, Any]] | None = None,
+        as_user: Optional[str] = None,
+        as_role: Optional[str] = None,
         **kwargs: Any,
     ) -> "AsyncClient":
         """
@@ -131,6 +135,8 @@ class AsyncClient:
             api_key=api_key,
             api_secret=api_secret,
             paper_trading=paper_trading,
+            as_user=as_user,
+            as_role=as_role,
             grpc_host=grpc_host,
             grpc_port=grpc_port,
             grpc_options=grpc_options,
@@ -153,6 +159,8 @@ class AsyncClient:
         api_key: Optional[str] = None,
         api_secret: Optional[str] = None,
         paper_trading: bool,
+        as_user: Optional[str] = None,
+        as_role: Optional[str] = None,
         grpc_host: str = "app.architect.co",
         grpc_port: int,
         grpc_options: Sequence[Tuple[str, Any]] | None = None,
@@ -184,6 +192,8 @@ class AsyncClient:
         self.api_key = api_key
         self.api_secret = api_secret
         self.paper_trading = paper_trading
+        self.as_user = as_user
+        self.as_role = as_role
         self.graphql_client = GraphQLClient(
             host=grpc_host,
             port=graphql_port,
@@ -193,7 +203,12 @@ class AsyncClient:
         )
         self.grpc_options = grpc_options
         self.grpc_core = GrpcClient(
-            host=grpc_host, port=grpc_port, use_ssl=use_ssl, options=grpc_options
+            host=grpc_host,
+            port=grpc_port,
+            use_ssl=use_ssl,
+            options=grpc_options,
+            as_user=as_user,
+            as_role=as_role,
         )
 
     async def close(self):
@@ -287,6 +302,8 @@ class AsyncClient:
                         port=grpc_port,
                         use_ssl=use_ssl,
                         options=self.grpc_options,
+                        as_user=self.as_user,
+                        as_role=self.as_role,
                     )
                 except Exception as e:
                     logging.error("Failed to set marketdata endpoint: %s", e)
@@ -304,6 +321,8 @@ class AsyncClient:
                 port=grpc_port,
                 use_ssl=use_ssl,
                 options=self.grpc_options,
+                as_user=self.as_user,
+                as_role=self.as_role,
             )
             logging.debug(
                 f"Setting marketdata endpoint for {venue}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
@@ -340,6 +359,8 @@ class AsyncClient:
                 port=grpc_port,
                 use_ssl=use_ssl,
                 options=self.grpc_options,
+                as_user=self.as_user,
+                as_role=self.as_role,
             )
         except Exception as e:
             logging.error("Failed to set hmart endpoint: %s", e)
@@ -379,6 +400,12 @@ class AsyncClient:
         """
         res = await self.graphql_client.user_id_query()
         return res.user_id, res.user_email
+
+    async def auth_info(self) -> AuthInfoResponse:
+        grpc_client = await self.core()
+        req = AuthInfoRequest()
+        res: AuthInfoResponse = await grpc_client.unary_unary(req)
+        return res
 
     def enable_orderflow(self):
         """
