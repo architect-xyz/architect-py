@@ -177,6 +177,8 @@ class CandleWidth(int, Enum):
     OneSecond = 1
     FiveSecond = 5
     OneMinute = 60
+    TwoMinute = 120
+    ThreeMinute = 180
     FifteenMinute = 900
     OneHour = 3600
     OneDay = 86400

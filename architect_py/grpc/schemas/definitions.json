@@ -1282,6 +1282,8 @@
       1,
       5,
       60,
+      120,
+      180,
       900,
       3600,
       86400
@@ -1290,6 +1292,8 @@
       "OneSecond",
       "FiveSecond",
       "OneMinute",
+      "TwoMinute",
+      "ThreeMinute",
       "FifteenMinute",
       "OneHour",
       "OneDay"
