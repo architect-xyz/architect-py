@@ -4,10 +4,10 @@
 from __future__ import annotations
 from architect_py.grpc.models.Folio.AccountHistoryResponse import AccountHistoryResponse
 
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, time
+from typing import Annotated, Optional
 
-from msgspec import Struct
+from msgspec import Meta, Struct
 
 from .. import definitions
 
@@ -15,6 +15,31 @@ from .. import definitions
 class AccountHistoryRequest(Struct, omit_defaults=True):
     account: definitions.AccountIdOrName
     from_inclusive: Optional[datetime] = None
+    granularity: Optional[definitions.AccountHistoryGranularity] = None
+    limit: Optional[
+        Annotated[
+            Optional[int],
+            Meta(
+                description="Default maximum of 100 data points.  If the number of data points between from_inclusive and to_exclusive exceeds the limit, the response will be truncated.  Data is always returned in descending timestamp order."
+            ),
+        ]
+    ] = None
+    """
+    Default maximum of 100 data points.  If the number of data points between from_inclusive and to_exclusive exceeds the limit, the response will be truncated.  Data is always returned in descending timestamp order.
+    """
+    time_of_day: Optional[
+        Annotated[
+            Optional[time],
+            Meta(
+                description="For daily granularity, the UTC time of day to use for each day.\n\nCurrently the seconds and subseconds parts are ignored."
+            ),
+        ]
+    ] = None
+    """
+    For daily granularity, the UTC time of day to use for each day.
+
+    Currently the seconds and subseconds parts are ignored.
+    """
     to_exclusive: Optional[datetime] = None
 
     # Constructor that takes all field titles as arguments for convenience
@@ -23,16 +48,22 @@ class AccountHistoryRequest(Struct, omit_defaults=True):
         cls,
         account: definitions.AccountIdOrName,
         from_inclusive: Optional[datetime] = None,
+        granularity: Optional[definitions.AccountHistoryGranularity] = None,
+        limit: Optional[int] = None,
+        time_of_day: Optional[time] = None,
         to_exclusive: Optional[datetime] = None,
     ):
         return cls(
             account,
             from_inclusive,
+            granularity,
+            limit,
+            time_of_day,
             to_exclusive,
         )
 
     def __str__(self) -> str:
-        return f"AccountHistoryRequest(account={self.account},from_inclusive={self.from_inclusive},to_exclusive={self.to_exclusive})"
+        return f"AccountHistoryRequest(account={self.account},from_inclusive={self.from_inclusive},granularity={self.granularity},limit={self.limit},time_of_day={self.time_of_day},to_exclusive={self.to_exclusive})"
 
     @staticmethod
     def get_response_type():

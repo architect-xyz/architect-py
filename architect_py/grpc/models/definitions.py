@@ -15,6 +15,12 @@ from msgspec import Meta, Struct
 from .Marketdata.Ticker import Ticker
 
 
+class AccountHistoryGranularity(str, Enum):
+    FiveMinutes = "FiveMinutes"
+    Hourly = "Hourly"
+    Daily = "Daily"
+
+
 AccountIdOrName = str
 
 

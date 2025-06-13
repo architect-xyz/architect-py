@@ -2043,6 +2043,14 @@
       }
     }
   },
+  "AccountHistoryGranularity": {
+    "type": "string",
+    "enum": [
+      "FiveMinutes",
+      "Hourly",
+      "Daily"
+    ]
+  },
   "CptyLoginRequest": {
     "type": "object",
     "required": [

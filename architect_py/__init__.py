@@ -7,6 +7,7 @@ from .async_client import AsyncClient
 from .client import Client
 from .common_types import OrderDir, TradableProduct, TimeInForce, Venue
 from .grpc.models.definitions import (
+    AccountHistoryGranularity,
     AccountIdOrName,
     AccountPosition,
     AccountStatistics,
@@ -239,6 +240,7 @@ from .grpc.models.Symbology.UploadSymbologyResponse import UploadSymbologyRespon
 __all__ = [
     "AberrantFill",
     "Account",
+    "AccountHistoryGranularity",
     "AccountHistoryRequest",
     "AccountHistoryResponse",
     "AccountIdOrName",
