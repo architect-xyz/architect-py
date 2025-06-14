@@ -9,6 +9,7 @@
 - Add as_user and as_role to AsyncClient and Client constructors
 - Add auth_info endpoint 
 - various small type fixes
+- add send_initial_snapshots to stream_l1_book_snapshots
 
 # 5.1.3
 - Fix stream_orderflow endpoint
