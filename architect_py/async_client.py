@@ -894,7 +894,11 @@ class AsyncClient:
         return res
 
     async def stream_l1_book_snapshots(
-        self, symbols: Sequence[TradableProduct | str], venue: Venue
+        self,
+        symbols: Sequence[TradableProduct | str],
+        venue: Venue,
+        *,
+        send_initial_snapshots: Optional[bool] = False,
     ) -> AsyncGenerator[L1BookSnapshot, None]:
         """
         Subscribe to the stream of L1BookSnapshots for a symbol.
@@ -905,7 +909,11 @@ class AsyncClient:
             venue: the venue to subscribe to
         """
         grpc_client = await self.marketdata(venue)
-        req = SubscribeL1BookSnapshotsRequest(symbols=list(symbols), venue=venue)
+        req = SubscribeL1BookSnapshotsRequest(
+            symbols=list(symbols),
+            venue=venue,
+            send_initial_snapshots=send_initial_snapshots,
+        )
         async for res in grpc_client.unary_stream(req):
             yield res
 
