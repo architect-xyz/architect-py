@@ -4,7 +4,7 @@ Do *NOT* run this script in production. This script is for educational purposes 
 
 import asyncio
 from decimal import Decimal
-from typing import AsyncIterator, Optional
+from typing import Optional
 
 from architect_py import (
     AsyncClient,
@@ -13,16 +13,15 @@ from architect_py import (
     TimeInForce,
     TradableProduct,
 )
-from architect_py.graphql_client.exceptions import GraphQLClientHttpError
 from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedOrderAck,
     TaggedOrderOut,
     TaggedOrderReject,
 )
 from architect_py.grpc.models.Orderflow.OrderflowRequest import (
-    OrderflowRequest,
     PlaceOrder,
 )
+from architect_py.grpc.orderflow import OrderflowChannel
 
 from .config import connect_async_client
 
@@ -34,23 +33,6 @@ best_ask_price: Optional[Decimal] = None
 current_funding_rate: Optional[Decimal] = None  # as fraction, e.g. 0.0001 = 1 bp
 target_position = 0
 current_position = 0
-
-
-class OrderflowRequester:
-    def __init__(self):
-        self.queue: asyncio.Queue[OrderflowRequest] = asyncio.Queue()
-
-    async def __aiter__(self) -> AsyncIterator[OrderflowRequest]:
-        while True:
-            value = await self.queue.get()  # Wait for a value
-            yield value  # Yield it when available
-
-    async def __anext__(self) -> OrderflowRequest:
-        return await self.queue.get()
-
-    async def put(self, value: OrderflowRequest) -> None:
-        # OrderflowRequest contains: PlaceOrder, CancelOrder, CancelAllOrders
-        await self.queue.put(value)  # Put value into the queue
 
 
 async def update_marketdata(c: AsyncClient):
@@ -81,30 +63,23 @@ async def update_marketdata(c: AsyncClient):
 
 
 async def subscribe_and_print_orderflow(
-    c: AsyncClient, orderflow_requester: OrderflowRequester
+    c: AsyncClient, orderflow_manager: OrderflowChannel
 ):
-    try:
-        stream = c.orderflow(orderflow_requester)
-        """
-        subscribe_orderflow_stream is a duplex_stream meaning that it is a stream that can be read from and written to.
-        This is a stream that will be used to send orders to the Architect and receive order updates from the Architect.
-        """
-        async for orderflow in stream:
-            if isinstance(orderflow, TaggedOrderAck):
-                print(f"<!> ACK {orderflow.order_id}")
-            if isinstance(orderflow, TaggedOrderReject):
-                print(f"<!> REJECT {orderflow.id} {orderflow.r}: {orderflow.rm}")
-                # reject reason, reject message
-            elif isinstance(orderflow, TaggedOrderOut):
-                print(f"<!> OUT {orderflow.id}")
-    except GraphQLClientHttpError as e:
-        print(e.status_code)
-        print(e.response.json())
+    """
+    subscribe_orderflow_stream is a duplex_stream meaning that it is a stream that can be read from and written to.
+    This is a stream that will be used to send orders to the Architect and receive order updates from the Architect.
+    """
+    async for orderflow in orderflow_manager:
+        if isinstance(orderflow, TaggedOrderAck):
+            print(f"<!> ACK {orderflow.order_id}")
+        if isinstance(orderflow, TaggedOrderReject):
+            print(f"<!> REJECT {orderflow.id} {orderflow.r}: {orderflow.rm}")
+            # reject reason, reject message
+        elif isinstance(orderflow, TaggedOrderOut):
+            print(f"<!> OUT {orderflow.id}")
 
 
-async def step_to_target_position(
-    c: AsyncClient, orderflow_requester: OrderflowRequester
-):
+async def step_to_target_position(c: AsyncClient, orderflow_manager: OrderflowChannel):
     while True:
         await asyncio.sleep(10)
         # check open orders
@@ -147,7 +122,7 @@ async def step_to_target_position(
                 )
 
         if order is not None:
-            await orderflow_requester.put(
+            await orderflow_manager.send(
                 order
             )  # this will add the order to the queue to send over
 
@@ -176,13 +151,14 @@ async def print_info(c: AsyncClient):
 async def main():
     c = await connect_async_client()
 
-    orderflow_requester = OrderflowRequester()
+    orderflow_manager = await c.orderflow()
+    await orderflow_manager.start()
 
     await asyncio.gather(
         update_marketdata(c),
-        step_to_target_position(c, orderflow_requester),
+        step_to_target_position(c, orderflow_manager),
         print_info(c),
-        subscribe_and_print_orderflow(c, orderflow_requester),
+        subscribe_and_print_orderflow(c, orderflow_manager),
     )
     await c.close()
 

@@ -1,6 +1,6 @@
 # ruff: noqa:I001
 
-__version__ = "5.1.4b1"
+__version__ = "5.1.4rc1"
 
 from .utils.nearest_tick import TickRoundMethod
 from .async_client import AsyncClient
@@ -40,6 +40,7 @@ from .grpc.models.definitions import (
     AliasKind,
     DerivativeKind,
     FillKind,
+    HumanDuration,
     Unit,
     MinOrderQuantityUnit,
     OptionsExerciseType,
@@ -57,6 +58,7 @@ from .grpc.models.definitions import (
     SnapshotOrUpdateForStringAndProductCatalogInfo2,
     SnapshotOrUpdateForStringAndString1,
     SnapshotOrUpdateForStringAndString2,
+    SpreaderPhase,
     SimpleDecimal,
     Varying1,
     Varying,
@@ -84,6 +86,8 @@ from .grpc.models.definitions import (
     SnapshotOrUpdateForStringAndOptionsSeriesInfo2,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo1,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo2,
+    SpreaderParams,
+    SpreaderStatus,
     Account,
     FutureSpread,
     Option,
@@ -112,6 +116,8 @@ from .grpc.models.Algo.StartAlgoRequest import StartAlgoRequest
 from .grpc.models.Algo.StartAlgoResponse import StartAlgoResponse
 from .grpc.models.Algo.StopAlgoRequest import StopAlgoRequest
 from .grpc.models.Algo.StopAlgoResponse import StopAlgoResponse
+from .grpc.models.AlgoHelper.AlgoParamTypes import AlgoParamTypes
+from .grpc.models.AlgoHelper.CoerceAlgoParamTypes import CoerceAlgoParamTypes
 from .grpc.models.Auth.AuthInfoRequest import AuthInfoRequest
 from .grpc.models.Auth.AuthInfoResponse import AuthInfoResponse
 from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
@@ -260,6 +266,7 @@ __all__ = [
     "AlgoOrderStatus",
     "AlgoOrdersRequest",
     "AlgoOrdersResponse",
+    "AlgoParamTypes",
     "AliasKind",
     "ArrayOfL1BookSnapshot",
     "AsyncClient",
@@ -274,6 +281,7 @@ __all__ = [
     "Candle",
     "CandleWidth",
     "Client",
+    "CoerceAlgoParamTypes",
     "Commodity",
     "ConfigRequest",
     "ConfigResponse",
@@ -322,6 +330,7 @@ __all__ = [
     "HistoricalFillsResponse",
     "HistoricalOrdersRequest",
     "HistoricalOrdersResponse",
+    "HumanDuration",
     "Index",
     "L1BookSnapshot",
     "L1BookSnapshotRequest",
@@ -401,6 +410,9 @@ __all__ = [
     "SnapshotOrUpdateForStringAndString2",
     "SortTickersBy",
     "SpreadLeg",
+    "SpreaderParams",
+    "SpreaderPhase",
+    "SpreaderStatus",
     "StartAlgoRequest",
     "StartAlgoResponse",
     "Statement",

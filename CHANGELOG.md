@@ -1,8 +1,14 @@
-# 5.1.4b1
+# 5.1.4
 
 - Add grpc_options to AsyncClient and Client constructors to allow customization of gRPC channels
+- Renamed place_limit_order with place_order. place_limit_order is deprecated
+- Added algo types and create_algo_order 
+- Added easy interface for accessing orderflow bi-directional stream, use client.orderflow() to access
+- added bracket and market orders
+- paper trading should be active now for all order types except Bracket
 - Add as_user and as_role to AsyncClient and Client constructors
 - Add auth_info endpoint 
+- various small type fixes
 
 # 5.1.3
 - Fix stream_orderflow endpoint

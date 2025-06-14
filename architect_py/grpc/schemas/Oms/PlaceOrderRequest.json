@@ -116,7 +116,7 @@
       "format": "decimal"
     },
     "sl": {
-      "title": "bracket_order_stop_loss",
+      "title": "stop_loss",
       "anyOf": [
         {
           "$ref": "../definitions.json#/TriggerLimitOrderType"

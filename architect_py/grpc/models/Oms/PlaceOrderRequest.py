@@ -47,10 +47,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     po: Optional[Annotated[bool, Meta(title="post_only")]] = None
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
     sl: Optional[
-        Annotated[
-            Optional[definitions.TriggerLimitOrderType],
-            Meta(title="bracket_order_stop_loss"),
-        ]
+        Annotated[Optional[definitions.TriggerLimitOrderType], Meta(title="stop_loss")]
     ] = None
     tpp: Optional[Annotated[Optional[Decimal], Meta(title="take_profit_price")]] = None
 
@@ -72,7 +69,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         limit_price: Optional[Decimal] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
-        bracket_order_stop_loss: Optional[definitions.TriggerLimitOrderType] = None,
+        stop_loss: Optional[definitions.TriggerLimitOrderType] = None,
         take_profit_price: Optional[Decimal] = None,
     ):
         return cls(
@@ -90,12 +87,12 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
             limit_price,
             post_only,
             trigger_price,
-            bracket_order_stop_loss,
+            stop_loss,
             take_profit_price,
         )
 
     def __str__(self) -> str:
-        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},order_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},trader={self.u},execution_venue={self.x},limit_price={self.p},post_only={self.po},trigger_price={self.tp},bracket_order_stop_loss={self.sl},take_profit_price={self.tpp})"
+        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},order_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},trader={self.u},execution_venue={self.x},limit_price={self.p},post_only={self.po},trigger_price={self.tp},stop_loss={self.sl},take_profit_price={self.tpp})"
 
     @property
     def dir(self) -> OrderDir:
@@ -202,13 +199,11 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         self.tp = value
 
     @property
-    def bracket_order_stop_loss(self) -> Optional[definitions.TriggerLimitOrderType]:
+    def stop_loss(self) -> Optional[definitions.TriggerLimitOrderType]:
         return self.sl
 
-    @bracket_order_stop_loss.setter
-    def bracket_order_stop_loss(
-        self, value: Optional[definitions.TriggerLimitOrderType]
-    ) -> None:
+    @stop_loss.setter
+    def stop_loss(self, value: Optional[definitions.TriggerLimitOrderType]) -> None:
         self.sl = value
 
     @property
@@ -236,19 +231,10 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         return "unary"
 
     def __post_init__(self):
-        if self.k == "MARKET":
-            if not all(getattr(self, key) is not None for key in []):
-                raise ValueError(
-                    f"When field k (order_type) is of value MARKET, class PlaceOrderRequest requires fields []"
-                )
-            elif any(getattr(self, key) is not None for key in ["p", "po", "tp"]):
-                raise ValueError(
-                    f"When field k (order_type) is of value MARKET, class PlaceOrderRequest should not have fields ['p', 'po', 'tp']"
-                )
-        elif self.k == "LIMIT":
+        if self.k == "LIMIT":
             if not all(getattr(self, key) is not None for key in ["p", "po"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value LIMIT, class PlaceOrderRequest requires fields ['p', 'po']"
+                    f"When field k (order_type) is of value LIMIT, class PlaceOrderRequest requires fields ['limit_price (p)', 'post_only (po)']"
                 )
             elif any(getattr(self, key) is not None for key in ["tp"]):
                 raise ValueError(
@@ -257,7 +243,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         elif self.k == "STOP_LOSS_LIMIT":
             if not all(getattr(self, key) is not None for key in ["p", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest requires fields ['p', 'tp']"
+                    f"When field k (order_type) is of value STOP_LOSS_LIMIT, class PlaceOrderRequest requires fields ['limit_price (p)', 'trigger_price (tp)']"
                 )
             elif any(getattr(self, key) is not None for key in ["po"]):
                 raise ValueError(
@@ -266,7 +252,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         elif self.k == "TAKE_PROFIT_LIMIT":
             if not all(getattr(self, key) is not None for key in ["p", "tp"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest requires fields ['p', 'tp']"
+                    f"When field k (order_type) is of value TAKE_PROFIT_LIMIT, class PlaceOrderRequest requires fields ['limit_price (p)', 'trigger_price (tp)']"
                 )
             elif any(getattr(self, key) is not None for key in ["po"]):
                 raise ValueError(
@@ -275,7 +261,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         elif self.k == "BRACKET":
             if not all(getattr(self, key) is not None for key in ["p", "po"]):
                 raise ValueError(
-                    f"When field k (order_type) is of value BRACKET, class PlaceOrderRequest requires fields ['p', 'po']"
+                    f"When field k (order_type) is of value BRACKET, class PlaceOrderRequest requires fields ['limit_price (p)', 'post_only (po)']"
                 )
             elif any(getattr(self, key) is not None for key in ["tp"]):
                 raise ValueError(

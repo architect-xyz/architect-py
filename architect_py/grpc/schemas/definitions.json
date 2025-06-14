@@ -2184,6 +2184,153 @@
       "Stopped"
     ]
   },
+  "HumanDuration": {
+    "type": "string"
+  },
+  "SpreaderParams": {
+    "type": "object",
+    "required": [
+      "dir",
+      "leg1_marketdata_venue",
+      "leg1_price_offset",
+      "leg1_price_ratio",
+      "leg1_quantity_ratio",
+      "leg1_symbol",
+      "leg2_marketdata_venue",
+      "leg2_price_offset",
+      "leg2_price_ratio",
+      "leg2_quantity_ratio",
+      "leg2_symbol",
+      "limit_price",
+      "order_lockout",
+      "quantity"
+    ],
+    "properties": {
+      "dir": {
+        "$ref": "#/Dir"
+      },
+      "leg1_account": {
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "leg1_execution_venue": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "leg1_marketdata_venue": {
+        "type": "string"
+      },
+      "leg1_price_offset": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg1_price_ratio": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg1_quantity_ratio": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg1_symbol": {
+        "type": "string"
+      },
+      "leg2_account": {
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "leg2_execution_venue": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "leg2_marketdata_venue": {
+        "type": "string"
+      },
+      "leg2_price_offset": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg2_price_ratio": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg2_quantity_ratio": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg2_symbol": {
+        "type": "string"
+      },
+      "limit_price": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "order_lockout": {
+        "$ref": "#/HumanDuration"
+      },
+      "quantity": {
+        "type": "string",
+        "format": "decimal"
+      }
+    }
+  },
+  "SpreaderPhase": {
+    "type": "string",
+    "enum": [
+      "ScanningForTakes",
+      "AwaitingOrderResults",
+      "OrderLockout",
+      "NoBbo",
+      "NotEnoughBboSize",
+      "DoneOverfilled",
+      "DoneAndFullyHedged",
+      "DoneAndGivingUp"
+    ]
+  },
+  "SpreaderStatus": {
+    "type": "object",
+    "required": [
+      "current_spreader_phase",
+      "leg1_fill_quantity",
+      "leg2_fill_quantity"
+    ],
+    "properties": {
+      "current_spreader_phase": {
+        "$ref": "#/SpreaderPhase"
+      },
+      "implied_spread_vwap": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "leg1_fill_quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "leg2_fill_quantity": {
+        "type": "string",
+        "format": "decimal"
+      }
+    }
+  },
   "Statement": {
     "type": "object",
     "required": [

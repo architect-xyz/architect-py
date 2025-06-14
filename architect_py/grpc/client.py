@@ -1,7 +1,7 @@
 from types import UnionType
 from typing import Any, AsyncIterator, Sequence, Tuple
 
-import grpc
+import grpc.aio
 import msgspec
 
 from . import *
@@ -119,7 +119,7 @@ class GrpcClient:
             response_deserializer=decoder.decode,
         )
         metadata = self.metadata()
-        call: grpc.aio._base_call.UnaryStreamCall[
+        call: grpc.aio.UnaryStreamCall[
             RequestType[ResponseTypeGeneric], ResponseTypeGeneric
         ] = stub(request, metadata=metadata)
         async for update in call:

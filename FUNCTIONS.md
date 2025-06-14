@@ -72,10 +72,11 @@
 ### 📣 Order entry
 
 - **`place_orders`**: A low level function to place multiple orders in a single function.
-- **`place_limit_order`**: Sends a regular limit order.
+- **`place_order`**: Sends a regular limit order.
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.
 - **`cancel_order`**: Cancels an order by order id.
 - **`cancel_all_orders`**: Cancels all open orders.
+- **`create_algo_order`**: Sends an advanced algo order such as the spreader.
 
 ---
 

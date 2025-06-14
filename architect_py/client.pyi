@@ -9,8 +9,8 @@ from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
 from architect_py.grpc.client import GrpcClient as GrpcClient
-from architect_py.grpc.models.Orderflow.OrderflowRequest import OrderflowRequestUnannotatedResponseType as OrderflowRequestUnannotatedResponseType, OrderflowRequest_route as OrderflowRequest_route
-from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, TraderIdOrEmail as TraderIdOrEmail
+from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, TraderIdOrEmail as TraderIdOrEmail, TriggerLimitOrderType as TriggerLimitOrderType
+from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side as update_orderbook_side
@@ -19,7 +19,7 @@ from architect_py.utils.price_bands import price_band_pairs as price_band_pairs
 from architect_py.utils.symbol_parsing import nominative_expiration as nominative_expiration
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, AsyncGenerator, AsyncIterator, Literal, Sequence, overload
+from typing import Any, AsyncGenerator, Literal, Sequence, overload
 
 class Client:
     """
@@ -454,7 +454,11 @@ class Client:
         '''
     def send_limit_order(self, *args, **kwargs) -> Order:
         '''
-        @deprecated(reason="Use place_limit_order instead")
+        @deprecated(reason="Use place_order instead")
+        '''
+    def place_limit_order(self, *args, **kwargs) -> Order:
+        '''
+        @deprecated(reason="Use place_order instead")
         '''
     def place_orders(self, order_requests: Sequence[PlaceOrderRequest]) -> list[Order]:
         """
@@ -485,7 +489,7 @@ class Client:
                 trigger_price=trigger_price,
             )
         """
-    def place_limit_order(self, *, id: OrderId | None = None, symbol: TradableProduct | str, execution_venue: str | None = None, dir: OrderDir | None = None, quantity: Decimal, limit_price: Decimal, order_type: OrderType = ..., time_in_force: TimeInForce = ..., price_round_method: TickRoundMethod | None = None, account: str | None = None, trader: str | None = None, post_only: bool = False, trigger_price: Decimal | None = None, **kwargs: Any) -> Order:
+    def place_order(self, *, id: OrderId | None = None, symbol: TradableProduct | str, execution_venue: str | None = None, dir: OrderDir | None = None, quantity: Decimal, limit_price: Decimal, order_type: OrderType = ..., time_in_force: TimeInForce = ..., price_round_method: TickRoundMethod | None = None, account: str | None = None, trader: str | None = None, post_only: bool | None = None, trigger_price: Decimal | None = None, stop_loss: TriggerLimitOrderType | None = None, take_profit_price: Decimal | None = None, **kwargs: Any) -> Order:
         '''
         Sends a regular limit order.
 
@@ -508,6 +512,8 @@ class Client:
                 for when sending order for another user, not relevant for vast majority of users
             post_only: whether the order should be post only, not supported by all exchanges
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
+            stop_loss_price: the stop loss price for a bracket order
+            profit_price: the take profit price for a bracket order
         Returns:
             the Order object for the order
             The order.status should  be "PENDING" until the order is "OPEN" / "REJECTED" / "OUT" / "CANCELED" / "STALE"
@@ -551,4 +557,8 @@ class Client:
         Returns:
             True if all orders were cancelled successfully
             False if there was an error
+        """
+    def create_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None):
+        """
+        Sends an advanced algo order such as the spreader.
         """

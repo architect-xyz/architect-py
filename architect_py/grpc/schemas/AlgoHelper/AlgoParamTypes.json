@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlgoParamTypes",
+  "description": "this is used to coerce creation of the params in the schema.json",
+  "type": "object",
+  "required": [
+    "spreader"
+  ],
+  "properties": {
+    "spreader": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "../definitions.json#/SpreaderParams"
+        },
+        {
+          "$ref": "../definitions.json#/SpreaderStatus"
+        }
+      ],
+      "maxItems": 2,
+      "minItems": 2
+    }
+  }
+}

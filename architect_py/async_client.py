@@ -6,7 +6,6 @@ from decimal import Decimal
 from typing import (
     Any,
     AsyncGenerator,
-    AsyncIterator,
     List,
     Literal,
     Optional,
@@ -16,7 +15,6 @@ from typing import (
     overload,
 )
 
-import grpc
 import pandas as pd
 
 # cannot do architect_py import * due to circular import
@@ -38,12 +36,11 @@ from architect_py.grpc.models.definitions import (
     OrderSource,
     OrderType,
     SortTickersBy,
+    SpreaderParams,
     TraderIdOrEmail,
+    TriggerLimitOrderType,
 )
-from architect_py.grpc.models.Orderflow.OrderflowRequest import (
-    OrderflowRequest_route,
-    OrderflowRequestUnannotatedResponseType,
-)
+from architect_py.grpc.orderflow import OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT, resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side
@@ -1418,30 +1415,17 @@ class AsyncClient:
 
     async def orderflow(
         self,
-        request_iterator: AsyncIterator[OrderflowRequest],
-    ) -> AsyncGenerator[Orderflow, None]:
+        max_queue_size: int = 1024,
+    ) -> OrderflowChannel:
         """
         A two-way channel for both order entry and listening to order updates (fills, acks, outs, etc.).
 
         This is considered the most efficient way to trade in this SDK.
 
-        Example:
-            See test_orderflow.py for an example.
-
-        This WILL block the event loop until the stream is closed.
+        This requires advanced knowledge of the SDK and asyncio, not recommended for beginners.
+        See the OrderflowManager documentation for more details.
         """
-        grpc_client = await self.core()
-        decoder = grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
-        stub: grpc.aio.StreamStreamMultiCallable = grpc_client.channel.stream_stream(
-            OrderflowRequest_route,
-            request_serializer=grpc_client.encoder().encode,
-            response_deserializer=decoder.decode,
-        )
-        call: grpc.aio._base_call.StreamStreamCall[OrderflowRequest, Orderflow] = stub(
-            request_iterator, metadata=(("authorization", f"Bearer {grpc_client.jwt}"),)
-        )
-        async for update in call:
-            yield update
+        return OrderflowChannel(self, max_queue_size=max_queue_size)
 
     async def stream_orderflow(
         self,
@@ -1475,9 +1459,27 @@ class AsyncClient:
         **kwargs,
     ) -> Order:
         """
-        @deprecated(reason="Use place_limit_order instead")
+        @deprecated(reason="Use place_order instead")
         """
-        return await self.place_limit_order(*args, **kwargs)
+        logging.warning(
+            "send_limit_order is deprecated, use place_order instead. "
+            "This will be removed in a future version."
+        )
+        return await self.place_order(*args, **kwargs)
+
+    async def place_limit_order(
+        self,
+        *args,
+        **kwargs,
+    ) -> Order:
+        """
+        @deprecated(reason="Use place_order instead")
+        """
+        logging.warning(
+            "place_limit_order is deprecated, use place_order instead. "
+            "This will be removed in a future version."
+        )
+        return await self.place_order(*args, **kwargs)
 
     async def place_orders(
         self, order_requests: Sequence[PlaceOrderRequest]
@@ -1521,7 +1523,7 @@ class AsyncClient:
 
         return res
 
-    async def place_limit_order(
+    async def place_order(
         self,
         *,
         id: Optional[OrderId] = None,
@@ -1535,8 +1537,10 @@ class AsyncClient:
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
-        post_only: bool = False,
+        post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
+        stop_loss: Optional[TriggerLimitOrderType] = None,
+        take_profit_price: Optional[Decimal] = None,
         **kwargs: Any,
     ) -> Order:
         """
@@ -1561,6 +1565,8 @@ class AsyncClient:
                 for when sending order for another user, not relevant for vast majority of users
             post_only: whether the order should be post only, not supported by all exchanges
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
+            stop_loss_price: the stop loss price for a bracket order
+            profit_price: the take profit price for a bracket order
         Returns:
             the Order object for the order
             The order.status should  be "PENDING" until the order is "OPEN" / "REJECTED" / "OUT" / "CANCELED" / "STALE"
@@ -1617,6 +1623,8 @@ class AsyncClient:
             execution_venue=execution_venue,
             post_only=post_only,
             trigger_price=trigger_price,
+            stop_loss=stop_loss,
+            take_profit_price=take_profit_price,
         )
         res = await grpc_client.unary_unary(req)
         return res
@@ -1761,3 +1769,26 @@ class AsyncClient:
         # )
         # res = await grpc_client.unary_unary(req)
         # return True
+
+    async def create_algo_order(
+        self,
+        *,
+        params: SpreaderParams,
+        id: Optional[str] = None,
+        trader: Optional[str] = None,
+    ):
+        """
+        Sends an advanced algo order such as the spreader.
+        """
+        grpc_client = await self.core()
+
+        if isinstance(params, SpreaderParams):
+            algo = "SPREADER"
+        else:
+            raise ValueError(
+                "Unsupported algo type. Only SpreaderParams is supported for now."
+            )
+
+        req = CreateAlgoOrderRequest(algo=algo, params=params, id=id, trader=trader)
+        res = await grpc_client.unary_unary(req)
+        return res

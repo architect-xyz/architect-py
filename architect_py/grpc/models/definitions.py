@@ -914,6 +914,9 @@ class FillKind(int, Enum):
     Correction = 2
 
 
+HumanDuration = str
+
+
 class Unit(str, Enum):
     base = "base"
     quote = "quote"
@@ -1203,6 +1206,17 @@ class SnapshotOrUpdateForStringAndString2(Struct, omit_defaults=True):
 SnapshotOrUpdateForStringAndString = Union[
     SnapshotOrUpdateForStringAndString1, SnapshotOrUpdateForStringAndString2
 ]
+
+
+class SpreaderPhase(str, Enum):
+    ScanningForTakes = "ScanningForTakes"
+    AwaitingOrderResults = "AwaitingOrderResults"
+    OrderLockout = "OrderLockout"
+    NoBbo = "NoBbo"
+    NotEnoughBboSize = "NotEnoughBboSize"
+    DoneOverfilled = "DoneOverfilled"
+    DoneAndFullyHedged = "DoneAndFullyHedged"
+    DoneAndGivingUp = "DoneAndGivingUp"
 
 
 class SimpleDecimal(Struct, omit_defaults=True):
@@ -2299,6 +2313,100 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo = Uni
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo1,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo2,
 ]
+
+
+class SpreaderParams(Struct, omit_defaults=True):
+    dir: OrderDir
+    leg1_marketdata_venue: str
+    leg1_price_offset: Decimal
+    leg1_price_ratio: Decimal
+    leg1_quantity_ratio: Decimal
+    leg1_symbol: str
+    leg2_marketdata_venue: str
+    leg2_price_offset: Decimal
+    leg2_price_ratio: Decimal
+    leg2_quantity_ratio: Decimal
+    leg2_symbol: str
+    limit_price: Decimal
+    order_lockout: HumanDuration
+    quantity: Decimal
+    leg1_account: Optional[AccountIdOrName] = None
+    leg1_execution_venue: Optional[str] = None
+    leg2_account: Optional[AccountIdOrName] = None
+    leg2_execution_venue: Optional[str] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        dir: OrderDir,
+        leg1_marketdata_venue: str,
+        leg1_price_offset: Decimal,
+        leg1_price_ratio: Decimal,
+        leg1_quantity_ratio: Decimal,
+        leg1_symbol: str,
+        leg2_marketdata_venue: str,
+        leg2_price_offset: Decimal,
+        leg2_price_ratio: Decimal,
+        leg2_quantity_ratio: Decimal,
+        leg2_symbol: str,
+        limit_price: Decimal,
+        order_lockout: HumanDuration,
+        quantity: Decimal,
+        leg1_account: Optional[AccountIdOrName] = None,
+        leg1_execution_venue: Optional[str] = None,
+        leg2_account: Optional[AccountIdOrName] = None,
+        leg2_execution_venue: Optional[str] = None,
+    ):
+        return cls(
+            dir,
+            leg1_marketdata_venue,
+            leg1_price_offset,
+            leg1_price_ratio,
+            leg1_quantity_ratio,
+            leg1_symbol,
+            leg2_marketdata_venue,
+            leg2_price_offset,
+            leg2_price_ratio,
+            leg2_quantity_ratio,
+            leg2_symbol,
+            limit_price,
+            order_lockout,
+            quantity,
+            leg1_account,
+            leg1_execution_venue,
+            leg2_account,
+            leg2_execution_venue,
+        )
+
+    def __str__(self) -> str:
+        return f"SpreaderParams(dir={self.dir},leg1_marketdata_venue={self.leg1_marketdata_venue},leg1_price_offset={self.leg1_price_offset},leg1_price_ratio={self.leg1_price_ratio},leg1_quantity_ratio={self.leg1_quantity_ratio},leg1_symbol={self.leg1_symbol},leg2_marketdata_venue={self.leg2_marketdata_venue},leg2_price_offset={self.leg2_price_offset},leg2_price_ratio={self.leg2_price_ratio},leg2_quantity_ratio={self.leg2_quantity_ratio},leg2_symbol={self.leg2_symbol},limit_price={self.limit_price},order_lockout={self.order_lockout},quantity={self.quantity},leg1_account={self.leg1_account},leg1_execution_venue={self.leg1_execution_venue},leg2_account={self.leg2_account},leg2_execution_venue={self.leg2_execution_venue})"
+
+
+class SpreaderStatus(Struct, omit_defaults=True):
+    current_spreader_phase: SpreaderPhase
+    leg1_fill_quantity: Decimal
+    leg2_fill_quantity: Decimal
+    implied_spread_vwap: Optional[Decimal] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        current_spreader_phase: SpreaderPhase,
+        leg1_fill_quantity: Decimal,
+        leg2_fill_quantity: Decimal,
+        implied_spread_vwap: Optional[Decimal] = None,
+    ):
+        return cls(
+            current_spreader_phase,
+            leg1_fill_quantity,
+            leg2_fill_quantity,
+            implied_spread_vwap,
+        )
+
+    def __str__(self) -> str:
+        return f"SpreaderStatus(current_spreader_phase={self.current_spreader_phase},leg1_fill_quantity={self.leg1_fill_quantity},leg2_fill_quantity={self.leg2_fill_quantity},implied_spread_vwap={self.implied_spread_vwap})"
 
 
 class Account(Struct, omit_defaults=True):
