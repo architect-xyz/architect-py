@@ -358,12 +358,25 @@ def add_post_processing_to_unflattened_types(content: str, json_data: dict) -> s
     )
     union_keys = set.union(*map(set, enum_variant_to_other_required_keys.values()))
 
+    if_statement_used = False
     for i, (enum_value, required_keys) in enumerate(
         enum_variant_to_other_required_keys.items()
     ):
-        conditional = "if" if i == 0 else "elif"
+        conditional = "elif" if if_statement_used else "if"
         title = properties[enum_tag]["title"]
         req_keys_subset = [key for key in required_keys if key not in common_keys]
+
+        if not req_keys_subset:
+            continue
+
+        req_keys_titles = []
+        for key in req_keys_subset:
+            key_title = properties[key].get("title")
+            if key_title is None:
+                req_keys_titles.append(key)
+            else:
+                req_keys_titles.append(f"{key_title} ({key})")
+
         should_be_empty_keys: list[str] = list(union_keys - set(required_keys))
 
         req_keys_subset.sort()
@@ -373,11 +386,13 @@ def add_post_processing_to_unflattened_types(content: str, json_data: dict) -> s
             f'        {conditional} self.{enum_tag} == "{enum_value}":\n'
             f"            if not all(getattr(self, key) is not None for key in {req_keys_subset}):\n"
             f'                raise ValueError(f"When field {enum_tag} ({title}) is of value {enum_value}, '
-            f'class {class_title} requires fields {req_keys_subset}")\n'
+            f'class {class_title} requires fields {req_keys_titles}")\n'
             f"            elif any(getattr(self, key) is not None for key in {should_be_empty_keys}):\n"
             f'                raise ValueError(f"When field {enum_tag} ({title}) is of value {enum_value}, '
             f'class {class_title} should not have fields {should_be_empty_keys}")\n'
         )
+
+        if_statement_used = True
 
     return "".join(lines)
 

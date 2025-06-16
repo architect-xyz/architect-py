@@ -16,6 +16,32 @@
       ],
       "format": "date-time"
     },
+    "granularity": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountHistoryGranularity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "description": "Default maximum of 100 data points.  If the number of data points between from_inclusive and to_exclusive exceeds the limit, the response will be truncated.  Data is always returned in descending timestamp order.",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32"
+    },
+    "time_of_day": {
+      "description": "For daily granularity, the UTC time of day to use for each day.\n\nCurrently the seconds and subseconds parts are ignored.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "time"
+    },
     "to_exclusive": {
       "type": [
         "string",

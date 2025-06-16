@@ -13,7 +13,15 @@ from msgspec import Meta, Struct
 class L1BookSnapshot(Struct, omit_defaults=True):
     s: Annotated[str, Meta(title="symbol")]
     tn: Annotated[int, Meta(ge=0, title="timestamp_ns")]
-    ts: Annotated[int, Meta(title="timestamp")]
+    ts: Annotated[
+        int,
+        Meta(
+            description="Time that the exchange stamped the message", title="timestamp"
+        ),
+    ]
+    """
+    Time that the exchange stamped the message
+    """
     a: Optional[
         Annotated[
             List[Decimal], Meta(description="(price, quantity)", title="best_ask")
@@ -34,13 +42,13 @@ class L1BookSnapshot(Struct, omit_defaults=True):
         Annotated[
             Optional[int],
             Meta(
-                description="Time that Architect feed received the message; only set if streaming from direct L1 feeds",
+                description="Time that Architect feed received the message that updated the BBO",
                 title="recv_time",
             ),
         ]
     ] = None
     """
-    Time that Architect feed received the message; only set if streaming from direct L1 feeds
+    Time that Architect feed received the message that updated the BBO
     """
     rtn: Optional[Annotated[Optional[int], Meta(title="recv_time_ns")]] = None
 

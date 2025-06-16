@@ -76,6 +76,22 @@ scalar ExecutionVenue
 """
 scalar LocalDateTime
 
+"""
+  Clock time within a given date (without time zone) in `HH:mm[:ss[.SSS]]`
+  format.
+  
+  All minutes are assumed to have exactly 60 seconds; no attempt is made to
+  handle leap seconds (either positive or negative).
+  
+  [`LocalTime` scalar][1] compliant.
+  
+  See also [`chrono::NaiveTime`][2] for details.
+  
+  [1]: https://graphql-scalars.dev/docs/scalars/local-time
+  [2]: https://docs.rs/chrono/latest/chrono/naive/struct.NaiveTime.html
+"""
+scalar LocalTime
+
 "A venue that provides marketdata, e.g. COINBASE, DATABENTO, XIGNITE, etc."
 scalar MarketdataVenue
 

@@ -1,7 +1,7 @@
 from types import UnionType
 from typing import Any, AsyncIterator, Sequence, Tuple
 
-import grpc
+import grpc.aio
 import msgspec
 
 from . import *
@@ -17,6 +17,8 @@ class GrpcClient:
     endpoint: str
     channel: grpc.aio.Channel
     jwt: str | None = None
+    as_user: str | None = None
+    as_role: str | None = None
 
     def __init__(
         self,
@@ -25,9 +27,13 @@ class GrpcClient:
         port: int,
         use_ssl: bool = False,
         options: Sequence[Tuple[str, Any]] | None = None,
+        as_user: str | None = None,
+        as_role: str | None = None,
     ):
         scheme = "https" if use_ssl else "http"
         self.endpoint = f"{scheme}://{host}:{port}"
+        self.as_user = as_user
+        self.as_role = as_role
         if use_ssl:
             credentials = grpc.ssl_channel_credentials()
             self.channel = grpc.aio.secure_channel(
@@ -38,6 +44,16 @@ class GrpcClient:
 
     def set_jwt(self, jwt: str | None):
         self.jwt = jwt
+
+    def metadata(self) -> Sequence[Tuple[str, str]]:
+        metadata = []
+        if self.jwt is not None:
+            metadata.append(("authorization", f"Bearer {self.jwt}"))
+        if self.as_user is not None:
+            metadata.append(("x-architect-user", self.as_user))
+        if self.as_role is not None:
+            metadata.append(("x-architect-role", self.as_role))
+        return metadata
 
     async def close(self):
         await self.channel.close()
@@ -59,6 +75,8 @@ class GrpcClient:
     async def unary_unary(
         self,
         request: RequestType[ResponseTypeGeneric],
+        *,
+        no_metadata: bool = False,
     ) -> ResponseTypeGeneric:
         """
         Generic function for making a unary RPC call to the gRPC server.
@@ -75,10 +93,10 @@ class GrpcClient:
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        if self.jwt is not None:
-            metadata = (("authorization", f"Bearer {self.jwt}"),)
-        else:
+        if no_metadata:
             metadata = ()
+        else:
+            metadata = self.metadata()
         return await stub(request, metadata=metadata)
 
     async def unary_stream(
@@ -100,11 +118,8 @@ class GrpcClient:
             request_serializer=encoder.encode,
             response_deserializer=decoder.decode,
         )
-        if self.jwt is not None:
-            metadata = (("authorization", f"Bearer {self.jwt}"),)
-        else:
-            metadata = ()
-        call: grpc.aio._base_call.UnaryStreamCall[
+        metadata = self.metadata()
+        call: grpc.aio.UnaryStreamCall[
             RequestType[ResponseTypeGeneric], ResponseTypeGeneric
         ] = stub(request, metadata=metadata)
         async for update in call:

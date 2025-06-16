@@ -6,7 +6,6 @@ from decimal import Decimal
 from typing import (
     Any,
     AsyncGenerator,
-    AsyncIterator,
     List,
     Literal,
     Optional,
@@ -16,7 +15,6 @@ from typing import (
     overload,
 )
 
-import grpc
 import pandas as pd
 
 # cannot do architect_py import * due to circular import
@@ -38,12 +36,11 @@ from architect_py.grpc.models.definitions import (
     OrderSource,
     OrderType,
     SortTickersBy,
+    SpreaderParams,
     TraderIdOrEmail,
+    TriggerLimitOrderType,
 )
-from architect_py.grpc.models.Orderflow.OrderflowRequest import (
-    OrderflowRequest_route,
-    OrderflowRequestUnannotatedResponseType,
-)
+from architect_py.grpc.orderflow import OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT, resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side
@@ -56,6 +53,8 @@ class AsyncClient:
     api_key: Optional[str] = None
     api_secret: Optional[str] = None
     paper_trading: bool
+    as_user: Optional[str] = None
+    as_role: Optional[str] = None
     graphql_client: GraphQLClient
     grpc_options: Sequence[Tuple[str, Any]] | None = None
     grpc_core: Optional[GrpcClient] = None
@@ -80,6 +79,8 @@ class AsyncClient:
         endpoint: str = "https://app.architect.co",
         graphql_port: Optional[int] = None,
         grpc_options: Sequence[Tuple[str, Any]] | None = None,
+        as_user: Optional[str] = None,
+        as_role: Optional[str] = None,
         **kwargs: Any,
     ) -> "AsyncClient":
         """
@@ -131,6 +132,8 @@ class AsyncClient:
             api_key=api_key,
             api_secret=api_secret,
             paper_trading=paper_trading,
+            as_user=as_user,
+            as_role=as_role,
             grpc_host=grpc_host,
             grpc_port=grpc_port,
             grpc_options=grpc_options,
@@ -153,6 +156,8 @@ class AsyncClient:
         api_key: Optional[str] = None,
         api_secret: Optional[str] = None,
         paper_trading: bool,
+        as_user: Optional[str] = None,
+        as_role: Optional[str] = None,
         grpc_host: str = "app.architect.co",
         grpc_port: int,
         grpc_options: Sequence[Tuple[str, Any]] | None = None,
@@ -184,6 +189,8 @@ class AsyncClient:
         self.api_key = api_key
         self.api_secret = api_secret
         self.paper_trading = paper_trading
+        self.as_user = as_user
+        self.as_role = as_role
         self.graphql_client = GraphQLClient(
             host=grpc_host,
             port=graphql_port,
@@ -193,7 +200,12 @@ class AsyncClient:
         )
         self.grpc_options = grpc_options
         self.grpc_core = GrpcClient(
-            host=grpc_host, port=grpc_port, use_ssl=use_ssl, options=grpc_options
+            host=grpc_host,
+            port=grpc_port,
+            use_ssl=use_ssl,
+            options=grpc_options,
+            as_user=as_user,
+            as_role=as_role,
         )
 
     async def close(self):
@@ -238,7 +250,9 @@ class AsyncClient:
         ):
             try:
                 req = CreateJwtRequest(api_key=self.api_key, api_secret=self.api_secret)
-                res: CreateJwtResponse = await self.grpc_core.unary_unary(req)
+                res: CreateJwtResponse = await self.grpc_core.unary_unary(
+                    req, no_metadata=True
+                )
                 self.jwt = res.jwt
                 # CR alee: actually read the JWT to get the expiration time;
                 # for now, we just "know" that the JWTs are granted for an hour
@@ -287,6 +301,8 @@ class AsyncClient:
                         port=grpc_port,
                         use_ssl=use_ssl,
                         options=self.grpc_options,
+                        as_user=self.as_user,
+                        as_role=self.as_role,
                     )
                 except Exception as e:
                     logging.error("Failed to set marketdata endpoint: %s", e)
@@ -304,6 +320,8 @@ class AsyncClient:
                 port=grpc_port,
                 use_ssl=use_ssl,
                 options=self.grpc_options,
+                as_user=self.as_user,
+                as_role=self.as_role,
             )
             logging.debug(
                 f"Setting marketdata endpoint for {venue}: {grpc_host}:{grpc_port} use_ssl={use_ssl}"
@@ -340,6 +358,8 @@ class AsyncClient:
                 port=grpc_port,
                 use_ssl=use_ssl,
                 options=self.grpc_options,
+                as_user=self.as_user,
+                as_role=self.as_role,
             )
         except Exception as e:
             logging.error("Failed to set hmart endpoint: %s", e)
@@ -379,6 +399,12 @@ class AsyncClient:
         """
         res = await self.graphql_client.user_id_query()
         return res.user_id, res.user_email
+
+    async def auth_info(self) -> AuthInfoResponse:
+        grpc_client = await self.core()
+        req = AuthInfoRequest()
+        res: AuthInfoResponse = await grpc_client.unary_unary(req)
+        return res
 
     def enable_orderflow(self):
         """
@@ -865,7 +891,11 @@ class AsyncClient:
         return res
 
     async def stream_l1_book_snapshots(
-        self, symbols: Sequence[TradableProduct | str], venue: Venue
+        self,
+        symbols: Sequence[TradableProduct | str],
+        venue: Venue,
+        *,
+        send_initial_snapshots: Optional[bool] = False,
     ) -> AsyncGenerator[L1BookSnapshot, None]:
         """
         Subscribe to the stream of L1BookSnapshots for a symbol.
@@ -876,7 +906,11 @@ class AsyncClient:
             venue: the venue to subscribe to
         """
         grpc_client = await self.marketdata(venue)
-        req = SubscribeL1BookSnapshotsRequest(symbols=list(symbols), venue=venue)
+        req = SubscribeL1BookSnapshotsRequest(
+            symbols=list(symbols),
+            venue=venue,
+            send_initial_snapshots=send_initial_snapshots,
+        )
         async for res in grpc_client.unary_stream(req):
             yield res
 
@@ -1381,30 +1415,17 @@ class AsyncClient:
 
     async def orderflow(
         self,
-        request_iterator: AsyncIterator[OrderflowRequest],
-    ) -> AsyncGenerator[Orderflow, None]:
+        max_queue_size: int = 1024,
+    ) -> OrderflowChannel:
         """
         A two-way channel for both order entry and listening to order updates (fills, acks, outs, etc.).
 
         This is considered the most efficient way to trade in this SDK.
 
-        Example:
-            See test_orderflow.py for an example.
-
-        This WILL block the event loop until the stream is closed.
+        This requires advanced knowledge of the SDK and asyncio, not recommended for beginners.
+        See the OrderflowManager documentation for more details.
         """
-        grpc_client = await self.core()
-        decoder = grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
-        stub: grpc.aio.StreamStreamMultiCallable = grpc_client.channel.stream_stream(
-            OrderflowRequest_route,
-            request_serializer=grpc_client.encoder().encode,
-            response_deserializer=decoder.decode,
-        )
-        call: grpc.aio._base_call.StreamStreamCall[OrderflowRequest, Orderflow] = stub(
-            request_iterator, metadata=(("authorization", f"Bearer {grpc_client.jwt}"),)
-        )
-        async for update in call:
-            yield update
+        return OrderflowChannel(self, max_queue_size=max_queue_size)
 
     async def stream_orderflow(
         self,
@@ -1438,9 +1459,27 @@ class AsyncClient:
         **kwargs,
     ) -> Order:
         """
-        @deprecated(reason="Use place_limit_order instead")
+        @deprecated(reason="Use place_order instead")
         """
-        return await self.place_limit_order(*args, **kwargs)
+        logging.warning(
+            "send_limit_order is deprecated, use place_order instead. "
+            "This will be removed in a future version."
+        )
+        return await self.place_order(*args, **kwargs)
+
+    async def place_limit_order(
+        self,
+        *args,
+        **kwargs,
+    ) -> Order:
+        """
+        @deprecated(reason="Use place_order instead")
+        """
+        logging.warning(
+            "place_limit_order is deprecated, use place_order instead. "
+            "This will be removed in a future version."
+        )
+        return await self.place_order(*args, **kwargs)
 
     async def place_orders(
         self, order_requests: Sequence[PlaceOrderRequest]
@@ -1484,13 +1523,13 @@ class AsyncClient:
 
         return res
 
-    async def place_limit_order(
+    async def place_order(
         self,
         *,
         id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
         execution_venue: Optional[str] = None,
-        dir: Optional[OrderDir] = None,
+        dir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
         order_type: OrderType = OrderType.LIMIT,
@@ -1498,12 +1537,14 @@ class AsyncClient:
         price_round_method: Optional[TickRoundMethod] = None,
         account: Optional[str] = None,
         trader: Optional[str] = None,
-        post_only: bool = False,
+        post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
+        stop_loss: Optional[TriggerLimitOrderType] = None,
+        take_profit_price: Optional[Decimal] = None,
         **kwargs: Any,
     ) -> Order:
         """
-        Sends a regular limit order.
+        Sends a regular order.
 
         Args:
             id: in case user wants to generate their own order id, otherwise it will be generated automatically
@@ -1524,6 +1565,8 @@ class AsyncClient:
                 for when sending order for another user, not relevant for vast majority of users
             post_only: whether the order should be post only, not supported by all exchanges
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
+            stop_loss_price: the stop loss price for a bracket order.
+            profit_price: the take profit price for a bracket order.
         Returns:
             the Order object for the order
             The order.status should  be "PENDING" until the order is "OPEN" / "REJECTED" / "OUT" / "CANCELED" / "STALE"
@@ -1580,6 +1623,8 @@ class AsyncClient:
             execution_venue=execution_venue,
             post_only=post_only,
             trigger_price=trigger_price,
+            stop_loss=stop_loss,
+            take_profit_price=take_profit_price,
         )
         res = await grpc_client.unary_unary(req)
         return res
@@ -1724,3 +1769,26 @@ class AsyncClient:
         # )
         # res = await grpc_client.unary_unary(req)
         # return True
+
+    async def create_algo_order(
+        self,
+        *,
+        params: SpreaderParams,
+        id: Optional[str] = None,
+        trader: Optional[str] = None,
+    ):
+        """
+        Sends an advanced algo order such as the spreader.
+        """
+        grpc_client = await self.core()
+
+        if isinstance(params, SpreaderParams):
+            algo = "SPREADER"
+        else:
+            raise ValueError(
+                "Unsupported algo type. Only SpreaderParams is supported for now."
+            )
+
+        req = CreateAlgoOrderRequest(algo=algo, params=params, id=id, trader=trader)
+        res = await grpc_client.unary_unary(req)
+        return res

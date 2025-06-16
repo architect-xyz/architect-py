@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuthInfoResponse",
+  "type": "object",
+  "properties": {
+    "original_user_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/UserId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "user_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/UserId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

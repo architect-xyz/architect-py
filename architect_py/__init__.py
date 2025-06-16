@@ -1,12 +1,13 @@
 # ruff: noqa:I001
 
-__version__ = "5.1.4b1"
+__version__ = "5.1.4rc1"
 
 from .utils.nearest_tick import TickRoundMethod
 from .async_client import AsyncClient
 from .client import Client
 from .common_types import OrderDir, TradableProduct, TimeInForce, Venue
 from .grpc.models.definitions import (
+    AccountHistoryGranularity,
     AccountIdOrName,
     AccountPosition,
     AccountStatistics,
@@ -32,12 +33,14 @@ from .grpc.models.definitions import (
     SortTickersBy,
     Statement,
     TraderIdOrEmail,
+    TriggerLimitOrderType,
     UserId,
     Withdrawal,
     AccountPermissions,
     AliasKind,
     DerivativeKind,
     FillKind,
+    HumanDuration,
     Unit,
     MinOrderQuantityUnit,
     OptionsExerciseType,
@@ -55,6 +58,7 @@ from .grpc.models.definitions import (
     SnapshotOrUpdateForStringAndProductCatalogInfo2,
     SnapshotOrUpdateForStringAndString1,
     SnapshotOrUpdateForStringAndString2,
+    SpreaderPhase,
     SimpleDecimal,
     Varying1,
     Varying,
@@ -82,6 +86,8 @@ from .grpc.models.definitions import (
     SnapshotOrUpdateForStringAndOptionsSeriesInfo2,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo1,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo2,
+    SpreaderParams,
+    SpreaderStatus,
     Account,
     FutureSpread,
     Option,
@@ -110,6 +116,9 @@ from .grpc.models.Algo.StartAlgoRequest import StartAlgoRequest
 from .grpc.models.Algo.StartAlgoResponse import StartAlgoResponse
 from .grpc.models.Algo.StopAlgoRequest import StopAlgoRequest
 from .grpc.models.Algo.StopAlgoResponse import StopAlgoResponse
+from .grpc.models.AlgoHelper.AlgoParamTypes import AlgoParamTypes
+from .grpc.models.Auth.AuthInfoRequest import AuthInfoRequest
+from .grpc.models.Auth.AuthInfoResponse import AuthInfoResponse
 from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
 from .grpc.models.Auth.CreateJwtResponse import CreateJwtResponse
 from .grpc.models.Boss.DepositsRequest import DepositsRequest
@@ -236,6 +245,7 @@ from .grpc.models.Symbology.UploadSymbologyResponse import UploadSymbologyRespon
 __all__ = [
     "AberrantFill",
     "Account",
+    "AccountHistoryGranularity",
     "AccountHistoryRequest",
     "AccountHistoryResponse",
     "AccountIdOrName",
@@ -255,9 +265,12 @@ __all__ = [
     "AlgoOrderStatus",
     "AlgoOrdersRequest",
     "AlgoOrdersResponse",
+    "AlgoParamTypes",
     "AliasKind",
     "ArrayOfL1BookSnapshot",
     "AsyncClient",
+    "AuthInfoRequest",
+    "AuthInfoResponse",
     "Cancel",
     "CancelAllOrdersRequest",
     "CancelAllOrdersResponse",
@@ -315,6 +328,7 @@ __all__ = [
     "HistoricalFillsResponse",
     "HistoricalOrdersRequest",
     "HistoricalOrdersResponse",
+    "HumanDuration",
     "Index",
     "L1BookSnapshot",
     "L1BookSnapshotRequest",
@@ -394,6 +408,9 @@ __all__ = [
     "SnapshotOrUpdateForStringAndString2",
     "SortTickersBy",
     "SpreadLeg",
+    "SpreaderParams",
+    "SpreaderPhase",
+    "SpreaderStatus",
     "StartAlgoRequest",
     "StartAlgoResponse",
     "Statement",
@@ -428,6 +445,7 @@ __all__ = [
     "TradableProduct",
     "Trade",
     "TraderIdOrEmail",
+    "TriggerLimitOrderType",
     "Unit",
     "Unknown",
     "UploadProductCatalogRequest",

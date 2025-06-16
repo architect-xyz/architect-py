@@ -11,6 +11,7 @@
 - **`hmart`**: Get the hmart (historical marketdata service) client.
 - **`core`**: Get the core client.
 - **`who_am_i`**: Gets the user_id and user_email for the user that the API key belongs to.
+- **`auth_info`**
 - **`cpty_status`**: Get cpty status.
 
 ---
@@ -71,10 +72,11 @@
 ### 📣 Order entry
 
 - **`place_orders`**: A low level function to place multiple orders in a single function.
-- **`place_limit_order`**: Sends a regular limit order.
+- **`place_order`**: Sends a regular order.
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.
 - **`cancel_order`**: Cancels an order by order id.
 - **`cancel_all_orders`**: Cancels all open orders.
+- **`create_algo_order`**: Sends an advanced algo order such as the spreader.
 
 ---
 
