@@ -1529,7 +1529,7 @@ class AsyncClient:
         id: Optional[OrderId] = None,
         symbol: TradableProduct | str,
         execution_venue: Optional[str] = None,
-        dir: Optional[OrderDir] = None,
+        dir: OrderDir,
         quantity: Decimal,
         limit_price: Decimal,
         order_type: OrderType = OrderType.LIMIT,
@@ -1544,7 +1544,7 @@ class AsyncClient:
         **kwargs: Any,
     ) -> Order:
         """
-        Sends a regular limit order.
+        Sends a regular order.
 
         Args:
             id: in case user wants to generate their own order id, otherwise it will be generated automatically
@@ -1565,8 +1565,8 @@ class AsyncClient:
                 for when sending order for another user, not relevant for vast majority of users
             post_only: whether the order should be post only, not supported by all exchanges
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
-            stop_loss_price: the stop loss price for a bracket order
-            profit_price: the take profit price for a bracket order
+            stop_loss_price: the stop loss price for a bracket order.
+            profit_price: the take profit price for a bracket order.
         Returns:
             the Order object for the order
             The order.status should  be "PENDING" until the order is "OPEN" / "REJECTED" / "OUT" / "CANCELED" / "STALE"

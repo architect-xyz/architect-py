@@ -117,7 +117,6 @@ from .grpc.models.Algo.StartAlgoResponse import StartAlgoResponse
 from .grpc.models.Algo.StopAlgoRequest import StopAlgoRequest
 from .grpc.models.Algo.StopAlgoResponse import StopAlgoResponse
 from .grpc.models.AlgoHelper.AlgoParamTypes import AlgoParamTypes
-from .grpc.models.AlgoHelper.CoerceAlgoParamTypes import CoerceAlgoParamTypes
 from .grpc.models.Auth.AuthInfoRequest import AuthInfoRequest
 from .grpc.models.Auth.AuthInfoResponse import AuthInfoResponse
 from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
@@ -281,7 +280,6 @@ __all__ = [
     "Candle",
     "CandleWidth",
     "Client",
-    "CoerceAlgoParamTypes",
     "Commodity",
     "ConfigRequest",
     "ConfigResponse",
