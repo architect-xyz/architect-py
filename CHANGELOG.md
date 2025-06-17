@@ -1,31 +1,31 @@
 # 5.1.4
 
 - Add grpc_options to AsyncClient and Client constructors to allow customization of gRPC channels
-- Renamed place_limit_order with place_order. place_limit_order is deprecated
+- Deprecated place_limit_order in favor of place_order. Dir is now required.
 - Added algo types and create_algo_order 
-- Added easy interface for accessing orderflow bi-directional stream, use client.orderflow() to access
-- added bracket and market orders
-- paper trading should be active now for all order types except Bracket
+- Added easy interface for accessing orderflow bi-directional stream, use client.orderflow() / OrderflowChannel to access
+- Added bracket and market orders to OrderType
+- Paper trading should be active very soon for all order types except Bracket
 - Add as_user and as_role to AsyncClient and Client constructors
-- Add auth_info endpoint 
-- various small type fixes
-- add send_initial_snapshots to stream_l1_book_snapshots
+- Add auth_info endpoint
+- Various small type fixes
+- Add send_initial_snapshots to stream_l1_book_snapshots
 
 # 5.1.3
 - Fix stream_orderflow endpoint
 - Add cpty_status endpoint
 
 # 5.1.2
-- paper trading mode now CORRECTLY sets the port automatically
-- fixed get_front_future
-- place_orders is a new low level function oto place multiple orders in a single function
+- Paper trading mode now CORRECTLY sets the port automatically
+- Fixed get_front_future
+- Place_orders is a new low level function oto place multiple orders in a single function
 
 
 # 5.1.1
 This patch contains only fixes:
-- paper trading mode now sets the port automatically
-- fixed sys.excepthook when a script closes via the Client.close() function. This is cosmetic though and is for reducing log lines.
-- fix serializing TradableProduct vs str
+- Paper trading mode now sets the port automatically
+- Fixed sys.excepthook when a script closes via the Client.close() function. This is cosmetic though and is for reducing log lines.
+- Fix serializing TradableProduct vs str
 
 # 5.1.0
 - Added a type-checker-friendly way to get enum-like constants + a payload-carrying variant (GTD) in one class for TimeInForce
@@ -39,14 +39,14 @@ This patch contains only fixes:
 
 # 5.0.0
 
-- refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
-- as a consequence, many marketdata methods require a `venue` argument
-- some methods renamed:
-  - send_limit_order -> place_limit_order
-- moved some directories around, esp auto-generated files
-- added justfile and switched to ruff for linting and formatting
-- switched to pyright for typechecking
-- in AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
+- Refactor AsyncClient to be more gRPC-centric, leveraging new dynamic marketdata endpoint discovery
+- As a consequence, many marketdata methods require a `venue` argument
+- Some methods renamed:
+  - Send_limit_order -> place_limit_order
+- Moved some directories around, esp auto-generated files
+- Added justfile and switched to ruff for linting and formatting
+- Switched to pyright for typechecking
+- In AsyncClient, replaced functions in Account Management, Order Management, and Order Entry with their grpc counterparts
 - Moved around some of the subscription stream types (e.g. orderflow) from the grpc_client to the AsyncClient 
 
 Migration from v3.2.2:

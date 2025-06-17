@@ -155,10 +155,16 @@ class Ticker(Struct, omit_defaults=True):
 
     @property
     def datetime(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in UTC.
+        """
         return datetime.fromtimestamp(self.ts, tz=timezone.utc)
 
     @property
     def datetime_local(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in local time.
+        """
         return datetime.fromtimestamp(self.ts)
 
     @property
