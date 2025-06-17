@@ -93,12 +93,18 @@ class {{ class_name }}:
     def {{ field.extras.title }}(self, value: {{ field.type_hint }}) -> None:
         self.{{ field.name }} = value
 
-    {%- if field.extras.title == "timestamp" %}
+    {%- if (field.extras.title == "timestamp" or field.extras.title == "trade_time") and field.type_hint == "int" %}
     @property
     def datetime(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in UTC.
+        """
         return datetime.fromtimestamp(self.{{ field.name }}, tz=timezone.utc)
     @property
     def datetime_local(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in local time.
+        """
         return datetime.fromtimestamp(self.{{ field.name }})
     {%- endif %}
 {%- endfor %}

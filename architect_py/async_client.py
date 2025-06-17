@@ -1531,7 +1531,7 @@ class AsyncClient:
         execution_venue: Optional[str] = None,
         dir: OrderDir,
         quantity: Decimal,
-        limit_price: Decimal,
+        limit_price: Optional[Decimal] = None,
         order_type: OrderType = OrderType.LIMIT,
         time_in_force: TimeInForce = TimeInForce.DAY,
         price_round_method: Optional[TickRoundMethod] = None,
@@ -1563,7 +1563,7 @@ class AsyncClient:
                 While technically optional, for most order types, the account is required
             trader: the trader to send the order for, defaults to the user's trader
                 for when sending order for another user, not relevant for vast majority of users
-            post_only: whether the order should be post only, not supported by all exchanges
+            post_only: whether the order should be post only, NOT SUPPORTED BY ALL EXCHANGES (e.g. CME)
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
             stop_loss_price: the stop loss price for a bracket order.
             profit_price: the take profit price for a bracket order.
@@ -1576,14 +1576,7 @@ class AsyncClient:
         grpc_client = await self.core()
         assert quantity > 0, "quantity must be positive"
 
-        if dir is None:
-            if "odir" in kwargs and isinstance(kwargs["odir"], OrderDir):
-                logging.warning("odir is deprecated, use dir instead")
-                dir = kwargs["odir"]
-            else:
-                raise ValueError("dir is required")
-
-        if price_round_method is not None:
+        if limit_price is not None and price_round_method is not None:
             if execution_venue is None:
                 product_info = await self.get_product_info(symbol)
                 if product_info is None:

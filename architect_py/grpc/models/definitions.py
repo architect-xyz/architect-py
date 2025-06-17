@@ -422,10 +422,16 @@ class L2BookDiff(Struct, omit_defaults=True):
 
     @property
     def datetime(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in UTC.
+        """
         return datetime.fromtimestamp(self.ts, tz=timezone.utc)
 
     @property
     def datetime_local(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in local time.
+        """
         return datetime.fromtimestamp(self.ts)
 
 
@@ -1853,6 +1859,20 @@ class Fill(Struct, omit_defaults=True):
     @trade_time.setter
     def trade_time(self, value: int) -> None:
         self.ts = value
+
+    @property
+    def datetime(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in UTC.
+        """
+        return datetime.fromtimestamp(self.ts, tz=timezone.utc)
+
+    @property
+    def datetime_local(self) -> datetime:
+        """
+        Convenience property to get the timestamp as a datetime object in local time.
+        """
+        return datetime.fromtimestamp(self.ts)
 
     @property
     def execution_venue(self) -> str:
