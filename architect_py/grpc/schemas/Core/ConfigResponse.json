@@ -12,6 +12,13 @@
         "type": "string",
         "format": "uri"
       }
+    },
+    "symbology": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
     }
   }
 }

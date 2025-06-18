@@ -3,23 +3,28 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Optional
 
 from msgspec import Struct
 
 
 class ConfigResponse(Struct, omit_defaults=True):
     marketdata: Dict[str, str]
+    symbology: Optional[str] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         marketdata: Dict[str, str],
+        symbology: Optional[str] = None,
     ):
         return cls(
             marketdata,
+            symbology,
         )
 
     def __str__(self) -> str:
-        return f"ConfigResponse(marketdata={self.marketdata})"
+        return (
+            f"ConfigResponse(marketdata={self.marketdata},symbology={self.symbology})"
+        )
