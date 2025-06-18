@@ -44,7 +44,7 @@ from architect_py.grpc.orderflow import OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT, resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side
-from architect_py.utils.pandas import candles_to_dataframe
+from architect_py.utils.pandas import candles_to_dataframe, tickers_to_dataframe
 from architect_py.utils.price_bands import price_band_pairs
 from architect_py.utils.symbol_parsing import nominative_expiration
 
@@ -889,6 +889,34 @@ class AsyncClient:
         req = TickerRequest(symbol=str(symbol), venue=venue)
         res: Ticker = await grpc_client.unary_unary(req)
         return res
+
+    async def get_tickers(
+        self,
+        *,
+        venue: Venue,
+        symbols: Optional[Sequence[TradableProduct | str]] = None,
+        include_options: bool = False,
+        sort_by: Optional[SortTickersBy | str] = None,
+        offset: Optional[int] = None,
+        limit: Optional[int] = None,
+        as_dataframe: bool = False,
+    ) -> Union[Sequence[Ticker], pd.DataFrame]:
+        grpc_client = await self.marketdata(venue)
+        sort_by = SortTickersBy(sort_by) if sort_by else None
+        symbols = [str(symbol) for symbol in symbols] if symbols else None
+        req = TickersRequest.new(
+            offset=offset,
+            include_options=include_options,
+            sort_by=sort_by,
+            limit=limit,
+            symbols=symbols,
+            venue=venue,
+        )
+        res: TickersResponse = await grpc_client.unary_unary(req)
+        if as_dataframe:
+            return tickers_to_dataframe(res.tickers)
+        else:
+            return res.tickers
 
     async def stream_l1_book_snapshots(
         self,
