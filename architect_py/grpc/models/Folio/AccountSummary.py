@@ -15,7 +15,13 @@ from .. import definitions
 class AccountSummary(Struct, omit_defaults=True):
     account: str
     balances: Dict[str, Decimal]
-    positions: Dict[str, List[definitions.AccountPosition]]
+    positions: Annotated[
+        Dict[str, List[definitions.AccountPosition]],
+        Meta(description="map from TradableProduct to a list of AccountPosition"),
+    ]
+    """
+    map from TradableProduct to a list of AccountPosition
+    """
     timestamp: datetime
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]

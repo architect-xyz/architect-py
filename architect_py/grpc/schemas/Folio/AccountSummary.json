@@ -45,6 +45,7 @@
       "format": "decimal"
     },
     "positions": {
+      "description": "map from TradableProduct to a list of AccountPosition",
       "type": "object",
       "additionalProperties": {
         "type": "array",

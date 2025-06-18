@@ -370,6 +370,13 @@ class Client:
             account: account uuid or name
                 Examples: "00000000-0000-0000-0000-000000000000", "STONEX:000000/JDoe"
         '''
+    def get_positions(self, accounts: list[str] | None = None, trader: str | None = None) -> dict[str, Decimal]:
+        """
+        Get positions for the specified symbols.
+
+        Args:
+            symbols: list of symbol strings
+        """
     def get_account_summaries(self, accounts: list[str] | None = None, trader: str | None = None) -> list[AccountSummary]:
         """
         Get account summaries for accounts matching the filters.

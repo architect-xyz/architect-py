@@ -52,6 +52,7 @@
 
 - **`list_accounts`**: List accounts for the user that the API key belongs to.
 - **`get_account_summary`**: Get account summary, including balances, positions, pnls, etc.
+- **`get_positions`**: Get positions for the specified symbols.
 - **`get_account_summaries`**: Get account summaries for accounts matching the filters.
 - **`get_account_history`**: Get historical sequence of account summaries for the given account.
 
