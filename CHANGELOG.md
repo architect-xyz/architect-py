@@ -1,6 +1,7 @@
 # 5.1.5
 
 - Add get_tickers to AsyncClient
+- Add get_positions to AsyncClient
 
 # 5.1.4
 

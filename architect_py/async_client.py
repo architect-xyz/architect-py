@@ -901,6 +901,9 @@ class AsyncClient:
         limit: Optional[int] = None,
         as_dataframe: bool = False,
     ) -> Union[Sequence[Ticker], pd.DataFrame]:
+        """
+        Gets the tickers for a list of symbols.
+        """
         grpc_client = await self.marketdata(venue)
         sort_by = SortTickersBy(sort_by) if sort_by else None
         symbols = [str(symbol) for symbol in symbols] if symbols else None

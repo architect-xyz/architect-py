@@ -353,7 +353,10 @@ class Client:
         """
         Gets the ticker for a symbol.
         """
-    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, include_options: bool = False, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame: ...
+    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, include_options: bool = False, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame:
+        """
+        Gets the tickers for a list of symbols.
+        """
     def list_accounts(self) -> list[AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.

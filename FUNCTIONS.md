@@ -38,7 +38,7 @@
 - **`get_l1_book_snapshots`**: Gets the L1 book snapshots for a list of symbols.
 - **`get_l2_book_snapshot`**: Gets the L2 book snapshot for a symbol.
 - **`get_ticker`**: Gets the ticker for a symbol.
-- **`get_tickers`**
+- **`get_tickers`**: Gets the tickers for a list of symbols.
 - **`stream_l1_book_snapshots`**: Subscribe to the stream of L1BookSnapshots for a symbol.
 - **`stream_l2_book_updates`**: Subscribe to the stream of L2BookUpdates for a symbol.
 - **`subscribe_l1_book`**: Subscribe to the L1 stream for a symbol in the background.
