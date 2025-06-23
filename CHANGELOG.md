@@ -1,3 +1,7 @@
+# 5.1.5
+
+- Add get_tickers to AsyncClient
+
 # 5.1.4
 
 - Add grpc_options to AsyncClient and Client constructors to allow customization of gRPC channels

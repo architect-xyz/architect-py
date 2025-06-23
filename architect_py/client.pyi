@@ -14,7 +14,7 @@ from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
 from architect_py.utils.orderbook import update_orderbook_side as update_orderbook_side
-from architect_py.utils.pandas import candles_to_dataframe as candles_to_dataframe
+from architect_py.utils.pandas import candles_to_dataframe as candles_to_dataframe, tickers_to_dataframe as tickers_to_dataframe
 from architect_py.utils.price_bands import price_band_pairs as price_band_pairs
 from architect_py.utils.symbol_parsing import nominative_expiration as nominative_expiration
 from datetime import date, datetime
@@ -353,6 +353,7 @@ class Client:
         """
         Gets the ticker for a symbol.
         """
+    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, include_options: bool = False, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame: ...
     def list_accounts(self) -> list[AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.
