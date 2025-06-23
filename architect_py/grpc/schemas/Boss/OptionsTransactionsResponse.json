@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OptionsTransactionsResponse",
+  "type": "object",
+  "required": [
+    "options_transactions"
+  ],
+  "properties": {
+    "options_transactions": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/OptionsTransaction"
+      }
+    }
+  }
+}

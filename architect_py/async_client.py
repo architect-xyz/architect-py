@@ -893,6 +893,9 @@ class AsyncClient:
         limit: Optional[int] = None,
         as_dataframe: bool = False,
     ) -> Union[Sequence[Ticker], pd.DataFrame]:
+        """
+        Gets the tickers for a list of symbols.
+        """
         grpc_client = await self.marketdata(venue)
         sort_by = SortTickersBy(sort_by) if sort_by else None
         symbols = [str(symbol) for symbol in symbols] if symbols else None
@@ -1170,6 +1173,27 @@ class AsyncClient:
         req = AccountSummaryRequest(account=account)
         res = await grpc_client.unary_unary(req)
         return res
+
+    async def get_positions(
+        self,
+        accounts: Optional[list[str]] = None,
+        trader: Optional[str] = None,
+    ) -> dict[str, Decimal]:
+        """
+        Get positions for the specified symbols.
+
+        Args:
+            symbols: list of symbol strings
+        """
+        account_summaries = await self.get_account_summaries(
+            accounts=accounts, trader=trader
+        )
+        positions: dict[str, Decimal] = {}
+        for summary in account_summaries:
+            for symbol, summary in summary.positions.items():
+                for pos in summary:
+                    positions[symbol] = positions.get(symbol, Decimal(0)) + pos.quantity
+        return positions
 
     async def get_account_summaries(
         self,

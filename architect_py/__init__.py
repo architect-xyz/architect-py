@@ -1,6 +1,6 @@
 # ruff: noqa:I001
 
-__version__ = "5.1.4"
+__version__ = "5.1.5"
 
 from .utils.nearest_tick import TickRoundMethod
 from .async_client import AsyncClient
@@ -21,6 +21,7 @@ from .grpc.models.definitions import (
     HealthMetric,
     HealthStatus,
     L2BookDiff,
+    OptionsTransaction,
     OrderId,
     OrderOut,
     OrderRejectReason,
@@ -123,6 +124,8 @@ from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
 from .grpc.models.Auth.CreateJwtResponse import CreateJwtResponse
 from .grpc.models.Boss.DepositsRequest import DepositsRequest
 from .grpc.models.Boss.DepositsResponse import DepositsResponse
+from .grpc.models.Boss.OptionsTransactionsRequest import OptionsTransactionsRequest
+from .grpc.models.Boss.OptionsTransactionsResponse import OptionsTransactionsResponse
 from .grpc.models.Boss.RqdAccountStatisticsRequest import RqdAccountStatisticsRequest
 from .grpc.models.Boss.RqdAccountStatisticsResponse import RqdAccountStatisticsResponse
 from .grpc.models.Boss.StatementUrlRequest import StatementUrlRequest
@@ -356,6 +359,9 @@ __all__ = [
     "OptionsGreeks",
     "OptionsSeriesInfo",
     "OptionsSeriesInstance",
+    "OptionsTransaction",
+    "OptionsTransactionsRequest",
+    "OptionsTransactionsResponse",
     "Order",
     "OrderAck",
     "OrderCanceled",

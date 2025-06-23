@@ -2742,5 +2742,41 @@
         "format": "date-time"
       }
     }
+  },
+  "OptionsTransaction": {
+    "type": "object",
+    "required": [
+      "clearing_firm_account",
+      "quantity",
+      "timestamp",
+      "tradable_product",
+      "transaction_type"
+    ],
+    "properties": {
+      "clearing_firm_account": {
+        "type": "string"
+      },
+      "price": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "tradable_product": {
+        "type": "string"
+      },
+      "transaction_type": {
+        "type": "string"
+      }
+    }
   }
 }

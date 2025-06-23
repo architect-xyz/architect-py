@@ -435,6 +435,38 @@ class L2BookDiff(Struct, omit_defaults=True):
         return datetime.fromtimestamp(self.ts)
 
 
+class OptionsTransaction(Struct, omit_defaults=True):
+    clearing_firm_account: str
+    quantity: Decimal
+    timestamp: datetime
+    tradable_product: str
+    transaction_type: str
+    price: Optional[Decimal] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        clearing_firm_account: str,
+        quantity: Decimal,
+        timestamp: datetime,
+        tradable_product: str,
+        transaction_type: str,
+        price: Optional[Decimal] = None,
+    ):
+        return cls(
+            clearing_firm_account,
+            quantity,
+            timestamp,
+            tradable_product,
+            transaction_type,
+            price,
+        )
+
+    def __str__(self) -> str:
+        return f"OptionsTransaction(clearing_firm_account={self.clearing_firm_account},quantity={self.quantity},timestamp={self.timestamp},tradable_product={self.tradable_product},transaction_type={self.transaction_type},price={self.price})"
+
+
 OrderId = Annotated[
     str, Meta(description="System-unique, persistent order identifiers")
 ]

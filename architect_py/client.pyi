@@ -353,7 +353,10 @@ class Client:
         """
         Gets the ticker for a symbol.
         """
-    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, include_options: bool = False, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame: ...
+    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, include_options: bool = False, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame:
+        """
+        Gets the tickers for a list of symbols.
+        """
     def list_accounts(self) -> list[AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.
@@ -371,6 +374,13 @@ class Client:
             account: account uuid or name
                 Examples: "00000000-0000-0000-0000-000000000000", "STONEX:000000/JDoe"
         '''
+    def get_positions(self, accounts: list[str] | None = None, trader: str | None = None) -> dict[str, Decimal]:
+        """
+        Get positions for the specified symbols.
+
+        Args:
+            symbols: list of symbol strings
+        """
     def get_account_summaries(self, accounts: list[str] | None = None, trader: str | None = None) -> list[AccountSummary]:
         """
         Get account summaries for accounts matching the filters.
