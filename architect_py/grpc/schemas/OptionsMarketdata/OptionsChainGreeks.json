@@ -10,13 +10,13 @@
     "calls": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/OptionsGreeks"
+        "$ref": "../OptionsMarketdata/OptionsGreeks.json/#"
       }
     },
     "puts": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/OptionsGreeks"
+        "$ref": "../OptionsMarketdata/OptionsGreeks.json/#"
       }
     }
   }

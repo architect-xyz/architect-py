@@ -30,6 +30,7 @@ from .grpc.models.definitions import (
     OrderStatus,
     OrderType,
     ProductCatalogInfo,
+    PutOrCall,
     RqdAccountStatistics,
     SortTickersBy,
     Statement,
@@ -54,7 +55,6 @@ from .grpc.models.definitions import (
     Future,
     Perpetual,
     Unknown,
-    PutOrCall,
     SnapshotOrUpdateForStringAndProductCatalogInfo1,
     SnapshotOrUpdateForStringAndProductCatalogInfo2,
     SnapshotOrUpdateForStringAndString1,
@@ -74,8 +74,6 @@ from .grpc.models.definitions import (
     CptyLoginRequest,
     ExecutionInfo,
     Fill,
-    OptionsContract,
-    OptionsGreeks,
     OptionsSeriesInfo,
     OrderAck,
     OrderCanceled,
@@ -209,10 +207,18 @@ from .grpc.models.OptionsMarketdata.OptionsChainGreeksRequest import (
     OptionsChainGreeksRequest,
 )
 from .grpc.models.OptionsMarketdata.OptionsChainRequest import OptionsChainRequest
+from .grpc.models.OptionsMarketdata.OptionsContract import OptionsContract
+from .grpc.models.OptionsMarketdata.OptionsContractGreeksRequest import (
+    OptionsContractGreeksRequest,
+)
+from .grpc.models.OptionsMarketdata.OptionsContractRequest import OptionsContractRequest
 from .grpc.models.OptionsMarketdata.OptionsExpirations import OptionsExpirations
 from .grpc.models.OptionsMarketdata.OptionsExpirationsRequest import (
     OptionsExpirationsRequest,
 )
+from .grpc.models.OptionsMarketdata.OptionsGreeks import OptionsGreeks
+from .grpc.models.OptionsMarketdata.OptionsWraps import OptionsWraps
+from .grpc.models.OptionsMarketdata.OptionsWrapsRequest import OptionsWrapsRequest
 from .grpc.models.Orderflow.Dropcopy import Dropcopy
 from .grpc.models.Orderflow.DropcopyRequest import DropcopyRequest
 from .grpc.models.Orderflow.Orderflow import Orderflow
@@ -353,6 +359,8 @@ __all__ = [
     "OptionsChainGreeksRequest",
     "OptionsChainRequest",
     "OptionsContract",
+    "OptionsContractGreeksRequest",
+    "OptionsContractRequest",
     "OptionsExerciseType",
     "OptionsExpirations",
     "OptionsExpirationsRequest",
@@ -362,6 +370,8 @@ __all__ = [
     "OptionsTransaction",
     "OptionsTransactionsRequest",
     "OptionsTransactionsResponse",
+    "OptionsWraps",
+    "OptionsWrapsRequest",
     "Order",
     "OrderAck",
     "OrderCanceled",

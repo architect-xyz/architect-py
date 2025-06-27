@@ -13,6 +13,12 @@
     },
     "underlying": {
       "type": "string"
+    },
+    "wrap": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "route": "/json.architect.OptionsMarketdata/OptionsChainGreeks",

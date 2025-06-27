@@ -6,24 +6,31 @@ from architect_py.grpc.models.OptionsMarketdata.OptionsExpirations import (
     OptionsExpirations,
 )
 
+from typing import Optional
+
 from msgspec import Struct
 
 
 class OptionsExpirationsRequest(Struct, omit_defaults=True):
     underlying: str
+    wrap: Optional[str] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         underlying: str,
+        wrap: Optional[str] = None,
     ):
         return cls(
             underlying,
+            wrap,
         )
 
     def __str__(self) -> str:
-        return f"OptionsExpirationsRequest(underlying={self.underlying})"
+        return (
+            f"OptionsExpirationsRequest(underlying={self.underlying},wrap={self.wrap})"
+        )
 
     @staticmethod
     def get_response_type():

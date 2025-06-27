@@ -7,19 +7,19 @@ from typing import List
 
 from msgspec import Struct
 
-from .. import definitions
+from .OptionsGreeks import OptionsGreeks
 
 
 class OptionsChainGreeks(Struct, omit_defaults=True):
-    calls: List[definitions.OptionsGreeks]
-    puts: List[definitions.OptionsGreeks]
+    calls: List[OptionsGreeks]
+    puts: List[OptionsGreeks]
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        calls: List[definitions.OptionsGreeks],
-        puts: List[definitions.OptionsGreeks],
+        calls: List[OptionsGreeks],
+        puts: List[OptionsGreeks],
     ):
         return cls(
             calls,

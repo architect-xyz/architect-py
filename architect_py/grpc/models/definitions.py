@@ -12,8 +12,6 @@ from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
-from .Marketdata.Ticker import Ticker
-
 
 class AccountHistoryGranularity(str, Enum):
     FiveMinutes = "FiveMinutes"
@@ -636,6 +634,11 @@ class ProductCatalogInfo(Struct, omit_defaults=True):
         return f"ProductCatalogInfo(exchange={self.exchange},exchange_product={self.exchange_product},category={self.category},cqg_contract_symbol={self.cqg_contract_symbol},info_url={self.info_url},long_description={self.long_description},multiplier={self.multiplier},price_display_format={self.price_display_format},quote_currency={self.quote_currency},schedule_description={self.schedule_description},settle_method={self.settle_method},short_description={self.short_description},sub_category={self.sub_category})"
 
 
+class PutOrCall(str, Enum):
+    P = "P"
+    C = "C"
+
+
 class RqdAccountStatistics(Struct, omit_defaults=True):
     account_number: str
     account_type: Optional[str] = None
@@ -1150,11 +1153,6 @@ class Unknown(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"Unknown(product_type={self.product_type})"
-
-
-class PutOrCall(str, Enum):
-    P = "P"
-    C = "C"
 
 
 class SnapshotOrUpdateForStringAndProductCatalogInfo1(Struct, omit_defaults=True):
@@ -1985,85 +1983,6 @@ class Fill(Struct, omit_defaults=True):
     @exchange_fill_id.setter
     def exchange_fill_id(self, value: Optional[str]) -> None:
         self.xid = value
-
-
-class OptionsContract(Struct, omit_defaults=True):
-    expiration: date
-    put_or_call: PutOrCall
-    strike: Decimal
-    ticker: Ticker
-    underlying: str
-    in_the_money: Optional[bool] = None
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        expiration: date,
-        put_or_call: PutOrCall,
-        strike: Decimal,
-        ticker: Ticker,
-        underlying: str,
-        in_the_money: Optional[bool] = None,
-    ):
-        return cls(
-            expiration,
-            put_or_call,
-            strike,
-            ticker,
-            underlying,
-            in_the_money,
-        )
-
-    def __str__(self) -> str:
-        return f"OptionsContract(expiration={self.expiration},put_or_call={self.put_or_call},strike={self.strike},ticker={self.ticker},underlying={self.underlying},in_the_money={self.in_the_money})"
-
-
-class OptionsGreeks(Struct, omit_defaults=True):
-    delta: Decimal
-    expiration: date
-    gamma: Decimal
-    implied_volatility: Decimal
-    put_or_call: PutOrCall
-    rho: Decimal
-    strike: Decimal
-    symbol: str
-    theta: Decimal
-    underlying: str
-    vega: Decimal
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        delta: Decimal,
-        expiration: date,
-        gamma: Decimal,
-        implied_volatility: Decimal,
-        put_or_call: PutOrCall,
-        rho: Decimal,
-        strike: Decimal,
-        symbol: str,
-        theta: Decimal,
-        underlying: str,
-        vega: Decimal,
-    ):
-        return cls(
-            delta,
-            expiration,
-            gamma,
-            implied_volatility,
-            put_or_call,
-            rho,
-            strike,
-            symbol,
-            theta,
-            underlying,
-            vega,
-        )
-
-    def __str__(self) -> str:
-        return f"OptionsGreeks(delta={self.delta},expiration={self.expiration},gamma={self.gamma},implied_volatility={self.implied_volatility},put_or_call={self.put_or_call},rho={self.rho},strike={self.strike},symbol={self.symbol},theta={self.theta},underlying={self.underlying},vega={self.vega})"
 
 
 class OptionsSeriesInfo(Struct, omit_defaults=True):

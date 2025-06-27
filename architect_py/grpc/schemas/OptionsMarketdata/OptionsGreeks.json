@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OptionsGreeks",
+  "type": "object",
+  "required": [
+    "delta",
+    "expiration",
+    "gamma",
+    "implied_volatility",
+    "put_or_call",
+    "rho",
+    "strike",
+    "symbol",
+    "theta",
+    "underlying",
+    "vega"
+  ],
+  "properties": {
+    "delta": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "expiration": {
+      "type": "string",
+      "format": "date"
+    },
+    "gamma": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "implied_volatility": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "put_or_call": {
+      "$ref": "../definitions.json#/PutOrCall"
+    },
+    "rho": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "strike": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "symbol": {
+      "type": "string"
+    },
+    "theta": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "underlying": {
+      "type": "string"
+    },
+    "vega": {
+      "type": "string",
+      "format": "decimal"
+    }
+  }
+}

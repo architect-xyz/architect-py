@@ -12,6 +12,7 @@ from msgspec import Struct
 class OptionsExpirations(Struct, omit_defaults=True):
     expirations: List[date]
     underlying: str
+    wrap: str
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -19,11 +20,13 @@ class OptionsExpirations(Struct, omit_defaults=True):
         cls,
         expirations: List[date],
         underlying: str,
+        wrap: str,
     ):
         return cls(
             expirations,
             underlying,
+            wrap,
         )
 
     def __str__(self) -> str:
-        return f"OptionsExpirations(expirations={self.expirations},underlying={self.underlying})"
+        return f"OptionsExpirations(expirations={self.expirations},underlying={self.underlying},wrap={self.wrap})"

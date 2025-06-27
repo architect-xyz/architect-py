@@ -5,6 +5,7 @@ from __future__ import annotations
 from architect_py.grpc.models.OptionsMarketdata.OptionsChain import OptionsChain
 
 from datetime import date
+from typing import Optional
 
 from msgspec import Struct
 
@@ -12,6 +13,7 @@ from msgspec import Struct
 class OptionsChainRequest(Struct, omit_defaults=True):
     expiration: date
     underlying: str
+    wrap: Optional[str] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -19,14 +21,16 @@ class OptionsChainRequest(Struct, omit_defaults=True):
         cls,
         expiration: date,
         underlying: str,
+        wrap: Optional[str] = None,
     ):
         return cls(
             expiration,
             underlying,
+            wrap,
         )
 
     def __str__(self) -> str:
-        return f"OptionsChainRequest(expiration={self.expiration},underlying={self.underlying})"
+        return f"OptionsChainRequest(expiration={self.expiration},underlying={self.underlying},wrap={self.wrap})"
 
     @staticmethod
     def get_response_type():

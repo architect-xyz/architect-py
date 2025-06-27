@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OptionsContract",
+  "type": "object",
+  "required": [
+    "expiration",
+    "put_or_call",
+    "strike",
+    "ticker",
+    "underlying"
+  ],
+  "properties": {
+    "expiration": {
+      "type": "string",
+      "format": "date"
+    },
+    "in_the_money": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "put_or_call": {
+      "$ref": "../definitions.json#/PutOrCall"
+    },
+    "strike": {
+      "type": "string",
+      "format": "decimal"
+    },
+    "ticker": {
+      "$ref": "../Marketdata/Ticker.json/#"
+    },
+    "underlying": {
+      "type": "string"
+    }
+  }
+}

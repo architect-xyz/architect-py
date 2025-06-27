@@ -4,7 +4,8 @@
   "type": "object",
   "required": [
     "expirations",
-    "underlying"
+    "underlying",
+    "wrap"
   ],
   "properties": {
     "expirations": {
@@ -15,6 +16,9 @@
       }
     },
     "underlying": {
+      "type": "string"
+    },
+    "wrap": {
       "type": "string"
     }
   }

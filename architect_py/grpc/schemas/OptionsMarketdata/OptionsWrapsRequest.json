@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "OptionsExpirationsRequest",
+  "title": "OptionsWrapsRequest",
   "type": "object",
   "required": [
     "underlying"
@@ -8,16 +8,10 @@
   "properties": {
     "underlying": {
       "type": "string"
-    },
-    "wrap": {
-      "type": [
-        "string",
-        "null"
-      ]
     }
   },
-  "route": "/json.architect.OptionsMarketdata/OptionsExpirations",
+  "route": "/json.architect.OptionsMarketdata/OptionsWraps",
   "rpc_method": "unary",
   "service": "OptionsMarketdata",
-  "response_type": "OptionsExpirations"
+  "response_type": "OptionsWraps"
 }

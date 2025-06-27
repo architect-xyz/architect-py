@@ -10,13 +10,13 @@
     "calls": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/OptionsContract"
+        "$ref": "../OptionsMarketdata/OptionsContract.json/#"
       }
     },
     "puts": {
       "type": "array",
       "items": {
-        "$ref": "../definitions.json#/OptionsContract"
+        "$ref": "../OptionsMarketdata/OptionsContract.json/#"
       }
     }
   }
