@@ -29,7 +29,9 @@ async def print_l2_book(c: AsyncClient, symbol: TradableProduct, venue: str):
 
 async def main():
     c: AsyncClient = await connect_async_client()
-    market_symbol = TradableProduct("ES 20250620 CME Future/USD")
+
+    ES_front_future = await c.get_front_future("ES CME Futures")
+    market_symbol = TradableProduct(ES_front_future)
     venue = "CME"
     await print_l2_book(c, market_symbol, venue=venue)
 

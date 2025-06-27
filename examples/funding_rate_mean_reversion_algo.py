@@ -151,14 +151,14 @@ async def print_info(c: AsyncClient):
 async def main():
     c = await connect_async_client()
 
-    orderflow_manager = await c.orderflow()
-    await orderflow_manager.start()
+    orderflow_channel = await c.orderflow()
+    await orderflow_channel.start()
 
     await asyncio.gather(
         update_marketdata(c),
-        step_to_target_position(c, orderflow_manager),
+        step_to_target_position(c, orderflow_channel),
         print_info(c),
-        subscribe_and_print_orderflow(c, orderflow_manager),
+        subscribe_and_print_orderflow(c, orderflow_channel),
     )
     await c.close()
 

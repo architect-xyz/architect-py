@@ -146,7 +146,7 @@ class AsyncClient:
         await client.refresh_jwt()
 
         logging.info("Discovering marketdata endpoints...")
-        await client.discover_marketdata()
+        await client._discover_marketdata()
 
         return client
 
@@ -260,7 +260,7 @@ class AsyncClient:
             except Exception as e:
                 logging.error("Failed to refresh gRPC credentials: %s", e)
 
-    def set_jwt(self, jwt: str | None, jwt_expiration: datetime | None = None):
+    def _set_jwt(self, jwt: str | None, jwt_expiration: datetime | None = None):
         """
         Manually set the JWT for gRPC authentication.
 
@@ -272,18 +272,18 @@ class AsyncClient:
         self.jwt = jwt
         self.jwt_expiration = jwt_expiration
 
-    async def discover_marketdata(self):
+    async def _discover_marketdata(self):
         """
         Load marketdata endpoints from the server config.
 
         The Architect core is responsible for telling you where to find marketdata as per
         its configuration.  You can also manually set marketdata endpoints by calling
-        set_marketdata directly.
+        _set_marketdata directly.
 
         This method is called on AsyncClient.connect.
         """
         try:
-            grpc_client = await self.core()
+            grpc_client = await self._core()
             req = ConfigRequest()
             res: ConfigResponse = await grpc_client.unary_unary(req)
             for venue, endpoint in res.marketdata.items():
@@ -329,7 +329,7 @@ class AsyncClient:
         except Exception as e:
             logging.error("Failed to set marketdata endpoint: %s", e)
 
-    async def marketdata(self, venue: Venue) -> GrpcClient:
+    async def _marketdata(self, venue: Venue) -> GrpcClient:
         """
         Get the marketdata client for a venue.
         """
@@ -364,7 +364,7 @@ class AsyncClient:
         except Exception as e:
             logging.error("Failed to set hmart endpoint: %s", e)
 
-    async def hmart(self) -> GrpcClient:
+    async def _hmart(self) -> GrpcClient:
         """
         Get the hmart (historical marketdata service) client.
         """
@@ -379,7 +379,7 @@ class AsyncClient:
         self.grpc_hmart.set_jwt(self.jwt)
         return self.grpc_hmart
 
-    async def core(self) -> GrpcClient:
+    async def _core(self) -> GrpcClient:
         """
         Get the core client.
         """
@@ -400,8 +400,11 @@ class AsyncClient:
         res = await self.graphql_client.user_id_query()
         return res.user_id, res.user_email
 
-    async def auth_info(self) -> AuthInfoResponse:
-        grpc_client = await self.core()
+    async def _auth_info(self) -> AuthInfoResponse:
+        """
+        Gets auth info mapping
+        """
+        grpc_client = await self._core()
         req = AuthInfoRequest()
         res: AuthInfoResponse = await grpc_client.unary_unary(req)
         return res
@@ -420,7 +423,7 @@ class AsyncClient:
         """
         Get cpty status.
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         req = CptyStatusRequest(kind=kind, instance=instance)
         res: CptyStatus = await grpc_client.unary_unary(req)
         return res
@@ -440,9 +443,9 @@ class AsyncClient:
                 cross-referencing symbols or checking availability.
         """
         if marketdata is not None:
-            grpc_client = await self.marketdata(marketdata)
+            grpc_client = await self._marketdata(marketdata)
         else:
-            grpc_client = await self.core()
+            grpc_client = await self._core()
         req = SymbolsRequest()
         res: SymbolsResponse = await grpc_client.unary_unary(req)
         return res.symbols
@@ -487,6 +490,20 @@ class AsyncClient:
             None if the symbol does not exist
         """
         res = await self.graphql_client.get_product_info_query(symbol)
+        if res.product_info is None:
+            if "/" in symbol:
+                assert ValueError(
+                    f"Product info not found for symbol: {symbol}.\n"
+                    "for calling get_product_info, "
+                    f"symbol {symbol} should not have a quote (ie should not end with /USD);"
+                    "either use the base() method of TradableProduct, or remove the quote from the symbol"
+                )
+            raise ValueError(
+                f"Product info not found for symbol: {symbol}."
+                "Please ensure it is of the form 'ES 20250620 CME Future' or 'AAPL US Equity'."
+                "(note that Future and Equity are not completely capitalized)."
+            )
+
         return res.product_info
 
     async def get_product_infos(
@@ -629,7 +646,7 @@ class AsyncClient:
             futures.sort()
             return TradableProduct(futures[0], "USD")
         else:
-            grpc_client = await self.marketdata(venue)
+            grpc_client = await self._marketdata(venue)
             req = TickersRequest(
                 symbols=[TradableProduct(f"{future}/USD") for future in futures],
                 k=SortTickersBy.VOLUME_DESC,
@@ -723,7 +740,7 @@ class AsyncClient:
             symbol: the symbol to get the market status for, e.g. "ES 20250321 CME Future/USD"
             venue: the venue that the symbol is traded at, e.g. CME
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = MarketStatusRequest(symbol=str(symbol), venue=venue)
         res: MarketStatus = await grpc_client.unary_unary(req)
         return res
@@ -805,7 +822,7 @@ class AsyncClient:
             as_dataframe: if True, return a pandas DataFrame
 
         """
-        grpc_client = await self.hmart()
+        grpc_client = await self._hmart()
         if not start.tzinfo:
             raise ValueError("start time must be timezone-aware")
         if not end.tzinfo:
@@ -836,7 +853,7 @@ class AsyncClient:
             symbol: the symbol to get the l1 book snapshot for
             venue: the venue that the symbol is traded at
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = L1BookSnapshotRequest(symbol=str(symbol), venue=venue)
         res: L1BookSnapshot = await grpc_client.unary_unary(req)
         return res
@@ -851,7 +868,7 @@ class AsyncClient:
             symbols: the symbols to get the l1 book snapshots for
             venue: the venue that the symbols are traded at
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = L1BookSnapshotsRequest(symbols=symbols)
         res: ArrayOfL1BookSnapshot = await grpc_client.unary_unary(
             req  # pyright: ignore[reportArgumentType]
@@ -868,7 +885,7 @@ class AsyncClient:
             symbol: the symbol to get the l2 book snapshot for
             venue: the venue that the symbol is traded at
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = L2BookSnapshotRequest(symbol=str(symbol), venue=venue)
         res: L2BookSnapshot = await grpc_client.unary_unary(req)
         return res
@@ -877,7 +894,7 @@ class AsyncClient:
         """
         Gets the ticker for a symbol.
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = TickerRequest(symbol=str(symbol), venue=venue)
         res: Ticker = await grpc_client.unary_unary(req)
         return res
@@ -896,7 +913,7 @@ class AsyncClient:
         """
         Gets the tickers for a list of symbols.
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         sort_by = SortTickersBy(sort_by) if sort_by else None
         symbols = [str(symbol) for symbol in symbols] if symbols else None
         req = TickersRequest.new(
@@ -928,7 +945,7 @@ class AsyncClient:
                 If symbols=None, subscribe to all symbols available for the venue.
             venue: the venue to subscribe to
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = SubscribeL1BookSnapshotsRequest(
             symbols=list(symbols),
             venue=venue,
@@ -950,7 +967,7 @@ class AsyncClient:
             symbol: the symbol to subscribe to
             venue: the marketdata venue
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = SubscribeL2BookUpdatesRequest(symbol=str(symbol), venue=venue)
         async for res in grpc_client.unary_stream(
             req  # pyright: ignore[reportArgumentType]
@@ -983,7 +1000,7 @@ class AsyncClient:
         else:
             self.l1_books[venue] = {}
 
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         book = L1BookSnapshot(symbol, 0, 0)
         self.l1_books[venue][symbol] = (
             book,
@@ -1061,7 +1078,7 @@ class AsyncClient:
         else:
             self.l2_books[venue] = {}
 
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         book = L2BookSnapshot([], [], 0, 0, 0, 0)
         self.l2_books[venue][symbol] = (
             book,
@@ -1120,7 +1137,7 @@ class AsyncClient:
         """
         Subscribe to a stream of trades for a symbol.
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = SubscribeTradesRequest(symbol=str(symbol), venue=venue)
         async for res in grpc_client.unary_stream(req):
             yield res
@@ -1134,7 +1151,7 @@ class AsyncClient:
         """
         Subscribe to a stream of candles for a symbol.
         """
-        grpc_client = await self.marketdata(venue)
+        grpc_client = await self._marketdata(venue)
         req = SubscribeCandlesRequest(
             symbol=str(symbol),
             venue=venue,
@@ -1156,7 +1173,7 @@ class AsyncClient:
             a list of AccountWithPermissions for the user that the API key belongs to
             (use who_am_i to get the user_id / email)
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         req = AccountsRequest(paper=self.paper_trading)
         res = await grpc_client.unary_unary(req)
         return res.accounts
@@ -1169,7 +1186,7 @@ class AsyncClient:
             account: account uuid or name
                 Examples: "00000000-0000-0000-0000-000000000000", "STONEX:000000/JDoe"
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         req = AccountSummaryRequest(account=account)
         res = await grpc_client.unary_unary(req)
         return res
@@ -1209,7 +1226,7 @@ class AsyncClient:
 
         If both arguments are given, the union of matching accounts are returned.
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         request = AccountSummariesRequest(
             accounts=accounts,
             trader=trader,
@@ -1226,7 +1243,7 @@ class AsyncClient:
         """
         Get historical sequence of account summaries for the given account.
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         if from_inclusive is not None:
             assert from_inclusive.tzinfo is timezone.utc, (
                 "from_inclusive must be a utc datetime:\n"
@@ -1274,7 +1291,7 @@ class AsyncClient:
         Returns:
             Open orders that match the union of the filters
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         open_orders_request = OpenOrdersRequest(
             venue=venue,
             account=account,
@@ -1323,7 +1340,7 @@ class AsyncClient:
         If order_ids is not specified, then from_inclusive and to_exclusive
         MUST be specified.
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
 
         if from_inclusive is not None:
             assert from_inclusive.tzinfo is timezone.utc, (
@@ -1364,7 +1381,7 @@ class AsyncClient:
         Args:
             order_id: the order id to get
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         req = OpenOrdersRequest.new(
             order_ids=[order_id],
         )
@@ -1388,7 +1405,7 @@ class AsyncClient:
         Args:
             order_ids: a list of order ids to get
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         orders_dict: dict[OrderId, Optional[Order]] = {
             order_id: None for order_id in order_ids
         }
@@ -1432,7 +1449,7 @@ class AsyncClient:
             account: account uuid or name
             order_id: the order id to get fills for
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         if from_inclusive is not None:
             assert from_inclusive.tzinfo is timezone.utc, (
                 "from_inclusive must be a utc datetime:\n"
@@ -1486,7 +1503,7 @@ class AsyncClient:
                 print(event)
             ```
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         req: SubscribeOrderflowRequest = SubscribeOrderflowRequest(
             account=account, execution_venue=execution_venue, trader=trader
         )
@@ -1556,7 +1573,7 @@ class AsyncClient:
                 trigger_price=trigger_price,
             )
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
 
         res = await asyncio.gather(
             *[
@@ -1595,7 +1612,7 @@ class AsyncClient:
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
-                the primary_exchange can be deduced from `get_product_info`
+                the primary_exchange can be deduced from `get_product_info` (generally will be "CME" or "US-EQUITIES")
             dir: the direction of the order, BUY or SELL
             quantity: the quantity of the order
             limit_price: the limit price of the order
@@ -1617,7 +1634,7 @@ class AsyncClient:
 
             If the order is rejected, the order.reject_reason and order.reject_message will be set
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         assert quantity > 0, "quantity must be positive"
 
         if limit_price is not None and price_round_method is not None:
@@ -1764,7 +1781,7 @@ class AsyncClient:
         Returns:
             the CancelFields object
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
         req = CancelOrderRequest(id=order_id)
         res = await grpc_client.unary_unary(req)
         return res
@@ -1807,7 +1824,7 @@ class AsyncClient:
         # res = await grpc_client.unary_unary(req)
         # return True
 
-    async def create_algo_order(
+    async def place_algo_order(
         self,
         *,
         params: SpreaderParams,
@@ -1817,7 +1834,7 @@ class AsyncClient:
         """
         Sends an advanced algo order such as the spreader.
         """
-        grpc_client = await self.core()
+        grpc_client = await self._core()
 
         if isinstance(params, SpreaderParams):
             algo = "SPREADER"

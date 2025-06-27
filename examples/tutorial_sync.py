@@ -2,7 +2,7 @@ import pprint
 import time
 from decimal import Decimal
 
-from architect_py import OrderDir, OrderStatus
+from architect_py import OrderDir, OrderStatus, OrderType
 from architect_py.utils.nearest_tick import TickRoundMethod
 
 from .config import connect_client
@@ -32,7 +32,7 @@ pprint.pp(product_info)
 # and other ticker info for the given symbol.
 # this function is an alias for get_l1_book_snapshot
 print(f"\nMarket snapshot for {product_info.symbol}:")
-market_snapshot = c.get_market_snapshot(symbol=symbol, venue=venue)
+market_snapshot = c.get_l1_book_snapshot(symbol=symbol, venue=venue)
 
 pprint.pp(market_snapshot)
 
@@ -66,10 +66,11 @@ order = None
 if confirm(
     f"Place a limit order to BUY 1 {symbol} LIMIT {limit_price} on account {account.account.name}?"
 ):
-    order = c.send_limit_order(
+    order = c.place_order(
         symbol=symbol,
         execution_venue=venue,
         dir=OrderDir.BUY,
+        order_type=OrderType.LIMIT,
         quantity=best_bid_quantity,
         limit_price=limit_price,
         account=account.account.name,

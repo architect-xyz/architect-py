@@ -1,7 +1,7 @@
 import asyncio
 from decimal import Decimal
 
-from architect_py import OrderDir, OrderStatus, TradableProduct
+from architect_py import OrderDir, OrderStatus, OrderType, TradableProduct
 
 from .config import connect_async_client
 
@@ -47,10 +47,11 @@ async def main():
         )
         == "y"
     ):
-        order = await c.place_limit_order(
+        order = await c.place_order(
             symbol=market,
             execution_venue=execution_venue,
             dir=OrderDir.BUY,
+            order_type=OrderType.LIMIT,
             quantity=quantity,
             limit_price=limit_price,
             account=str(account_id),

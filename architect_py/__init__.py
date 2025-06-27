@@ -104,6 +104,8 @@ from .grpc.models.definitions import (
 )
 from .grpc.models.Accounts.AccountsRequest import AccountsRequest
 from .grpc.models.Accounts.AccountsResponse import AccountsResponse
+from .grpc.models.Accounts.ResetPaperAccountRequest import ResetPaperAccountRequest
+from .grpc.models.Accounts.ResetPaperAccountResponse import ResetPaperAccountResponse
 from .grpc.models.Algo.AlgoOrder import AlgoOrder
 from .grpc.models.Algo.AlgoOrderRequest import AlgoOrderRequest
 from .grpc.models.Algo.AlgoOrdersRequest import AlgoOrdersRequest
@@ -400,6 +402,8 @@ __all__ = [
     "PruneExpiredSymbolsRequest",
     "PruneExpiredSymbolsResponse",
     "PutOrCall",
+    "ResetPaperAccountRequest",
+    "ResetPaperAccountResponse",
     "RestartCptyRequest",
     "RestartCptyResponse",
     "RqdAccountStatistics",

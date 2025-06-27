@@ -1,17 +1,12 @@
+# Client Methods
 ### 🚀 Initialization and configuration
 
 - **`connect`**: Connect to an Architect installation.
 - **`close`**: Close the gRPC channel and GraphQL client.
 - **`refresh_jwt`**: Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
-- **`set_jwt`**: Manually set the JWT for gRPC authentication.
-- **`discover_marketdata`**: Load marketdata endpoints from the server config.
 - **`set_marketdata`**: Manually set the marketdata endpoint for a venue.
-- **`marketdata`**: Get the marketdata client for a venue.
 - **`set_hmart`**: Manually set the hmart (historical marketdata service) endpoint.
-- **`hmart`**: Get the hmart (historical marketdata service) client.
-- **`core`**: Get the core client.
 - **`who_am_i`**: Gets the user_id and user_email for the user that the API key belongs to.
-- **`auth_info`**
 - **`cpty_status`**: Get cpty status.
 
 ---
@@ -78,7 +73,7 @@
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.
 - **`cancel_order`**: Cancels an order by order id.
 - **`cancel_all_orders`**: Cancels all open orders.
-- **`create_algo_order`**: Sends an advanced algo order such as the spreader.
+- **`place_algo_order`**: Sends an advanced algo order such as the spreader.
 
 ---
 

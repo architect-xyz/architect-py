@@ -22,7 +22,7 @@ async def search_symbol(c: AsyncClient) -> tuple[str, TradableProduct]:
 async def test_send_order(client: AsyncClient, account: str):
     venue, symbol = await search_symbol(client)
 
-    snapshot = await client.get_market_snapshot(symbol=symbol, venue=venue)
+    snapshot = await client.get_l1_book_snapshot(symbol=symbol, venue=venue)
     if snapshot is None:
         return ValueError(f"Market snapshot for {symbol} is None")
 
@@ -34,7 +34,7 @@ async def test_send_order(client: AsyncClient, account: str):
     d = datetime.now(tz=timezone.utc) + timedelta(days=1)
     gtd = TimeInForce.GTD(d)
 
-    order = await client.place_limit_order(
+    order = await client.place_order(
         symbol=symbol,
         dir=OrderDir.BUY,
         quantity=best_bid_quantity,
@@ -82,7 +82,7 @@ async def send_NQ_buy_for_mid(client: AsyncClient, account: str):
     if snapshot is None or snapshot.best_ask is None or snapshot.best_bid is None:
         return ValueError(f"Market snapshot for {NQ_lead_future} is None")
 
-    order = await client.place_limit_order(
+    order = await client.place_order(
         symbol=NQ_lead_future,
         dir=OrderDir.BUY,
         quantity=Decimal(1),

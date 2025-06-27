@@ -4,12 +4,8 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Optional, 
 
 import grpc.aio
 
-from architect_py.grpc.models.Orderflow.Orderflow import Orderflow
-from architect_py.grpc.models.Orderflow.OrderflowRequest import (
-    OrderflowRequest,
-    OrderflowRequest_route,
-    OrderflowRequestUnannotatedResponseType,
-)
+from architect_py.grpc.models.Orderflow.Orderflow import *
+from architect_py.grpc.models.Orderflow.OrderflowRequest import *
 
 if TYPE_CHECKING:
     from architect_py.async_client import AsyncClient
@@ -120,7 +116,7 @@ class OrderflowChannel:
         self, request_iterator: AsyncIterator[OrderflowRequest]
     ) -> AsyncGenerator[Orderflow, None]:
         """Low-level wrapper around Architect’s gRPC bidirectional stream."""
-        grpc_client = await self._client.core()
+        grpc_client = await self._client._core()
         decoder = grpc_client.get_decoder(OrderflowRequestUnannotatedResponseType)
 
         stub: grpc.aio.StreamStreamMultiCallable = grpc_client.channel.stream_stream(

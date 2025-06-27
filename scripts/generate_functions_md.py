@@ -129,6 +129,7 @@ def main(filename):
     )
     # Alternatively, sort by section name alphabetically:
     # sorted_sections = sorted(grouped.items())
+    print("# Client Methods")
     for section, funcs in sorted_sections:
         emoji = emoji_dict.get(section, "")
         if emoji == "":
@@ -138,7 +139,7 @@ def main(filename):
         # Sort functions by their line number
         for name, summary, lineno in sorted(funcs, key=lambda x: x[2]):
             # Exclude private methods
-            if name.startswith("__"):
+            if name.startswith("_"):
                 continue
             # Only output if summary is non-empty
             if summary:

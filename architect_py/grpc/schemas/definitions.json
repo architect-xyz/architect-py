@@ -126,6 +126,9 @@
       }
     }
   },
+  "AccountIdOrName": {
+    "type": "string"
+  },
   "ExecutionInfo": {
     "description": "Information about a symbol related to its execution route.",
     "type": "object",
@@ -1319,9 +1322,6 @@
       "CHANGE_DESC",
       "ABS_CHANGE_DESC"
     ]
-  },
-  "AccountIdOrName": {
-    "type": "string"
   },
   "OrderId": {
     "description": "System-unique, persistent order identifiers",

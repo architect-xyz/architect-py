@@ -8,8 +8,10 @@ from .config import connect_async_client
 async def main():
     c: AsyncClient = await connect_async_client()
 
+    ES_front_future = await c.get_front_future("ES CME Futures")
+
     async for snap in c.stream_l1_book_snapshots(
-        symbols=[TradableProduct("ES 20250620 CME Future/USD")],
+        symbols=[TradableProduct(ES_front_future)],
         venue="CME",
     ):
         best_bid_s = "<no bid>"

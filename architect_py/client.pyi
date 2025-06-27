@@ -75,44 +75,13 @@ class Client:
 
         Query methods on Client that require auth will call this method internally.
         """
-    def set_jwt(self, jwt: str | None, jwt_expiration: datetime | None = None):
-        """
-        Manually set the JWT for gRPC authentication.
-
-        Args:
-            jwt: the JWT to set;
-                None to clear the JWT
-            jwt_expiration: when to expire the JWT
-        """
-    def discover_marketdata(self) -> None:
-        """
-        Load marketdata endpoints from the server config.
-
-        The Architect core is responsible for telling you where to find marketdata as per
-        its configuration.  You can also manually set marketdata endpoints by calling
-        set_marketdata directly.
-
-        This method is called on Client.connect.
-        """
     def set_marketdata(self, venue: Venue, endpoint: str):
         """
         Manually set the marketdata endpoint for a venue.
         """
-    def marketdata(self, venue: Venue) -> GrpcClient:
-        """
-        Get the marketdata client for a venue.
-        """
     def set_hmart(self, endpoint: str):
         """
         Manually set the hmart (historical marketdata service) endpoint.
-        """
-    def hmart(self) -> GrpcClient:
-        """
-        Get the hmart (historical marketdata service) client.
-        """
-    def core(self) -> GrpcClient:
-        """
-        Get the core client.
         """
     def who_am_i(self) -> tuple[str, str]:
         """
@@ -121,7 +90,6 @@ class Client:
         Returns:
             (user_id, user_email)
         """
-    def auth_info(self) -> AuthInfoResponse: ...
     def cpty_status(self, kind: str, instance: str | None = None) -> CptyStatus:
         """
         Get cpty status.
@@ -509,7 +477,7 @@ class Client:
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
-                the primary_exchange can be deduced from `get_product_info`
+                the primary_exchange can be deduced from `get_product_info` (generally will be "CME" or "US-EQUITIES")
             dir: the direction of the order, BUY or SELL
             quantity: the quantity of the order
             limit_price: the limit price of the order
@@ -569,7 +537,7 @@ class Client:
             True if all orders were cancelled successfully
             False if there was an error
         """
-    def create_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None):
+    def place_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None):
         """
         Sends an advanced algo order such as the spreader.
         """
