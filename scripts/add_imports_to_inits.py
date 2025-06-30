@@ -115,7 +115,9 @@ def main(architect_path: Path, output: Path):
 
     unique = sorted(set(model_all))
     model_lines.append("")
-    model_lines.append(f"__all__ = [{', '.join(f'"{n}"' for n in model_all)}]")
+
+    model_lines_all_list = ", ".join(f'"{n}"' for n in model_all)
+    model_lines.append(f"__all__ = [{model_lines_all_list}]")
     model_lines.append("")
 
     (models_root / "__init__.py").write_text("\n".join(model_lines))
@@ -123,7 +125,9 @@ def main(architect_path: Path, output: Path):
     # 3) write __all__
     unique = sorted(set(all_names))
     import_lines.append("")  # blank line
-    import_lines.append(f"__all__ = [{', '.join(f'"{n}"' for n in unique)}]")
+
+    import_lines_all_list = ", ".join(f'"{n}"' for n in unique)
+    import_lines.append(f"__all__ = [{import_lines_all_list}]")
 
     import_lines.append("")  # blank line
 
