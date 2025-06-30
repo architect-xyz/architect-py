@@ -41,9 +41,7 @@ class OrderflowServicer(object):
 
 
 def add_OrderflowServicer_to_server(servicer, server):
-    decoder = msgspec.json.Decoder(
-        type=SubscribeOrderflowRequest.get_unannotated_response_type()
-    )
+    decoder = msgspec.json.Decoder(type=SubscribeOrderflowRequest)
     rpc_method_handlers = {
         "SubscribeOrderflow": grpc.unary_stream_rpc_method_handler(
             servicer.SubscribeOrderflow,

@@ -58,7 +58,8 @@ class MockCptyServicer(CptyServicer, OrderflowServicer):
     def SubscribeOrderflow(self, request, context):
         context.set_code(grpc.StatusCode.OK)
         context.send_initial_metadata({})
-        time.sleep(100)
+        print("client subscribed to orderflow")
+        time.sleep(1000)
 
 
 def serve():
