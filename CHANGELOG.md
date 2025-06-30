@@ -1,3 +1,7 @@
+# 5.2.0
+
+- New external cpty interface AsyncCpty, makes building custom connectors easier
+
 # 5.1.5
 
 - Add get_tickers to AsyncClient
