@@ -1,3 +1,7 @@
+# 5.3.0
+
+- Add on_cancel_all_orders callback to AsyncCpty
+
 # 5.2.0
 
 - New external cpty interface AsyncCpty, makes building custom connectors easier
