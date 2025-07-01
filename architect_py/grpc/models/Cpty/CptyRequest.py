@@ -39,6 +39,29 @@ class CancelOrder(Struct, omit_defaults=True, tag_field="t", tag="cancel_order")
         return f"CancelOrder(cancel={self.cancel},original_order={self.original_order})"
 
 
+class CancelAllOrders(Struct, omit_defaults=True, tag_field="t", tag="cancel_all_orders"):
+    account: Optional[definitions.AccountIdOrName] = None
+    execution_venue: Optional[str] = None
+    trader: Optional[definitions.TraderIdOrEmail] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: Optional[definitions.AccountIdOrName] = None,
+        execution_venue: Optional[str] = None,
+        trader: Optional[definitions.TraderIdOrEmail] = None,
+    ):
+        return cls(
+            account,
+            execution_venue,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"CancelAllOrders(account={self.account},execution_venue={self.execution_venue},trader={self.trader})"
+
+
 class Login(
     definitions.CptyLoginRequest, omit_defaults=True, tag_field="t", tag="login"
 ):
@@ -56,11 +79,11 @@ class PlaceOrder(Order, omit_defaults=True, tag_field="t", tag="place_order"):
 
 
 CptyRequest = Annotated[
-    Union[Login, Logout, PlaceOrder, CancelOrder], Meta(title="CptyRequest")
+    Union[Login, Logout, PlaceOrder, CancelOrder, CancelAllOrders], Meta(title="CptyRequest")
 ]
 
 CptyRequest_rpc_method = "duplex_stream"
-UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder
+UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder | CancelAllOrders
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
     Symbology | ReconcileOrder | ReconcileOpenOrders | UpdateAccountSummary
