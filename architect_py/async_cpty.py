@@ -10,6 +10,7 @@ import msgspec
 
 from .grpc.client import dec_hook
 from .grpc.models.Cpty.CptyRequest import (
+    CancelAllOrders,
     CancelOrder,
     Login,
     Logout,
@@ -108,6 +109,17 @@ class AsyncCpty:
         Args:
             cancel: The cancel order request.
             original_order: The original order that was cancelled, if the OMS knows it.
+        """
+        raise NotImplementedError
+
+    async def on_cancel_all_orders(
+        self,
+        _cancel_id: str,
+        _trader: Optional[UserId] = None,
+        _account: Optional[AccountIdOrName] = None,
+    ):
+        """
+        Called when the cpty receives a cancel-all orders request.
         """
         raise NotImplementedError
 
@@ -333,6 +345,13 @@ class AsyncCpty:
                     await self.on_cancel_order(request.cancel, request.original_order)
                 except NotImplementedError:
                     logging.error("on_cancel_order not implemented")
+            elif isinstance(request, CancelAllOrders):
+                try:
+                    await self.on_cancel_all_orders(
+                        request.cancel_id, request.trader, request.account
+                    )
+                except NotImplementedError:
+                    logging.error("on_cancel_all_orders not implemented")
             else:
                 logging.error(f"unhandled cpty request: {request}")
 

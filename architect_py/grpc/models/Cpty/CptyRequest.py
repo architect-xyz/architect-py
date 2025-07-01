@@ -19,6 +19,31 @@ from ..Oms.Cancel import Cancel
 from ..Oms.Order import Order
 
 
+class CancelAllOrders(
+    Struct, omit_defaults=True, tag_field="t", tag="cancel_all_orders"
+):
+    cancel_id: str
+    account: Optional[str] = None
+    trader: Optional[definitions.UserId] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        cancel_id: str,
+        account: Optional[str] = None,
+        trader: Optional[definitions.UserId] = None,
+    ):
+        return cls(
+            cancel_id,
+            account,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"CancelAllOrders(cancel_id={self.cancel_id},account={self.account},trader={self.trader})"
+
+
 class CancelOrder(Struct, omit_defaults=True, tag_field="t", tag="cancel_order"):
     cancel: Cancel
     original_order: Optional[Order] = None
@@ -56,11 +81,12 @@ class PlaceOrder(Order, omit_defaults=True, tag_field="t", tag="place_order"):
 
 
 CptyRequest = Annotated[
-    Union[Login, Logout, PlaceOrder, CancelOrder], Meta(title="CptyRequest")
+    Union[Login, Logout, PlaceOrder, CancelOrder, CancelAllOrders],
+    Meta(title="CptyRequest"),
 ]
 
 CptyRequest_rpc_method = "duplex_stream"
-UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder
+UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder | CancelAllOrders
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
     Symbology | ReconcileOrder | ReconcileOpenOrders | UpdateAccountSummary

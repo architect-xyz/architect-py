@@ -43,6 +43,38 @@
         }
       },
       "title": "CancelOrder"
+    },
+    {
+      "tag_value": "cancel_all_orders",
+      "variant_name": "CancelAllOrders",
+      "type": "object",
+      "required": [
+        "cancel_id"
+      ],
+      "properties": {
+        "account": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "cancel_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "trader": {
+          "anyOf": [
+            {
+              "$ref": "../definitions.json#/UserId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "title": "CancelAllOrders"
     }
   ],
   "route": "/json.architect.Cpty/Cpty",
