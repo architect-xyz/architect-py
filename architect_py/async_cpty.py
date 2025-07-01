@@ -33,6 +33,7 @@ from .grpc.models.definitions import (
     OrderDir,
     OrderId,
     OrderRejectReason,
+    TraderIdOrEmail,
     UserId,
 )
 from .grpc.models.Oms.Cancel import Cancel
