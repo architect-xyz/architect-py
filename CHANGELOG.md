@@ -1,3 +1,7 @@
+# 5.3.1
+
+- Add native cancel-all support to cancel_all_orders(); default behavior (synthetic cancel-all) remains unchanged
+
 # 5.3.0
 
 - Add on_cancel_all_orders callback to AsyncCpty

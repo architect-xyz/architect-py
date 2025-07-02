@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import re
+import uuid
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import (
@@ -1791,38 +1792,52 @@ class AsyncClient:
         account: Optional[AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
         trader: Optional[TraderIdOrEmail] = None,
+        *,
+        synthetic: bool = True,
     ) -> bool:
         """
         Cancels all open orders.
+
+        Some venues support cancel-all natively, in which case pass synthetic=False.
+
+        Otherwise, this function will manually query for open order IDs matching
+        the criteria and send cancel requests for each order.  This is also the
+        default behavior (synthetic=True).
+
+        Args:
+            account: cancel all orders for this account
+            execution_venue: cancel all orders for this execution venue
+            trader: cancel all orders for this trader
+            synthetic: see docstring
 
         Returns:
             True if all orders were cancelled successfully
             False if there was an error
         """
+        if synthetic:
+            open_orders = await self.get_open_orders(
+                account=account,
+                venue=execution_venue,
+                trader=trader,
+            )
+            outputs = await asyncio.gather(
+                *(self.cancel_order(order.id) for order in open_orders)
+            )
+            for cancel in outputs:
+                if cancel.reject_reason is not None:
+                    return False
 
-        open_orders = await self.get_open_orders(
-            account=account,
-            venue=execution_venue,
-            trader=trader,
-        )
-        outputs = await asyncio.gather(
-            *(self.cancel_order(order.id) for order in open_orders)
-        )
-
-        for cancel in outputs:
-            if cancel.reject_reason is not None:
-                return False
-        return True
-        # grpc_client = await self.core()
-
-        # req = CancelAllOrdersRequest(
-        #     id=str(uuid.uuid4()),  # Unique ID for the request
-        #     account=account,
-        #     execution_venue=execution_venue,
-        #     trader=trader,
-        # )
-        # res = await grpc_client.unary_unary(req)
-        # return True
+            return True
+        else:
+            grpc_client = await self._core()
+            req = CancelAllOrdersRequest(
+                id=str(uuid.uuid4()),  # Unique ID for the request
+                account=account,
+                execution_venue=execution_venue,
+                trader=trader,
+            )
+            _res = await grpc_client.unary_unary(req)
+            return True
 
     async def place_algo_order(
         self,

@@ -529,9 +529,21 @@ class Client:
         Returns:
             the CancelFields object
         """
-    def cancel_all_orders(self, account: AccountIdOrName | None = None, execution_venue: str | None = None, trader: TraderIdOrEmail | None = None) -> bool:
+    def cancel_all_orders(self, account: AccountIdOrName | None = None, execution_venue: str | None = None, trader: TraderIdOrEmail | None = None, *, synthetic: bool = True) -> bool:
         """
         Cancels all open orders.
+
+        Some venues support cancel-all natively, in which case pass synthetic=False.
+
+        Otherwise, this function will manually query for open order IDs matching
+        the criteria and send cancel requests for each order.  This is also the
+        default behavior (synthetic=True).
+
+        Args:
+            account: cancel all orders for this account
+            execution_venue: cancel all orders for this execution venue
+            trader: cancel all orders for this trader
+            synthetic: see docstring
 
         Returns:
             True if all orders were cancelled successfully
