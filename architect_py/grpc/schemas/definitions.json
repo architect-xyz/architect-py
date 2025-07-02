@@ -53,6 +53,41 @@
       "SERVICE_UNKNOWN"
     ]
   },
+  "BoolOrList_for_String": {
+    "anyOf": [
+      {
+        "type": "boolean"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    ]
+  },
+  "Grants": {
+    "type": "object",
+    "properties": {
+      "marketdata": {
+        "anyOf": [
+          {
+            "$ref": "#/BoolOrList_for_String"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "scoped": {
+        "description": "If true, auth is scoped to the specific claims rather than granting broad access permissions;",
+        "type": [
+          "boolean",
+          "null"
+        ]
+      }
+    }
+  },
   "UserId": {
     "type": "string",
     "format": "uuid"

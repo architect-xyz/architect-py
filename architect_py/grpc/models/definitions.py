@@ -993,6 +993,9 @@ class AliasKind(str, Enum):
     CFE = "CFE"
 
 
+BoolOrListForString = Union[bool, List[str]]
+
+
 class DerivativeKind(str, Enum):
     Linear = "Linear"
     Inverse = "Inverse"
@@ -2033,6 +2036,36 @@ class Fill(Struct, omit_defaults=True):
     @exchange_fill_id.setter
     def exchange_fill_id(self, value: Optional[str]) -> None:
         self.xid = value
+
+
+class Grants(Struct, omit_defaults=True):
+    marketdata: Optional[BoolOrListForString] = None
+    scoped: Optional[
+        Annotated[
+            Optional[bool],
+            Meta(
+                description="If true, auth is scoped to the specific claims rather than granting broad access permissions;"
+            ),
+        ]
+    ] = None
+    """
+    If true, auth is scoped to the specific claims rather than granting broad access permissions;
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        marketdata: Optional[BoolOrListForString] = None,
+        scoped: Optional[bool] = None,
+    ):
+        return cls(
+            marketdata,
+            scoped,
+        )
+
+    def __str__(self) -> str:
+        return f"Grants(marketdata={self.marketdata},scoped={self.scoped})"
 
 
 class OptionsSeriesInfo(Struct, omit_defaults=True):

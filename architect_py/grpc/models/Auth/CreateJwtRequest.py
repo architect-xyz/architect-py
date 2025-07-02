@@ -4,16 +4,23 @@
 from __future__ import annotations
 from architect_py.grpc.models.Auth.CreateJwtResponse import CreateJwtResponse
 
+from typing import Optional
+
 from msgspec import Struct
+
+from .. import definitions
 
 
 class CreateJwtRequest(Struct, omit_defaults=True):
     """
     Create a session JWT to use for authentication with upstream gRPC services.
+
+    If grants are not specified, the JWT will be created with the same grants as the API key.
     """
 
     api_key: str
     api_secret: str
+    grants: Optional[definitions.Grants] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -21,14 +28,16 @@ class CreateJwtRequest(Struct, omit_defaults=True):
         cls,
         api_key: str,
         api_secret: str,
+        grants: Optional[definitions.Grants] = None,
     ):
         return cls(
             api_key,
             api_secret,
+            grants,
         )
 
     def __str__(self) -> str:
-        return f"CreateJwtRequest(api_key={self.api_key},api_secret={self.api_secret})"
+        return f"CreateJwtRequest(api_key={self.api_key},api_secret={self.api_secret},grants={self.grants})"
 
     @staticmethod
     def get_response_type():

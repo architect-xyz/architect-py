@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "CreateJwtRequest",
-  "description": "Create a session JWT to use for authentication with upstream gRPC services.",
+  "description": "Create a session JWT to use for authentication with upstream gRPC services.\n\nIf grants are not specified, the JWT will be created with the same grants as the API key.",
   "type": "object",
   "required": [
     "api_key",
@@ -13,6 +13,16 @@
     },
     "api_secret": {
       "type": "string"
+    },
+    "grants": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/Grants"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "route": "/json.architect.Auth/CreateJwt",
