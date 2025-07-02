@@ -237,6 +237,8 @@ from .grpc.models.Symbology.DownloadProductCatalogResponse import (
 )
 from .grpc.models.Symbology.ExecutionInfoRequest import ExecutionInfoRequest
 from .grpc.models.Symbology.ExecutionInfoResponse import ExecutionInfoResponse
+from .grpc.models.Symbology.FuturesSeriesRequest import FuturesSeriesRequest
+from .grpc.models.Symbology.FuturesSeriesResponse import FuturesSeriesResponse
 from .grpc.models.Symbology.PruneExpiredSymbolsRequest import PruneExpiredSymbolsRequest
 from .grpc.models.Symbology.PruneExpiredSymbolsResponse import (
     PruneExpiredSymbolsResponse,
@@ -332,6 +334,8 @@ __all__ = [
     "FillKind",
     "Future",
     "FutureSpread",
+    "FuturesSeriesRequest",
+    "FuturesSeriesResponse",
     "HealthCheckRequest",
     "HealthCheckResponse",
     "HealthMetric",

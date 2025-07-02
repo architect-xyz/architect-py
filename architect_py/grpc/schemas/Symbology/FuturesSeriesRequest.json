@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FuturesSeriesRequest",
+  "type": "object",
+  "required": [
+    "series_symbol"
+  ],
+  "properties": {
+    "include_expired": {
+      "default": false,
+      "type": "boolean"
+    },
+    "series_symbol": {
+      "type": "string"
+    }
+  },
+  "route": "/json.architect.Symbology/FuturesSeries",
+  "rpc_method": "unary",
+  "service": "Symbology",
+  "response_type": "FuturesSeriesResponse"
+}
