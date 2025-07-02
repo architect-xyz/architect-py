@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MarginCallsRequest",
+  "type": "object",
+  "properties": {
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "system_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    }
+  },
+  "route": "/json.architect.Boss/MarginCalls",
+  "rpc_method": "unary",
+  "service": "Boss",
+  "response_type": "MarginCallsResponse"
+}

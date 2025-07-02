@@ -21,6 +21,7 @@ from .grpc.models.definitions import (
     HealthMetric,
     HealthStatus,
     L2BookDiff,
+    MarginCall,
     OptionsTransaction,
     OrderId,
     OrderOut,
@@ -124,6 +125,8 @@ from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
 from .grpc.models.Auth.CreateJwtResponse import CreateJwtResponse
 from .grpc.models.Boss.DepositsRequest import DepositsRequest
 from .grpc.models.Boss.DepositsResponse import DepositsResponse
+from .grpc.models.Boss.MarginCallsRequest import MarginCallsRequest
+from .grpc.models.Boss.MarginCallsResponse import MarginCallsResponse
 from .grpc.models.Boss.OptionsTransactionsRequest import OptionsTransactionsRequest
 from .grpc.models.Boss.OptionsTransactionsResponse import OptionsTransactionsResponse
 from .grpc.models.Boss.RqdAccountStatisticsRequest import RqdAccountStatisticsRequest
@@ -349,6 +352,9 @@ __all__ = [
     "L2BookSnapshotRequest",
     "L2BookUpdate",
     "Liquidation",
+    "MarginCall",
+    "MarginCallsRequest",
+    "MarginCallsResponse",
     "MarketStatus",
     "MarketStatusRequest",
     "MinOrderQuantityUnit",

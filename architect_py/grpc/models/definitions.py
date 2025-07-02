@@ -433,6 +433,56 @@ class L2BookDiff(Struct, omit_defaults=True):
         return datetime.fromtimestamp(self.ts)
 
 
+class MarginCall(Struct, omit_defaults=True):
+    account_number: str
+    call_amount: Decimal
+    call_type: str
+    correspondent_id: str
+    description: str
+    office: str
+    remarks: str
+    satisfied_amount: Decimal
+    status: str
+    create_date: Optional[datetime] = None
+    due_date: Optional[datetime] = None
+    system_date: Optional[str] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account_number: str,
+        call_amount: Decimal,
+        call_type: str,
+        correspondent_id: str,
+        description: str,
+        office: str,
+        remarks: str,
+        satisfied_amount: Decimal,
+        status: str,
+        create_date: Optional[datetime] = None,
+        due_date: Optional[datetime] = None,
+        system_date: Optional[str] = None,
+    ):
+        return cls(
+            account_number,
+            call_amount,
+            call_type,
+            correspondent_id,
+            description,
+            office,
+            remarks,
+            satisfied_amount,
+            status,
+            create_date,
+            due_date,
+            system_date,
+        )
+
+    def __str__(self) -> str:
+        return f"MarginCall(account_number={self.account_number},call_amount={self.call_amount},call_type={self.call_type},correspondent_id={self.correspondent_id},description={self.description},office={self.office},remarks={self.remarks},satisfied_amount={self.satisfied_amount},status={self.status},create_date={self.create_date},due_date={self.due_date},system_date={self.system_date})"
+
+
 class OptionsTransaction(Struct, omit_defaults=True):
     clearing_firm_account: str
     quantity: Decimal
