@@ -1,14 +1,13 @@
 import asyncio
 import logging
+import random
 import uuid
 from datetime import datetime
 from decimal import Decimal
 from typing import AsyncIterable, Dict, Optional, Sequence, Union
 
 import grpc
-import msgspec
 
-from .grpc.client import dec_hook
 from .grpc.models.Cpty.CptyRequest import (
     CancelAllOrders,
     CancelOrder,
@@ -35,6 +34,18 @@ from .grpc.models.definitions import (
     OrderRejectReason,
     UserId,
 )
+from .grpc.models.Marketdata.L1BookSnapshot import L1BookSnapshot
+from .grpc.models.Marketdata.L1BookSnapshotRequest import L1BookSnapshotRequest
+from .grpc.models.Marketdata.L2BookSnapshot import L2BookSnapshot
+from .grpc.models.Marketdata.L2BookSnapshotRequest import L2BookSnapshotRequest
+from .grpc.models.Marketdata.L2BookUpdate import Diff, Snapshot
+from .grpc.models.Marketdata.SubscribeL1BookSnapshotsRequest import (
+    SubscribeL1BookSnapshotsRequest,
+)
+from .grpc.models.Marketdata.SubscribeL2BookUpdatesRequest import (
+    SubscribeL2BookUpdatesRequest,
+)
+from .grpc.models.Marketdata.SubscribeTradesRequest import SubscribeTradesRequest
 from .grpc.models.Oms.Cancel import Cancel
 from .grpc.models.Oms.Order import Order
 from .grpc.models.Orderflow.OrderflowRequest import (
@@ -47,7 +58,11 @@ from .grpc.models.Orderflow.OrderflowRequest import (
     TaggedOrderReject,
 )
 from .grpc.models.Orderflow.SubscribeOrderflowRequest import SubscribeOrderflowRequest
-from .grpc.utils import encoder
+from .grpc.server import (
+    add_CptyServicer_to_server,
+    add_MarketdataServicer_to_server,
+    add_OrderflowServicer_to_server,
+)
 
 FILLS_NS = uuid.UUID("c4b64693-40d2-5613-8d13-bf35b89f92e0")
 
@@ -74,13 +89,23 @@ class AsyncCpty:
         self.execution_info: Dict[str, Dict[str, ExecutionInfo]] = {}
         self.cpty_notifications: dict[int, CptyNotifications] = {}
         self.orderflow_subscriptions: dict[int, OrderflowSubscription] = {}
+        self.l1_book_snapshots_subscriptions: dict[
+            int, L1BookSnapshotsSubscription
+        ] = {}
+        self.l2_book_updates_subscriptions: dict[int, L2BookUpdatesSubscription] = {}
         self.next_subscription_id = 1
+
+        # marketdata caches
+        self.l1_book_snapshots: dict[str, L1BookSnapshot] = {}
+        self.l2_book_snapshots: dict[str, L2BookSnapshot] = {}
 
     def add_execution_info(self, symbol: str, execution_info: ExecutionInfo):
         """
         Add execution info for a symbol.
         """
-        self.execution_info[self.execution_venue][symbol] = execution_info
+        if symbol not in self.execution_info:
+            self.execution_info[symbol] = {}
+        self.execution_info[symbol][self.execution_venue] = execution_info
 
     async def on_login(self, _request: CptyLoginRequest):
         raise NotImplementedError
@@ -286,6 +311,88 @@ class AsyncCpty:
             except asyncio.QueueFull:
                 logging.warn(f"cpty notification queue full #{sub_id}")
 
+    def on_l1_book_snapshot(
+        self,
+        *,
+        symbol: str,
+        timestamp: Optional[datetime] = None,
+        recv_time: Optional[datetime] = None,
+        best_bid: Optional[Sequence[Decimal]] = None,
+        best_ask: Optional[Sequence[Decimal]] = None,
+    ):
+        """
+        Call this function to update the L1 book for a symbol.
+        """
+        if timestamp is None:
+            timestamp = datetime.now()
+        if recv_time is None:
+            recv_time = datetime.now()
+        self.l1_book_snapshots[symbol] = L1BookSnapshot(
+            symbol,
+            timestamp.microsecond * 1000,
+            int(timestamp.timestamp()),
+            list(best_bid) if best_bid is not None else None,
+            list(best_ask) if best_ask is not None else None,
+            int(recv_time.timestamp()),
+            0,
+        )
+        for sub_id, sub in self.l1_book_snapshots_subscriptions.items():
+            try:
+                sub.queue.put_nowait(self.l1_book_snapshots[symbol])
+            except asyncio.QueueFull:
+                logging.warn(f"l1 book snapshot queue full #{sub_id}")
+
+    def on_l2_book_snapshot(
+        self,
+        *,
+        symbol: str,
+        timestamp: Optional[datetime] = None,
+        bids: Optional[Sequence[Sequence[Decimal]]] = None,
+        asks: Optional[Sequence[Sequence[Decimal]]] = None,
+        reset_sequence: bool = False,
+        also_update_l1: bool = True,
+    ):
+        """
+        Call this function to update the L2 book for a symbol.
+
+        This also updates the L1 book snapshot unless also_update_l1 is False.
+        """
+        if timestamp is None:
+            timestamp = datetime.now()
+        if reset_sequence or symbol not in self.l2_book_snapshots:
+            sequence_id = random.randint(0, 2**64 - 1)
+            sequence_number = 0
+        else:
+            # INVARIANT: symbol in self.l2_book_snapshots
+            sequence_id = self.l2_book_snapshots[symbol].sequence_id
+            sequence_number = self.l2_book_snapshots[symbol].sequence_number + 1
+
+        snap = Snapshot(
+            list(map(list, asks)) if asks is not None else [],
+            list(map(list, bids)) if bids is not None else [],
+            sequence_id,
+            sequence_number,
+            timestamp.microsecond * 1000,
+            int(timestamp.timestamp()),
+        )
+
+        self.l2_book_snapshots[symbol] = snap
+
+        if also_update_l1:
+            self.on_l1_book_snapshot(
+                symbol=symbol,
+                timestamp=timestamp,
+                best_bid=bids[0] if bids is not None else None,
+                best_ask=asks[0] if asks is not None else None,
+            )
+
+        for sub_id, sub in self.l2_book_updates_subscriptions.items():
+            try:
+                if sub.request.symbol == symbol:
+                    sub.queue.put_nowait(snap)
+            except asyncio.QueueFull:
+                logging.warn(f"l2 book snapshot queue full #{sub_id}")
+
     async def Cpty(
         self,
         request_iterator: AsyncIterable[UnannotatedCptyRequest],
@@ -376,39 +483,86 @@ class AsyncCpty:
             next_item = await subscription.queue.get()
             yield next_item
 
-    def _add_cpty_method_handlers(self, server: grpc.aio.Server):
-        decoder = msgspec.json.Decoder(type=UnannotatedCptyRequest, dec_hook=dec_hook)
-        rpc_method_handlers = {
-            "Cpty": grpc.stream_stream_rpc_method_handler(
-                self.Cpty,
-                request_deserializer=decoder.decode,
-                response_serializer=encoder.encode,
-            ),
-        }
-        generic_handler = grpc.method_handlers_generic_handler(
-            "json.architect.Cpty", rpc_method_handlers
-        )
-        server.add_generic_rpc_handlers((generic_handler,))
+    async def L1BookSnapshot(
+        self, request: L1BookSnapshotRequest, context: grpc.aio.ServicerContext
+    ):
+        if request.symbol not in self.l1_book_snapshots:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            return
 
-    def _add_orderflow_method_handlers(self, server: grpc.aio.Server):
-        decoder = msgspec.json.Decoder(
-            type=SubscribeOrderflowRequest, dec_hook=dec_hook
-        )
-        rpc_method_handlers = {
-            "SubscribeOrderflow": grpc.unary_stream_rpc_method_handler(
-                self.SubscribeOrderflow,
-                request_deserializer=decoder.decode,
-                response_serializer=encoder.encode,
-            ),
-        }
-        generic_handler = grpc.method_handlers_generic_handler(
-            "json.architect.Orderflow", rpc_method_handlers
-        )
-        server.add_generic_rpc_handlers((generic_handler,))
+        context.set_code(grpc.StatusCode.OK)
+        return self.l1_book_snapshots[request.symbol]
+
+    async def SubscribeL1BookSnapshots(
+        self,
+        request: SubscribeL1BookSnapshotsRequest,
+        context: grpc.aio.ServicerContext,
+    ):
+        context.set_code(grpc.StatusCode.OK)
+        await context.send_initial_metadata([])
+        subscription_id = self.next_subscription_id
+        self.next_subscription_id += 1
+        logging.debug(f"registered l1 book snapshots subscription #{subscription_id}")
+        subscription = L1BookSnapshotsSubscription(request)
+
+        def cleanup_subscription(_context):
+            del self.l1_book_snapshots_subscriptions[subscription_id]
+            logging.debug(
+                f"cleaned up l1 book snapshots subscription #{subscription_id}"
+            )
+
+        context.add_done_callback(cleanup_subscription)
+        self.l1_book_snapshots_subscriptions[subscription_id] = subscription
+
+        while True:
+            next_item = await subscription.queue.get()
+            if subscription.request.symbols is not None:
+                if next_item.symbol not in subscription.request.symbols:
+                    continue
+            yield next_item
+
+    async def L2BookSnapshot(
+        self, request: L2BookSnapshotRequest, context: grpc.aio.ServicerContext
+    ):
+        if request.symbol not in self.l2_book_snapshots:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            return
+
+        context.set_code(grpc.StatusCode.OK)
+        return self.l2_book_snapshots[request.symbol]
+
+    async def SubscribeL2BookUpdates(
+        self, request: SubscribeL2BookUpdatesRequest, context: grpc.aio.ServicerContext
+    ):
+        context.set_code(grpc.StatusCode.OK)
+        await context.send_initial_metadata([])
+        subscription_id = self.next_subscription_id
+        self.next_subscription_id += 1
+        logging.debug(f"registered l2 book updates subscription #{subscription_id}")
+        subscription = L2BookUpdatesSubscription(request)
+
+        def cleanup_subscription(_context):
+            del self.l2_book_updates_subscriptions[subscription_id]
+            logging.debug(f"cleaned up l2 book updates subscription #{subscription_id}")
+
+        context.add_done_callback(cleanup_subscription)
+        self.l2_book_updates_subscriptions[subscription_id] = subscription
+
+        while True:
+            next_item = await subscription.queue.get()
+            yield next_item
+
+    async def SubscribeTrades(
+        self, request: SubscribeTradesRequest, context: grpc.aio.ServicerContext
+    ):
+        context.set_code(grpc.StatusCode.OK)
+        await context.send_initial_metadata([])
+        await asyncio.Future()
 
     def _add_method_handlers(self, server: grpc.aio.Server):
-        self._add_cpty_method_handlers(server)
-        self._add_orderflow_method_handlers(server)
+        add_CptyServicer_to_server(self, server)
+        add_OrderflowServicer_to_server(self, server)
+        add_MarketdataServicer_to_server(self, server)
 
     async def serve(self, bind: str):
         server = grpc.aio.server()
@@ -437,5 +591,23 @@ class OrderflowSubscription:
     queue: asyncio.Queue[OrderflowRequestUnannotatedResponseType]
 
     def __init__(self, request: SubscribeOrderflowRequest):
+        self.request = request
+        self.queue = asyncio.Queue()
+
+
+class L1BookSnapshotsSubscription:
+    request: SubscribeL1BookSnapshotsRequest
+    queue: asyncio.Queue[L1BookSnapshot]
+
+    def __init__(self, request: SubscribeL1BookSnapshotsRequest):
+        self.request = request
+        self.queue = asyncio.Queue()
+
+
+class L2BookUpdatesSubscription:
+    request: SubscribeL2BookUpdatesRequest
+    queue: asyncio.Queue[Union[Snapshot, Diff]]
+
+    def __init__(self, request: SubscribeL2BookUpdatesRequest):
         self.request = request
         self.queue = asyncio.Queue()

@@ -15,6 +15,8 @@ from architect_py.async_cpty import *
 class ExampleCpty(AsyncCpty):
     def __init__(self):
         super().__init__("EXAMPLE")
+        # start a mock marketdata task
+        asyncio.create_task(mock_marketdata(self))
 
     async def on_login(self, request: CptyLoginRequest):
         print(
@@ -71,6 +73,32 @@ async def mock_order_lifecycle(cpty: ExampleCpty, order: Order):
     else:
         print(f"🎟️ out order: {order.id}")
         cpty.out_order(order.id, canceled=False)
+
+
+async def mock_marketdata(cpty: ExampleCpty):
+    while True:
+        await asyncio.sleep(0.5)
+        bid_price = Decimal(str(random.uniform(12.0, 13.0)))
+        ask_price = bid_price + Decimal(str(random.uniform(0.5, 1.0)))
+        bid_size = Decimal(str(random.randint(50, 500)))
+        ask_size = Decimal(str(random.randint(50, 500)))
+
+        # Generate 3 more levels each side
+        bids = [[bid_price, bid_size]]
+        asks = [[ask_price, ask_size]]
+
+        for i in range(3):
+            # Each level gets slightly worse price
+            next_bid = bid_price - Decimal(str(random.uniform(0.1, 0.3))) * (i + 1)
+            next_ask = ask_price + Decimal(str(random.uniform(0.1, 0.3))) * (i + 1)
+            next_bid_size = Decimal(str(random.randint(50, 500)))
+            next_ask_size = Decimal(str(random.randint(50, 500)))
+            bids.append([next_bid, next_bid_size])
+            asks.append([next_ask, next_ask_size])
+
+        cpty.on_l2_book_snapshot(
+            symbol="TEST/USD", timestamp=datetime.now(), bids=bids, asks=asks
+        )
 
 
 async def serve():
