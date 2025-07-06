@@ -1,3 +1,7 @@
+# 5.4.0
+
+- Add marketdata server functionality to external cpty
+
 # 5.3.1
 
 - Add native cancel-all support to cancel_all_orders(); default behavior (synthetic cancel-all) remains unchanged
