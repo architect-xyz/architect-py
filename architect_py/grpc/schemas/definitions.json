@@ -1358,6 +1358,20 @@
       "ABS_CHANGE_DESC"
     ]
   },
+  "PlaceBatchOrderRequest": {
+    "type": "object",
+    "required": [
+      "place_orders"
+    ],
+    "properties": {
+      "place_orders": {
+        "type": "array",
+        "items": {
+          "$ref": "Oms/PlaceOrderRequest.json/#"
+        }
+      }
+    }
+  },
   "OrderId": {
     "description": "System-unique, persistent order identifiers",
     "type": "string"
@@ -2012,6 +2026,20 @@
     "type": "object",
     "required": [],
     "properties": {}
+  },
+  "BatchOrder": {
+    "type": "object",
+    "required": [
+      "orders"
+    ],
+    "properties": {
+      "orders": {
+        "type": "array",
+        "items": {
+          "$ref": "Oms/Order.json/#"
+        }
+      }
+    }
   },
   "AccountStatistics": {
     "type": "object",

@@ -71,6 +71,7 @@ from .grpc.models.definitions import (
     SpreadLeg,
     Outcome,
     AberrantFill,
+    BatchOrder,
     CancelReject,
     CptyLoginRequest,
     ExecutionInfo,
@@ -81,6 +82,7 @@ from .grpc.models.definitions import (
     OrderCanceled,
     OrderCanceling,
     OrderReject,
+    PlaceBatchOrderRequest,
     SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1,
     SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2,
     SnapshotOrUpdateForStringAndOptionsSeriesInfo1,
@@ -209,6 +211,8 @@ from .grpc.models.Oms.Order import Order
 from .grpc.models.Oms.PendingCancelsRequest import PendingCancelsRequest
 from .grpc.models.Oms.PendingCancelsResponse import PendingCancelsResponse
 from .grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequest
+from .grpc.models.Oms.ReconcileOutRequest import ReconcileOutRequest
+from .grpc.models.Oms.ReconcileOutResponse import ReconcileOutResponse
 from .grpc.models.OptionsMarketdata.OptionsChain import OptionsChain
 from .grpc.models.OptionsMarketdata.OptionsChainGreeks import OptionsChainGreeks
 from .grpc.models.OptionsMarketdata.OptionsChainGreeksRequest import (
@@ -290,6 +294,7 @@ __all__ = [
     "AsyncClient",
     "AuthInfoRequest",
     "AuthInfoResponse",
+    "BatchOrder",
     "Cancel",
     "CancelAllOrdersRequest",
     "CancelAllOrdersResponse",
@@ -411,6 +416,7 @@ __all__ = [
     "PendingCancelsRequest",
     "PendingCancelsResponse",
     "Perpetual",
+    "PlaceBatchOrderRequest",
     "PlaceOrderRequest",
     "PriceDisplayFormat",
     "ProductCatalogInfo",
@@ -418,6 +424,8 @@ __all__ = [
     "PruneExpiredSymbolsRequest",
     "PruneExpiredSymbolsResponse",
     "PutOrCall",
+    "ReconcileOutRequest",
+    "ReconcileOutResponse",
     "ResetPaperAccountRequest",
     "ResetPaperAccountResponse",
     "RestartCptyRequest",

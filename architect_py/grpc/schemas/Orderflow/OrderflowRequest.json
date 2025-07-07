@@ -9,6 +9,12 @@
       "variant_name": "PlaceOrder"
     },
     {
+      "tag_value": "pp",
+      "title": "PlaceBatchOrderRequest",
+      "$ref": "../definitions.json#/PlaceBatchOrderRequest",
+      "variant_name": "PlaceBatchOrder"
+    },
+    {
       "tag_value": "x",
       "title": "CancelOrderRequest",
       "$ref": "../Oms/CancelOrderRequest.json/#",

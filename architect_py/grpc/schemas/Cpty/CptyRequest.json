@@ -21,6 +21,12 @@
       "variant_name": "PlaceOrder"
     },
     {
+      "tag_value": "place_batch_order",
+      "title": "BatchOrder",
+      "$ref": "../definitions.json#/BatchOrder",
+      "variant_name": "PlaceBatchOrder"
+    },
+    {
       "tag_value": "cancel_order",
       "variant_name": "CancelOrder",
       "type": "object",

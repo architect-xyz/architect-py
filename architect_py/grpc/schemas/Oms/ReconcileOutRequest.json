@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ReconcileOutRequest",
+  "description": "Manually reconcile out orders.  Useful for clearing stuck orders or stale orders when a human wants to intervene.",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order_ids": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "../definitions.json#/OrderId"
+      }
+    }
+  },
+  "route": "/json.architect.Oms/ReconcileOut",
+  "rpc_method": "unary",
+  "service": "Oms",
+  "response_type": "ReconcileOutResponse"
+}

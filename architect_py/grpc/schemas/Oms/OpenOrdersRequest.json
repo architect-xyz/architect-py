@@ -13,6 +13,20 @@
         }
       ]
     },
+    "from_inclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "limit": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32"
+    },
     "order_ids": {
       "type": [
         "array",
@@ -37,6 +51,13 @@
         "string",
         "null"
       ]
+    },
+    "to_exclusive": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
     },
     "trader": {
       "anyOf": [

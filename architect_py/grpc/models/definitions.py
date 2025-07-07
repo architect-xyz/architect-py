@@ -12,6 +12,9 @@ from typing import Annotated, Dict, List, Literal, Optional, Union
 
 from msgspec import Meta, Struct
 
+from .Oms.Order import Order
+from .Oms.PlaceOrderRequest import PlaceOrderRequest
+
 
 class AccountHistoryGranularity(str, Enum):
     FiveMinutes = "FiveMinutes"
@@ -1686,6 +1689,23 @@ class AberrantFill(Struct, omit_defaults=True):
         self.xid = value
 
 
+class BatchOrder(Struct, omit_defaults=True):
+    orders: List[Order]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        orders: List[Order],
+    ):
+        return cls(
+            orders,
+        )
+
+    def __str__(self) -> str:
+        return f"BatchOrder(orders={self.orders})"
+
+
 class CancelReject(Struct, omit_defaults=True):
     id: OrderId
     xid: str
@@ -2228,6 +2248,23 @@ class OrderReject(Struct, omit_defaults=True):
     @message.setter
     def message(self, value: Optional[str]) -> None:
         self.rm = value
+
+
+class PlaceBatchOrderRequest(Struct, omit_defaults=True):
+    place_orders: List[PlaceOrderRequest]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        place_orders: List[PlaceOrderRequest],
+    ):
+        return cls(
+            place_orders,
+        )
+
+    def __str__(self) -> str:
+        return f"PlaceBatchOrderRequest(place_orders={self.place_orders})"
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(

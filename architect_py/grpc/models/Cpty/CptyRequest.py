@@ -80,13 +80,21 @@ class PlaceOrder(Order, omit_defaults=True, tag_field="t", tag="place_order"):
     pass
 
 
+class PlaceBatchOrder(
+    definitions.BatchOrder, omit_defaults=True, tag_field="t", tag="place_batch_order"
+):
+    pass
+
+
 CptyRequest = Annotated[
-    Union[Login, Logout, PlaceOrder, CancelOrder, CancelAllOrders],
+    Union[Login, Logout, PlaceOrder, PlaceBatchOrder, CancelOrder, CancelAllOrders],
     Meta(title="CptyRequest"),
 ]
 
 CptyRequest_rpc_method = "duplex_stream"
-UnannotatedCptyRequest = Login | Logout | PlaceOrder | CancelOrder | CancelAllOrders
+UnannotatedCptyRequest = (
+    Login | Logout | PlaceOrder | PlaceBatchOrder | CancelOrder | CancelAllOrders
+)
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (
     Symbology | ReconcileOrder | ReconcileOpenOrders | UpdateAccountSummary

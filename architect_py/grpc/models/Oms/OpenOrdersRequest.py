@@ -4,6 +4,7 @@
 from __future__ import annotations
 from architect_py.grpc.models.Oms.OpenOrdersResponse import OpenOrdersResponse
 
+from datetime import datetime
 from typing import List, Optional
 
 from msgspec import Struct
@@ -13,9 +14,12 @@ from .. import definitions
 
 class OpenOrdersRequest(Struct, omit_defaults=True):
     account: Optional[definitions.AccountIdOrName] = None
+    from_inclusive: Optional[datetime] = None
+    limit: Optional[int] = None
     order_ids: Optional[List[definitions.OrderId]] = None
     parent_order_id: Optional[definitions.OrderId] = None
     symbol: Optional[str] = None
+    to_exclusive: Optional[datetime] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
     venue: Optional[str] = None
 
@@ -24,23 +28,29 @@ class OpenOrdersRequest(Struct, omit_defaults=True):
     def new(
         cls,
         account: Optional[definitions.AccountIdOrName] = None,
+        from_inclusive: Optional[datetime] = None,
+        limit: Optional[int] = None,
         order_ids: Optional[List[definitions.OrderId]] = None,
         parent_order_id: Optional[definitions.OrderId] = None,
         symbol: Optional[str] = None,
+        to_exclusive: Optional[datetime] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         venue: Optional[str] = None,
     ):
         return cls(
             account,
+            from_inclusive,
+            limit,
             order_ids,
             parent_order_id,
             symbol,
+            to_exclusive,
             trader,
             venue,
         )
 
     def __str__(self) -> str:
-        return f"OpenOrdersRequest(account={self.account},order_ids={self.order_ids},parent_order_id={self.parent_order_id},symbol={self.symbol},trader={self.trader},venue={self.venue})"
+        return f"OpenOrdersRequest(account={self.account},from_inclusive={self.from_inclusive},limit={self.limit},order_ids={self.order_ids},parent_order_id={self.parent_order_id},symbol={self.symbol},to_exclusive={self.to_exclusive},trader={self.trader},venue={self.venue})"
 
     @staticmethod
     def get_response_type():

@@ -22,12 +22,19 @@ from typing import Annotated, Union
 
 from msgspec import Meta
 
+from .. import definitions
 from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from ..Oms.CancelOrderRequest import CancelOrderRequest
 from ..Oms.PlaceOrderRequest import PlaceOrderRequest
 
 
 class PlaceOrder(PlaceOrderRequest, omit_defaults=True, tag_field="t", tag="p"):
+    pass
+
+
+class PlaceBatchOrder(
+    definitions.PlaceBatchOrderRequest, omit_defaults=True, tag_field="t", tag="pp"
+):
     pass
 
 
@@ -42,11 +49,14 @@ class CancelAllOrders(
 
 
 OrderflowRequest = Annotated[
-    Union[PlaceOrder, CancelOrder, CancelAllOrders], Meta(title="OrderflowRequest")
+    Union[PlaceOrder, PlaceBatchOrder, CancelOrder, CancelAllOrders],
+    Meta(title="OrderflowRequest"),
 ]
 
 OrderflowRequest_rpc_method = "duplex_stream"
-UnannotatedOrderflowRequest = PlaceOrder | CancelOrder | CancelAllOrders
+UnannotatedOrderflowRequest = (
+    PlaceOrder | PlaceBatchOrder | CancelOrder | CancelAllOrders
+)
 OrderflowRequestResponseType = Orderflow
 OrderflowRequestUnannotatedResponseType = (
     OrderPending
