@@ -124,6 +124,8 @@ from .grpc.models.Auth.AuthInfoRequest import AuthInfoRequest
 from .grpc.models.Auth.AuthInfoResponse import AuthInfoResponse
 from .grpc.models.Auth.CreateJwtRequest import CreateJwtRequest
 from .grpc.models.Auth.CreateJwtResponse import CreateJwtResponse
+from .grpc.models.Auth.LicenseInfoRequest import LicenseInfoRequest
+from .grpc.models.Auth.LicenseInfoResponse import LicenseInfoResponse
 from .grpc.models.Boss.DepositsRequest import DepositsRequest
 from .grpc.models.Boss.DepositsResponse import DepositsResponse
 from .grpc.models.Boss.MarginCallsRequest import MarginCallsRequest
@@ -357,6 +359,8 @@ __all__ = [
     "L2BookSnapshot",
     "L2BookSnapshotRequest",
     "L2BookUpdate",
+    "LicenseInfoRequest",
+    "LicenseInfoResponse",
     "Liquidation",
     "MarginCall",
     "MarginCallsRequest",
