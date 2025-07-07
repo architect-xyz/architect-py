@@ -64,8 +64,8 @@ class AsyncClient:
     jwt: str | None = None
     jwt_expiration: datetime | None = None
 
-    l1_books: dict[Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]]
-    l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]]
+    l1_books: dict[Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]] = {}
+    l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]] = {}
 
     # ------------------------------------------------------------
     # Initialization and configuration
@@ -208,6 +208,8 @@ class AsyncClient:
             as_user=as_user,
             as_role=as_role,
         )
+        self.l1_books = {}
+        self.l2_books = {}
 
     async def close(self):
         """
@@ -287,6 +289,7 @@ class AsyncClient:
             grpc_client = await self._core()
             req = ConfigRequest()
             res: ConfigResponse = await grpc_client.unary_unary(req)
+            logging.info("Architect configuration: %s", res)
             for venue, endpoint in res.marketdata.items():
                 try:
                     grpc_host, grpc_port, use_ssl = await resolve_endpoint(endpoint)
@@ -1035,7 +1038,7 @@ class AsyncClient:
         book: L1BookSnapshot,
     ):
         try:
-            req = SubscribeL1BookSnapshotsRequest(symbols=[symbol], venue=venue)
+            req = SubscribeL1BookSnapshotsRequest(symbols=[str(symbol)], venue=venue)
             stream = grpc_client.unary_stream(req)
             async for snap in stream:
                 book.tn = snap.tn
