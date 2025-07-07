@@ -64,8 +64,12 @@ class AsyncClient:
     jwt: str | None = None
     jwt_expiration: datetime | None = None
 
-    l1_books: dict[Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]] = {}
-    l2_books: dict[Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]] = {}
+    l1_books: dict[
+        Venue, dict[TradableProduct, tuple[L1BookSnapshot, asyncio.Task]]
+    ] = {}
+    l2_books: dict[
+        Venue, dict[TradableProduct, tuple[L2BookSnapshot, asyncio.Task]]
+    ] = {}
 
     # ------------------------------------------------------------
     # Initialization and configuration
