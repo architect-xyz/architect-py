@@ -606,6 +606,8 @@ class ProductCatalogInfo(Struct, omit_defaults=True):
     Loosely normalized information about exchange products; used to seed symbology loaders and populate extended product info;
 
     Symbology loaders will use catalog fields to augment and/or cross-check any other load source.
+
+    Numeric data is very rough and not at all precise in time. These fields, such as eps_adj, dividend_yield, etc. should be considered almost cosmetic.  They can still be useful for rough purposes.
     """
 
     exchange: str
@@ -613,15 +615,29 @@ class ProductCatalogInfo(Struct, omit_defaults=True):
     """
     Could be anything really
     """
+    as_of_date: Optional[date] = None
     category: Optional[str] = None
     cqg_contract_symbol: Optional[str] = None
+    dividend: Optional[Decimal] = None
+    dividend_yield: Optional[Decimal] = None
+    eps_adj: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="For stocks, adjusted earnings per share"),
+        ]
+    ] = None
+    """
+    For stocks, adjusted earnings per share
+    """
     info_url: Optional[
         Annotated[Optional[str], Meta(description="URL to more product info")]
     ] = None
     """
     URL to more product info
     """
+    last_updated: Optional[datetime] = None
     long_description: Optional[str] = None
+    market_cap: Optional[Decimal] = None
     multiplier: Optional[
         Annotated[
             Optional[Decimal],
@@ -632,9 +648,11 @@ class ProductCatalogInfo(Struct, omit_defaults=True):
     For derivatives contracts, the multiplier
     """
     price_display_format: Optional[str] = None
+    price_to_earnings: Optional[Decimal] = None
     quote_currency: Optional[str] = None
     schedule_description: Optional[str] = None
     settle_method: Optional[str] = None
+    shared_outstanding_weighted_adj: Optional[Decimal] = None
     short_description: Optional[
         Annotated[
             Optional[str],
@@ -654,36 +672,52 @@ class ProductCatalogInfo(Struct, omit_defaults=True):
         cls,
         exchange: str,
         exchange_product: str,
+        as_of_date: Optional[date] = None,
         category: Optional[str] = None,
         cqg_contract_symbol: Optional[str] = None,
+        dividend: Optional[Decimal] = None,
+        dividend_yield: Optional[Decimal] = None,
+        eps_adj: Optional[Decimal] = None,
         info_url: Optional[str] = None,
+        last_updated: Optional[datetime] = None,
         long_description: Optional[str] = None,
+        market_cap: Optional[Decimal] = None,
         multiplier: Optional[Decimal] = None,
         price_display_format: Optional[str] = None,
+        price_to_earnings: Optional[Decimal] = None,
         quote_currency: Optional[str] = None,
         schedule_description: Optional[str] = None,
         settle_method: Optional[str] = None,
+        shared_outstanding_weighted_adj: Optional[Decimal] = None,
         short_description: Optional[str] = None,
         sub_category: Optional[str] = None,
     ):
         return cls(
             exchange,
             exchange_product,
+            as_of_date,
             category,
             cqg_contract_symbol,
+            dividend,
+            dividend_yield,
+            eps_adj,
             info_url,
+            last_updated,
             long_description,
+            market_cap,
             multiplier,
             price_display_format,
+            price_to_earnings,
             quote_currency,
             schedule_description,
             settle_method,
+            shared_outstanding_weighted_adj,
             short_description,
             sub_category,
         )
 
     def __str__(self) -> str:
-        return f"ProductCatalogInfo(exchange={self.exchange},exchange_product={self.exchange_product},category={self.category},cqg_contract_symbol={self.cqg_contract_symbol},info_url={self.info_url},long_description={self.long_description},multiplier={self.multiplier},price_display_format={self.price_display_format},quote_currency={self.quote_currency},schedule_description={self.schedule_description},settle_method={self.settle_method},short_description={self.short_description},sub_category={self.sub_category})"
+        return f"ProductCatalogInfo(exchange={self.exchange},exchange_product={self.exchange_product},as_of_date={self.as_of_date},category={self.category},cqg_contract_symbol={self.cqg_contract_symbol},dividend={self.dividend},dividend_yield={self.dividend_yield},eps_adj={self.eps_adj},info_url={self.info_url},last_updated={self.last_updated},long_description={self.long_description},market_cap={self.market_cap},multiplier={self.multiplier},price_display_format={self.price_display_format},price_to_earnings={self.price_to_earnings},quote_currency={self.quote_currency},schedule_description={self.schedule_description},settle_method={self.settle_method},shared_outstanding_weighted_adj={self.shared_outstanding_weighted_adj},short_description={self.short_description},sub_category={self.sub_category})"
 
 
 class PutOrCall(str, Enum):
