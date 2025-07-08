@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlaceBatchOrderRequest",
+  "type": "object",
+  "required": [
+    "place_orders"
+  ],
+  "properties": {
+    "place_orders": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/PlaceOrderRequest.json/#"
+      }
+    }
+  },
+  "route": "/json.architect.Oms/PlaceBatchOrder",
+  "rpc_method": "unary",
+  "service": "Oms",
+  "response_type": "PlaceBatchOrderResponse"
+}

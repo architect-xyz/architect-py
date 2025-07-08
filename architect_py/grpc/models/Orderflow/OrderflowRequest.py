@@ -22,9 +22,9 @@ from typing import Annotated, Union
 
 from msgspec import Meta
 
-from .. import definitions
 from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from ..Oms.CancelOrderRequest import CancelOrderRequest
+from ..Oms.PlaceBatchOrderRequest import PlaceBatchOrderRequest
 from ..Oms.PlaceOrderRequest import PlaceOrderRequest
 
 
@@ -33,7 +33,7 @@ class PlaceOrder(PlaceOrderRequest, omit_defaults=True, tag_field="t", tag="p"):
 
 
 class PlaceBatchOrder(
-    definitions.PlaceBatchOrderRequest, omit_defaults=True, tag_field="t", tag="pp"
+    PlaceBatchOrderRequest, omit_defaults=True, tag_field="t", tag="pp"
 ):
     pass
 

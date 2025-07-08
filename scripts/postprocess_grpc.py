@@ -19,7 +19,8 @@ from typing import Annotated, List, Tuple, Union, get_args, get_origin
 # Regular Expressions (Constants)
 # --------------------------------------------------------------------
 
-IMPORT_FIX_RE = re.compile(r"^from\s+(\.+)(\w*)\s+import\s+(.+)$")
+IMPORT_START_RE = re.compile(r"^\s*from\s+(\.+)(\w*)\s+import\s+(.*)")
+
 CLASS_HEADER_RE = re.compile(r"^(\s*)class\s+(\w+)\([^)]*Enum[^)]*\)\s*:")
 MEMBER_RE = re.compile(r"^(\s*)(\w+)\s*=\s*([0-9]+)(.*)")
 
@@ -519,6 +520,62 @@ def delete_class(names: list[str], lines: list[str]) -> list[str]:
     return lines
 
 
+def process_import_block(dots: str, module: str, imports_str: str) -> str:
+    """Helper to expand a collected block of import names."""
+    # Clean the captured string: remove parens, newlines, etc.
+    cleaned_imports = imports_str.strip().lstrip("(").rstrip(")").strip()
+    # Split into individual names, filtering out empty strings
+    names = [name.strip() for name in cleaned_imports.split(",") if name.strip()]
+    # Rebuild the new import statements in the desired format
+    if module:
+        return "\n".join(f"from {dots}{module}.{name} import {name}" for name in names)
+    else:
+        return "\n".join(f"from {dots}{name} import {name}" for name in names)
+
+
+def fix_imports(content: str) -> str:
+    processed_lines = []
+    in_multiline_import = False
+    import_meta = {}  # To store the dots and module of the current import
+    import_buffer = ""
+    original_lines = content.splitlines()
+
+    for line in original_lines:
+        if not in_multiline_import:
+            match = IMPORT_START_RE.match(line)
+            # allowing it to process any relative import (`.` or `..`).
+            if match and " import definitions" not in line:
+                dots, module, rest_of_line = match.groups()
+
+                # Check if this is the start of a multi-line block
+                if "(" in rest_of_line and ")" not in rest_of_line:
+                    in_multiline_import = True
+                    import_meta = {"dots": dots, "module": module}
+                    import_buffer = rest_of_line.strip()
+                else:
+                    # It's a single-line import, process it immediately
+                    expanded_import = process_import_block(dots, module, rest_of_line)
+                    processed_lines.append(expanded_import)
+            else:
+                # This is a regular line of code, pass it through
+                processed_lines.append(line)
+        else:  # We are inside a multi-line import block
+            import_buffer += f" {line.strip()}"
+            # Check for the end of the block
+            if ")" in line:
+                in_multiline_import = False
+                expanded_import = process_import_block(
+                    import_meta["dots"], import_meta["module"], import_buffer
+                )
+                processed_lines.append(expanded_import)
+                # Reset for the next find
+                import_buffer = ""
+                import_meta = {}
+
+    content_with_fixed_imports = "\n".join(processed_lines)
+    return content_with_fixed_imports
+
+
 def fix_enum_member_names(content: str, json_data: dict) -> str:
     """
     Fixes enum member names based on JSON definitions.
@@ -526,23 +583,9 @@ def fix_enum_member_names(content: str, json_data: dict) -> str:
     it replaces the member names with the names defined in the JSON file under "x-enumNames".
     """
 
-    lines = content.splitlines()
-    # Fix import statements from grpc classes.
-    for i, line in enumerate(lines):
-        if line.strip() != "from .. import definitions":
-            m = IMPORT_FIX_RE.match(line)
-            if m:
-                dots, module, imports = m.groups()
-                names = [name.strip() for name in imports.split(",")]
-                if module:
-                    lines[i] = "\n".join(
-                        f"from {dots}{module}.{name} import {name}" for name in names
-                    )
-                else:
-                    lines[i] = "\n".join(
-                        f"from {dots}{name} import {name}" for name in names
-                    )
+    content_with_fixed_imports = fix_imports(content)
 
+    lines = content_with_fixed_imports.splitlines()
     new_lines = []
     in_enum_class = False
     enum_class_indent = ""

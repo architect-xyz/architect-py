@@ -1,6 +1,6 @@
 # ruff: noqa:I001
 
-__version__ = "5.4.1"
+__version__ = "5.5.0"
 
 from .utils.nearest_tick import TickRoundMethod
 from .async_client import AsyncClient
@@ -82,7 +82,6 @@ from .grpc.models.definitions import (
     OrderCanceled,
     OrderCanceling,
     OrderReject,
-    PlaceBatchOrderRequest,
     SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1,
     SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2,
     SnapshotOrUpdateForStringAndOptionsSeriesInfo1,
@@ -210,6 +209,8 @@ from .grpc.models.Oms.OpenOrdersResponse import OpenOrdersResponse
 from .grpc.models.Oms.Order import Order
 from .grpc.models.Oms.PendingCancelsRequest import PendingCancelsRequest
 from .grpc.models.Oms.PendingCancelsResponse import PendingCancelsResponse
+from .grpc.models.Oms.PlaceBatchOrderRequest import PlaceBatchOrderRequest
+from .grpc.models.Oms.PlaceBatchOrderResponse import PlaceBatchOrderResponse
 from .grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequest
 from .grpc.models.Oms.ReconcileOutRequest import ReconcileOutRequest
 from .grpc.models.Oms.ReconcileOutResponse import ReconcileOutResponse
@@ -417,6 +418,7 @@ __all__ = [
     "PendingCancelsResponse",
     "Perpetual",
     "PlaceBatchOrderRequest",
+    "PlaceBatchOrderResponse",
     "PlaceOrderRequest",
     "PriceDisplayFormat",
     "ProductCatalogInfo",

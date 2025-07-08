@@ -70,9 +70,11 @@
 
 - **`place_orders`**: A low level function to place multiple orders in a single function.
 - **`place_order`**: Sends a regular order.
+- **`place_batch_order`**: Place a batch order.
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.
 - **`cancel_order`**: Cancels an order by order id.
 - **`cancel_all_orders`**: Cancels all open orders.
+- **`reconcile_out`**: Manually reconcile orders out.
 - **`place_algo_order`**: Sends an advanced algo order such as the spreader.
 
 ---

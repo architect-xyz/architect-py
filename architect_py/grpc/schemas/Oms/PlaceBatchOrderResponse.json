@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlaceBatchOrderResponse",
+  "type": "object",
+  "required": [
+    "order_rejects",
+    "pending_orders"
+  ],
+  "properties": {
+    "order_rejects": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/OrderReject"
+      }
+    },
+    "pending_orders": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Order.json/#"
+      }
+    }
+  }
+}

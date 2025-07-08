@@ -11,7 +11,7 @@
     {
       "tag_value": "pp",
       "title": "PlaceBatchOrderRequest",
-      "$ref": "../definitions.json#/PlaceBatchOrderRequest",
+      "$ref": "../Oms/PlaceBatchOrderRequest.json/#",
       "variant_name": "PlaceBatchOrder"
     },
     {

@@ -4,6 +4,7 @@
 from architect_py.grpc.models import *
 import asyncio
 import pandas as pd
+from architect_py.batch_place_order import BatchPlaceOrder as BatchPlaceOrder
 from architect_py.common_types import OrderDir as OrderDir, TimeInForce as TimeInForce, TradableProduct as TradableProduct, Venue as Venue
 from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
@@ -363,7 +364,7 @@ class Client:
         """
         Get historical sequence of account summaries for the given account.
         """
-    def get_open_orders(self, order_ids: list[OrderId] | None = None, venue: str | None = None, account: str | None = None, trader: str | None = None, symbol: str | None = None, parent_order_id: OrderId | None = None) -> list[Order]:
+    def get_open_orders(self, order_ids: list[OrderId] | None = None, venue: str | None = None, account: str | None = None, trader: str | None = None, symbol: str | None = None, parent_order_id: OrderId | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, limit: int | None = None) -> list[Order]:
         """
         Returns a list of open orders for the user that match the filters.
 
@@ -499,6 +500,10 @@ class Client:
 
             If the order is rejected, the order.reject_reason and order.reject_message will be set
         '''
+    def place_batch_order(self, batch: BatchPlaceOrder) -> PlaceBatchOrderResponse:
+        """
+        Place a batch order.
+        """
     def send_market_pro_order(self, *, id: OrderId | None = None, symbol: TradableProduct | str, execution_venue: str, dir: OrderDir, quantity: Decimal, time_in_force: TimeInForce = ..., account: str | None = None, fraction_through_market: Decimal = ...) -> Order:
         '''
         Sends a market-order like limit price based on the BBO.
@@ -548,6 +553,12 @@ class Client:
         Returns:
             True if all orders were cancelled successfully
             False if there was an error
+        """
+    def reconcile_out(self, *, order_id: OrderId | None = None, order_ids: list[OrderId] | None = None):
+        """
+        Manually reconcile orders out.
+
+        Useful for clearing stuck orders or stale orders when a human wants to intervene.
         """
     def place_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None):
         """

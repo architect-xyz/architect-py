@@ -13,6 +13,7 @@ from .grpc.models.Cpty.CptyRequest import (
     CancelOrder,
     Login,
     Logout,
+    PlaceBatchOrder,
     PlaceOrder,
     UnannotatedCptyRequest,
 )
@@ -119,6 +120,15 @@ class AsyncCpty:
 
         Call `ack_order` or `reject_order` to advance the order state;
         otherwise, the order will be left in the `PENDING` state.
+        """
+        raise NotImplementedError
+
+    async def on_place_batch_order(self, _batch: PlaceBatchOrder):
+        """
+        Called when the cpty receives a batch order to place.
+
+        This may have different semantics (atomic, all-or-nothing) per cpty
+        than sending multiple place_orders.
         """
         raise NotImplementedError
 
@@ -447,6 +457,11 @@ class AsyncCpty:
                     await self.on_place_order(request)
                 except NotImplementedError:
                     logging.error("on_place_order not implemented")
+            elif isinstance(request, PlaceBatchOrder):
+                try:
+                    await self.on_place_batch_order(request)
+                except NotImplementedError:
+                    logging.error("on_place_batch_order not implemented")
             elif isinstance(request, CancelOrder):
                 try:
                     await self.on_cancel_order(request.cancel, request.original_order)

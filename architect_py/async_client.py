@@ -18,6 +18,8 @@ from typing import (
 
 import pandas as pd
 
+from architect_py.batch_place_order import BatchPlaceOrder
+
 # cannot do architect_py import * due to circular import
 from architect_py.common_types import OrderDir, TimeInForce, TradableProduct, Venue
 from architect_py.graphql_client import GraphQLClient
@@ -1284,6 +1286,9 @@ class AsyncClient:
         trader: Optional[str] = None,
         symbol: Optional[str] = None,
         parent_order_id: Optional[OrderId] = None,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
+        limit: Optional[int] = None,
     ) -> list[Order]:
         """
         Returns a list of open orders for the user that match the filters.
@@ -1300,6 +1305,17 @@ class AsyncClient:
             Open orders that match the union of the filters
         """
         grpc_client = await self._core()
+
+        if from_inclusive is not None:
+            if not from_inclusive.tzinfo:
+                raise ValueError("start time must be timezone-aware")
+            from_inclusive = from_inclusive.astimezone(timezone.utc)
+
+        if to_exclusive is not None:
+            if not to_exclusive.tzinfo:
+                raise ValueError("end time must be timezone-aware")
+            to_exclusive = to_exclusive.astimezone(timezone.utc)
+
         open_orders_request = OpenOrdersRequest(
             venue=venue,
             account=account,
@@ -1307,6 +1323,9 @@ class AsyncClient:
             symbol=symbol,
             parent_order_id=parent_order_id,
             order_ids=order_ids,
+            from_inclusive=from_inclusive,
+            to_exclusive=to_exclusive,
+            limit=limit,
         )
 
         open_orders = await grpc_client.unary_unary(open_orders_request)
@@ -1351,18 +1370,14 @@ class AsyncClient:
         grpc_client = await self._core()
 
         if from_inclusive is not None:
-            assert from_inclusive.tzinfo is timezone.utc, (
-                "from_inclusive must be a utc datetime:\n"
-                "for example datetime.now(timezone.utc) or \n"
-                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
-            )
+            if not from_inclusive.tzinfo:
+                raise ValueError("start time must be timezone-aware")
+            from_inclusive = from_inclusive.astimezone(timezone.utc)
 
         if to_exclusive is not None:
-            assert to_exclusive.tzinfo is timezone.utc, (
-                "to_exclusive must be a utc datetime:\n"
-                "for example datetime.now(timezone.utc) or \n"
-                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
-            )
+            if not to_exclusive.tzinfo:
+                raise ValueError("end time must be timezone-aware")
+            to_exclusive = to_exclusive.astimezone(timezone.utc)
 
         historical_orders_request = HistoricalOrdersRequest.new(
             order_ids=order_ids,
@@ -1691,6 +1706,19 @@ class AsyncClient:
         res = await grpc_client.unary_unary(req)
         return res
 
+    async def place_batch_order(
+        self, batch: BatchPlaceOrder
+    ) -> PlaceBatchOrderResponse:
+        """
+        Place a batch order.
+        """
+        grpc_client = await self._core()
+        req: PlaceBatchOrderRequest = PlaceBatchOrderRequest.new(
+            place_orders=batch.place_orders,
+        )
+        res = await grpc_client.unary_unary(req)
+        return res
+
     async def send_market_pro_order(
         self,
         *,
@@ -1845,6 +1873,21 @@ class AsyncClient:
             )
             _res = await grpc_client.unary_unary(req)
             return True
+
+    async def reconcile_out(
+        self,
+        *,
+        order_id: Optional[OrderId] = None,
+        order_ids: Optional[list[OrderId]] = None,
+    ):
+        """
+        Manually reconcile orders out.
+
+        Useful for clearing stuck orders or stale orders when a human wants to intervene.
+        """
+        grpc_client = await self._core()
+        req = ReconcileOutRequest(order_id=order_id, order_ids=order_ids)
+        await grpc_client.unary_unary(req)
 
     async def place_algo_order(
         self,
