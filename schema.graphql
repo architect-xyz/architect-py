@@ -163,7 +163,7 @@ type SymbologyQueryRoot {
   executionInfos(symbols: [TradableProduct!], executionVenue: ExecutionVenue): [ExecutionInfo!]!
   productInfo(symbol: String!): ProductInfo
   productInfos(symbols: [String!]): [ProductInfo!]!
-  searchSymbols(searchString: String, executionVenue: ExecutionVenue, executionVenues: [ExecutionVenue!], offset: Int, limit: Int): [TradableProduct!]!
+  searchSymbols(searchString: String, executionVenue: ExecutionVenue, executionVenues: [ExecutionVenue!], offset: Int, limit: Int, includeExpired: Boolean, sortAlphabetically: Boolean): [TradableProduct!]!
 }
 
 type UserQueryRoot {

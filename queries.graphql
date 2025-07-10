@@ -37,9 +37,9 @@ query UserIdQuery {
   }
 }
 
-query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $offset: Int, $limit: Int) {
+query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $include_expired: Boolean, $sort_alphabetically: Boolean, $offset: Int, $limit: Int) {
   symbology {
-    searchSymbols(searchString: $searchString, executionVenue: $executionVenue, offset: $offset, limit: $limit)
+    searchSymbols(searchString: $searchString, executionVenue: $executionVenue, offset: $offset, limit: $limit, includeExpired: $include_expired, sortAlphabetically: $sort_alphabetically)
   }
 }
 

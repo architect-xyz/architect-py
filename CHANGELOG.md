@@ -1,3 +1,6 @@
+# 5.4.1
+- improved search_symbols with more args (include_expired, order_alphabetically)
+
 # 5.4.0
 
 - Add marketdata server functionality to external cpty

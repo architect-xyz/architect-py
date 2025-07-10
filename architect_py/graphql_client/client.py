@@ -49,6 +49,8 @@ class GraphQLClient(JuniperBaseClient):
         self,
         search_string: Union[Optional[str], "UnsetType"] = UNSET,
         execution_venue: Union[Optional[str], "UnsetType"] = UNSET,
+        include_expired: Union[Optional[bool], "UnsetType"] = UNSET,
+        sort_alphabetically: Union[Optional[bool], "UnsetType"] = UNSET,
         offset: Union[Optional[int], "UnsetType"] = UNSET,
         limit: Union[Optional[int], "UnsetType"] = UNSET,
         **kwargs: Any
@@ -57,13 +59,15 @@ class GraphQLClient(JuniperBaseClient):
 
         query = gql(
             """
-            query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $offset: Int, $limit: Int) {
+            query SearchSymbolsQuery($searchString: String, $executionVenue: ExecutionVenue, $include_expired: Boolean, $sort_alphabetically: Boolean, $offset: Int, $limit: Int) {
               symbology {
                 searchSymbols(
                   searchString: $searchString
                   executionVenue: $executionVenue
                   offset: $offset
                   limit: $limit
+                  includeExpired: $include_expired
+                  sortAlphabetically: $sort_alphabetically
                 )
               }
             }
@@ -72,6 +76,8 @@ class GraphQLClient(JuniperBaseClient):
         variables: Dict[str, object] = {
             "searchString": search_string,
             "executionVenue": execution_venue,
+            "include_expired": include_expired,
+            "sort_alphabetically": sort_alphabetically,
             "offset": offset,
             "limit": limit,
         }

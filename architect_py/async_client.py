@@ -464,6 +464,8 @@ class AsyncClient:
         self,
         search_string: Optional[str] = None,
         execution_venue: Optional[str] = None,
+        include_expired: bool = False,
+        sort_alphabetically: bool = True,
         offset: int = 0,
         limit: int = 20,
     ) -> List[TradableProduct]:
@@ -480,6 +482,8 @@ class AsyncClient:
         res = await self.graphql_client.search_symbols_query(
             search_string=search_string,
             execution_venue=execution_venue,
+            include_expired=include_expired,
+            sort_alphabetically=sort_alphabetically,
             offset=offset,
             limit=limit,
         )
@@ -953,7 +957,7 @@ class AsyncClient:
         Args:
             symbols: the symbols to subscribe to;
                 If symbols=None, subscribe to all symbols available for the venue.
-            venue: the venue to subscribe to
+            venue: the venue to subscribe to, e.g. "CME", "US-EQUITIES"
         """
         grpc_client = await self._marketdata(venue)
         req = SubscribeL1BookSnapshotsRequest(
@@ -975,7 +979,7 @@ class AsyncClient:
 
         Args:
             symbol: the symbol to subscribe to
-            venue: the marketdata venue
+            venue: the marketdata venue, e.g. "CME", "US-EQUITIES"
         """
         grpc_client = await self._marketdata(venue)
         req = SubscribeL2BookUpdatesRequest(symbol=str(symbol), venue=venue)
@@ -997,7 +1001,7 @@ class AsyncClient:
 
         Args:
             symbol: the symbol to subscribe to
-            venue: the marketdata venue
+            venue: the marketdata venue, e.g. "CME", "US-EQUITIES"
 
         Return:
             An L1 book object that is constantly updating in the background.

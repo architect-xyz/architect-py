@@ -105,7 +105,7 @@ class Client:
                 instead of the Architect core.  This is sometimes useful for
                 cross-referencing symbols or checking availability.
         """
-    def search_symbols(self, search_string: str | None = None, execution_venue: str | None = None, offset: int = 0, limit: int = 20) -> list[TradableProduct]:
+    def search_symbols(self, search_string: str | None = None, execution_venue: str | None = None, include_expired: bool = False, sort_alphabetically: bool = True, offset: int = 0, limit: int = 20) -> list[TradableProduct]:
         '''
         Search for tradable products on Architect.
 
