@@ -14,6 +14,9 @@ from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedCancelReject,
     TaggedOrderCanceling,
     TaggedOrderCanceled,
+    TaggedModifyPending,
+    TaggedModifyReject,
+    TaggedOrderModified,
     TaggedFill,
     TaggedAberrantFill,
 )
@@ -68,6 +71,9 @@ class SubscribeOrderflowRequest(Struct, omit_defaults=True):
             | TaggedCancelReject
             | TaggedOrderCanceling
             | TaggedOrderCanceled
+            | TaggedModifyPending
+            | TaggedModifyReject
+            | TaggedOrderModified
             | TaggedFill
             | TaggedAberrantFill
         )

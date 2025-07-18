@@ -64,6 +64,24 @@ class TaggedOrderCanceled(
     pass
 
 
+class TaggedModifyPending(
+    definitions.ModifyPending, omit_defaults=True, tag_field="t", tag="mp"
+):
+    pass
+
+
+class TaggedModifyReject(
+    definitions.ModifyReject, omit_defaults=True, tag_field="t", tag="mr"
+):
+    pass
+
+
+class TaggedOrderModified(
+    definitions.OrderModified, omit_defaults=True, tag_field="t", tag="mm"
+):
+    pass
+
+
 class TaggedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
     pass
 
@@ -86,6 +104,9 @@ Orderflow = Annotated[
         TaggedCancelReject,
         TaggedOrderCanceling,
         TaggedOrderCanceled,
+        TaggedModifyPending,
+        TaggedModifyReject,
+        TaggedOrderModified,
         TaggedFill,
         TaggedAberrantFill,
     ],

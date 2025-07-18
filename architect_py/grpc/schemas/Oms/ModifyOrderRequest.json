@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModifyOrderRequest",
+  "description": "The ModifyOrderRequest will cause the order to get a new OrderId",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "id": {
+      "title": "order_id",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/OrderId"
+        }
+      ]
+    },
+    "mid": {
+      "title": "modify_id",
+      "description": "If not specified, one will be generated for you; note, in that case, you won't know for sure if the specific request went through.",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "p": {
+      "title": "new_price",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
+    "q": {
+      "title": "new_quantity",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    }
+  },
+  "route": "/json.architect.Oms/ModifyOrder",
+  "rpc_method": "unary",
+  "service": "Oms",
+  "response_type": "Modify"
+}

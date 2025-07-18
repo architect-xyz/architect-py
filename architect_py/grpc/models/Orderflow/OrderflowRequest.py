@@ -14,6 +14,9 @@ from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedCancelReject,
     TaggedOrderCanceling,
     TaggedOrderCanceled,
+    TaggedModifyPending,
+    TaggedModifyReject,
+    TaggedOrderModified,
     TaggedFill,
     TaggedAberrantFill,
 )
@@ -24,6 +27,7 @@ from msgspec import Meta
 
 from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from ..Oms.CancelOrderRequest import CancelOrderRequest
+from ..Oms.ModifyOrderRequest import ModifyOrderRequest
 from ..Oms.PlaceBatchOrderRequest import PlaceBatchOrderRequest
 from ..Oms.PlaceOrderRequest import PlaceOrderRequest
 
@@ -48,14 +52,20 @@ class CancelAllOrders(
     pass
 
 
+class ModifyOrder(
+    ModifyOrderRequest, omit_defaults=True, tag_field="t", tag="modify_order"
+):
+    pass
+
+
 OrderflowRequest = Annotated[
-    Union[PlaceOrder, PlaceBatchOrder, CancelOrder, CancelAllOrders],
+    Union[PlaceOrder, PlaceBatchOrder, CancelOrder, CancelAllOrders, ModifyOrder],
     Meta(title="OrderflowRequest"),
 ]
 
 OrderflowRequest_rpc_method = "duplex_stream"
 UnannotatedOrderflowRequest = (
-    PlaceOrder | PlaceBatchOrder | CancelOrder | CancelAllOrders
+    PlaceOrder | PlaceBatchOrder | CancelOrder | CancelAllOrders | ModifyOrder
 )
 OrderflowRequestResponseType = Orderflow
 OrderflowRequestUnannotatedResponseType = (
@@ -69,6 +79,9 @@ OrderflowRequestUnannotatedResponseType = (
     | TaggedCancelReject
     | TaggedOrderCanceling
     | TaggedOrderCanceled
+    | TaggedModifyPending
+    | TaggedModifyReject
+    | TaggedOrderModified
     | TaggedFill
     | TaggedAberrantFill
 )

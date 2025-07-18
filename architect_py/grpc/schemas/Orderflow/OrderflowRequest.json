@@ -25,6 +25,12 @@
       "title": "CancelAllOrdersRequest",
       "$ref": "../Oms/CancelAllOrdersRequest.json/#",
       "variant_name": "CancelAllOrders"
+    },
+    {
+      "tag_value": "modify_order",
+      "title": "ModifyOrderRequest",
+      "$ref": "../Oms/ModifyOrderRequest.json/#",
+      "variant_name": "ModifyOrder"
     }
   ],
   "route": "/json.architect.Orderflow/Orderflow",

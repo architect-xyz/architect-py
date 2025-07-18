@@ -63,6 +63,24 @@
       "variant_name": "TaggedOrderCanceled"
     },
     {
+      "tag_value": "mp",
+      "title": "ModifyPending",
+      "$ref": "../definitions.json#/ModifyPending",
+      "variant_name": "TaggedModifyPending"
+    },
+    {
+      "tag_value": "mr",
+      "title": "ModifyReject",
+      "$ref": "../definitions.json#/ModifyReject",
+      "variant_name": "TaggedModifyReject"
+    },
+    {
+      "tag_value": "mm",
+      "title": "OrderModified",
+      "$ref": "../definitions.json#/OrderModified",
+      "variant_name": "TaggedOrderModified"
+    },
+    {
       "tag_value": "f",
       "title": "Fill",
       "$ref": "../definitions.json#/Fill",

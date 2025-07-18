@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PendingModifiesResponse",
+  "type": "object",
+  "required": [
+    "pending_modifies"
+  ],
+  "properties": {
+    "pending_modifies": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Modify.json/#"
+      }
+    }
+  }
+}

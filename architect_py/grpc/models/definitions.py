@@ -485,6 +485,13 @@ class MarginCall(Struct, omit_defaults=True):
         return f"MarginCall(account_number={self.account_number},call_amount={self.call_amount},call_type={self.call_type},correspondent_id={self.correspondent_id},description={self.description},office={self.office},remarks={self.remarks},satisfied_amount={self.satisfied_amount},status={self.status},create_date={self.create_date},due_date={self.due_date},system_date={self.system_date})"
 
 
+class ModifyStatus(int, Enum):
+    Pending = 0
+    Acked = 1
+    Rejected = 2
+    Out = 127
+
+
 class OptionsTransaction(Struct, omit_defaults=True):
     clearing_firm_account: str
     quantity: Decimal
@@ -520,6 +527,29 @@ class OptionsTransaction(Struct, omit_defaults=True):
 OrderId = Annotated[
     str, Meta(description="System-unique, persistent order identifiers")
 ]
+
+
+class OrderModified(Struct, omit_defaults=True):
+    mid: str
+    n: OrderId
+    o: OrderId
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        mid: str,
+        n: OrderId,
+        o: OrderId,
+    ):
+        return cls(
+            mid,
+            n,
+            o,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderModified(mid={self.mid},n={self.n},o={self.o})"
 
 
 class OrderOut(Struct, omit_defaults=True):
@@ -589,6 +619,7 @@ class OrderStatus(int, Enum):
     Canceling = 128
     Canceled = 129
     ReconciledOut = 130
+    ModifiedOut = 131
     Stale = 254
     Unknown = 255
 
@@ -2119,6 +2150,151 @@ class Grants(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"Grants(marketdata={self.marketdata},scoped={self.scoped})"
+
+
+class ModifyPending(Struct, omit_defaults=True):
+    id: Annotated[OrderId, Meta(title="order_id")]
+    mid: Annotated[str, Meta(title="modify_id")]
+    nid: Annotated[
+        OrderId,
+        Meta(
+            description="The new order ID that will be assigned to the order after modification.",
+            title="new_order_id",
+        ),
+    ]
+    """
+    The new order ID that will be assigned to the order after modification.
+    """
+    o: Annotated[ModifyStatus, Meta(title="status")]
+    tn: Annotated[int, Meta(ge=0, title="recv_time_ns")]
+    ts: Annotated[int, Meta(title="recv_time")]
+    p: Optional[Annotated[Optional[Decimal], Meta(title="new_price")]] = None
+    q: Optional[Annotated[Optional[Decimal], Meta(title="new_quantity")]] = None
+    r: Optional[Annotated[Optional[str], Meta(title="reject_reason")]] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        order_id: OrderId,
+        modify_id: str,
+        new_order_id: OrderId,
+        status: ModifyStatus,
+        recv_time_ns: int,
+        recv_time: int,
+        new_price: Optional[Decimal] = None,
+        new_quantity: Optional[Decimal] = None,
+        reject_reason: Optional[str] = None,
+    ):
+        return cls(
+            order_id,
+            modify_id,
+            new_order_id,
+            status,
+            recv_time_ns,
+            recv_time,
+            new_price,
+            new_quantity,
+            reject_reason,
+        )
+
+    def __str__(self) -> str:
+        return f"ModifyPending(order_id={self.id},modify_id={self.mid},new_order_id={self.nid},status={self.o},recv_time_ns={self.tn},recv_time={self.ts},new_price={self.p},new_quantity={self.q},reject_reason={self.r})"
+
+    @property
+    def order_id(self) -> OrderId:
+        return self.id
+
+    @order_id.setter
+    def order_id(self, value: OrderId) -> None:
+        self.id = value
+
+    @property
+    def modify_id(self) -> str:
+        return self.mid
+
+    @modify_id.setter
+    def modify_id(self, value: str) -> None:
+        self.mid = value
+
+    @property
+    def new_order_id(self) -> OrderId:
+        return self.nid
+
+    @new_order_id.setter
+    def new_order_id(self, value: OrderId) -> None:
+        self.nid = value
+
+    @property
+    def status(self) -> ModifyStatus:
+        return self.o
+
+    @status.setter
+    def status(self, value: ModifyStatus) -> None:
+        self.o = value
+
+    @property
+    def recv_time_ns(self) -> int:
+        return self.tn
+
+    @recv_time_ns.setter
+    def recv_time_ns(self, value: int) -> None:
+        self.tn = value
+
+    @property
+    def recv_time(self) -> int:
+        return self.ts
+
+    @recv_time.setter
+    def recv_time(self, value: int) -> None:
+        self.ts = value
+
+    @property
+    def new_price(self) -> Optional[Decimal]:
+        return self.p
+
+    @new_price.setter
+    def new_price(self, value: Optional[Decimal]) -> None:
+        self.p = value
+
+    @property
+    def new_quantity(self) -> Optional[Decimal]:
+        return self.q
+
+    @new_quantity.setter
+    def new_quantity(self, value: Optional[Decimal]) -> None:
+        self.q = value
+
+    @property
+    def reject_reason(self) -> Optional[str]:
+        return self.r
+
+    @reject_reason.setter
+    def reject_reason(self, value: Optional[str]) -> None:
+        self.r = value
+
+
+class ModifyReject(Struct, omit_defaults=True):
+    id: OrderId
+    mid: str
+    rm: Optional[str] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        id: OrderId,
+        mid: str,
+        rm: Optional[str] = None,
+    ):
+        return cls(
+            id,
+            mid,
+            rm,
+        )
+
+    def __str__(self) -> str:
+        return f"ModifyReject(id={self.id},mid={self.mid},rm={self.rm})"
 
 
 class OptionsSeriesInfo(Struct, omit_defaults=True):

@@ -22,8 +22,10 @@ from .grpc.models.definitions import (
     HealthStatus,
     L2BookDiff,
     MarginCall,
+    ModifyStatus,
     OptionsTransaction,
     OrderId,
+    OrderModified,
     OrderOut,
     OrderRejectReason,
     OrderSource,
@@ -77,6 +79,8 @@ from .grpc.models.definitions import (
     ExecutionInfo,
     Fill,
     Grants,
+    ModifyPending,
+    ModifyReject,
     OptionsSeriesInfo,
     OrderAck,
     OrderCanceled,
@@ -204,11 +208,15 @@ from .grpc.models.Oms.Cancel import Cancel
 from .grpc.models.Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from .grpc.models.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
 from .grpc.models.Oms.CancelOrderRequest import CancelOrderRequest
+from .grpc.models.Oms.Modify import Modify
+from .grpc.models.Oms.ModifyOrderRequest import ModifyOrderRequest
 from .grpc.models.Oms.OpenOrdersRequest import OpenOrdersRequest
 from .grpc.models.Oms.OpenOrdersResponse import OpenOrdersResponse
 from .grpc.models.Oms.Order import Order
 from .grpc.models.Oms.PendingCancelsRequest import PendingCancelsRequest
 from .grpc.models.Oms.PendingCancelsResponse import PendingCancelsResponse
+from .grpc.models.Oms.PendingModifiesRequest import PendingModifiesRequest
+from .grpc.models.Oms.PendingModifiesResponse import PendingModifiesResponse
 from .grpc.models.Oms.PlaceBatchOrderRequest import PlaceBatchOrderRequest
 from .grpc.models.Oms.PlaceBatchOrderResponse import PlaceBatchOrderResponse
 from .grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequest
@@ -374,6 +382,11 @@ __all__ = [
     "MarketStatus",
     "MarketStatusRequest",
     "MinOrderQuantityUnit",
+    "Modify",
+    "ModifyOrderRequest",
+    "ModifyPending",
+    "ModifyReject",
+    "ModifyStatus",
     "OpenOrdersRequest",
     "OpenOrdersResponse",
     "Option",
@@ -402,6 +415,7 @@ __all__ = [
     "OrderCanceling",
     "OrderDir",
     "OrderId",
+    "OrderModified",
     "OrderOut",
     "OrderReject",
     "OrderRejectReason",
@@ -416,6 +430,8 @@ __all__ = [
     "PauseAlgoResponse",
     "PendingCancelsRequest",
     "PendingCancelsResponse",
+    "PendingModifiesRequest",
+    "PendingModifiesResponse",
     "Perpetual",
     "PlaceBatchOrderRequest",
     "PlaceBatchOrderResponse",

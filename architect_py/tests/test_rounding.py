@@ -23,6 +23,8 @@ def _test_rounding():
     rounded_toward_zero_pos = TickRoundMethod.TOWARD_ZERO(value, tick_size)
     assert rounded_toward_zero_pos == Decimal("123.45")
 
+    assert TickRoundMethod.CEIL(Decimal("3.150"), Decimal("0.01")) == Decimal("3.15")
+
     value_negative = Decimal("-123.456")
     rounded_toward_zero_neg = TickRoundMethod.TOWARD_ZERO(value_negative, tick_size)
     assert rounded_toward_zero_neg == Decimal("-123.45")

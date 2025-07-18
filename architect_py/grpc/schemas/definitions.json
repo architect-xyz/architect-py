@@ -1619,6 +1619,125 @@
       }
     }
   },
+  "ModifyPending": {
+    "type": "object",
+    "required": [
+      "id",
+      "mid",
+      "nid",
+      "o",
+      "tn",
+      "ts"
+    ],
+    "properties": {
+      "id": {
+        "title": "order_id",
+        "allOf": [
+          {
+            "$ref": "#/OrderId"
+          }
+        ]
+      },
+      "mid": {
+        "title": "modify_id",
+        "type": "string",
+        "format": "uuid"
+      },
+      "nid": {
+        "title": "new_order_id",
+        "description": "The new order ID that will be assigned to the order after modification.",
+        "allOf": [
+          {
+            "$ref": "#/OrderId"
+          }
+        ]
+      },
+      "o": {
+        "title": "status",
+        "allOf": [
+          {
+            "$ref": "#/ModifyStatus"
+          }
+        ]
+      },
+      "p": {
+        "title": "new_price",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "q": {
+        "title": "new_quantity",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "r": {
+        "title": "reject_reason",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "tn": {
+        "title": "recv_time_ns",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "ts": {
+        "title": "recv_time",
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  },
+  "ModifyReject": {
+    "type": "object",
+    "required": [
+      "id",
+      "mid"
+    ],
+    "properties": {
+      "id": {
+        "$ref": "#/OrderId"
+      },
+      "mid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "rm": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "OrderModified": {
+    "type": "object",
+    "required": [
+      "mid",
+      "n",
+      "o"
+    ],
+    "properties": {
+      "mid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "n": {
+        "$ref": "#/OrderId"
+      },
+      "o": {
+        "$ref": "#/OrderId"
+      }
+    }
+  },
   "Fill": {
     "type": "object",
     "required": [
@@ -1938,6 +2057,21 @@
       "Correction"
     ]
   },
+  "ModifyStatus": {
+    "type": "integer",
+    "enum": [
+      0,
+      1,
+      2,
+      127
+    ],
+    "x-enumNames": [
+      "Pending",
+      "Acked",
+      "Rejected",
+      "Out"
+    ]
+  },
   "OrderRejectReason": {
     "type": "string",
     "enum": [
@@ -1965,6 +2099,7 @@
       128,
       129,
       130,
+      131,
       254,
       255
     ],
@@ -1976,6 +2111,7 @@
       "Canceling",
       "Canceled",
       "ReconciledOut",
+      "ModifiedOut",
       "Stale",
       "Unknown"
     ]
