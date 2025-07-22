@@ -1,5 +1,6 @@
 # 5.4.1
 - improved search_symbols with more args (include_expired, order_alphabetically)
+- add options section to client
 
 # 5.4.0
 

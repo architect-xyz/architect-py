@@ -326,6 +326,67 @@ class Client:
         """
         Gets the tickers for a list of symbols.
         """
+    def get_options_chain(self, *, expiration: date, underlying: str, wrap: str | None = None, venue: str) -> OptionsChain:
+        '''
+        Get the options chain for a symbol.
+
+        Args:
+            expiration: the expiration date of the options chain
+            underlying: the underlying symbol for the options chain
+            wrap: the disambiguation for underlyings with multiple chains, see method `get_options_wraps`
+            venue: the venue to get the options chain from, e.g. "CME", "US-EQUITIES"
+
+        Returns:
+            A list of Option objects for the symbol.
+        '''
+    @staticmethod
+    def get_option_symbol(options_contract: OptionsContract) -> TradableProduct:
+        '''
+        Get the tradable product symbol for an options contract.
+        Users can get the OptionsContract from the method `get_options_chain`
+
+        Args:
+            options_contract: the options contract to get the symbol for
+
+        Returns:
+            The tradable product symbol for the options contract.
+            e.g. "AAPL US 20250718 200.00 P Option/USD"
+        '''
+    def get_options_expirations(self, *, underlying: str, wrap: str | None = None, venue: str) -> OptionsExpirations:
+        '''
+        Get the available expirations for a symbol\'s options chain.
+
+        Args:
+            symbol: the underlying symbol for the options chain, e.g. "TSLA US Equity"
+            wrap: the disambiguation for underlyings with multiple chains, see method `get_options_wraps`
+            venue: the venue to get the options expirations from, e.g. "CME", "US-EQUITIES"
+        '''
+    def get_options_wraps(self, *, underlying: str, venue: str) -> OptionsWraps:
+        '''
+        Get the available wraps for a symbol\'s options chain.
+        For disambiguation of underlyings with multiple chains.
+
+        Args:
+            underlying: the underlying symbol for the options chain
+                e.g. "TSLA US Equity"
+            venue: the venue to get the options wraps from, e.g. "CME", "US-EQUITIES"
+
+        Returns:
+            A list of wraps for the options chain.
+            e.g. "TSLA US Equity" might yield wraps=["1TSLA", "2TSLA", "TSLA"]
+        '''
+    def get_options_contract_greeks(self, *, contract: str, venue: str) -> OptionsGreeks:
+        '''
+        Get the greeks for a specific options contract.
+
+        Args:
+            contract: the specific options contract to get the greeks for, e.g. "AAPL US 20250718 200.00 P Option/USD"
+            venue: the venue to get the options greeks from, e.g. "CME", "US-EQUITIES"
+        '''
+    def get_options_chain_greeks(self, *, expiration: date, underlying: str, wrap: str | None = None, venue: str) -> OptionsChainGreeks:
+        """
+        Get the greeks for the options chain of a specific underlying.
+        """
     def list_accounts(self) -> list[AccountWithPermissions]:
         """
         List accounts for the user that the API key belongs to.

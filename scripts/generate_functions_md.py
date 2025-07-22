@@ -158,6 +158,7 @@ emoji_dict: dict[str, str] = {
     "Order management": "📝",
     "Order entry": "📣",
     "Marketdata": "🧮",
+    "Options": "🎯",
 }
 
 if __name__ == "__main__":

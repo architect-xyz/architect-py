@@ -1175,6 +1175,127 @@ class AsyncClient:
             yield res
 
     # ------------------------------------------------------------
+    # Options
+    # ------------------------------------------------------------
+
+    async def get_options_chain(
+        self,
+        *,
+        expiration: date,
+        underlying: str,
+        wrap: Optional[str] = None,
+        venue: str,
+    ) -> OptionsChain:
+        """
+        Get the options chain for a symbol.
+
+        Args:
+            expiration: the expiration date of the options chain
+            underlying: the underlying symbol for the options chain
+            wrap: the disambiguation for underlyings with multiple chains, see method `get_options_wraps`
+            venue: the venue to get the options chain from, e.g. "CME", "US-EQUITIES"
+
+        Returns:
+            A list of Option objects for the symbol.
+        """
+        grpc_client = await self._marketdata(venue)
+        req = OptionsChainRequest(
+            expiration=expiration,
+            underlying=underlying,
+            wrap=wrap,
+        )
+        res: OptionsChain = await grpc_client.unary_unary(req)
+        return res
+
+    @staticmethod
+    def get_option_symbol(options_contract: OptionsContract) -> TradableProduct:
+        """
+        Get the tradable product symbol for an options contract.
+        Users can get the OptionsContract from the method `get_options_chain`
+
+        Args:
+            options_contract: the options contract to get the symbol for
+
+        Returns:
+            The tradable product symbol for the options contract.
+            e.g. "AAPL US 20250718 200.00 P Option/USD"
+        """
+        expiration = options_contract.expiration.strftime("%Y%m%d")
+        return TradableProduct(
+            f"{options_contract.underlying} US {expiration} "
+            f"{options_contract.strike} {options_contract.put_or_call} "
+            f"Option/USD"
+        )
+
+    async def get_options_expirations(
+        self, *, underlying: str, wrap: Optional[str] = None, venue: str
+    ) -> OptionsExpirations:
+        """
+        Get the available expirations for a symbol's options chain.
+
+        Args:
+            symbol: the underlying symbol for the options chain, e.g. "TSLA US Equity"
+            wrap: the disambiguation for underlyings with multiple chains, see method `get_options_wraps`
+            venue: the venue to get the options expirations from, e.g. "CME", "US-EQUITIES"
+        """
+        grpc_client = await self._marketdata(venue)
+        req = OptionsExpirationsRequest(underlying=underlying, wrap=wrap)
+        res: OptionsExpirations = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_options_wraps(self, *, underlying: str, venue: str) -> OptionsWraps:
+        """
+        Get the available wraps for a symbol's options chain.
+        For disambiguation of underlyings with multiple chains.
+
+        Args:
+            underlying: the underlying symbol for the options chain
+                e.g. "TSLA US Equity"
+            venue: the venue to get the options wraps from, e.g. "CME", "US-EQUITIES"
+
+        Returns:
+            A list of wraps for the options chain.
+            e.g. "TSLA US Equity" might yield wraps=["1TSLA", "2TSLA", "TSLA"]
+        """
+        grpc_client = await self._marketdata(venue)
+        req = OptionsWrapsRequest(underlying=underlying)
+        res: OptionsWraps = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_options_contract_greeks(
+        self, *, contract: str, venue: str
+    ) -> OptionsGreeks:
+        """
+        Get the greeks for a specific options contract.
+
+        Args:
+            contract: the specific options contract to get the greeks for, e.g. "AAPL US 20250718 200.00 P Option/USD"
+            venue: the venue to get the options greeks from, e.g. "CME", "US-EQUITIES"
+        """
+        grpc_client = await self._marketdata(venue)
+        req = OptionsContractGreeksRequest(tradable_product=contract)
+        res: OptionsGreeks = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_options_chain_greeks(
+        self,
+        *,
+        expiration: date,
+        underlying: str,
+        wrap: Optional[str] = None,
+        venue: str,
+    ) -> OptionsChainGreeks:
+        """
+        Get the greeks for the options chain of a specific underlying.
+        """
+        grpc_client = await self._marketdata(venue)
+        req = OptionsChainGreeksRequest(
+            underlying=underlying, expiration=expiration, wrap=wrap
+        )
+        res: OptionsChainGreeks = await grpc_client.unary_unary(req)
+        return res
+
+    # ------------------------------------------------------------
     # Portfolio management
     # ------------------------------------------------------------
 

@@ -9,6 +9,10 @@ from msgspec import Struct
 
 
 class OptionsWraps(Struct, omit_defaults=True):
+    """
+    used for disambiguation of underlying symbols that have multiple series e.g. TSLA vs 2TSLA
+    """
+
     underlying: str
     wraps: List[str]
 
