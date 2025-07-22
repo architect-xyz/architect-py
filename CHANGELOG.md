@@ -1,3 +1,10 @@
+# 5.6.0
+- simplified / improved TickRoundMethod
+- added options methods along with an options category for the client
+
+# 5.5.0
+- batch cancels and other OMS enhancements
+
 # 5.4.1
 - improved search_symbols with more args (include_expired, order_alphabetically)
 - add options section to client
