@@ -1,3 +1,6 @@
+# Upcoming
+- add on_batch_cancel_orders to AsyncCpty
+
 # 5.6.0
 - simplified / improved TickRoundMethod
 - added options methods along with an options category for the client
