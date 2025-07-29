@@ -27,6 +27,12 @@
       "variant_name": "CancelAllOrders"
     },
     {
+      "tag_value": "xb",
+      "title": "BatchCancelOrdersRequest",
+      "$ref": "../Oms/BatchCancelOrdersRequest.json/#",
+      "variant_name": "BatchCancelOrders"
+    },
+    {
       "tag_value": "modify_order",
       "title": "ModifyOrderRequest",
       "$ref": "../Oms/ModifyOrderRequest.json/#",

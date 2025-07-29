@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BatchCancelOrdersResponse",
+  "type": "object",
+  "required": [
+    "cancel_rejects",
+    "cancels"
+  ],
+  "properties": {
+    "cancel_rejects": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/CancelReject"
+      }
+    },
+    "cancels": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Cancel.json/#"
+      }
+    }
+  }
+}

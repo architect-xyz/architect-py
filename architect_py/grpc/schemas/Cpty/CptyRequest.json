@@ -81,6 +81,37 @@
         }
       },
       "title": "CancelAllOrders"
+    },
+    {
+      "tag_value": "batch_cancel_orders",
+      "variant_name": "BatchCancelOrders",
+      "type": "object",
+      "required": [
+        "cancels",
+        "original_orders"
+      ],
+      "properties": {
+        "cancels": {
+          "type": "array",
+          "items": {
+            "$ref": "../Oms/Cancel.json/#"
+          }
+        },
+        "original_orders": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "../Oms/Order.json/#"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "title": "BatchCancelOrders"
     }
   ],
   "route": "/json.architect.Cpty/Cpty",

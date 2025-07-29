@@ -25,6 +25,7 @@ from typing import Annotated, Union
 
 from msgspec import Meta
 
+from ..Oms.BatchCancelOrdersRequest import BatchCancelOrdersRequest
 from ..Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from ..Oms.CancelOrderRequest import CancelOrderRequest
 from ..Oms.ModifyOrderRequest import ModifyOrderRequest
@@ -52,6 +53,12 @@ class CancelAllOrders(
     pass
 
 
+class BatchCancelOrders(
+    BatchCancelOrdersRequest, omit_defaults=True, tag_field="t", tag="xb"
+):
+    pass
+
+
 class ModifyOrder(
     ModifyOrderRequest, omit_defaults=True, tag_field="t", tag="modify_order"
 ):
@@ -59,13 +66,25 @@ class ModifyOrder(
 
 
 OrderflowRequest = Annotated[
-    Union[PlaceOrder, PlaceBatchOrder, CancelOrder, CancelAllOrders, ModifyOrder],
+    Union[
+        PlaceOrder,
+        PlaceBatchOrder,
+        CancelOrder,
+        CancelAllOrders,
+        BatchCancelOrders,
+        ModifyOrder,
+    ],
     Meta(title="OrderflowRequest"),
 ]
 
 OrderflowRequest_rpc_method = "duplex_stream"
 UnannotatedOrderflowRequest = (
-    PlaceOrder | PlaceBatchOrder | CancelOrder | CancelAllOrders | ModifyOrder
+    PlaceOrder
+    | PlaceBatchOrder
+    | CancelOrder
+    | CancelAllOrders
+    | BatchCancelOrders
+    | ModifyOrder
 )
 OrderflowRequestResponseType = Orderflow
 OrderflowRequestUnannotatedResponseType = (

@@ -10,7 +10,7 @@ from architect_py.grpc.models.Cpty.CptyResponse import (
     UpdateAccountSummary,
 )
 
-from typing import Annotated, Optional, Union
+from typing import Annotated, List, Optional, Union
 
 from msgspec import Meta, Struct
 
@@ -64,6 +64,28 @@ class CancelOrder(Struct, omit_defaults=True, tag_field="t", tag="cancel_order")
         return f"CancelOrder(cancel={self.cancel},original_order={self.original_order})"
 
 
+class BatchCancelOrders(
+    Struct, omit_defaults=True, tag_field="t", tag="batch_cancel_orders"
+):
+    cancels: List[Cancel]
+    original_orders: List[Optional[Order]]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        cancels: List[Cancel],
+        original_orders: List[Optional[Order]],
+    ):
+        return cls(
+            cancels,
+            original_orders,
+        )
+
+    def __str__(self) -> str:
+        return f"BatchCancelOrders(cancels={self.cancels},original_orders={self.original_orders})"
+
+
 class Login(
     definitions.CptyLoginRequest, omit_defaults=True, tag_field="t", tag="login"
 ):
@@ -87,13 +109,27 @@ class PlaceBatchOrder(
 
 
 CptyRequest = Annotated[
-    Union[Login, Logout, PlaceOrder, PlaceBatchOrder, CancelOrder, CancelAllOrders],
+    Union[
+        Login,
+        Logout,
+        PlaceOrder,
+        PlaceBatchOrder,
+        CancelOrder,
+        CancelAllOrders,
+        BatchCancelOrders,
+    ],
     Meta(title="CptyRequest"),
 ]
 
 CptyRequest_rpc_method = "duplex_stream"
 UnannotatedCptyRequest = (
-    Login | Logout | PlaceOrder | PlaceBatchOrder | CancelOrder | CancelAllOrders
+    Login
+    | Logout
+    | PlaceOrder
+    | PlaceBatchOrder
+    | CancelOrder
+    | CancelAllOrders
+    | BatchCancelOrders
 )
 CptyRequestResponseType = CptyResponse
 CptyRequestUnannotatedResponseType = (

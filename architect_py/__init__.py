@@ -204,6 +204,8 @@ from .grpc.models.Marketdata.TickerUpdate import TickerUpdate
 from .grpc.models.Marketdata.TickersRequest import TickersRequest
 from .grpc.models.Marketdata.TickersResponse import TickersResponse
 from .grpc.models.Marketdata.Trade import Trade
+from .grpc.models.Oms.BatchCancelOrdersRequest import BatchCancelOrdersRequest
+from .grpc.models.Oms.BatchCancelOrdersResponse import BatchCancelOrdersResponse
 from .grpc.models.Oms.Cancel import Cancel
 from .grpc.models.Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from .grpc.models.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
@@ -303,6 +305,8 @@ __all__ = [
     "AsyncClient",
     "AuthInfoRequest",
     "AuthInfoResponse",
+    "BatchCancelOrdersRequest",
+    "BatchCancelOrdersResponse",
     "BatchOrder",
     "Cancel",
     "CancelAllOrdersRequest",

@@ -9,6 +9,7 @@ from typing import AsyncIterable, Dict, Optional, Sequence, Union
 import grpc
 
 from .grpc.models.Cpty.CptyRequest import (
+    BatchCancelOrders,
     CancelAllOrders,
     CancelOrder,
     Login,
@@ -155,6 +156,16 @@ class AsyncCpty:
     ):
         """
         Called when the cpty receives a cancel-all orders request.
+        """
+        raise NotImplementedError
+
+    async def on_batch_cancel_orders(
+        self,
+        _cancels: Sequence[Cancel],
+        _original_orders: Sequence[Optional[Order]],
+    ):
+        """
+        Called when the cpty receives a batch cancel orders request.
         """
         raise NotImplementedError
 
@@ -474,6 +485,13 @@ class AsyncCpty:
                     )
                 except NotImplementedError:
                     logging.error("on_cancel_all_orders not implemented")
+            elif isinstance(request, BatchCancelOrders):
+                try:
+                    await self.on_batch_cancel_orders(
+                        request.cancels, request.original_orders
+                    )
+                except NotImplementedError:
+                    logging.error("on_batch_cancel_orders not implemented")
             else:
                 logging.error(f"unhandled cpty request: {request}")
 
