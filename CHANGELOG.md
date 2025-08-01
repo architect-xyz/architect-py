@@ -1,4 +1,4 @@
-# Upcoming
+# 5.7.0 
 - add on_batch_cancel_orders to AsyncCpty
 
 # 5.6.0
