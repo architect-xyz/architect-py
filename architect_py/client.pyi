@@ -615,6 +615,10 @@ class Client:
             True if all orders were cancelled successfully
             False if there was an error
         """
+    def batch_cancel_orders(self, order_ids: list[OrderId]) -> BatchCancelOrdersResponse:
+        """
+        Cancels a batch of orders by order ids.
+        """
     def reconcile_out(self, *, order_id: OrderId | None = None, order_ids: list[OrderId] | None = None):
         """
         Manually reconcile orders out.

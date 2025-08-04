@@ -85,6 +85,7 @@
 - **`send_market_pro_order`**: Sends a market-order like limit price based on the BBO.
 - **`cancel_order`**: Cancels an order by order id.
 - **`cancel_all_orders`**: Cancels all open orders.
+- **`batch_cancel_orders`**: Cancels a batch of orders by order ids.
 - **`reconcile_out`**: Manually reconcile orders out.
 - **`place_algo_order`**: Sends an advanced algo order such as the spreader.
 
