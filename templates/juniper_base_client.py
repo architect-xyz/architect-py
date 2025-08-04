@@ -15,10 +15,10 @@ import httpx
 from pydantic import BaseModel
 from pydantic_core import to_jsonable_python
 
-from websockets.client import (  # type: ignore[import-not-found,unused-ignore]
+from websockets import (
     connect as ws_connect,
-    WebSocketClientProtocol,
 )
+from websockets.client import WebSocketClientProtocol  # type: ignore[import-not-found,unused-ignore]
 from websockets.typing import (  # type: ignore[import-not-found,unused-ignore]
     Data,
     Origin,
