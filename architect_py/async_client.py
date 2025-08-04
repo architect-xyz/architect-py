@@ -1998,7 +1998,7 @@ class AsyncClient:
             )
             _res = await grpc_client.unary_unary(req)
             return True
-        
+
     async def batch_cancel_orders(
         self,
         order_ids: list[OrderId],
