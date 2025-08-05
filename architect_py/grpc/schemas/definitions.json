@@ -253,7 +253,7 @@
       },
       {
         "title": "Varying",
-        "description": "List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.",
+        "description": "List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.\n\nFor example, if the thresholds are [(100, 0.01), (200, 0.02)], valid prices include:\n\n...199.98, 199.99, 200.00, 200.02, 200.04...",
         "type": "object",
         "required": [
           "varying"

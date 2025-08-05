@@ -1415,6 +1415,10 @@ class Varying1(Struct, omit_defaults=True):
 class Varying(Struct, omit_defaults=True):
     """
     List of (threshold, tick_size) pairs.  For price greater than or equal to each threshold, the tick size is the corresponding value.
+
+    For example, if the thresholds are [(100, 0.01), (200, 0.02)], valid prices include:
+
+    ...199.98, 199.99, 200.00, 200.02, 200.04...
     """
 
     varying: Varying1
