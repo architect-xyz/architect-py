@@ -425,6 +425,46 @@ class Client:
         """
         Get historical sequence of account summaries for the given account.
         """
+    def open_paper_account(self, account_name: str) -> OpenPaperAccountResponse:
+        """
+        Open a new paper trading account for the authenticated user.
+
+        Args:
+            account_name: Name for the new paper account (will be prefixed with PAPER:{email}:)
+
+        Returns:
+            OpenPaperAccountResponse containing:
+                - account_id: The ID of the newly created account (None if failed)
+                - success: Whether the operation succeeded
+                - error: Error message if the operation failed
+
+        Note: Users are limited to 3 paper accounts. Contact Architect for access to additional accounts.
+        """
+    def reset_paper_account(self, account: str, balance: int | None = None) -> ResetPaperAccountResponse:
+        """
+        Reset a paper trading account to its initial state.
+
+        Args:
+            account: Account UUID or name to reset
+            balance: Optional new balance to set (in cents)
+
+        Returns:
+            ResetPaperAccountResponse
+        """
+    def close_paper_account(self, account: str) -> ClosePaperAccountResponse:
+        """
+        Close a paper trading account owned by the authenticated user.
+
+        Args:
+            account: Account UUID or name to close
+
+        Returns:
+            ClosePaperAccountResponse containing:
+                - success: Whether the operation succeeded
+                - error: Error message if the operation failed
+
+        Note: The main PAPER:{email} account cannot be closed.
+        """
     def get_open_orders(self, order_ids: list[OrderId] | None = None, venue: str | None = None, account: str | None = None, trader: str | None = None, symbol: str | None = None, parent_order_id: OrderId | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, limit: int | None = None) -> list[Order]:
         """
         Returns a list of open orders for the user that match the filters.

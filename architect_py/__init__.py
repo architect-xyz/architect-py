@@ -111,6 +111,10 @@ from .grpc.models.definitions import (
 )
 from .grpc.models.Accounts.AccountsRequest import AccountsRequest
 from .grpc.models.Accounts.AccountsResponse import AccountsResponse
+from .grpc.models.Accounts.ClosePaperAccountRequest import ClosePaperAccountRequest
+from .grpc.models.Accounts.ClosePaperAccountResponse import ClosePaperAccountResponse
+from .grpc.models.Accounts.OpenPaperAccountRequest import OpenPaperAccountRequest
+from .grpc.models.Accounts.OpenPaperAccountResponse import OpenPaperAccountResponse
 from .grpc.models.Accounts.ResetPaperAccountRequest import ResetPaperAccountRequest
 from .grpc.models.Accounts.ResetPaperAccountResponse import ResetPaperAccountResponse
 from .grpc.models.Algo.AlgoOrder import AlgoOrder
@@ -317,6 +321,8 @@ __all__ = [
     "Candle",
     "CandleWidth",
     "Client",
+    "ClosePaperAccountRequest",
+    "ClosePaperAccountResponse",
     "Commodity",
     "ConfigRequest",
     "ConfigResponse",
@@ -393,6 +399,8 @@ __all__ = [
     "ModifyStatus",
     "OpenOrdersRequest",
     "OpenOrdersResponse",
+    "OpenPaperAccountRequest",
+    "OpenPaperAccountResponse",
     "Option",
     "OptionLike",
     "OptionsChain",
