@@ -433,7 +433,7 @@ class AsyncCpty:
                 except KeyError:
                     pass
 
-        context.add_done_callback(cleanup_subscription)
+        context.add_done_callback(cleanup_subscription)  # type: ignore[assignment]
         async for request in request_iterator:
             logging.debug(f"Cpty: {request}")
             if not logged_in and not isinstance(request, Login):
@@ -509,7 +509,7 @@ class AsyncCpty:
             del self.orderflow_subscriptions[subscription_id]
             logging.debug(f"cleaned up orderflow subscription #{subscription_id}")
 
-        context.add_done_callback(cleanup_subscription)
+        context.add_done_callback(cleanup_subscription)  # type: ignore[assignment]
         subscription = OrderflowSubscription(request)
         self.orderflow_subscriptions[subscription_id] = subscription
         while True:
@@ -544,7 +544,7 @@ class AsyncCpty:
                 f"cleaned up l1 book snapshots subscription #{subscription_id}"
             )
 
-        context.add_done_callback(cleanup_subscription)
+        context.add_done_callback(cleanup_subscription)  # type: ignore[assignment]
         self.l1_book_snapshots_subscriptions[subscription_id] = subscription
 
         while True:
@@ -578,7 +578,7 @@ class AsyncCpty:
             del self.l2_book_updates_subscriptions[subscription_id]
             logging.debug(f"cleaned up l2 book updates subscription #{subscription_id}")
 
-        context.add_done_callback(cleanup_subscription)
+        context.add_done_callback(cleanup_subscription)  # type: ignore[assignment]
         self.l2_book_updates_subscriptions[subscription_id] = subscription
 
         while True:

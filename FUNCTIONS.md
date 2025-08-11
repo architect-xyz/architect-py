@@ -46,8 +46,8 @@
 
 ### 🎯 Options
 
+- **`get_options_contract`**: Get the options contract for a tradable product.
 - **`get_options_chain`**: Get the options chain for a symbol.
-- **`get_option_symbol`**: Get the tradable product symbol for an options contract.
 - **`get_options_expirations`**: Get the available expirations for a symbol's options chain.
 - **`get_options_wraps`**: Get the available wraps for a symbol's options chain.
 - **`get_options_contract_greeks`**: Get the greeks for a specific options contract.

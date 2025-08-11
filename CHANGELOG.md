@@ -1,3 +1,7 @@
+# 5.8.0
+- improvements to options work
+- add the open_paper_accounts/delete_paper_accounts/refresh_paper_account
+
 # 5.7.0 
 - add on_batch_cancel_orders to AsyncCpty
 

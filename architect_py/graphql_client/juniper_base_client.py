@@ -17,11 +17,11 @@ import httpx
 from pydantic import BaseModel
 from pydantic_core import to_jsonable_python
 
-from websockets.client import (  # type: ignore[import-not-found,unused-ignore]
+from websockets.client import (
     connect as ws_connect,
     WebSocketClientProtocol,
 )
-from websockets.typing import (  # type: ignore[import-not-found,unused-ignore]
+from websockets.typing import (
     Data,
     Origin,
     Subprotocol,

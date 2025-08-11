@@ -1178,6 +1178,26 @@ class AsyncClient:
     # Options
     # ------------------------------------------------------------
 
+    async def get_options_contract(
+        self,
+        *,
+        tradable_product: TradableProduct | str,
+    ) -> OptionsContract:
+        """
+        Get the options contract for a tradable product.
+
+        Args:
+            tradable_product: the tradable product to get the options contract for
+                e.g. "AAPL  250718P00200000 Option/USD" (OSI format)
+
+        Returns:
+            An OptionsContract object for the tradable product.
+        """
+        grpc_client = await self._core()
+        req = OptionsContractRequest(tradable_product=str(tradable_product))
+        res: OptionsContract = await grpc_client.unary_unary(req)
+        return res
+
     async def get_options_chain(
         self,
         *,
@@ -1206,26 +1226,6 @@ class AsyncClient:
         )
         res: OptionsChain = await grpc_client.unary_unary(req)
         return res
-
-    @staticmethod
-    def get_option_symbol(options_contract: OptionsContract) -> TradableProduct:
-        """
-        Get the tradable product symbol for an options contract.
-        Users can get the OptionsContract from the method `get_options_chain`
-
-        Args:
-            options_contract: the options contract to get the symbol for
-
-        Returns:
-            The tradable product symbol for the options contract.
-            e.g. "AAPL US 20250718 200.00 P Option/USD"
-        """
-        expiration = options_contract.expiration.strftime("%Y%m%d")
-        return TradableProduct(
-            f"{options_contract.underlying} US {expiration} "
-            f"{options_contract.strike} {options_contract.put_or_call} "
-            f"Option/USD"
-        )
 
     async def get_options_expirations(
         self, *, underlying: str, wrap: Optional[str] = None, venue: str
@@ -1269,7 +1269,7 @@ class AsyncClient:
         Get the greeks for a specific options contract.
 
         Args:
-            contract: the specific options contract to get the greeks for, e.g. "AAPL US 20250718 200.00 P Option/USD"
+            contract: the specific options contract to get the greeks for, e.g. "AAPL  250718P00200000 Option/USD" (OSI format)
             venue: the venue to get the options greeks from, e.g. "CME", "US-EQUITIES"
         """
         grpc_client = await self._marketdata(venue)
