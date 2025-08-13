@@ -326,13 +326,15 @@ class Client:
         """
         Gets the tickers for a list of symbols.
         """
-    def get_options_contract(self, *, tradable_product: TradableProduct | str) -> OptionsContract:
+    def get_options_contract(self, *, tradable_product: TradableProduct | str, venue: str) -> OptionsContract:
         '''
         Get the options contract for a tradable product.
 
         Args:
             tradable_product: the tradable product to get the options contract for
-                e.g. "AAPL  250718P00200000 Option/USD" (OSI format)
+                e.g.
+                "AAPL  250919P00200000 Option/USD" (OSI format)
+                "AAPL  271217P00200000 Option/USD" (OSI format)
 
         Returns:
             An OptionsContract object for the tradable product.
