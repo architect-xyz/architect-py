@@ -1,3 +1,6 @@
+# 5.9.1
+- fixed get_options_contract
+
 # 5.9.0
 (skipped version)
 - improvements to options work

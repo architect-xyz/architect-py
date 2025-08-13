@@ -1179,21 +1179,21 @@ class AsyncClient:
     # ------------------------------------------------------------
 
     async def get_options_contract(
-        self,
-        *,
-        tradable_product: TradableProduct | str,
+        self, *, tradable_product: TradableProduct | str, venue: str
     ) -> OptionsContract:
         """
         Get the options contract for a tradable product.
 
         Args:
             tradable_product: the tradable product to get the options contract for
-                e.g. "AAPL  250718P00200000 Option/USD" (OSI format)
+                e.g.
+                "AAPL  250919P00200000 Option/USD" (OSI format)
+                "AAPL  271217P00200000 Option/USD" (OSI format)
 
         Returns:
             An OptionsContract object for the tradable product.
         """
-        grpc_client = await self._core()
+        grpc_client = await self._marketdata(venue)
         req = OptionsContractRequest(tradable_product=str(tradable_product))
         res: OptionsContract = await grpc_client.unary_unary(req)
         return res
