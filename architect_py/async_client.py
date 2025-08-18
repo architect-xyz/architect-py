@@ -150,7 +150,10 @@ class AsyncClient:
         )
 
         logging.info("Exchanging credentials...")
-        await client.refresh_jwt()
+        is_valid_jwt, error_msg = await client.refresh_jwt()
+
+        if not is_valid_jwt:
+            raise ValueError(f"Invalid JWT: {error_msg}")
 
         logging.info("Discovering marketdata endpoints...")
         await client._discover_marketdata()
@@ -240,7 +243,7 @@ class AsyncClient:
         if self.graphql_client is not None:
             await self.graphql_client.close()
 
-    async def refresh_jwt(self, force: bool = False):
+    async def refresh_jwt(self, force: bool = False) -> tuple[bool, str]:
         """
         Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
         If force=True, refresh the JWT unconditionally.
@@ -266,8 +269,12 @@ class AsyncClient:
                 # CR alee: actually read the JWT to get the expiration time;
                 # for now, we just "know" that the JWTs are granted for an hour
                 self.jwt_expiration = datetime.now() + timedelta(hours=1)
+
             except Exception as e:
                 logging.error("Failed to refresh gRPC credentials: %s", e)
+                return False, str(e)
+
+        return True, ""
 
     def _set_jwt(self, jwt: str | None, jwt_expiration: datetime | None = None):
         """

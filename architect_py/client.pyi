@@ -69,7 +69,7 @@ class Client:
 
         One might get when closing the client
         """
-    def refresh_jwt(self, force: bool = False):
+    def refresh_jwt(self, force: bool = False) -> tuple[bool, str]:
         """
         Refresh the JWT for the gRPC channel if it's nearing expiration (within 1 minute).
         If force=True, refresh the JWT unconditionally.

@@ -80,7 +80,7 @@ async def main():
 
     # for when you want to get the option contract directly
     option_contract_alternative_method = await c.get_options_contract(
-        tradable_product=tradable_product,
+        tradable_product=tradable_product, venue="US-EQUITIES"
     )
 
     assert option_contract == option_contract_alternative_method

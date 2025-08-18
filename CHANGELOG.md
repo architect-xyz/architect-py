@@ -1,3 +1,6 @@
+# 5.9.2
+- client connect now raises error if it does not successfully get a jwt
+
 # 5.9.1
 - fixed get_options_contract
 
