@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10, <4"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -52,7 +52,6 @@ dependencies = [
     { name = "msgspec" },
     { name = "pandas" },
     { name = "pydantic" },
-    { name = "websockets" },
 ]
 
 [package.dev-dependencies]
@@ -60,6 +59,7 @@ dev = [
     { name = "ariadne-codegen", extra = ["subscriptions"] },
     { name = "black" },
     { name = "datamodel-code-generator" },
+    { name = "exchange-calendars" },
     { name = "graphql-core" },
     { name = "jupyterlab" },
     { name = "marko" },
@@ -85,7 +85,6 @@ requires-dist = [
     { name = "msgspec", specifier = ">=0.19,<0.20" },
     { name = "pandas", specifier = ">=2" },
     { name = "pydantic", specifier = "~=2.10" },
-    { name = "websockets", specifier = ">=11" },
 ]
 
 [package.metadata.requires-dev]
@@ -93,6 +92,7 @@ dev = [
     { name = "ariadne-codegen", extras = ["subscriptions"], specifier = ">=0.13.0" },
     { name = "black", specifier = ">=24" },
     { name = "datamodel-code-generator", specifier = ">=0.28.0" },
+    { name = "exchange-calendars" },
     { name = "graphql-core" },
     { name = "jupyterlab" },
     { name = "marko" },
@@ -630,6 +630,23 @@ wheels = [
 ]
 
 [[package]]
+name = "exchange-calendars"
+version = "4.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "korean-lunar-calendar" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyluach" },
+    { name = "toolz" },
+    { name = "tzdata" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ff/60/cb0e3d8111df38a5a1328920ed20030ae1e7761ce84e9f9ff1fa9e3bd434/exchange_calendars-4.11.tar.gz", hash = "sha256:d6c873f8a7c3d1fb88c442c93a5c99e2c7c0a65b49afca93e8836d4aebab3cbe", size = 3948133, upload-time = "2025-07-15T18:01:41.491Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/74/41/bbb21403d1567d0661110c24f0df0c84f4ad2f02772c485399988721347e/exchange_calendars-4.11-py3-none-any.whl", hash = "sha256:893f618042492a3e99bc7bb6792533f2a8c2e2172ef9aff36c58a68b331e62d5", size = 203557, upload-time = "2025-07-15T18:01:39.974Z" },
+]
+
+[[package]]
 name = "executing"
 version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1154,6 +1171,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0a/c9/a883ce65eb27905ce77ace410d83587c82ea64dc85a48d1f7ed52bcfa68d/jupyterlab_server-2.27.3.tar.gz", hash = "sha256:eb36caca59e74471988f0ae25c77945610b887f777255aa21f8065def9e51ed4", size = 76173, upload-time = "2024-07-16T17:02:04.149Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/09/2032e7d15c544a0e3cd831c51d77a8ca57f7555b2e1b2922142eddb02a84/jupyterlab_server-2.27.3-py3-none-any.whl", hash = "sha256:e697488f66c3db49df675158a77b3b017520d772c6e1548c7d9bcc5df7944ee4", size = 59700, upload-time = "2024-07-16T17:02:01.115Z" },
+]
+
+[[package]]
+name = "korean-lunar-calendar"
+version = "0.3.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/93/a0bd2bd53ab19330e83ecc5652b7774ae86fd2fee19bc05ad220cf9db08b/korean_lunar_calendar-0.3.1.tar.gz", hash = "sha256:eb2c485124a061016926bdea6d89efdf9b9fdbf16db55895b6cf1e5bec17b857", size = 9877, upload-time = "2022-09-16T10:53:25.713Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9c/96/30f3fe51b336bb6da4714f4fdad7bbdce8f13af79af2eb75e22908f3f9f4/korean_lunar_calendar-0.3.1-py3-none-any.whl", hash = "sha256:392757135c492c4f42a604e6038042953c35c6f449dda5f27e3f86a7f9c943e5", size = 9033, upload-time = "2022-09-16T10:53:23.771Z" },
 ]
 
 [[package]]
@@ -2030,6 +2056,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pyluach"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/fc/4567068be2c78ac09339201f4a1adfd9e95f6f873f6f37f6fafb5648363e/pyluach-2.2.0.tar.gz", hash = "sha256:9063a25387cd7624276fd0656508bada08aa8a6f22e8db352844cd858e69012b", size = 26198, upload-time = "2023-03-01T02:48:07.047Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/83/2e585d06d49e0320050b3d7d8ae0dfbd1459e976ff9f4b4d8bcca983d474/pyluach-2.2.0-py3-none-any.whl", hash = "sha256:d1eb49d6292087e9290f4661ae01b60c8c933704ec8c9cef82673b349ff96adf", size = 25037, upload-time = "2023-03-01T02:47:55.882Z" },
+]
+
+[[package]]
 name = "pyright"
 version = "1.1.400"
 source = { registry = "https://pypi.org/simple" }
@@ -2622,6 +2657,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b1/09/a439bec5888f00a54b8b9f05fa94d7f901d6735ef4e55dcec9bc37b5d8fa/tomlkit-0.13.2.tar.gz", hash = "sha256:fff5fe59a87295b278abd31bec92c15d9bc4a06885ab12bcea52c71119392e79", size = 192885, upload-time = "2024-08-14T08:19:41.488Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f9/b6/a447b5e4ec71e13871be01ba81f5dfc9d0af7e473da256ff46bc0e24026f/tomlkit-0.13.2-py3-none-any.whl", hash = "sha256:7a974427f6e119197f670fbbbeae7bef749a6c14e793db934baefc1b5f03efde", size = 37955, upload-time = "2024-08-14T08:19:40.05Z" },
+]
+
+[[package]]
+name = "toolz"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/0b/d80dfa675bf592f636d1ea0b835eab4ec8df6e9415d8cfd766df54456123/toolz-1.0.0.tar.gz", hash = "sha256:2c86e3d9a04798ac556793bced838816296a2f085017664e4995cb40a1047a02", size = 66790, upload-time = "2024-10-04T16:17:04.001Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/98/eb27cc78ad3af8e302c9d8ff4977f5026676e130d28dd7578132a457170c/toolz-1.0.0-py3-none-any.whl", hash = "sha256:292c8f1c4e7516bf9086f8850935c799a874039c8bcf959d47b600e4c44a6236", size = 56383, upload-time = "2024-10-04T16:17:01.533Z" },
 ]
 
 [[package]]

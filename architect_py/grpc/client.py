@@ -4,7 +4,6 @@ from typing import Any, AsyncIterator, Sequence, Tuple
 import grpc.aio
 import msgspec
 
-from . import *
 from .utils import RequestType, ResponseTypeGeneric, decoders, encoder
 
 

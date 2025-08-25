@@ -843,13 +843,21 @@ class AsyncClient:
             as_dataframe: if True, return a pandas DataFrame
 
         """
-        grpc_client = await self._hmart()
+        # Special handling for US-EQUITIES: route to marketdata channel instead of hmart
+        # if this branch is changed, fix the rust sdk and graphql query as well
+        if venue == "US-EQUITIES":
+            grpc_client = await self._marketdata(venue)
+            venue_param = None
+        else:
+            grpc_client = await self._hmart()
+            venue_param = venue
+
         if not start.tzinfo:
             raise ValueError("start time must be timezone-aware")
         if not end.tzinfo:
             raise ValueError("end time must be timezone-aware")
         req = HistoricalCandlesRequest(
-            venue=venue,
+            venue=venue_param,
             symbol=str(symbol),
             candle_width=candle_width,
             start_date=start.astimezone(timezone.utc),
@@ -1593,6 +1601,10 @@ class AsyncClient:
         Returns the specified order.  Useful for looking at past sent orders.
         Queries open_orders first, then queries historical_orders.
 
+        Not that placing an order is not instant, so if one places an order
+        and then immediately calls `get_order` on the just sent order, it may
+        return `None`, as it has not registered yet.
+
         Args:
             order_id: the order id to get
         """
@@ -1741,6 +1753,9 @@ class AsyncClient:
             "send_limit_order is deprecated, use place_order instead. "
             "This will be removed in a future version."
         )
+        print(
+            "The `send_limit_order` method is deprecated and will be removed very soon, use `place_order` instead."
+        )
         return await self.place_order(*args, **kwargs)
 
     async def place_limit_order(
@@ -1751,6 +1766,9 @@ class AsyncClient:
         """
         @deprecated(reason="Use place_order instead")
         """
+        print(
+            "The `place_limit_order` method is deprecated and will be removed very soon, use `place_order` instead."
+        )
         logging.warning(
             "place_limit_order is deprecated, use place_order instead. "
             "This will be removed in a future version."
@@ -1823,7 +1841,10 @@ class AsyncClient:
         Sends a regular order.
 
         Args:
-            id: in case user wants to generate their own order id, otherwise it will be generated automatically
+            id: an optional id in case user wants to generate their own order id, otherwise it will be generated automatically
+                The id must be in the format "{sequence_id}:{sequence_number}"
+                where the sequence_id is a globally unique UUID and the sequence_number must be a unique u64 per sequence_id
+                (so you can just generate one UUID and then just increment the sequence_number for each order)
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange

@@ -511,6 +511,10 @@ class Client:
         Returns the specified order.  Useful for looking at past sent orders.
         Queries open_orders first, then queries historical_orders.
 
+        Not that placing an order is not instant, so if one places an order
+        and then immediately calls `get_order` on the just sent order, it may
+        return `None`, as it has not registered yet.
+
         Args:
             order_id: the order id to get
         """
@@ -575,7 +579,10 @@ class Client:
         Sends a regular order.
 
         Args:
-            id: in case user wants to generate their own order id, otherwise it will be generated automatically
+            id: an optional id in case user wants to generate their own order id, otherwise it will be generated automatically
+                The id must be in the format "{sequence_id}:{sequence_number}"
+                where the sequence_id is a globally unique UUID and the sequence_number must be a unique u64 per sequence_id
+                (so you can just generate one UUID and then just increment the sequence_number for each order)
             symbol: the symbol to send the order for
             execution_venue: the execution venue to send the order to,
                 if execution_venue is set to None, the OMS will send the order to the primary_exchange
