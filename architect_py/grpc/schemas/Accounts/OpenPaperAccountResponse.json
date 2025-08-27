@@ -3,26 +3,16 @@
   "title": "OpenPaperAccountResponse",
   "type": "object",
   "required": [
-    "success"
+    "account"
   ],
   "properties": {
-    "account_id": {
-      "description": "The ID of the newly created paper account (None if failed)",
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "uuid"
-    },
-    "error": {
-      "description": "Error message if the operation failed",
-      "type": [
-        "string",
-        "null"
+    "account": {
+      "description": "The newly created paper account",
+      "allOf": [
+        {
+          "$ref": "../definitions.json#/Account"
+        }
       ]
-    },
-    "success": {
-      "type": "boolean"
     }
   }
 }

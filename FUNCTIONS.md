@@ -64,7 +64,6 @@
 - **`get_account_history`**: Get historical sequence of account summaries for the given account.
 - **`open_paper_account`**: Open a new paper trading account for the authenticated user.
 - **`reset_paper_account`**: Reset a paper trading account to its initial state.
-- **`close_paper_account`**: Close a paper trading account owned by the authenticated user.
 
 ---
 

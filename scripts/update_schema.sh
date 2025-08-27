@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Unset VIRTUAL_ENV to avoid conflicts with uv's environment detection
+unset VIRTUAL_ENV
+
 BASE_DIR=$(dirname "$(cd "$(dirname "$0")" && pwd)")
 # rm -rf "$BASE_DIR/.venv"
 

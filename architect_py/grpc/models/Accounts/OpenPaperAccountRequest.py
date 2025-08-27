@@ -6,34 +6,47 @@ from architect_py.grpc.models.Accounts.OpenPaperAccountResponse import (
     OpenPaperAccountResponse,
 )
 
-from typing import Annotated
+from typing import Annotated, Optional
 
 from msgspec import Meta, Struct
 
 
 class OpenPaperAccountRequest(Struct, omit_defaults=True):
-    account_name: Annotated[
-        str,
-        Meta(
-            description="The name for the new paper account (will be prefixed with PAPER:{email}:)"
-        ),
-    ]
+    account_name: Optional[
+        Annotated[
+            Optional[str],
+            Meta(
+                description='The name for the new paper account (will be of the form "PAPER:{email}:{account_name}") If not specified, the default account will be created "PAPER:{email}" Note that you cannot close a paper account once you open it.'
+            ),
+        ]
+    ] = None
     """
-    The name for the new paper account (will be prefixed with PAPER:{email}:)
+    The name for the new paper account (will be of the form "PAPER:{email}:{account_name}") If not specified, the default account will be created "PAPER:{email}" Note that you cannot close a paper account once you open it.
+    """
+    usd_balance_cents: Optional[
+        Annotated[
+            Optional[int],
+            Meta(description="Balance to open paper account with in USD cents"),
+        ]
+    ] = None
+    """
+    Balance to open paper account with in USD cents
     """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        account_name: str,
+        account_name: Optional[str] = None,
+        usd_balance_cents: Optional[int] = None,
     ):
         return cls(
             account_name,
+            usd_balance_cents,
         )
 
     def __str__(self) -> str:
-        return f"OpenPaperAccountRequest(account_name={self.account_name})"
+        return f"OpenPaperAccountRequest(account_name={self.account_name},usd_balance_cents={self.usd_balance_cents})"
 
     @staticmethod
     def get_response_type():

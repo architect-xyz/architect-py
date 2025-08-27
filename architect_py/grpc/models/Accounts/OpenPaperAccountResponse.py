@@ -3,46 +3,30 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from msgspec import Meta, Struct
 
+from .. import definitions
+
 
 class OpenPaperAccountResponse(Struct, omit_defaults=True):
-    success: bool
-    account_id: Optional[
-        Annotated[
-            Optional[str],
-            Meta(
-                description="The ID of the newly created paper account (None if failed)"
-            ),
-        ]
-    ] = None
+    account: Annotated[
+        definitions.Account, Meta(description="The newly created paper account")
+    ]
     """
-    The ID of the newly created paper account (None if failed)
-    """
-    error: Optional[
-        Annotated[
-            Optional[str], Meta(description="Error message if the operation failed")
-        ]
-    ] = None
-    """
-    Error message if the operation failed
+    The newly created paper account
     """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        success: bool,
-        account_id: Optional[str] = None,
-        error: Optional[str] = None,
+        account: definitions.Account,
     ):
         return cls(
-            success,
-            account_id,
-            error,
+            account,
         )
 
     def __str__(self) -> str:
-        return f"OpenPaperAccountResponse(success={self.success},account_id={self.account_id},error={self.error})"
+        return f"OpenPaperAccountResponse(account={self.account})"

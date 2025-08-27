@@ -1022,6 +1022,9 @@ class Withdrawal(Struct, omit_defaults=True):
         return f"Withdrawal(account={self.account},amount={self.amount},description={self.description},timestamp={self.timestamp})"
 
 
+AccountName = str
+
+
 class AccountPermissions(Struct, omit_defaults=True):
     """
     Set of flags for account permissions
@@ -1440,9 +1443,6 @@ class Varying(Struct, omit_defaults=True):
 TickSize = Union[SimpleDecimal, Varying]
 
 
-AccountName = str
-
-
 class OptionLike(Struct, omit_defaults=True):
     strike: Decimal
     expiration: Optional[datetime] = None
@@ -1755,6 +1755,49 @@ class AberrantFill(Struct, omit_defaults=True):
     @exchange_fill_id.setter
     def exchange_fill_id(self, value: Optional[str]) -> None:
         self.xid = value
+
+
+class Account(Struct, omit_defaults=True):
+    id: str
+    name: AccountName
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        id: str,
+        name: AccountName,
+    ):
+        return cls(
+            id,
+            name,
+        )
+
+    def __str__(self) -> str:
+        return f"Account(id={self.id},name={self.name})"
+
+
+class AccountWithPermissions(Struct, omit_defaults=True):
+    account: Account
+    permissions: AccountPermissions
+    trader: UserId
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: Account,
+        permissions: AccountPermissions,
+        trader: UserId,
+    ):
+        return cls(
+            account,
+            permissions,
+            trader,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader})"
 
 
 class BatchOrder(Struct, omit_defaults=True):
@@ -2696,26 +2739,6 @@ class SpreaderStatus(Struct, omit_defaults=True):
         return f"SpreaderStatus(current_spreader_phase={self.current_spreader_phase},leg1_fill_quantity={self.leg1_fill_quantity},leg2_fill_quantity={self.leg2_fill_quantity},implied_spread_vwap={self.implied_spread_vwap})"
 
 
-class Account(Struct, omit_defaults=True):
-    id: str
-    name: AccountName
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        id: str,
-        name: AccountName,
-    ):
-        return cls(
-            id,
-            name,
-        )
-
-    def __str__(self) -> str:
-        return f"Account(id={self.id},name={self.name})"
-
-
 class FutureSpread(Struct, omit_defaults=True):
     legs: List[SpreadLeg]
     product_type: Literal["FutureSpread"]
@@ -2839,29 +2862,6 @@ class EventContractSeriesInstance1(Struct, omit_defaults=True):
 EventContractSeriesInstance = Union[
     EventContractSeriesInstance1, EventContractSeriesInstance2
 ]
-
-
-class AccountWithPermissions(Struct, omit_defaults=True):
-    account: Account
-    permissions: AccountPermissions
-    trader: UserId
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        account: Account,
-        permissions: AccountPermissions,
-        trader: UserId,
-    ):
-        return cls(
-            account,
-            permissions,
-            trader,
-        )
-
-    def __str__(self) -> str:
-        return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader})"
 
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(

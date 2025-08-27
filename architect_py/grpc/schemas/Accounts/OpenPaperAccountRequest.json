@@ -2,13 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "OpenPaperAccountRequest",
   "type": "object",
-  "required": [
-    "account_name"
-  ],
   "properties": {
     "account_name": {
-      "description": "The name for the new paper account (will be prefixed with PAPER:{email}:)",
-      "type": "string"
+      "description": "The name for the new paper account (will be of the form \"PAPER:{email}:{account_name}\") If not specified, the default account will be created \"PAPER:{email}\" Note that you cannot close a paper account once you open it.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "usd_balance_cents": {
+      "description": "Balance to open paper account with in USD cents",
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32"
     }
   },
   "route": "/json.architect.Accounts/OpenPaperAccount",

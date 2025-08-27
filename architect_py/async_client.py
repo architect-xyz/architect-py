@@ -1414,12 +1414,17 @@ class AsyncClient:
         res = await grpc_client.unary_unary(req)
         return res.history
 
-    async def open_paper_account(self, account_name: str) -> "OpenPaperAccountResponse":
+    async def open_paper_account(
+        self,
+        account_name: Optional[str] = None,
+        usd_balance_cents: Optional[int] = None,
+    ) -> "OpenPaperAccountResponse":
         """
         Open a new paper trading account for the authenticated user.
 
         Args:
-            account_name: Name for the new paper account (will be prefixed with PAPER:{email}:)
+            account_name: Optional name for the new paper account (will be of form `PAPER:{email}:{account_name}`).
+                         If not specified, creates/accesses the default account PAPER:{email}
 
         Returns:
             OpenPaperAccountResponse containing:
@@ -1427,15 +1432,18 @@ class AsyncClient:
                 - success: Whether the operation succeeded
                 - error: Error message if the operation failed
 
-        Note: Users are limited to 3 paper accounts. Contact Architect for access to additional accounts.
+        Note: One cannot close a paper account once it is opened.
+        Users are limited to 3 paper accounts. Contact Architect for access to additional accounts.
         """
         grpc_client = await self._core()
-        req = OpenPaperAccountRequest(account_name=account_name)
+        req = OpenPaperAccountRequest(
+            account_name=account_name, usd_balance_cents=usd_balance_cents
+        )
         res = await grpc_client.unary_unary(req)
         return res
 
     async def reset_paper_account(
-        self, account: str, balance: Optional[int] = None
+        self, account: str, usd_balance_cents: Optional[int] = None
     ) -> "ResetPaperAccountResponse":
         """
         Reset a paper trading account to its initial state.
@@ -1448,29 +1456,9 @@ class AsyncClient:
             ResetPaperAccountResponse
         """
         grpc_client = await self._core()
-        req = ResetPaperAccountRequest(account=str(account), balance=balance)
-        res = await grpc_client.unary_unary(req)
-        return res
-
-    async def close_paper_account(
-        self,
-        account: str,
-    ) -> "ClosePaperAccountResponse":
-        """
-        Close a paper trading account owned by the authenticated user.
-
-        Args:
-            account: Account UUID or name to close
-
-        Returns:
-            ClosePaperAccountResponse containing:
-                - success: Whether the operation succeeded
-                - error: Error message if the operation failed
-
-        Note: The main PAPER:{email} account cannot be closed.
-        """
-        grpc_client = await self._core()
-        req = ClosePaperAccountRequest(account=str(account))
+        req = ResetPaperAccountRequest(
+            account=str(account), usd_balance_cents=usd_balance_cents
+        )
         res = await grpc_client.unary_unary(req)
         return res
 

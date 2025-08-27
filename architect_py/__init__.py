@@ -41,6 +41,7 @@ from .grpc.models.definitions import (
     TriggerLimitOrderType,
     UserId,
     Withdrawal,
+    AccountName,
     AccountPermissions,
     AliasKind,
     DerivativeKind,
@@ -66,13 +67,14 @@ from .grpc.models.definitions import (
     SimpleDecimal,
     Varying1,
     Varying,
-    AccountName,
     OptionLike,
     EventContractSeriesInstance2,
     OptionsSeriesInstance,
     SpreadLeg,
     Outcome,
     AberrantFill,
+    Account,
+    AccountWithPermissions,
     BatchOrder,
     CancelReject,
     CptyLoginRequest,
@@ -94,14 +96,12 @@ from .grpc.models.definitions import (
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo2,
     SpreaderParams,
     SpreaderStatus,
-    Account,
     FutureSpread,
     Option,
     SnapshotOrUpdateForStringAndExecutionInfo1,
     SnapshotOrUpdateForStringAndExecutionInfo2,
     Enumerated,
     EventContractSeriesInstance1,
-    AccountWithPermissions,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2,
     EventContract,
@@ -111,8 +111,6 @@ from .grpc.models.definitions import (
 )
 from .grpc.models.Accounts.AccountsRequest import AccountsRequest
 from .grpc.models.Accounts.AccountsResponse import AccountsResponse
-from .grpc.models.Accounts.ClosePaperAccountRequest import ClosePaperAccountRequest
-from .grpc.models.Accounts.ClosePaperAccountResponse import ClosePaperAccountResponse
 from .grpc.models.Accounts.OpenPaperAccountRequest import OpenPaperAccountRequest
 from .grpc.models.Accounts.OpenPaperAccountResponse import OpenPaperAccountResponse
 from .grpc.models.Accounts.ResetPaperAccountRequest import ResetPaperAccountRequest
@@ -321,8 +319,6 @@ __all__ = [
     "Candle",
     "CandleWidth",
     "Client",
-    "ClosePaperAccountRequest",
-    "ClosePaperAccountResponse",
     "Commodity",
     "ConfigRequest",
     "ConfigResponse",

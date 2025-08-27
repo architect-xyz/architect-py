@@ -1,20 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ResetPaperAccountResponse",
-  "type": "object",
-  "required": [
-    "success"
-  ],
-  "properties": {
-    "error": {
-      "description": "Error message if the operation failed",
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "success": {
-      "type": "boolean"
-    }
-  }
+  "type": "object"
 }

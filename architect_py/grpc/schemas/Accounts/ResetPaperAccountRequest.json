@@ -14,12 +14,14 @@
         }
       ]
     },
-    "balance": {
+    "usd_balance_cents": {
+      "description": "Balance to reset paper account to in USD cents",
+      "default": null,
       "type": [
         "integer",
         "null"
       ],
-      "format": "default"
+      "format": "int32"
     }
   },
   "route": "/json.architect.Accounts/ResetPaperAccount",

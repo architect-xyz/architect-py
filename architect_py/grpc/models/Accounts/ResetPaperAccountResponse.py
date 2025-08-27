@@ -3,33 +3,18 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Optional
-
-from msgspec import Meta, Struct
+from msgspec import Struct
 
 
 class ResetPaperAccountResponse(Struct, omit_defaults=True):
-    success: bool
-    error: Optional[
-        Annotated[
-            Optional[str], Meta(description="Error message if the operation failed")
-        ]
-    ] = None
-    """
-    Error message if the operation failed
-    """
+    pass
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        success: bool,
-        error: Optional[str] = None,
     ):
-        return cls(
-            success,
-            error,
-        )
+        return cls()
 
     def __str__(self) -> str:
-        return f"ResetPaperAccountResponse(success={self.success},error={self.error})"
+        return f"ResetPaperAccountResponse()"

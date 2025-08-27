@@ -23,24 +23,30 @@ class ResetPaperAccountRequest(Struct, omit_defaults=True):
     """
     The trader for whom to reset paper accounts. If not specified, defaults to the caller user.
     """
-    balance: Optional[int] = None
+    usd_balance_cents: Optional[
+        Annotated[
+            Optional[int],
+            Meta(description="Balance to reset paper account to in USD cents"),
+        ]
+    ] = None
+    """
+    Balance to reset paper account to in USD cents
+    """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         account: definitions.AccountIdOrName,
-        balance: Optional[int] = None,
+        usd_balance_cents: Optional[int] = None,
     ):
         return cls(
             account,
-            balance,
+            usd_balance_cents,
         )
 
     def __str__(self) -> str:
-        return (
-            f"ResetPaperAccountRequest(account={self.account},balance={self.balance})"
-        )
+        return f"ResetPaperAccountRequest(account={self.account},usd_balance_cents={self.usd_balance_cents})"
 
     @staticmethod
     def get_response_type():
