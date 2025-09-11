@@ -1,3 +1,6 @@
+# 5.9.3
+- tickers_to_dataframe no longer errors on empty df
+
 # 5.9.2
 - client connect now raises error if it does not successfully get a jwt
 - equities candles now works
