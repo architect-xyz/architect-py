@@ -10,7 +10,7 @@ from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
 from architect_py.grpc.client import GrpcClient as GrpcClient
-from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, TraderIdOrEmail as TraderIdOrEmail, TriggerLimitOrderType as TriggerLimitOrderType
+from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail, TriggerLimitOrderType as TriggerLimitOrderType
 from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
@@ -660,7 +660,39 @@ class Client:
 
         Useful for clearing stuck orders or stale orders when a human wants to intervene.
         """
-    def place_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None):
+    def place_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None) -> AlgoOrder:
         """
         Sends an advanced algo order such as the spreader.
+        """
+    def get_algo_order_status(self, algo_order_id: str | OrderId) -> AlgoOrder:
+        """
+        Get the status of a specific algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to retrieve
+            algo_status_type: The type of the status_details field
+
+        Returns:
+            AlgoOrder object containing the order details and status
+        """
+    def stop_algo_order(self, algo_order_id: str | OrderId) -> StopAlgoResponse:
+        """
+        Cancel/stop an algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to cancel
+
+        Returns:
+            StopAlgoResponse object confirming the cancellation
+        """
+    def modify_algo_order(self, algo_order_id: str | OrderId, params: SpreaderParams) -> AlgoOrder:
+        """
+        Modify an existing algo order's parameters.
+
+        Args:
+            algo_order_id: The ID of the algo order to modify
+            params: The new parameters for the algo order
+
+        Returns:
+            Updated AlgoOrder object with new parameters
         """

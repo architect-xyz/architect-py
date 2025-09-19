@@ -120,6 +120,7 @@ from .grpc.models.Algo.AlgoOrderRequest import AlgoOrderRequest
 from .grpc.models.Algo.AlgoOrdersRequest import AlgoOrdersRequest
 from .grpc.models.Algo.AlgoOrdersResponse import AlgoOrdersResponse
 from .grpc.models.Algo.CreateAlgoOrderRequest import CreateAlgoOrderRequest
+from .grpc.models.Algo.ModifyAlgoOrderRequest import ModifyAlgoOrderRequest
 from .grpc.models.Algo.PauseAlgoRequest import PauseAlgoRequest
 from .grpc.models.Algo.PauseAlgoResponse import PauseAlgoResponse
 from .grpc.models.Algo.StartAlgoRequest import StartAlgoRequest
@@ -389,6 +390,7 @@ __all__ = [
     "MarketStatusRequest",
     "MinOrderQuantityUnit",
     "Modify",
+    "ModifyAlgoOrderRequest",
     "ModifyOrderRequest",
     "ModifyPending",
     "ModifyReject",

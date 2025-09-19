@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModifyAlgoOrderRequest",
+  "type": "object",
+  "required": [
+    "algo_order_id",
+    "params"
+  ],
+  "properties": {
+    "algo_order_id": {
+      "$ref": "../definitions.json#/OrderId"
+    },
+    "params": true
+  },
+  "route": "/json.architect.Algo/ModifyAlgoOrder",
+  "rpc_method": "unary",
+  "service": "Algo",
+  "response_type": "AlgoOrder"
+}

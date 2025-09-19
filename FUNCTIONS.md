@@ -90,6 +90,9 @@
 - **`batch_cancel_orders`**: Cancels a batch of orders by order ids.
 - **`reconcile_out`**: Manually reconcile orders out.
 - **`place_algo_order`**: Sends an advanced algo order such as the spreader.
+- **`get_algo_order_status`**: Get the status of a specific algo order.
+- **`stop_algo_order`**: Cancel/stop an algo order.
+- **`modify_algo_order`**: Modify an existing algo order's parameters.
 
 ---
 

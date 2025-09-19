@@ -16,6 +16,7 @@ from typing import (
     overload,
 )
 
+import msgspec
 import pandas as pd
 
 from architect_py.batch_place_order import BatchPlaceOrder
@@ -40,6 +41,7 @@ from architect_py.grpc.models.definitions import (
     OrderType,
     SortTickersBy,
     SpreaderParams,
+    SpreaderStatus,
     TraderIdOrEmail,
     TriggerLimitOrderType,
 )
@@ -2109,7 +2111,7 @@ class AsyncClient:
         params: SpreaderParams,
         id: Optional[str] = None,
         trader: Optional[str] = None,
-    ):
+    ) -> AlgoOrder:
         """
         Sends an advanced algo order such as the spreader.
         """
@@ -2123,5 +2125,74 @@ class AsyncClient:
             )
 
         req = CreateAlgoOrderRequest(algo=algo, params=params, id=id, trader=trader)
+        res = await grpc_client.unary_unary(req)
+        return res
+
+    async def get_algo_order_status(
+        self,
+        algo_order_id: Union[str, OrderId],
+    ) -> AlgoOrder:
+        """
+        Get the status of a specific algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to retrieve
+            algo_status_type: The type of the status_details field
+
+        Returns:
+            AlgoOrder object containing the order details and status
+        """
+        grpc_client = await self._core()
+
+        req = AlgoOrderRequest(algo_order_id=algo_order_id)
+        res = await grpc_client.unary_unary(req)
+        if res.algo == "SPREADER":
+            status_details_type = SpreaderStatus
+        else:
+            status_details_type = None
+
+        if status_details_type is not None:
+            res.status_details = msgspec.convert(
+                res.status_details, status_details_type
+            )
+        return res
+
+    async def stop_algo_order(
+        self,
+        algo_order_id: Union[str, OrderId],
+    ) -> StopAlgoResponse:
+        """
+        Cancel/stop an algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to cancel
+
+        Returns:
+            StopAlgoResponse object confirming the cancellation
+        """
+        grpc_client = await self._core()
+
+        req = StopAlgoRequest(algo_order_id=algo_order_id)
+        res = await grpc_client.unary_unary(req)
+        return res
+
+    async def modify_algo_order(
+        self,
+        algo_order_id: Union[str, OrderId],
+        params: SpreaderParams,
+    ) -> AlgoOrder:
+        """
+        Modify an existing algo order's parameters.
+
+        Args:
+            algo_order_id: The ID of the algo order to modify
+            params: The new parameters for the algo order
+
+        Returns:
+            Updated AlgoOrder object with new parameters
+        """
+        grpc_client = await self._core()
+
+        req = ModifyAlgoOrderRequest(algo_order_id=algo_order_id, params=params)
         res = await grpc_client.unary_unary(req)
         return res
