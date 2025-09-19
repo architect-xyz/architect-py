@@ -4,9 +4,23 @@
   "description": "this is used to coerce creation of the params in the schema.json",
   "type": "object",
   "required": [
+    "quote_one_side",
     "spreader"
   ],
   "properties": {
+    "quote_one_side": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "../definitions.json#/QuoteOneSideParams"
+        },
+        {
+          "$ref": "../definitions.json#/QuoteOneSideStatus"
+        }
+      ],
+      "maxItems": 2,
+      "minItems": 2
+    },
     "spreader": {
       "type": "array",
       "items": [

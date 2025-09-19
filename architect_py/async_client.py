@@ -39,6 +39,8 @@ from architect_py.grpc.models.definitions import (
     OrderId,
     OrderSource,
     OrderType,
+    QuoteOneSideParams,
+    QuoteOneSideStatus,
     SortTickersBy,
     SpreaderParams,
     SpreaderStatus,
@@ -2108,7 +2110,7 @@ class AsyncClient:
     async def place_algo_order(
         self,
         *,
-        params: SpreaderParams,
+        params: SpreaderParams | QuoteOneSideParams,
         id: Optional[str] = None,
         trader: Optional[str] = None,
     ) -> AlgoOrder:
@@ -2119,6 +2121,8 @@ class AsyncClient:
 
         if isinstance(params, SpreaderParams):
             algo = "SPREADER"
+        elif isinstance(params, QuoteOneSideParams):
+            algo = "QUOTE_ONE_SIDE"
         else:
             raise ValueError(
                 "Unsupported algo type. Only SpreaderParams is supported for now."
@@ -2148,6 +2152,8 @@ class AsyncClient:
         res = await grpc_client.unary_unary(req)
         if res.algo == "SPREADER":
             status_details_type = SpreaderStatus
+        elif res.algo == "QUOTE_ONE_SIDE":
+            status_details_type = QuoteOneSideStatus
         else:
             status_details_type = None
 

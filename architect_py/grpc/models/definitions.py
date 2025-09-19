@@ -757,6 +757,58 @@ class PutOrCall(str, Enum):
     C = "C"
 
 
+class QuoteOneSideStatus(Struct, omit_defaults=True):
+    """
+    Current status of the QuoteOneSide algorithm
+    """
+
+    front_of_queue: Annotated[
+        bool,
+        Meta(
+            description="Indicates whether the current quote is at the front of the queue (best price on our side) - For Buy orders: `true` when our quote price > previous best bid on the market - For Sell orders: `true` when our quote price < previous best ask on the market - Also `true` when we're the first to establish a quote on our side (no existing bid/ask) - This status updates dynamically as market conditions change and other orders arrive/cancel - Being front of queue provides priority for fills"
+        ),
+    ]
+    """
+    Indicates whether the current quote is at the front of the queue (best price on our side) - For Buy orders: `true` when our quote price > previous best bid on the market - For Sell orders: `true` when our quote price < previous best ask on the market - Also `true` when we're the first to establish a quote on our side (no existing bid/ask) - This status updates dynamically as market conditions change and other orders arrive/cancel - Being front of queue provides priority for fills
+    """
+    is_cancelling: Annotated[
+        bool,
+        Meta(
+            description="Indicates whether the algorithm is currently cancelling an order"
+        ),
+    ]
+    """
+    Indicates whether the algorithm is currently cancelling an order
+    """
+    orders_sent: Annotated[int, Meta(ge=0)]
+    quantity_filled: Decimal
+    current_quote_price: Optional[Decimal] = None
+    realized_avg_price: Optional[Decimal] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        front_of_queue: bool,
+        is_cancelling: bool,
+        orders_sent: int,
+        quantity_filled: Decimal,
+        current_quote_price: Optional[Decimal] = None,
+        realized_avg_price: Optional[Decimal] = None,
+    ):
+        return cls(
+            front_of_queue,
+            is_cancelling,
+            orders_sent,
+            quantity_filled,
+            current_quote_price,
+            realized_avg_price,
+        )
+
+    def __str__(self) -> str:
+        return f"QuoteOneSideStatus(front_of_queue={self.front_of_queue},is_cancelling={self.is_cancelling},orders_sent={self.orders_sent},quantity_filled={self.quantity_filled},current_quote_price={self.current_quote_price},realized_avg_price={self.realized_avg_price})"
+
+
 class RqdAccountStatistics(Struct, omit_defaults=True):
     account_number: str
     account_type: Optional[str] = None
@@ -1080,6 +1132,15 @@ class FillKind(int, Enum):
 
 
 HumanDuration = str
+
+
+class ImproveOrJoin(str, Enum):
+    """
+    Whether to improve the market or join at the current best price
+    """
+
+    Improve = "Improve"
+    Join = "Join"
 
 
 class Unit(str, Enum):
@@ -2505,6 +2566,95 @@ class OrderReject(Struct, omit_defaults=True):
     @message.setter
     def message(self, value: Optional[str]) -> None:
         self.rm = value
+
+
+class QuoteOneSideParams(Struct, omit_defaults=True):
+    """
+    Parameters for the QuoteOneSide algorithm
+    """
+
+    account: AccountIdOrName
+    dir: OrderDir
+    execution_venue: str
+    improve_or_join: Annotated[
+        ImproveOrJoin,
+        Meta(
+            description="Whether to improve the market or join at the current best price"
+        ),
+    ]
+    """
+    Whether to improve the market or join at the current best price
+    """
+    limit_price: Annotated[
+        Decimal, Meta(description="the most aggressive price the algo will quote at")
+    ]
+    """
+    the most aggressive price the algo will quote at
+    """
+    marketdata_venue: str
+    quantity: Decimal
+    quantity_filled: Annotated[
+        Decimal,
+        Meta(
+            description="Insert as 0, used for tracking fill quantity when modifying quote"
+        ),
+    ]
+    """
+    Insert as 0, used for tracking fill quantity when modifying quote
+    """
+    symbol: str
+    max_ticks_outside: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100"
+            ),
+        ]
+    ] = None
+    """
+    Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100
+    """
+    parent_id: Optional[
+        Annotated[
+            Optional[OrderId], Meta(description="when being called from another algo")
+        ]
+    ] = None
+    """
+    when being called from another algo
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account: AccountIdOrName,
+        dir: OrderDir,
+        execution_venue: str,
+        improve_or_join: ImproveOrJoin,
+        limit_price: Decimal,
+        marketdata_venue: str,
+        quantity: Decimal,
+        quantity_filled: Decimal,
+        symbol: str,
+        max_ticks_outside: Optional[Decimal] = None,
+        parent_id: Optional[OrderId] = None,
+    ):
+        return cls(
+            account,
+            dir,
+            execution_venue,
+            improve_or_join,
+            limit_price,
+            marketdata_venue,
+            quantity,
+            quantity_filled,
+            symbol,
+            max_ticks_outside,
+            parent_id,
+        )
+
+    def __str__(self) -> str:
+        return f"QuoteOneSideParams(account={self.account},dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},quantity_filled={self.quantity_filled},symbol={self.symbol},max_ticks_outside={self.max_ticks_outside},parent_id={self.parent_id})"
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(

@@ -15,17 +15,24 @@ class AlgoParamTypes(Struct, omit_defaults=True):
     this is used to coerce creation of the params in the schema.json
     """
 
+    quote_one_side: List[
+        Union[definitions.QuoteOneSideParams, definitions.QuoteOneSideStatus]
+    ]
     spreader: List[Union[definitions.SpreaderParams, definitions.SpreaderStatus]]
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
+        quote_one_side: List[
+            Union[definitions.QuoteOneSideParams, definitions.QuoteOneSideStatus]
+        ],
         spreader: List[Union[definitions.SpreaderParams, definitions.SpreaderStatus]],
     ):
         return cls(
+            quote_one_side,
             spreader,
         )
 
     def __str__(self) -> str:
-        return f"AlgoParamTypes(spreader={self.spreader})"
+        return f"AlgoParamTypes(quote_one_side={self.quote_one_side},spreader={self.spreader})"

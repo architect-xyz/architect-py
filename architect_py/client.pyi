@@ -10,7 +10,7 @@ from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
 from architect_py.grpc.client import GrpcClient as GrpcClient
-from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail, TriggerLimitOrderType as TriggerLimitOrderType
+from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail, TriggerLimitOrderType as TriggerLimitOrderType
 from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
@@ -660,7 +660,7 @@ class Client:
 
         Useful for clearing stuck orders or stale orders when a human wants to intervene.
         """
-    def place_algo_order(self, *, params: SpreaderParams, id: str | None = None, trader: str | None = None) -> AlgoOrder:
+    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams, id: str | None = None, trader: str | None = None) -> AlgoOrder:
         """
         Sends an advanced algo order such as the spreader.
         """

@@ -2337,6 +2337,130 @@
   "HumanDuration": {
     "type": "string"
   },
+  "ImproveOrJoin": {
+    "description": "Whether to improve the market or join at the current best price",
+    "enum": [
+      "Improve",
+      "Join"
+    ],
+    "type": "string"
+  },
+  "QuoteOneSideParams": {
+    "description": "Parameters for the QuoteOneSide algorithm",
+    "type": "object",
+    "required": [
+      "account",
+      "dir",
+      "execution_venue",
+      "improve_or_join",
+      "limit_price",
+      "marketdata_venue",
+      "quantity",
+      "quantity_filled",
+      "symbol"
+    ],
+    "properties": {
+      "account": {
+        "$ref": "#/AccountIdOrName"
+      },
+      "dir": {
+        "$ref": "#/Dir"
+      },
+      "execution_venue": {
+        "type": "string"
+      },
+      "improve_or_join": {
+        "description": "Whether to improve the market or join at the current best price",
+        "allOf": [
+          {
+            "$ref": "#/ImproveOrJoin"
+          }
+        ]
+      },
+      "limit_price": {
+        "description": "the most aggressive price the algo will quote at",
+        "type": "string",
+        "format": "decimal"
+      },
+      "marketdata_venue": {
+        "type": "string"
+      },
+      "max_ticks_outside": {
+        "description": "Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "parent_id": {
+        "description": "when being called from another algo",
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "quantity_filled": {
+        "description": "Insert as 0, used for tracking fill quantity when modifying quote",
+        "type": "string",
+        "format": "decimal"
+      },
+      "symbol": {
+        "type": "string"
+      }
+    }
+  },
+  "QuoteOneSideStatus": {
+    "description": "Current status of the QuoteOneSide algorithm",
+    "type": "object",
+    "required": [
+      "front_of_queue",
+      "is_cancelling",
+      "orders_sent",
+      "quantity_filled"
+    ],
+    "properties": {
+      "current_quote_price": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "front_of_queue": {
+        "description": "Indicates whether the current quote is at the front of the queue (best price on our side) - For Buy orders: `true` when our quote price > previous best bid on the market - For Sell orders: `true` when our quote price < previous best ask on the market - Also `true` when we're the first to establish a quote on our side (no existing bid/ask) - This status updates dynamically as market conditions change and other orders arrive/cancel - Being front of queue provides priority for fills",
+        "type": "boolean"
+      },
+      "is_cancelling": {
+        "description": "Indicates whether the algorithm is currently cancelling an order",
+        "type": "boolean"
+      },
+      "orders_sent": {
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "quantity_filled": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "realized_avg_price": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      }
+    }
+  },
   "SpreaderParams": {
     "type": "object",
     "required": [
