@@ -169,6 +169,7 @@ class AlgoOrderStatus(int, Enum):
     Working = 1
     Rejected = 2
     Paused = 63
+    Stopping = 128
     Stopped = 127
 
 
