@@ -5,6 +5,7 @@
     {
       "tag_value": "p",
       "title": "PlaceOrderRequest",
+      "description": "<!-- py: unflatten=k/order_type/OrderType, tag=k -->",
       "$ref": "../Oms/PlaceOrderRequest.json/#",
       "variant_name": "PlaceOrder"
     },
@@ -29,12 +30,14 @@
     {
       "tag_value": "xb",
       "title": "BatchCancelOrdersRequest",
+      "description": "Batch cancel orders.  Depending on the cpty, their may be different semantics on how the batch cancel is handled.",
       "$ref": "../Oms/BatchCancelOrdersRequest.json/#",
       "variant_name": "BatchCancelOrders"
     },
     {
       "tag_value": "modify_order",
       "title": "ModifyOrderRequest",
+      "description": "The ModifyOrderRequest will cause the order to get a new OrderId. The new OrderId will come in the Modify Response.",
       "$ref": "../Oms/ModifyOrderRequest.json/#",
       "variant_name": "ModifyOrder"
     }

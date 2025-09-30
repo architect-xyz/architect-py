@@ -22,7 +22,9 @@ class TaggedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
 class TaggedAberrantFill(
     definitions.AberrantFill, omit_defaults=True, tag_field="t", tag="af"
 ):
-    pass
+    """
+    Fills which we received but couldn't parse fully, return details best effort
+    """
 
 
 Dropcopy = Annotated[

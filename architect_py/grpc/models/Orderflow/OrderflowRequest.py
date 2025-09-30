@@ -18,6 +18,7 @@ from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedModifyReject,
     TaggedOrderModified,
     TaggedFill,
+    DescendantFill,
     TaggedAberrantFill,
 )
 
@@ -56,13 +57,17 @@ class CancelAllOrders(
 class BatchCancelOrders(
     BatchCancelOrdersRequest, omit_defaults=True, tag_field="t", tag="xb"
 ):
-    pass
+    """
+    Batch cancel orders.  Depending on the cpty, their may be different semantics on how the batch cancel is handled.
+    """
 
 
 class ModifyOrder(
     ModifyOrderRequest, omit_defaults=True, tag_field="t", tag="modify_order"
 ):
-    pass
+    """
+    The ModifyOrderRequest will cause the order to get a new OrderId. The new OrderId will come in the Modify Response.
+    """
 
 
 OrderflowRequest = Annotated[
@@ -102,6 +107,7 @@ OrderflowRequestUnannotatedResponseType = (
     | TaggedModifyReject
     | TaggedOrderModified
     | TaggedFill
+    | DescendantFill
     | TaggedAberrantFill
 )
 OrderflowRequest_route = "/json.architect.Orderflow/Orderflow"

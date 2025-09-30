@@ -18,6 +18,7 @@ from architect_py.grpc.models.Orderflow.Orderflow import (
     TaggedModifyReject,
     TaggedOrderModified,
     TaggedFill,
+    DescendantFill,
     TaggedAberrantFill,
 )
 
@@ -75,6 +76,7 @@ class SubscribeOrderflowRequest(Struct, omit_defaults=True):
             | TaggedModifyReject
             | TaggedOrderModified
             | TaggedFill
+            | DescendantFill
             | TaggedAberrantFill
         )
 

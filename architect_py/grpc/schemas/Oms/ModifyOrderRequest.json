@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ModifyOrderRequest",
-  "description": "The ModifyOrderRequest will cause the order to get a new OrderId",
+  "description": "The ModifyOrderRequest will cause the order to get a new OrderId. The new OrderId will come in the Modify Response.",
   "type": "object",
   "required": [
     "id"

@@ -321,10 +321,6 @@ Bid = List[Decimal]
 
 
 class L2BookDiff(Struct, omit_defaults=True):
-    """
-    Unique sequence id and number.
-    """
-
     a: Annotated[
         List[Ask],
         Meta(
@@ -2573,7 +2569,6 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     Parameters for the QuoteOneSide algorithm
     """
 
-    account: AccountIdOrName
     dir: OrderDir
     execution_venue: str
     improve_or_join: Annotated[
@@ -2603,6 +2598,7 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     Insert as 0, used for tracking fill quantity when modifying quote
     """
     symbol: str
+    account: Optional[AccountIdOrName] = None
     max_ticks_outside: Optional[
         Annotated[
             Optional[Decimal],
@@ -2614,20 +2610,11 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     """
     Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100
     """
-    parent_id: Optional[
-        Annotated[
-            Optional[OrderId], Meta(description="when being called from another algo")
-        ]
-    ] = None
-    """
-    when being called from another algo
-    """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        account: AccountIdOrName,
         dir: OrderDir,
         execution_venue: str,
         improve_or_join: ImproveOrJoin,
@@ -2636,11 +2623,10 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
         quantity: Decimal,
         quantity_filled: Decimal,
         symbol: str,
+        account: Optional[AccountIdOrName] = None,
         max_ticks_outside: Optional[Decimal] = None,
-        parent_id: Optional[OrderId] = None,
     ):
         return cls(
-            account,
             dir,
             execution_venue,
             improve_or_join,
@@ -2649,12 +2635,12 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
             quantity,
             quantity_filled,
             symbol,
+            account,
             max_ticks_outside,
-            parent_id,
         )
 
     def __str__(self) -> str:
-        return f"QuoteOneSideParams(account={self.account},dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},quantity_filled={self.quantity_filled},symbol={self.symbol},max_ticks_outside={self.max_ticks_outside},parent_id={self.parent_id})"
+        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},quantity_filled={self.quantity_filled},symbol={self.symbol},account={self.account},max_ticks_outside={self.max_ticks_outside})"
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(

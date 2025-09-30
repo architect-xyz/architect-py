@@ -12,11 +12,15 @@ from .L2BookSnapshot import L2BookSnapshot
 
 
 class Snapshot(L2BookSnapshot, omit_defaults=True, tag_field="t", tag="s"):
-    pass
+    """
+    Unique sequence id and number.
+    """
 
 
 class Diff(definitions.L2BookDiff, omit_defaults=True, tag_field="t", tag="d"):
-    pass
+    """
+    Unique sequence id and number.
+    """
 
 
 L2BookUpdate = Annotated[

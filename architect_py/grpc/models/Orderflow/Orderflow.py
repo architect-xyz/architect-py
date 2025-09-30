@@ -86,10 +86,20 @@ class TaggedFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="f"):
     pass
 
 
+class DescendantFill(definitions.Fill, omit_defaults=True, tag_field="t", tag="df"):
+    """
+        For parent algos with child algos, the parent algo will also receive copies of fills from its descendants.  The fills will be modified such that their order_id is set to the immediate child algo's order ID.
+
+    For example, suppose algo order A spawns child algo order B, whose suborder O receives fill F.  F's order_id is O.  A should also hear about this fill as a DescendantFill F_desc where F_desc's order_id is B.
+    """
+
+
 class TaggedAberrantFill(
     definitions.AberrantFill, omit_defaults=True, tag_field="t", tag="af"
 ):
-    pass
+    """
+    Fills which we received but couldn't parse fully, return details best effort
+    """
 
 
 Orderflow = Annotated[
@@ -108,6 +118,7 @@ Orderflow = Annotated[
         TaggedModifyReject,
         TaggedOrderModified,
         TaggedFill,
+        DescendantFill,
         TaggedAberrantFill,
     ],
     Meta(title="Orderflow"),

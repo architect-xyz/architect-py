@@ -1295,7 +1295,6 @@
     ]
   },
   "L2BookDiff": {
-    "description": "Unique sequence id and number.",
     "type": "object",
     "required": [
       "a",
@@ -2349,7 +2348,6 @@
     "description": "Parameters for the QuoteOneSide algorithm",
     "type": "object",
     "required": [
-      "account",
       "dir",
       "execution_venue",
       "improve_or_join",
@@ -2361,7 +2359,14 @@
     ],
     "properties": {
       "account": {
-        "$ref": "#/AccountIdOrName"
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "dir": {
         "$ref": "#/Dir"
@@ -2392,17 +2397,6 @@
           "null"
         ],
         "format": "decimal"
-      },
-      "parent_id": {
-        "description": "when being called from another algo",
-        "anyOf": [
-          {
-            "$ref": "#/OrderId"
-          },
-          {
-            "type": "null"
-          }
-        ]
       },
       "quantity": {
         "type": "string",

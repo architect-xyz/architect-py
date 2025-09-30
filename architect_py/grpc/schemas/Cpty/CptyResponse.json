@@ -25,6 +25,7 @@
     {
       "tag_value": "ro",
       "title": "Order",
+      "description": "<!-- py: unflatten=k/order_type/OrderType, tag=k -->",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "ReconcileOrder"
     },

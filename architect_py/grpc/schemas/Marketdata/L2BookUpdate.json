@@ -6,12 +6,14 @@
     {
       "tag_value": "s",
       "title": "L2BookSnapshot",
+      "description": "Unique sequence id and number.",
       "$ref": "../Marketdata/L2BookSnapshot.json/#",
       "variant_name": "Snapshot"
     },
     {
       "tag_value": "d",
       "title": "L2BookDiff",
+      "description": "Unique sequence id and number.",
       "$ref": "../definitions.json#/L2BookDiff",
       "variant_name": "Diff"
     }

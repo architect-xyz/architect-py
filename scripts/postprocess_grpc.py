@@ -210,8 +210,14 @@ def create_tagged_subtypes_for_variant_types(content: str, json_data: dict) -> s
 
     # Build a mapping from base type name to its variants.
     tag_field_map: dict[str, List[Tuple[str, str]]] = defaultdict(list)
+    variant_descriptions: dict[str, str] = {}
     for p in json_data["oneOf"]:
         tag_field_map[p["title"]].append((p["variant_name"], p["tag_value"]))
+        if "description" in p and p["variant_name"]:
+            # Remove metadata comments from descriptions
+            desc = re.sub(r"<!--.*?-->", "", p["description"]).strip()
+            if desc:  # Only add if there's content after removing metadata
+                variant_descriptions[p["variant_name"]] = desc
 
     # Match the type alias (Union or single type)
     alias_match = ALIAS_PATTERN_UNION.search(content)
@@ -248,18 +254,34 @@ def create_tagged_subtypes_for_variant_types(content: str, json_data: dict) -> s
                 def repl(m):
                     if "tag=" in m.group("inheritance"):
                         return m.group(0)
-                    return (
+                    result = (
                         f"{m.group(1)}{m.group('inheritance')}, omit_defaults=True, "
                         f'tag_field="{tag_field}", tag="{tag_value}"{m.group(3)}{m.group(4)}'
                     )
+                    # Check if we need to add a docstring
+                    if variant_name in variant_descriptions:
+                        desc = variant_descriptions[variant_name]
+                        docstring = f'\n    """\n    {desc}\n    """'
+                        result += docstring
+                    return result
 
                 content, count = pattern.subn(repl, content)
                 if count == 0:
+                    # Check if this variant has a description
+                    docstring = ""
+                    if variant_name in variant_descriptions:
+                        # Format the description as a docstring
+                        desc = variant_descriptions[variant_name]
+                        docstring = f'    """\n    {desc}\n    """\n'
+
                     new_class_def = (
                         f"\n\nclass {variant_name}({base_type}, omit_defaults=True, "
                         f'tag_field="{tag_field}", tag="{tag_value}"):\n'
-                        "    pass\n"
                     )
+                    if docstring:
+                        new_class_def += docstring
+                    else:
+                        new_class_def += "    pass\n"
                     additional_class_defs += new_class_def
                 new_union_types.append(variant_name)
         else:

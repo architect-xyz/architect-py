@@ -5,6 +5,7 @@
     {
       "tag_value": "o",
       "title": "Order",
+      "description": "<!-- py: unflatten=k/order_type/OrderType, tag=k -->",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "TaggedOrder"
     },
@@ -17,6 +18,7 @@
     {
       "tag_value": "af",
       "title": "AberrantFill",
+      "description": "Fills which we received but couldn't parse fully, return details best effort",
       "$ref": "../definitions.json#/AberrantFill",
       "variant_name": "TaggedAberrantFill"
     }

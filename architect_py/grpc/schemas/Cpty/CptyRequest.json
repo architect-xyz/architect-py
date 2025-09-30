@@ -17,6 +17,7 @@
     {
       "tag_value": "place_order",
       "title": "Order",
+      "description": "<!-- py: unflatten=k/order_type/OrderType, tag=k -->",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "PlaceOrder"
     },

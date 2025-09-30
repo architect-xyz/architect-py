@@ -237,13 +237,30 @@ def correct_variant_types(
         else:
             variant_name, type_name = title.split("|", 1)
             enum_ref["title"] = type_name
+
+            # Preserve the description for the enum variant if it exists
+            if "description" in item:
+                enum_ref["description"] = item["description"]
+
             if type_name in definitions:
-                if definitions[type_name] != item:
+                # Compare definitions without description field to avoid false conflicts
+                # when enum variants add their own descriptions
+                def normalize_for_comparison(d):
+                    normalized = d.copy()
+                    normalized.pop("description", None)
+                    return normalized
+
+                if normalize_for_comparison(
+                    definitions[type_name]
+                ) != normalize_for_comparison(item):
                     raise ValueError(f"Conflicting definitions for {type_name}.")
             elif type_name in type_to_json_file:
                 pass
             else:
-                definitions[type_name] = item
+                # Store the definition without the variant-specific description
+                item_to_store = item.copy()
+                item_to_store.pop("description", None)
+                definitions[type_name] = item_to_store
 
             if type_name in type_to_json_file:
                 ref = f"../{type_to_json_file[type_name]}/#"
@@ -653,6 +670,7 @@ def preprocess_schemas(input_file: str, output_dir: str) -> None:
 
     replacements = {
         # Suppress UserWarning: format of 'uint32' not understood for 'integer' - using default
+        "uint8": "default",
         "uint32": "default",
         "uint64": "default",
         # Suppress UserWarning: format of 'int' not understood for 'integer' - using default

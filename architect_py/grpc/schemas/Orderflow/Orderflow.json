@@ -5,6 +5,7 @@
     {
       "tag_value": "w",
       "title": "Order",
+      "description": "<!-- py: unflatten=k/order_type/OrderType, tag=k -->",
       "$ref": "../Oms/Order.json/#",
       "variant_name": "OrderPending"
     },
@@ -89,8 +90,16 @@
     {
       "tag_value": "af",
       "title": "AberrantFill",
+      "description": "Fills which we received but couldn't parse fully, return details best effort",
       "$ref": "../definitions.json#/AberrantFill",
       "variant_name": "TaggedAberrantFill"
+    },
+    {
+      "tag_value": "df",
+      "title": "Fill",
+      "description": "For parent algos with child algos, the parent algo will also receive copies of fills from its descendants.  The fills will be modified such that their order_id is set to the immediate child algo's order ID.\n\nFor example, suppose algo order A spawns child algo order B, whose suborder O receives fill F.  F's order_id is O.  A should also hear about this fill as a DescendantFill F_desc where F_desc's order_id is B.",
+      "$ref": "../definitions.json#/Fill",
+      "variant_name": "DescendantFill"
     }
   ],
   "tag_field": "t"

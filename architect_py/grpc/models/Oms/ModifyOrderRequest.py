@@ -14,7 +14,7 @@ from .. import definitions
 
 class ModifyOrderRequest(Struct, omit_defaults=True):
     """
-    The ModifyOrderRequest will cause the order to get a new OrderId
+    The ModifyOrderRequest will cause the order to get a new OrderId. The new OrderId will come in the Modify Response.
     """
 
     id: Annotated[definitions.OrderId, Meta(title="order_id")]
