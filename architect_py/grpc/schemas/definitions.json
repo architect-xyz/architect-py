@@ -2344,6 +2344,81 @@
     ],
     "type": "string"
   },
+  "LegParams": {
+    "type": "object",
+    "required": [
+      "chase_ticks",
+      "marketdata_venue",
+      "price_multiplier",
+      "price_offset",
+      "quantity_ratio",
+      "symbol"
+    ],
+    "properties": {
+      "account": {
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "chase_ticks": {
+        "description": "number of ticks more aggressive than the desired price for taking orders this is just to greatly increase the likelihood of a fill",
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "execution_venue": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "marketdata_venue": {
+        "type": "string"
+      },
+      "price_multiplier": {
+        "description": "for calculation of the spread: price + price_offset is multiplied by this",
+        "type": "string",
+        "format": "decimal"
+      },
+      "price_offset": {
+        "description": "for calculation of the spread: offset is applied pre-multiplier",
+        "type": "string",
+        "format": "decimal"
+      },
+      "quantity_ratio": {
+        "description": "the amount to fire on per unit of spread Note that fractional units can be given, but quantities will be rounded down Or will be rounded up a leg is behind where it should be relative to spread count",
+        "type": "string",
+        "format": "decimal"
+      },
+      "quoting_parameters": {
+        "description": "Quoting parameters - if None, the leg doesn't quote",
+        "anyOf": [
+          {
+            "$ref": "#/QuotingParameters"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "symbol": {
+        "type": "string"
+      }
+    }
+  },
+  "MissedTakePolicy": {
+    "description": "Policy for handling missed hedge orders that don't get filled within the specified duration",
+    "enum": [
+      "Halt",
+      "Continue"
+    ],
+    "type": "string"
+  },
   "QuoteOneSideParams": {
     "description": "Parameters for the QuoteOneSide algorithm",
     "type": "object",
@@ -2455,120 +2530,78 @@
       }
     }
   },
+  "QuotingParameters": {
+    "type": "object",
+    "properties": {
+      "max_quote_quantity": {
+        "description": "Maximum quantity to quote at a time",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      }
+    }
+  },
   "SpreaderParams": {
     "type": "object",
     "required": [
       "dir",
-      "leg1_marketdata_venue",
-      "leg1_price_offset",
-      "leg1_price_ratio",
-      "leg1_quantity_ratio",
-      "leg1_symbol",
-      "leg2_marketdata_venue",
-      "leg2_price_offset",
-      "leg2_price_ratio",
-      "leg2_quantity_ratio",
-      "leg2_symbol",
+      "leg1",
+      "leg2",
       "limit_price",
-      "order_lockout",
-      "quantity"
+      "missed_hedge_policy",
+      "missed_hedge_wait_time",
+      "quantity",
+      "taking_parameters"
     ],
     "properties": {
       "dir": {
         "$ref": "#/Dir"
       },
-      "leg1_account": {
-        "anyOf": [
-          {
-            "$ref": "#/AccountIdOrName"
-          },
-          {
-            "type": "null"
-          }
-        ]
+      "leg1": {
+        "$ref": "#/LegParams"
       },
-      "leg1_execution_venue": {
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "leg1_marketdata_venue": {
-        "type": "string"
-      },
-      "leg1_price_offset": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "leg1_price_ratio": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "leg1_quantity_ratio": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "leg1_symbol": {
-        "type": "string"
-      },
-      "leg2_account": {
-        "anyOf": [
-          {
-            "$ref": "#/AccountIdOrName"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "leg2_execution_venue": {
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "leg2_marketdata_venue": {
-        "type": "string"
-      },
-      "leg2_price_offset": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "leg2_price_ratio": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "leg2_quantity_ratio": {
-        "type": "string",
-        "format": "decimal"
-      },
-      "leg2_symbol": {
-        "type": "string"
+      "leg2": {
+        "$ref": "#/LegParams"
       },
       "limit_price": {
         "type": "string",
         "format": "decimal"
       },
-      "order_lockout": {
-        "$ref": "#/HumanDuration"
+      "missed_hedge_policy": {
+        "description": "Policy for handling missed hedge orders that don't get filled within the specified duration",
+        "allOf": [
+          {
+            "$ref": "#/MissedTakePolicy"
+          }
+        ]
+      },
+      "missed_hedge_wait_time": {
+        "description": "a string representing time, for example \"5s\", \"1m\", \"2h\"",
+        "allOf": [
+          {
+            "$ref": "#/HumanDuration"
+          }
+        ]
       },
       "quantity": {
         "type": "string",
         "format": "decimal"
+      },
+      "taking_parameters": {
+        "$ref": "#/TakingParameters"
       }
     }
   },
   "SpreaderPhase": {
     "type": "string",
     "enum": [
-      "ScanningForTakes",
-      "AwaitingOrderResults",
-      "OrderLockout",
       "NoBbo",
-      "NotEnoughBboSize",
-      "DoneOverfilled",
-      "DoneAndFullyHedged",
-      "DoneAndGivingUp"
+      "Waiting",
+      "OrdersInMarket",
+      "DoneNotFullyFilled",
+      "Done"
     ]
   },
   "SpreaderStatus": {
@@ -2593,9 +2626,69 @@
         "type": "string",
         "format": "decimal"
       },
+      "leg1_quote_order_id": {
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "leg2_fill_quantity": {
         "type": "string",
         "format": "decimal"
+      },
+      "leg2_quote_order_id": {
+        "anyOf": [
+          {
+            "$ref": "#/OrderId"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "spread_price": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      }
+    }
+  },
+  "TakingParameters": {
+    "description": "For when each leg is taking (ie not a quote order)",
+    "type": "object",
+    "properties": {
+      "max_fire_quantity": {
+        "description": "max fire quantity for a single fire",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "min_quantity_threshold": {
+        "description": "min quantity needed on the spread quantity for the spread before firing unless the remaining spread quantity to do is below this threshold",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "take_lockout": {
+        "description": "time lockout before another spread-taking order again",
+        "anyOf": [
+          {
+            "$ref": "#/HumanDuration"
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     }
   },

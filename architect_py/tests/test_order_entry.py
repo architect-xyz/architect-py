@@ -5,7 +5,7 @@ import pytest
 
 from architect_py import AsyncClient, OrderDir, TickRoundMethod
 from architect_py.common_types.tradable_product import TradableProduct
-from architect_py.grpc.models.definitions import OrderType, SpreaderParams
+from architect_py.grpc.models.definitions import OrderType
 
 
 @pytest.mark.asyncio
@@ -92,10 +92,10 @@ async def test_equity_order(async_client: AsyncClient):
     info = await async_client.get_execution_info(tradable_product, venue)
     assert info is not None
     # assert info.tick_size is not None
-
-    tick_size = Decimal("0.01")
+    tick_size = info.tick_size or Decimal("0.01")  # Default tick size if not provided
 
     snap = await async_client.get_ticker(tradable_product, venue)
+
     assert snap is not None
     assert snap.bid_price is not None
     accounts = await async_client.list_accounts()
@@ -117,44 +117,5 @@ async def test_equity_order(async_client: AsyncClient):
     assert order is not None
     await asyncio.sleep(1)
     await async_client.cancel_order(order.id)
-
-    await async_client.close()
-
-
-@pytest.mark.asyncio
-@pytest.mark.timeout(3)
-async def test_spreader_algo(async_client: AsyncClient):
-    accounts = await async_client.list_accounts()
-    account = accounts[0]
-
-    venue = "CME"
-
-    front_ES_future = await async_client.get_front_future("ES CME Futures", venue)
-    front_NQ_future = await async_client.get_front_future("NQ CME Futures", venue)
-
-    params = SpreaderParams(
-        dir=OrderDir.BUY,  # or OrderDir.SELL
-        leg1_marketdata_venue=venue,
-        leg1_price_offset=Decimal("0"),
-        leg1_price_ratio=Decimal("1"),
-        leg1_quantity_ratio=Decimal("1"),
-        leg1_symbol=front_ES_future,
-        leg2_marketdata_venue=venue,
-        leg2_price_offset=Decimal("0"),
-        leg2_price_ratio=Decimal("-1"),
-        leg2_quantity_ratio=Decimal("-1"),
-        leg2_symbol=front_NQ_future,
-        limit_price=Decimal("0.25"),
-        order_lockout="1s",
-        quantity=Decimal("10"),
-        leg1_account=account.account.id,
-        leg1_execution_venue=venue,
-        leg2_account=account.account.id,
-        leg2_execution_venue=venue,
-    )
-
-    order = await async_client.place_algo_order(params=params)
-
-    print(order)
 
     await async_client.close()

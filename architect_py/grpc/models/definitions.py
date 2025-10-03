@@ -1161,6 +1161,15 @@ class MinOrderQuantityUnit(Struct, omit_defaults=True):
         return f"MinOrderQuantityUnit(unit={self.unit})"
 
 
+class MissedTakePolicy(str, Enum):
+    """
+    Policy for handling missed hedge orders that don't get filled within the specified duration
+    """
+
+    Halt = "Halt"
+    Continue = "Continue"
+
+
 class OptionsExerciseType(str, Enum):
     american = "american"
     european = "european"
@@ -1426,14 +1435,63 @@ SnapshotOrUpdateForStringAndString = Union[
 
 
 class SpreaderPhase(str, Enum):
-    ScanningForTakes = "ScanningForTakes"
-    AwaitingOrderResults = "AwaitingOrderResults"
-    OrderLockout = "OrderLockout"
     NoBbo = "NoBbo"
-    NotEnoughBboSize = "NotEnoughBboSize"
-    DoneOverfilled = "DoneOverfilled"
-    DoneAndFullyHedged = "DoneAndFullyHedged"
-    DoneAndGivingUp = "DoneAndGivingUp"
+    Waiting = "Waiting"
+    OrdersInMarket = "OrdersInMarket"
+    DoneNotFullyFilled = "DoneNotFullyFilled"
+    Done = "Done"
+
+
+class TakingParameters(Struct, omit_defaults=True):
+    """
+    For when each leg is taking (ie not a quote order)
+    """
+
+    max_fire_quantity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="max fire quantity for a single fire")
+        ]
+    ] = None
+    """
+    max fire quantity for a single fire
+    """
+    min_quantity_threshold: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="min quantity needed on the spread quantity for the spread before firing unless the remaining spread quantity to do is below this threshold"
+            ),
+        ]
+    ] = None
+    """
+    min quantity needed on the spread quantity for the spread before firing unless the remaining spread quantity to do is below this threshold
+    """
+    take_lockout: Optional[
+        Annotated[
+            Optional[HumanDuration],
+            Meta(description="time lockout before another spread-taking order again"),
+        ]
+    ] = None
+    """
+    time lockout before another spread-taking order again
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        max_fire_quantity: Optional[Decimal] = None,
+        min_quantity_threshold: Optional[Decimal] = None,
+        take_lockout: Optional[HumanDuration] = None,
+    ):
+        return cls(
+            max_fire_quantity,
+            min_quantity_threshold,
+            take_lockout,
+        )
+
+    def __str__(self) -> str:
+        return f"TakingParameters(max_fire_quantity={self.max_fire_quantity},min_quantity_threshold={self.min_quantity_threshold},take_lockout={self.take_lockout})"
 
 
 class SimpleDecimal(Struct, omit_defaults=True):
@@ -1563,6 +1621,30 @@ class OptionsSeriesInstance(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"OptionsSeriesInstance(expiration={self.expiration},put_or_call={self.put_or_call},strike={self.strike})"
+
+
+class QuotingParameters(Struct, omit_defaults=True):
+    max_quote_quantity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Maximum quantity to quote at a time")
+        ]
+    ] = None
+    """
+    Maximum quantity to quote at a time
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        max_quote_quantity: Optional[Decimal] = None,
+    ):
+        return cls(
+            max_quote_quantity,
+        )
+
+    def __str__(self) -> str:
+        return f"QuotingParameters(max_quote_quantity={self.max_quote_quantity})"
 
 
 class SpreadLeg(Struct, omit_defaults=True):
@@ -2782,79 +2864,14 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndProductCatalogInfo = Uni
 ]
 
 
-class SpreaderParams(Struct, omit_defaults=True):
-    dir: OrderDir
-    leg1_marketdata_venue: str
-    leg1_price_offset: Decimal
-    leg1_price_ratio: Decimal
-    leg1_quantity_ratio: Decimal
-    leg1_symbol: str
-    leg2_marketdata_venue: str
-    leg2_price_offset: Decimal
-    leg2_price_ratio: Decimal
-    leg2_quantity_ratio: Decimal
-    leg2_symbol: str
-    limit_price: Decimal
-    order_lockout: HumanDuration
-    quantity: Decimal
-    leg1_account: Optional[AccountIdOrName] = None
-    leg1_execution_venue: Optional[str] = None
-    leg2_account: Optional[AccountIdOrName] = None
-    leg2_execution_venue: Optional[str] = None
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        dir: OrderDir,
-        leg1_marketdata_venue: str,
-        leg1_price_offset: Decimal,
-        leg1_price_ratio: Decimal,
-        leg1_quantity_ratio: Decimal,
-        leg1_symbol: str,
-        leg2_marketdata_venue: str,
-        leg2_price_offset: Decimal,
-        leg2_price_ratio: Decimal,
-        leg2_quantity_ratio: Decimal,
-        leg2_symbol: str,
-        limit_price: Decimal,
-        order_lockout: HumanDuration,
-        quantity: Decimal,
-        leg1_account: Optional[AccountIdOrName] = None,
-        leg1_execution_venue: Optional[str] = None,
-        leg2_account: Optional[AccountIdOrName] = None,
-        leg2_execution_venue: Optional[str] = None,
-    ):
-        return cls(
-            dir,
-            leg1_marketdata_venue,
-            leg1_price_offset,
-            leg1_price_ratio,
-            leg1_quantity_ratio,
-            leg1_symbol,
-            leg2_marketdata_venue,
-            leg2_price_offset,
-            leg2_price_ratio,
-            leg2_quantity_ratio,
-            leg2_symbol,
-            limit_price,
-            order_lockout,
-            quantity,
-            leg1_account,
-            leg1_execution_venue,
-            leg2_account,
-            leg2_execution_venue,
-        )
-
-    def __str__(self) -> str:
-        return f"SpreaderParams(dir={self.dir},leg1_marketdata_venue={self.leg1_marketdata_venue},leg1_price_offset={self.leg1_price_offset},leg1_price_ratio={self.leg1_price_ratio},leg1_quantity_ratio={self.leg1_quantity_ratio},leg1_symbol={self.leg1_symbol},leg2_marketdata_venue={self.leg2_marketdata_venue},leg2_price_offset={self.leg2_price_offset},leg2_price_ratio={self.leg2_price_ratio},leg2_quantity_ratio={self.leg2_quantity_ratio},leg2_symbol={self.leg2_symbol},limit_price={self.limit_price},order_lockout={self.order_lockout},quantity={self.quantity},leg1_account={self.leg1_account},leg1_execution_venue={self.leg1_execution_venue},leg2_account={self.leg2_account},leg2_execution_venue={self.leg2_execution_venue})"
-
-
 class SpreaderStatus(Struct, omit_defaults=True):
     current_spreader_phase: SpreaderPhase
     leg1_fill_quantity: Decimal
     leg2_fill_quantity: Decimal
     implied_spread_vwap: Optional[Decimal] = None
+    leg1_quote_order_id: Optional[OrderId] = None
+    leg2_quote_order_id: Optional[OrderId] = None
+    spread_price: Optional[Decimal] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -2864,16 +2881,104 @@ class SpreaderStatus(Struct, omit_defaults=True):
         leg1_fill_quantity: Decimal,
         leg2_fill_quantity: Decimal,
         implied_spread_vwap: Optional[Decimal] = None,
+        leg1_quote_order_id: Optional[OrderId] = None,
+        leg2_quote_order_id: Optional[OrderId] = None,
+        spread_price: Optional[Decimal] = None,
     ):
         return cls(
             current_spreader_phase,
             leg1_fill_quantity,
             leg2_fill_quantity,
             implied_spread_vwap,
+            leg1_quote_order_id,
+            leg2_quote_order_id,
+            spread_price,
         )
 
     def __str__(self) -> str:
-        return f"SpreaderStatus(current_spreader_phase={self.current_spreader_phase},leg1_fill_quantity={self.leg1_fill_quantity},leg2_fill_quantity={self.leg2_fill_quantity},implied_spread_vwap={self.implied_spread_vwap})"
+        return f"SpreaderStatus(current_spreader_phase={self.current_spreader_phase},leg1_fill_quantity={self.leg1_fill_quantity},leg2_fill_quantity={self.leg2_fill_quantity},implied_spread_vwap={self.implied_spread_vwap},leg1_quote_order_id={self.leg1_quote_order_id},leg2_quote_order_id={self.leg2_quote_order_id},spread_price={self.spread_price})"
+
+
+class LegParams(Struct, omit_defaults=True):
+    chase_ticks: Annotated[
+        int,
+        Meta(
+            description="number of ticks more aggressive than the desired price for taking orders this is just to greatly increase the likelihood of a fill",
+            ge=0,
+        ),
+    ]
+    """
+    number of ticks more aggressive than the desired price for taking orders this is just to greatly increase the likelihood of a fill
+    """
+    marketdata_venue: str
+    price_multiplier: Annotated[
+        Decimal,
+        Meta(
+            description="for calculation of the spread: price + price_offset is multiplied by this"
+        ),
+    ]
+    """
+    for calculation of the spread: price + price_offset is multiplied by this
+    """
+    price_offset: Annotated[
+        Decimal,
+        Meta(
+            description="for calculation of the spread: offset is applied pre-multiplier"
+        ),
+    ]
+    """
+    for calculation of the spread: offset is applied pre-multiplier
+    """
+    quantity_ratio: Annotated[
+        Decimal,
+        Meta(
+            description="the amount to fire on per unit of spread Note that fractional units can be given, but quantities will be rounded down Or will be rounded up a leg is behind where it should be relative to spread count"
+        ),
+    ]
+    """
+    the amount to fire on per unit of spread Note that fractional units can be given, but quantities will be rounded down Or will be rounded up a leg is behind where it should be relative to spread count
+    """
+    symbol: str
+    account: Optional[AccountIdOrName] = None
+    execution_venue: Optional[str] = None
+    quoting_parameters: Optional[
+        Annotated[
+            Optional[QuotingParameters],
+            Meta(description="Quoting parameters - if None, the leg doesn't quote"),
+        ]
+    ] = None
+    """
+    Quoting parameters - if None, the leg doesn't quote
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        chase_ticks: int,
+        marketdata_venue: str,
+        price_multiplier: Decimal,
+        price_offset: Decimal,
+        quantity_ratio: Decimal,
+        symbol: str,
+        account: Optional[AccountIdOrName] = None,
+        execution_venue: Optional[str] = None,
+        quoting_parameters: Optional[QuotingParameters] = None,
+    ):
+        return cls(
+            chase_ticks,
+            marketdata_venue,
+            price_multiplier,
+            price_offset,
+            quantity_ratio,
+            symbol,
+            account,
+            execution_venue,
+            quoting_parameters,
+        )
+
+    def __str__(self) -> str:
+        return f"LegParams(chase_ticks={self.chase_ticks},marketdata_venue={self.marketdata_venue},price_multiplier={self.price_multiplier},price_offset={self.price_offset},quantity_ratio={self.quantity_ratio},symbol={self.symbol},account={self.account},execution_venue={self.execution_venue},quoting_parameters={self.quoting_parameters})"
 
 
 class FutureSpread(Struct, omit_defaults=True):
@@ -3046,6 +3151,58 @@ SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo = Union[
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1,
     SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo2,
 ]
+
+
+class SpreaderParams(Struct, omit_defaults=True):
+    dir: OrderDir
+    leg1: LegParams
+    leg2: LegParams
+    limit_price: Decimal
+    missed_hedge_policy: Annotated[
+        MissedTakePolicy,
+        Meta(
+            description="Policy for handling missed hedge orders that don't get filled within the specified duration"
+        ),
+    ]
+    """
+    Policy for handling missed hedge orders that don't get filled within the specified duration
+    """
+    missed_hedge_wait_time: Annotated[
+        HumanDuration,
+        Meta(description='a string representing time, for example "5s", "1m", "2h"'),
+    ]
+    """
+    a string representing time, for example "5s", "1m", "2h"
+    """
+    quantity: Decimal
+    taking_parameters: TakingParameters
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        dir: OrderDir,
+        leg1: LegParams,
+        leg2: LegParams,
+        limit_price: Decimal,
+        missed_hedge_policy: MissedTakePolicy,
+        missed_hedge_wait_time: HumanDuration,
+        quantity: Decimal,
+        taking_parameters: TakingParameters,
+    ):
+        return cls(
+            dir,
+            leg1,
+            leg2,
+            limit_price,
+            missed_hedge_policy,
+            missed_hedge_wait_time,
+            quantity,
+            taking_parameters,
+        )
+
+    def __str__(self) -> str:
+        return f"SpreaderParams(dir={self.dir},leg1={self.leg1},leg2={self.leg2},limit_price={self.limit_price},missed_hedge_policy={self.missed_hedge_policy},missed_hedge_wait_time={self.missed_hedge_wait_time},quantity={self.quantity},taking_parameters={self.taking_parameters})"
 
 
 class EventContract(Struct, omit_defaults=True):
