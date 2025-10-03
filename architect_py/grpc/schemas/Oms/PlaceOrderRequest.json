@@ -115,25 +115,6 @@
       "type": "string",
       "format": "decimal"
     },
-    "sl": {
-      "title": "stop_loss",
-      "anyOf": [
-        {
-          "$ref": "../definitions.json#/TriggerLimitOrderType"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "tpp": {
-      "title": "take_profit_price",
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "decimal"
-    },
     "k": {
       "title": "order_type",
       "$ref": "../definitions.json#/OrderType"
@@ -162,11 +143,6 @@
       "k",
       "p",
       "tp"
-    ],
-    "BRACKET": [
-      "k",
-      "p",
-      "po"
     ]
   }
 }

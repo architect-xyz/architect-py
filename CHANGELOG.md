@@ -1,3 +1,7 @@
+# 5.9.4
+- Remove Bracket from OrderType, changed it to algo
+- Added Spreader algo order
+
 # 5.9.3
 - tickers_to_dataframe no longer errors on empty df
 

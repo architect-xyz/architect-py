@@ -6,7 +6,6 @@ from .grpc.models.definitions import (
     OrderId,
     OrderSource,
     OrderType,
-    TriggerLimitOrderType,
 )
 from .grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequest
 
@@ -36,8 +35,6 @@ class BatchPlaceOrder:
         trader: Optional[str] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
-        stop_loss: Optional[TriggerLimitOrderType] = None,
-        take_profit_price: Optional[Decimal] = None,
         **kwargs: Any,
     ):
         assert quantity > 0, "quantity must be positive"
@@ -57,7 +54,5 @@ class BatchPlaceOrder:
             execution_venue=execution_venue,
             post_only=post_only,
             trigger_price=trigger_price,
-            stop_loss=stop_loss,
-            take_profit_price=take_profit_price,
         )
         self.place_orders.append(req)

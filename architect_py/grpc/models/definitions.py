@@ -626,7 +626,6 @@ class OrderType(str, Enum):
     LIMIT = "LIMIT"
     STOP_LOSS_LIMIT = "STOP_LOSS_LIMIT"
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
-    BRACKET = "BRACKET"
 
 
 class ProductCatalogInfo(Struct, omit_defaults=True):
@@ -1004,42 +1003,6 @@ class Statement(Struct, omit_defaults=True):
 
 
 TraderIdOrEmail = str
-
-
-class TriggerLimitOrderType(Struct, omit_defaults=True):
-    p: Annotated[Decimal, Meta(title="limit_price")]
-    tp: Annotated[Decimal, Meta(title="trigger_price")]
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        limit_price: Decimal,
-        trigger_price: Decimal,
-    ):
-        return cls(
-            limit_price,
-            trigger_price,
-        )
-
-    def __str__(self) -> str:
-        return f"TriggerLimitOrderType(limit_price={self.p},trigger_price={self.tp})"
-
-    @property
-    def limit_price(self) -> Decimal:
-        return self.p
-
-    @limit_price.setter
-    def limit_price(self, value: Decimal) -> None:
-        self.p = value
-
-    @property
-    def trigger_price(self) -> Decimal:
-        return self.tp
-
-    @trigger_price.setter
-    def trigger_price(self, value: Decimal) -> None:
-        self.tp = value
 
 
 UserId = str

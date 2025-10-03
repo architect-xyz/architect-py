@@ -45,7 +45,6 @@ from architect_py.grpc.models.definitions import (
     SpreaderParams,
     SpreaderStatus,
     TraderIdOrEmail,
-    TriggerLimitOrderType,
 )
 from architect_py.grpc.orderflow import OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT, resolve_endpoint
@@ -1825,8 +1824,6 @@ class AsyncClient:
         trader: Optional[str] = None,
         post_only: Optional[bool] = None,
         trigger_price: Optional[Decimal] = None,
-        stop_loss: Optional[TriggerLimitOrderType] = None,
-        take_profit_price: Optional[Decimal] = None,
         **kwargs: Any,
     ) -> Order:
         """
@@ -1854,8 +1851,6 @@ class AsyncClient:
                 for when sending order for another user, not relevant for vast majority of users
             post_only: whether the order should be post only, NOT SUPPORTED BY ALL EXCHANGES (e.g. CME)
             trigger_price: the trigger price for the order, only relevant for stop / take_profit orders
-            stop_loss_price: the stop loss price for a bracket order.
-            profit_price: the take profit price for a bracket order.
         Returns:
             the Order object for the order
             The order.status should  be "PENDING" until the order is "OPEN" / "REJECTED" / "OUT" / "CANCELED" / "STALE"
@@ -1905,8 +1900,6 @@ class AsyncClient:
             execution_venue=execution_venue,
             post_only=post_only,
             trigger_price=trigger_price,
-            stop_loss=stop_loss,
-            take_profit_price=take_profit_price,
         )
         res = await grpc_client.unary_unary(req)
         return res
