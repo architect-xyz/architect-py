@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "StartAlgoRequest",
+  "title": "ResumeAlgoRequest",
   "type": "object",
   "required": [
     "algo_order_id"
@@ -10,8 +10,8 @@
       "$ref": "../definitions.json#/OrderId"
     }
   },
-  "route": "/json.architect.Algo/StartAlgo",
+  "route": "/json.architect.Algo/ResumeAlgo",
   "rpc_method": "unary",
   "service": "Algo",
-  "response_type": "StartAlgoResponse"
+  "response_type": "ResumeAlgoResponse"
 }

@@ -91,6 +91,8 @@
 - **`reconcile_out`**: Manually reconcile orders out.
 - **`place_algo_order`**: Sends an advanced algo order such as the spreader.
 - **`get_algo_order_status`**: Get the status of a specific algo order.
+- **`resume_algo_order`**: Resume a paused algo order.
+- **`pause_algo_order`**: Pause a running algo order.
 - **`stop_algo_order`**: Cancel/stop an algo order.
 - **`modify_algo_order`**: Modify an existing algo order's parameters.
 

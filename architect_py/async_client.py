@@ -2156,6 +2156,44 @@ class AsyncClient:
             )
         return res
 
+    async def resume_algo_order(
+        self,
+        algo_order_id: Union[str, OrderId],
+    ) -> ResumeAlgoResponse:
+        """
+        Resume a paused algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to resume
+
+        Returns:
+            Updated AlgoOrder object with status set to "WORKING"
+        """
+        grpc_client = await self._core()
+
+        req = ResumeAlgoRequest(algo_order_id=algo_order_id)
+        res = await grpc_client.unary_unary(req)
+        return res
+
+    async def pause_algo_order(
+        self,
+        algo_order_id: Union[str, OrderId],
+    ) -> PauseAlgoResponse:
+        """
+        Pause a running algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to pause
+
+        Returns:
+            Updated AlgoOrder object with status set to "PAUSED"
+        """
+        grpc_client = await self._core()
+
+        req = PauseAlgoRequest(algo_order_id=algo_order_id)
+        res = await grpc_client.unary_unary(req)
+        return res
+
     async def stop_algo_order(
         self,
         algo_order_id: Union[str, OrderId],

@@ -129,6 +129,8 @@ from .grpc.models.Algo.CreateAlgoOrderRequest import CreateAlgoOrderRequest
 from .grpc.models.Algo.ModifyAlgoOrderRequest import ModifyAlgoOrderRequest
 from .grpc.models.Algo.PauseAlgoRequest import PauseAlgoRequest
 from .grpc.models.Algo.PauseAlgoResponse import PauseAlgoResponse
+from .grpc.models.Algo.ResumeAlgoRequest import ResumeAlgoRequest
+from .grpc.models.Algo.ResumeAlgoResponse import ResumeAlgoResponse
 from .grpc.models.Algo.StartAlgoRequest import StartAlgoRequest
 from .grpc.models.Algo.StartAlgoResponse import StartAlgoResponse
 from .grpc.models.Algo.StopAlgoRequest import StopAlgoRequest
@@ -470,6 +472,8 @@ __all__ = [
     "ResetPaperAccountResponse",
     "RestartCptyRequest",
     "RestartCptyResponse",
+    "ResumeAlgoRequest",
+    "ResumeAlgoResponse",
     "RqdAccountStatistics",
     "RqdAccountStatisticsRequest",
     "RqdAccountStatisticsResponse",

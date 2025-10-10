@@ -673,6 +673,26 @@ class Client:
         Returns:
             AlgoOrder object containing the order details and status
         """
+    def resume_algo_order(self, algo_order_id: str | OrderId) -> ResumeAlgoResponse:
+        '''
+        Resume a paused algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to resume
+
+        Returns:
+            Updated AlgoOrder object with status set to "WORKING"
+        '''
+    def pause_algo_order(self, algo_order_id: str | OrderId) -> PauseAlgoResponse:
+        '''
+        Pause a running algo order.
+
+        Args:
+            algo_order_id: The ID of the algo order to pause
+
+        Returns:
+            Updated AlgoOrder object with status set to "PAUSED"
+        '''
     def stop_algo_order(self, algo_order_id: str | OrderId) -> StopAlgoResponse:
         """
         Cancel/stop an algo order.
