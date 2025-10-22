@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RecentlyOutOrdersResponse",
+  "type": "object",
+  "required": [
+    "recently_out_orders"
+  ],
+  "properties": {
+    "recently_out_orders": {
+      "type": "array",
+      "items": {
+        "$ref": "../Oms/Order.json/#"
+      }
+    }
+  }
+}

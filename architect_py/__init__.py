@@ -235,6 +235,8 @@ from .grpc.models.Oms.PendingModifiesResponse import PendingModifiesResponse
 from .grpc.models.Oms.PlaceBatchOrderRequest import PlaceBatchOrderRequest
 from .grpc.models.Oms.PlaceBatchOrderResponse import PlaceBatchOrderResponse
 from .grpc.models.Oms.PlaceOrderRequest import PlaceOrderRequest
+from .grpc.models.Oms.RecentlyOutOrdersRequest import RecentlyOutOrdersRequest
+from .grpc.models.Oms.RecentlyOutOrdersResponse import RecentlyOutOrdersResponse
 from .grpc.models.Oms.ReconcileOutRequest import ReconcileOutRequest
 from .grpc.models.Oms.ReconcileOutResponse import ReconcileOutResponse
 from .grpc.models.OptionsMarketdata.OptionsChain import OptionsChain
@@ -470,6 +472,8 @@ __all__ = [
     "QuoteOneSideParams",
     "QuoteOneSideStatus",
     "QuotingParameters",
+    "RecentlyOutOrdersRequest",
+    "RecentlyOutOrdersResponse",
     "ReconcileOutRequest",
     "ReconcileOutResponse",
     "ResetPaperAccountRequest",

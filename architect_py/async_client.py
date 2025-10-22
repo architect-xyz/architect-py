@@ -1608,6 +1608,14 @@ class AsyncClient:
             if open_order.id == order_id:
                 return open_order
 
+        req = RecentlyOutOrdersRequest.new(
+            order_ids=[order_id],
+        )
+        res = await grpc_client.unary_unary(req)
+        for recently_out_order in res.recently_out_orders:
+            if recently_out_order.id == order_id:
+                return recently_out_order
+
         req = HistoricalOrdersRequest.new(
             order_ids=[order_id],
         )
@@ -1635,12 +1643,20 @@ class AsyncClient:
         for open_order in res.open_orders:
             orders_dict[open_order.id] = open_order
 
-        not_open_order_ids = [
+        req = RecentlyOutOrdersRequest.new(
+            order_ids=order_ids,
+        )
+
+        res = await grpc_client.unary_unary(req)
+        for recently_out_order in res.recently_out_orders:
+            orders_dict[recently_out_order.id] = recently_out_order
+
+        not_open_or_recently_out_order_ids = [
             order_id for order_id in order_ids if orders_dict[order_id] is None
         ]
 
         req = HistoricalOrdersRequest.new(
-            order_ids=not_open_order_ids,
+            order_ids=not_open_or_recently_out_order_ids,
         )
         res = await grpc_client.unary_unary(req)
         for historical_order in res.orders:
