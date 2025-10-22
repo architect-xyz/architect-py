@@ -2643,7 +2643,6 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     Insert as 0, used for tracking fill quantity when modifying quote
     """
     symbol: str
-    account: Optional[AccountIdOrName] = None
     max_ticks_outside: Optional[
         Annotated[
             Optional[Decimal],
@@ -2668,7 +2667,6 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
         quantity: Decimal,
         quantity_filled: Decimal,
         symbol: str,
-        account: Optional[AccountIdOrName] = None,
         max_ticks_outside: Optional[Decimal] = None,
     ):
         return cls(
@@ -2680,12 +2678,11 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
             quantity,
             quantity_filled,
             symbol,
-            account,
             max_ticks_outside,
         )
 
     def __str__(self) -> str:
-        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},quantity_filled={self.quantity_filled},symbol={self.symbol},account={self.account},max_ticks_outside={self.max_ticks_outside})"
+        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},quantity_filled={self.quantity_filled},symbol={self.symbol},max_ticks_outside={self.max_ticks_outside})"
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
@@ -2902,7 +2899,6 @@ class LegParams(Struct, omit_defaults=True):
     the amount to fire on per unit of spread Note that fractional units can be given, but quantities will be rounded down Or will be rounded up a leg is behind where it should be relative to spread count
     """
     symbol: str
-    account: Optional[AccountIdOrName] = None
     execution_venue: Optional[str] = None
     quoting_parameters: Optional[
         Annotated[
@@ -2924,7 +2920,6 @@ class LegParams(Struct, omit_defaults=True):
         price_offset: Decimal,
         quantity_ratio: Decimal,
         symbol: str,
-        account: Optional[AccountIdOrName] = None,
         execution_venue: Optional[str] = None,
         quoting_parameters: Optional[QuotingParameters] = None,
     ):
@@ -2935,13 +2930,12 @@ class LegParams(Struct, omit_defaults=True):
             price_offset,
             quantity_ratio,
             symbol,
-            account,
             execution_venue,
             quoting_parameters,
         )
 
     def __str__(self) -> str:
-        return f"LegParams(chase_ticks={self.chase_ticks},marketdata_venue={self.marketdata_venue},price_multiplier={self.price_multiplier},price_offset={self.price_offset},quantity_ratio={self.quantity_ratio},symbol={self.symbol},account={self.account},execution_venue={self.execution_venue},quoting_parameters={self.quoting_parameters})"
+        return f"LegParams(chase_ticks={self.chase_ticks},marketdata_venue={self.marketdata_venue},price_multiplier={self.price_multiplier},price_offset={self.price_offset},quantity_ratio={self.quantity_ratio},symbol={self.symbol},execution_venue={self.execution_venue},quoting_parameters={self.quoting_parameters})"
 
 
 class FutureSpread(Struct, omit_defaults=True):

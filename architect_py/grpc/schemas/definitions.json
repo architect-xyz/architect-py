@@ -2164,6 +2164,23 @@
       "Daily"
     ]
   },
+  "AlgoOrderStatus": {
+    "type": "integer",
+    "enum": [
+      1,
+      2,
+      63,
+      128,
+      127
+    ],
+    "x-enumNames": [
+      "Working",
+      "Rejected",
+      "Paused",
+      "Stopping",
+      "Stopped"
+    ]
+  },
   "CptyLoginRequest": {
     "type": "object",
     "required": [
@@ -2296,23 +2313,6 @@
       }
     }
   },
-  "AlgoOrderStatus": {
-    "type": "integer",
-    "enum": [
-      1,
-      2,
-      63,
-      128,
-      127
-    ],
-    "x-enumNames": [
-      "Working",
-      "Rejected",
-      "Paused",
-      "Stopping",
-      "Stopped"
-    ]
-  },
   "HumanDuration": {
     "type": "string"
   },
@@ -2335,16 +2335,6 @@
       "symbol"
     ],
     "properties": {
-      "account": {
-        "anyOf": [
-          {
-            "$ref": "#/AccountIdOrName"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "chase_ticks": {
         "description": "number of ticks more aggressive than the desired price for taking orders this is just to greatly increase the likelihood of a fill",
         "type": "integer",
@@ -2413,16 +2403,6 @@
       "symbol"
     ],
     "properties": {
-      "account": {
-        "anyOf": [
-          {
-            "$ref": "#/AccountIdOrName"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "dir": {
         "$ref": "#/Dir"
       },

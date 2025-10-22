@@ -12,13 +12,14 @@ from .. import definitions
 
 
 class AlgoOrder(Struct, omit_defaults=True):
+    account: str
     algo: str
     create_time: datetime
     id: definitions.OrderId
-    num_errors: Annotated[int, Meta(ge=0)]
-    num_open_orders: Annotated[int, Meta(ge=0)]
-    num_rejects: Annotated[int, Meta(ge=0)]
-    num_sent_orders: Annotated[int, Meta(ge=0)]
+    num_errors: int
+    num_open_orders: int
+    num_rejects: int
+    num_sent_orders: int
     params: Any
     status: definitions.AlgoOrderStatus
     status_details: Any
@@ -72,6 +73,7 @@ class AlgoOrder(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        account: str,
         algo: str,
         create_time: datetime,
         id: definitions.OrderId,
@@ -91,6 +93,7 @@ class AlgoOrder(Struct, omit_defaults=True):
         working_progress: Optional[float] = None,
     ):
         return cls(
+            account,
             algo,
             create_time,
             id,
@@ -111,4 +114,4 @@ class AlgoOrder(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"AlgoOrder(algo={self.algo},create_time={self.create_time},id={self.id},num_errors={self.num_errors},num_open_orders={self.num_open_orders},num_rejects={self.num_rejects},num_sent_orders={self.num_sent_orders},params={self.params},status={self.status},status_details={self.status_details},trader={self.trader},display_symbols={self.display_symbols},finish_success={self.finish_success},finish_time={self.finish_time},parent_id={self.parent_id},reject_or_error_reason={self.reject_or_error_reason},working_progress={self.working_progress})"
+        return f"AlgoOrder(account={self.account},algo={self.algo},create_time={self.create_time},id={self.id},num_errors={self.num_errors},num_open_orders={self.num_open_orders},num_rejects={self.num_rejects},num_sent_orders={self.num_sent_orders},params={self.params},status={self.status},status_details={self.status_details},trader={self.trader},display_symbols={self.display_symbols},finish_success={self.finish_success},finish_time={self.finish_time},parent_id={self.parent_id},reject_or_error_reason={self.reject_or_error_reason},working_progress={self.working_progress})"

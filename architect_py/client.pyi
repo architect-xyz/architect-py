@@ -658,11 +658,26 @@ class Client:
 
         Useful for clearing stuck orders or stale orders when a human wants to intervene.
         """
-    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams, id: str | None = None, trader: str | None = None) -> AlgoOrder:
+    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams, account: AccountIdOrName, id: OrderId | None = None, trader: TraderIdOrEmail | None = None) -> AlgoOrder:
         """
-        Sends an advanced algo order such as the spreader.
+        Sends an advanced algo order such as the spreader. Documentation: [Algos Book](https://docs.architect.co/algos-book)
+
+        Args:
+            Required:
+                params: The parameters for the algo order
+                account: The account to send the algo order for
+            Optional:
+                id: The ID of the algo order
+                trader: The trader to send the algo order for
+
+        Returns:
+            The AlgoOrder object
+
+        Raises:
+            ValueError: If the algo type is not supported
+            grpc.RpcError: If there is an error sending the algo order to the server
         """
-    def get_algo_order_status(self, algo_order_id: str | OrderId) -> AlgoOrder:
+    def get_algo_order_status(self, algo_order_id: str | OrderId) -> AlgoOrder | None:
         """
         Get the status of a specific algo order.
 
@@ -713,4 +728,26 @@ class Client:
 
         Returns:
             Updated AlgoOrder object with new parameters
+        """
+    def get_historical_algo_orders(self, order_ids: list[OrderId] | OrderId | None = None, algo: str | None = None, account: AccountIdOrName | None = None, trader: TraderIdOrEmail | None = None, parent_order_id: OrderId | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, limit: int | None = None) -> list[AlgoOrder]:
+        """
+        Returns a list of all historical algo orders that match the filters.
+
+        Historical algo orders are algo orders that are not open, having completed or
+        stopped.
+
+        Args:
+            order_ids: a list of order ids to get
+            algo: filter by a specific algo name (e.g. SPREADER, QUOTE_ONE_SIDE)
+            account: filter by a specific account
+            trader: the trader to get algo orders for
+            parent_order_id: filter by a specific parent order id
+            from_inclusive: the start date to get algo orders for, must include the timezone
+            to_exclusive: the end date to get algo orders for, must include the timezone
+            limit: the maximum number of algo orders to return
+        Returns:
+            Historical algo orders that match the union of the filters.
+
+        If order_ids is not specified, then from_inclusive and to_exclusive
+        MUST be specified.
         """

@@ -3,6 +3,7 @@
   "title": "AlgoOrder",
   "type": "object",
   "required": [
+    "account",
     "algo",
     "create_time",
     "id",
@@ -16,6 +17,10 @@
     "trader"
   ],
   "properties": {
+    "account": {
+      "type": "string",
+      "format": "uuid"
+    },
     "algo": {
       "type": "string"
     },
@@ -52,23 +57,19 @@
     },
     "num_errors": {
       "type": "integer",
-      "format": "default",
-      "minimum": 0.0
+      "format": "int32"
     },
     "num_open_orders": {
       "type": "integer",
-      "format": "default",
-      "minimum": 0.0
+      "format": "int32"
     },
     "num_rejects": {
       "type": "integer",
-      "format": "default",
-      "minimum": 0.0
+      "format": "int32"
     },
     "num_sent_orders": {
       "type": "integer",
-      "format": "default",
-      "minimum": 0.0
+      "format": "int32"
     },
     "params": true,
     "parent_id": {

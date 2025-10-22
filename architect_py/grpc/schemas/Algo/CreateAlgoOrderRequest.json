@@ -7,6 +7,17 @@
     "params"
   ],
   "properties": {
+    "account": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "../definitions.json#/AccountIdOrName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "algo": {
       "type": "string"
     },

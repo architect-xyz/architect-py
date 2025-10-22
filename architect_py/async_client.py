@@ -2104,11 +2104,27 @@ class AsyncClient:
         self,
         *,
         params: SpreaderParams | QuoteOneSideParams,
-        id: Optional[str] = None,
-        trader: Optional[str] = None,
+        account: AccountIdOrName,
+        id: Optional[OrderId] = None,
+        trader: Optional[TraderIdOrEmail] = None,
     ) -> AlgoOrder:
         """
-        Sends an advanced algo order such as the spreader.
+        Sends an advanced algo order such as the spreader. Documentation: [Algos Book](https://docs.architect.co/algos-book)
+
+        Args:
+            Required:
+                params: The parameters for the algo order
+                account: The account to send the algo order for
+            Optional:
+                id: The ID of the algo order
+                trader: The trader to send the algo order for
+
+        Returns:
+            The AlgoOrder object
+
+        Raises:
+            ValueError: If the algo type is not supported
+            grpc.RpcError: If there is an error sending the algo order to the server
         """
         grpc_client = await self._core()
 
@@ -2118,17 +2134,19 @@ class AsyncClient:
             algo = "QUOTE_ONE_SIDE"
         else:
             raise ValueError(
-                "Unsupported algo type. Only SpreaderParams is supported for now."
+                "Unsupported algo type. Only QuoteOneSideParams and SpreaderParams are supported for now."
             )
 
-        req = CreateAlgoOrderRequest(algo=algo, params=params, id=id, trader=trader)
+        req = CreateAlgoOrderRequest(
+            algo=algo, params=params, id=id, account=account, trader=trader
+        )
         res = await grpc_client.unary_unary(req)
         return res
 
     async def get_algo_order_status(
         self,
         algo_order_id: Union[str, OrderId],
-    ) -> AlgoOrder:
+    ) -> Optional[AlgoOrder]:
         """
         Get the status of a specific algo order.
 
@@ -2141,8 +2159,22 @@ class AsyncClient:
         """
         grpc_client = await self._core()
 
-        req = AlgoOrderRequest(algo_order_id=algo_order_id)
+        req = AlgoOrdersRequest(order_ids=[algo_order_id])
         res = await grpc_client.unary_unary(req)
+        for algo_order in res.algo_orders:
+            if algo_order.id == algo_order_id:
+                res = algo_order
+                break
+        else:
+            req = HistoricalAlgoOrdersRequest(order_ids=[algo_order_id])
+            res = await grpc_client.unary_unary(req)
+            for algo_order in res.algo_orders:
+                if algo_order.id == algo_order_id:
+                    res = algo_order
+                    break
+            else:
+                return None
+
         if res.algo == "SPREADER":
             status_details_type = SpreaderStatus
         elif res.algo == "QUOTE_ONE_SIDE":
@@ -2233,3 +2265,75 @@ class AsyncClient:
         req = ModifyAlgoOrderRequest(algo_order_id=algo_order_id, params=params)
         res = await grpc_client.unary_unary(req)
         return res
+
+    async def get_historical_algo_orders(
+        self,
+        order_ids: Optional[Union[list[OrderId], OrderId]] = None,
+        algo: Optional[str] = None,
+        account: Optional[AccountIdOrName] = None,
+        trader: Optional[TraderIdOrEmail] = None,
+        parent_order_id: Optional[OrderId] = None,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
+        limit: Optional[int] = None,
+    ) -> list[AlgoOrder]:
+        """
+        Returns a list of all historical algo orders that match the filters.
+
+        Historical algo orders are algo orders that are not open, having completed or
+        stopped.
+
+        Args:
+            order_ids: a list of order ids to get
+            algo: filter by a specific algo name (e.g. SPREADER, QUOTE_ONE_SIDE)
+            account: filter by a specific account
+            trader: the trader to get algo orders for
+            parent_order_id: filter by a specific parent order id
+            from_inclusive: the start date to get algo orders for, must include the timezone
+            to_exclusive: the end date to get algo orders for, must include the timezone
+            limit: the maximum number of algo orders to return
+        Returns:
+            Historical algo orders that match the union of the filters.
+
+        If order_ids is not specified, then from_inclusive and to_exclusive
+        MUST be specified.
+        """
+        grpc_client = await self._core()
+
+        if order_ids is None and (from_inclusive is None or to_exclusive is None):
+            raise ValueError(
+                "If order_ids is not specified, then from_inclusive and to_exclusive "
+                "MUST be specified."
+            )
+
+        if from_inclusive is not None:
+            if not from_inclusive.tzinfo:
+                raise ValueError("start time must be timezone-aware")
+            from_inclusive = from_inclusive.astimezone(timezone.utc)
+
+        if to_exclusive is not None:
+            if not to_exclusive.tzinfo:
+                raise ValueError("end time must be timezone-aware")
+            to_exclusive = to_exclusive.astimezone(timezone.utc)
+
+        if order_ids is not None and not isinstance(order_ids, list):
+            order_ids = [order_ids]
+
+        historical_algo_orders_request = HistoricalAlgoOrdersRequest.new(
+            order_ids=order_ids,
+            algo=algo,
+            account=account,
+            trader=trader,
+            parent_order_id=parent_order_id,
+            from_inclusive=from_inclusive,
+            to_exclusive=to_exclusive,
+            limit=limit,
+        )
+        algo_orders = await grpc_client.unary_unary(historical_algo_orders_request)
+        if algo_orders is None:
+            raise ValueError(
+                "No algo orders found for the given filters. "
+                "If order_ids is not specified, then from_inclusive and to_exclusive "
+                "MUST be specified."
+            )
+        return algo_orders.algo_orders

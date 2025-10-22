@@ -1,7 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AlgoOrdersRequest",
-  "description": "Find all algo orders matching the given criteria.\n\nIf limit is not specified, it will default to 100.",
+  "title": "HistoricalAlgoOrdersRequest",
   "type": "object",
   "properties": {
     "account": {
@@ -21,12 +20,6 @@
         "null"
       ]
     },
-    "display_symbol": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
     "from_inclusive": {
       "type": [
         "string",
@@ -35,6 +28,7 @@
       "format": "date-time"
     },
     "limit": {
+      "description": "Default maximum is 1000.",
       "type": [
         "integer",
         "null"
@@ -61,15 +55,6 @@
         }
       ]
     },
-    "status": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "../definitions.json#/AlgoOrderStatus"
-      }
-    },
     "to_exclusive": {
       "type": [
         "string",
@@ -88,8 +73,8 @@
       ]
     }
   },
-  "route": "/json.architect.Algo/AlgoOrders",
+  "route": "/json.architect.Folio/HistoricalAlgoOrders",
   "rpc_method": "unary",
-  "service": "Algo",
-  "response_type": "AlgoOrdersResponse"
+  "service": "Folio",
+  "response_type": "HistoricalAlgoOrdersResponse"
 }

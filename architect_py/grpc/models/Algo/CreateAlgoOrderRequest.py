@@ -14,6 +14,7 @@ from .. import definitions
 class CreateAlgoOrderRequest(Struct, omit_defaults=True):
     algo: str
     params: Any
+    account: Optional[definitions.AccountIdOrName] = None
     id: Optional[definitions.OrderId] = None
     parent_id: Optional[definitions.OrderId] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
@@ -24,6 +25,7 @@ class CreateAlgoOrderRequest(Struct, omit_defaults=True):
         cls,
         algo: str,
         params: Any,
+        account: Optional[definitions.AccountIdOrName] = None,
         id: Optional[definitions.OrderId] = None,
         parent_id: Optional[definitions.OrderId] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
@@ -31,13 +33,14 @@ class CreateAlgoOrderRequest(Struct, omit_defaults=True):
         return cls(
             algo,
             params,
+            account,
             id,
             parent_id,
             trader,
         )
 
     def __str__(self) -> str:
-        return f"CreateAlgoOrderRequest(algo={self.algo},params={self.params},id={self.id},parent_id={self.parent_id},trader={self.trader})"
+        return f"CreateAlgoOrderRequest(algo={self.algo},params={self.params},account={self.account},id={self.id},parent_id={self.parent_id},trader={self.trader})"
 
     @staticmethod
     def get_response_type():

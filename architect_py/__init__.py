@@ -172,6 +172,8 @@ from .grpc.models.Folio.AccountSummariesRequest import AccountSummariesRequest
 from .grpc.models.Folio.AccountSummariesResponse import AccountSummariesResponse
 from .grpc.models.Folio.AccountSummary import AccountSummary
 from .grpc.models.Folio.AccountSummaryRequest import AccountSummaryRequest
+from .grpc.models.Folio.HistoricalAlgoOrdersRequest import HistoricalAlgoOrdersRequest
+from .grpc.models.Folio.HistoricalAlgoOrdersResponse import HistoricalAlgoOrdersResponse
 from .grpc.models.Folio.HistoricalFillsRequest import HistoricalFillsRequest
 from .grpc.models.Folio.HistoricalFillsResponse import HistoricalFillsResponse
 from .grpc.models.Folio.HistoricalOrdersRequest import HistoricalOrdersRequest
@@ -373,6 +375,8 @@ __all__ = [
     "HealthCheckResponse",
     "HealthMetric",
     "HealthStatus",
+    "HistoricalAlgoOrdersRequest",
+    "HistoricalAlgoOrdersResponse",
     "HistoricalCandlesRequest",
     "HistoricalCandlesResponse",
     "HistoricalFillsRequest",
