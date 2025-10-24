@@ -223,6 +223,8 @@ from .grpc.models.Oms.Cancel import Cancel
 from .grpc.models.Oms.CancelAllOrdersRequest import CancelAllOrdersRequest
 from .grpc.models.Oms.CancelAllOrdersResponse import CancelAllOrdersResponse
 from .grpc.models.Oms.CancelOrderRequest import CancelOrderRequest
+from .grpc.models.Oms.GetOrdersRequest import GetOrdersRequest
+from .grpc.models.Oms.GetOrdersResponse import GetOrdersResponse
 from .grpc.models.Oms.Modify import Modify
 from .grpc.models.Oms.ModifyOrderRequest import ModifyOrderRequest
 from .grpc.models.Oms.OpenOrdersRequest import OpenOrdersRequest
@@ -372,6 +374,8 @@ __all__ = [
     "FutureSpread",
     "FuturesSeriesRequest",
     "FuturesSeriesResponse",
+    "GetOrdersRequest",
+    "GetOrdersResponse",
     "Grants",
     "HealthCheckRequest",
     "HealthCheckResponse",

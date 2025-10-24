@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GetOrdersRequest",
+  "type": "object",
+  "required": [
+    "order_ids"
+  ],
+  "properties": {
+    "order_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/OrderId"
+      }
+    }
+  },
+  "route": "/json.architect.Oms/GetOrders",
+  "rpc_method": "unary",
+  "service": "Oms",
+  "response_type": "GetOrdersResponse"
+}

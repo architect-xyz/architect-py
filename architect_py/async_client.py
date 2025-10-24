@@ -1590,7 +1590,6 @@ class AsyncClient:
     async def get_order(self, order_id: OrderId) -> Optional[Order]:
         """
         Returns the specified order.  Useful for looking at past sent orders.
-        Queries open_orders first, then queries historical_orders.
 
         Not that placing an order is not instant, so if one places an order
         and then immediately calls `get_order` on the just sent order, it may
@@ -1599,31 +1598,11 @@ class AsyncClient:
         Args:
             order_id: the order id to get
         """
-        grpc_client = await self._core()
-        req = OpenOrdersRequest.new(
-            order_ids=[order_id],
-        )
-        res = await grpc_client.unary_unary(req)
-        for open_order in res.open_orders:
-            if open_order.id == order_id:
-                return open_order
+        orders = await self.get_orders(order_ids=[order_id])
+        if orders and len(orders) == 1:
+            return orders[0]
 
-        req = RecentlyOutOrdersRequest.new(
-            order_ids=[order_id],
-        )
-        res = await grpc_client.unary_unary(req)
-        for recently_out_order in res.recently_out_orders:
-            if recently_out_order.id == order_id:
-                return recently_out_order
-
-        req = HistoricalOrdersRequest.new(
-            order_ids=[order_id],
-        )
-        res = await grpc_client.unary_unary(req)
-        if res.orders and len(res.orders) == 1:
-            return res.orders[0]
-
-    async def get_orders(self, order_ids: list[OrderId]) -> list[Optional[Order]]:
+    async def get_orders(self, order_ids: list[OrderId]) -> List[Order]:
         """
         Returns the specified orders.  Useful for looking at past sent orders.
         Plural form of get_order.
@@ -1632,37 +1611,12 @@ class AsyncClient:
             order_ids: a list of order ids to get
         """
         grpc_client = await self._core()
-        orders_dict: dict[OrderId, Optional[Order]] = {
-            order_id: None for order_id in order_ids
-        }
-        req = OpenOrdersRequest.new(
+        req = GetOrdersRequest.new(
             order_ids=order_ids,
         )
-
         res = await grpc_client.unary_unary(req)
-        for open_order in res.open_orders:
-            orders_dict[open_order.id] = open_order
 
-        req = RecentlyOutOrdersRequest.new(
-            order_ids=order_ids,
-        )
-
-        res = await grpc_client.unary_unary(req)
-        for recently_out_order in res.recently_out_orders:
-            orders_dict[recently_out_order.id] = recently_out_order
-
-        not_open_or_recently_out_order_ids = [
-            order_id for order_id in order_ids if orders_dict[order_id] is None
-        ]
-
-        req = HistoricalOrdersRequest.new(
-            order_ids=not_open_or_recently_out_order_ids,
-        )
-        res = await grpc_client.unary_unary(req)
-        for historical_order in res.orders:
-            orders_dict[historical_order.id] = historical_order
-
-        return [orders_dict[order_id] for order_id in order_ids]
+        return res.orders
 
     async def get_fills(
         self,

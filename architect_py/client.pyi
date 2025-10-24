@@ -497,7 +497,6 @@ class Client:
     def get_order(self, order_id: OrderId) -> Order | None:
         """
         Returns the specified order.  Useful for looking at past sent orders.
-        Queries open_orders first, then queries historical_orders.
 
         Not that placing an order is not instant, so if one places an order
         and then immediately calls `get_order` on the just sent order, it may
@@ -506,7 +505,7 @@ class Client:
         Args:
             order_id: the order id to get
         """
-    def get_orders(self, order_ids: list[OrderId]) -> list[Order | None]:
+    def get_orders(self, order_ids: list[OrderId]) -> list[Order]:
         """
         Returns the specified orders.  Useful for looking at past sent orders.
         Plural form of get_order.
