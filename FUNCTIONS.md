@@ -89,6 +89,11 @@
 - **`cancel_all_orders`**: Cancels all open orders.
 - **`batch_cancel_orders`**: Cancels a batch of orders by order ids.
 - **`reconcile_out`**: Manually reconcile orders out.
+
+---
+
+### 🤖 Algo order management
+
 - **`place_algo_order`**: Sends an advanced algo order such as the spreader. Documentation: [Algos Book](https://docs.architect.co/algos-book)
 - **`get_algo_order_status`**: Get the status of a specific algo order.
 - **`resume_algo_order`**: Resume a paused algo order.

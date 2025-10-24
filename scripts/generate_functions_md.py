@@ -156,6 +156,7 @@ emoji_dict: dict[str, str] = {
     "Symbology": "🔍",
     "Portfolio management": "💹",
     "Order management": "📝",
+    "Algo order management": "🤖",
     "Order entry": "📣",
     "Marketdata": "🧮",
     "Options": "🎯",

@@ -2116,6 +2116,10 @@ class AsyncClient:
         req = ReconcileOutRequest(order_id=order_id, order_ids=order_ids)
         await grpc_client.unary_unary(req)
 
+    # ------------------------------------------------------------
+    # Algo order management
+    # ------------------------------------------------------------
+
     async def place_algo_order(
         self,
         *,

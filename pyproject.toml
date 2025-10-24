@@ -21,7 +21,7 @@ license = "Apache-2.0"
 name = "architect-py"
 readme = "README.md"
 requires-python = ">=3.10,<4"
-version = "5.9.2"
+version = "5.9.5"
 
 [dependency-groups]
 dev = [

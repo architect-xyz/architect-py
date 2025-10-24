@@ -1,3 +1,16 @@
+# 5.9.5
+- reconcile_out, manually reconciles out an order
+- Improve spreader order
+- Add better spreader + One-triggers-other order
+- Add more algo functions and improve algo functionality: 
+  - get_algo_order_status
+  - resume_algo_order
+  - pause_algo_order
+  - stop_algo_order
+  - modify_algo_order
+  - get_historical_algo_orders
+
+
 # 5.9.4
 - Remove Bracket from OrderType, changed it to algo
 - Added Spreader algo order
