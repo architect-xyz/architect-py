@@ -2,7 +2,7 @@
 #   filename:  definitions.json
 
 from __future__ import annotations
-from architect_py.common_types import OrderDir
+from architect_py.common_types import OrderDir, TimeInForce
 from datetime import datetime, timezone
 
 from datetime import date, datetime, time
@@ -487,6 +487,29 @@ class ModifyStatus(int, Enum):
     Acked = 1
     Rejected = 2
     Out = 127
+
+
+class OneTriggersOtherStatus(Struct, omit_defaults=True):
+    primary_filled_quantity: Decimal
+    secondary_fill_quantity: List[Decimal]
+    secondary_sent_quantity: List[Decimal]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        primary_filled_quantity: Decimal,
+        secondary_fill_quantity: List[Decimal],
+        secondary_sent_quantity: List[Decimal],
+    ):
+        return cls(
+            primary_filled_quantity,
+            secondary_fill_quantity,
+            secondary_sent_quantity,
+        )
+
+    def __str__(self) -> str:
+        return f"OneTriggersOtherStatus(primary_filled_quantity={self.primary_filled_quantity},secondary_fill_quantity={self.secondary_fill_quantity},secondary_sent_quantity={self.secondary_sent_quantity})"
 
 
 class OptionsTransaction(Struct, omit_defaults=True):
@@ -1137,6 +1160,79 @@ class OptionsExerciseType(str, Enum):
     american = "american"
     european = "european"
     unknown = "unknown"
+
+
+class OrderInfo(Struct, omit_defaults=True):
+    dir: OrderDir
+    execution_venue: str
+    quantity: Decimal
+    symbol: str
+    time_in_force: TimeInForce
+    k: Annotated[OrderType, Meta(title="order_type")]
+    p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
+    po: Optional[Annotated[bool, Meta(title="post_only")]] = None
+    tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        dir: OrderDir,
+        execution_venue: str,
+        quantity: Decimal,
+        symbol: str,
+        time_in_force: TimeInForce,
+        order_type: OrderType,
+        limit_price: Optional[Decimal] = None,
+        post_only: Optional[bool] = None,
+        trigger_price: Optional[Decimal] = None,
+    ):
+        return cls(
+            dir,
+            execution_venue,
+            quantity,
+            symbol,
+            time_in_force,
+            order_type,
+            limit_price,
+            post_only,
+            trigger_price,
+        )
+
+    def __str__(self) -> str:
+        return f"OrderInfo(dir={self.dir},execution_venue={self.execution_venue},quantity={self.quantity},symbol={self.symbol},time_in_force={self.time_in_force},order_type={self.k},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
+
+    @property
+    def order_type(self) -> OrderType:
+        return self.k
+
+    @order_type.setter
+    def order_type(self, value: OrderType) -> None:
+        self.k = value
+
+    @property
+    def limit_price(self) -> Optional[Decimal]:
+        return self.p
+
+    @limit_price.setter
+    def limit_price(self, value: Optional[Decimal]) -> None:
+        self.p = value
+
+    @property
+    def post_only(self) -> Optional[bool]:
+        return self.po
+
+    @post_only.setter
+    def post_only(self, value: Optional[bool]) -> None:
+        self.po = value
+
+    @property
+    def trigger_price(self) -> Optional[Decimal]:
+        return self.tp
+
+    @trigger_price.setter
+    def trigger_price(self, value: Optional[Decimal]) -> None:
+        self.tp = value
 
 
 PriceDisplayFormat = str
@@ -2445,6 +2541,45 @@ class ModifyReject(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"ModifyReject(id={self.id},mid={self.mid},rm={self.rm})"
+
+
+class OneTriggersOtherParams(Struct, omit_defaults=True):
+    """
+    An OTO order consists of a primary "primary" order and one or more "secondary" orders that are triggered only after the primary order is filled.
+
+    # Triggering Behavior
+
+    - The "primary" order is placed immediately when the algo starts - The "secondary" orders are only placed after the primary order is filled - If `trigger_in_proportion` is true, the secondary orders are triggered proportionally rounded down based on the fill quantity of the primary order. A given leg might have multiple orders triggered in this way if the primary order is filled in multiple fills. - If `trigger_in_proportion` is false, the secondary orders are only triggered after the primary order is completely filled - This algo will not attempt to re-send any orders that are manually cancelled - This algo never cancels any orders, and any manual cancellations will not be re-sent.
+
+    # Use Cases
+
+    Common use cases include: - Executing a hedging strategy after an initial position is established - Implementing conditional order sequences where subsequent orders depend on initial fills
+
+    # Note
+
+    You cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again.
+    """
+
+    primary: OrderInfo
+    secondary: List[OrderInfo]
+    trigger_in_proportion: bool
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        primary: OrderInfo,
+        secondary: List[OrderInfo],
+        trigger_in_proportion: bool,
+    ):
+        return cls(
+            primary,
+            secondary,
+            trigger_in_proportion,
+        )
+
+    def __str__(self) -> str:
+        return f"OneTriggersOtherParams(primary={self.primary},secondary={self.secondary},trigger_in_proportion={self.trigger_in_proportion})"
 
 
 class OptionsSeriesInfo(Struct, omit_defaults=True):

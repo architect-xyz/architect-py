@@ -220,7 +220,6 @@
     }
   },
   "MinOrderQuantityUnit": {
-    "title": "MinOrderQuantityUnit",
     "type": "object",
     "required": [
       "unit"
@@ -2098,7 +2097,6 @@
   },
   "OrderType": {
     "type": "string",
-    "title": "order_type",
     "enum": [
       "MARKET",
       "LIMIT",
@@ -2388,6 +2386,137 @@
       "Continue"
     ],
     "type": "string"
+  },
+  "OneTriggersOtherParams": {
+    "description": "An OTO order consists of a primary \"primary\" order and one or more \"secondary\" orders that are triggered only after the primary order is filled.\n\n# Triggering Behavior\n\n- The \"primary\" order is placed immediately when the algo starts - The \"secondary\" orders are only placed after the primary order is filled - If `trigger_in_proportion` is true, the secondary orders are triggered proportionally rounded down based on the fill quantity of the primary order. A given leg might have multiple orders triggered in this way if the primary order is filled in multiple fills. - If `trigger_in_proportion` is false, the secondary orders are only triggered after the primary order is completely filled - This algo will not attempt to re-send any orders that are manually cancelled - This algo never cancels any orders, and any manual cancellations will not be re-sent.\n\n# Use Cases\n\nCommon use cases include: - Executing a hedging strategy after an initial position is established - Implementing conditional order sequences where subsequent orders depend on initial fills\n\n# Note\n\nYou cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again.",
+    "type": "object",
+    "required": [
+      "primary",
+      "secondary",
+      "trigger_in_proportion"
+    ],
+    "properties": {
+      "primary": {
+        "$ref": "#/OrderInfo"
+      },
+      "secondary": {
+        "type": "array",
+        "items": {
+          "$ref": "#/OrderInfo"
+        }
+      },
+      "trigger_in_proportion": {
+        "type": "boolean"
+      }
+    }
+  },
+  "OneTriggersOtherStatus": {
+    "type": "object",
+    "required": [
+      "primary_filled_quantity",
+      "secondary_fill_quantity",
+      "secondary_sent_quantity"
+    ],
+    "properties": {
+      "primary_filled_quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "secondary_fill_quantity": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "decimal"
+        }
+      },
+      "secondary_sent_quantity": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "decimal"
+        }
+      }
+    }
+  },
+  "OrderInfo": {
+    "type": "object",
+    "required": [
+      "dir",
+      "execution_venue",
+      "quantity",
+      "symbol",
+      "time_in_force",
+      "k"
+    ],
+    "properties": {
+      "dir": {
+        "$ref": "#/Dir"
+      },
+      "execution_venue": {
+        "type": "string"
+      },
+      "quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "symbol": {
+        "type": "string"
+      },
+      "time_in_force": {
+        "$ref": "#/TimeInForce"
+      },
+      "p": {
+        "title": "limit_price",
+        "type": "string",
+        "format": "decimal"
+      },
+      "po": {
+        "title": "post_only",
+        "type": "boolean"
+      },
+      "tp": {
+        "title": "trigger_price",
+        "type": "string",
+        "format": "decimal"
+      },
+      "k": {
+        "title": "order_type",
+        "$ref": "#/OrderType"
+      }
+    },
+    "tag_field": "k",
+    "definitions": {
+      "OrderType": {
+        "type": "string",
+        "title": "order_type",
+        "enum": [
+          "MARKET",
+          "LIMIT",
+          "STOP_LOSS_LIMIT",
+          "TAKE_PROFIT_LIMIT"
+        ]
+      }
+    },
+    "enum_variant_to_other_required_keys": {
+      "MARKET": [
+        "k"
+      ],
+      "LIMIT": [
+        "k",
+        "p",
+        "po"
+      ],
+      "STOP_LOSS_LIMIT": [
+        "k",
+        "p",
+        "tp"
+      ],
+      "TAKE_PROFIT_LIMIT": [
+        "k",
+        "p",
+        "tp"
+      ]
+    }
   },
   "QuoteOneSideParams": {
     "description": "Parameters for the QuoteOneSide algorithm",

@@ -4,10 +4,24 @@
   "description": "this is used to coerce creation of the params in the schema.json",
   "type": "object",
   "required": [
+    "one_triggers_other",
     "quote_one_side",
     "spreader"
   ],
   "properties": {
+    "one_triggers_other": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "../definitions.json#/OneTriggersOtherParams"
+        },
+        {
+          "$ref": "../definitions.json#/OneTriggersOtherStatus"
+        }
+      ],
+      "maxItems": 2,
+      "minItems": 2
+    },
     "quote_one_side": {
       "type": "array",
       "items": [

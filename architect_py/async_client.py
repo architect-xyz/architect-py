@@ -36,6 +36,8 @@ from architect_py.grpc.models.definitions import (
     AccountWithPermissions,
     CandleWidth,
     L2BookDiff,
+    OneTriggersOtherParams,
+    OneTriggersOtherStatus,
     OrderId,
     OrderSource,
     OrderType,
@@ -2106,6 +2108,8 @@ class AsyncClient:
             algo = "SPREADER"
         elif isinstance(params, QuoteOneSideParams):
             algo = "QUOTE_ONE_SIDE"
+        elif isinstance(params, OneTriggersOtherParams):
+            algo = "ONE_TRIGGERS_OTHER"
         else:
             raise ValueError(
                 "Unsupported algo type. Only QuoteOneSideParams and SpreaderParams are supported for now."
@@ -2153,6 +2157,8 @@ class AsyncClient:
             status_details_type = SpreaderStatus
         elif res.algo == "QUOTE_ONE_SIDE":
             status_details_type = QuoteOneSideStatus
+        elif res.algo == "ONE_TRIGGERS_OTHER":
+            status_details_type = OneTriggersOtherStatus
         else:
             status_details_type = None
 

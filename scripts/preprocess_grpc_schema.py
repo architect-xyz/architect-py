@@ -182,6 +182,8 @@ def correct_flattened_types(schema: Dict[str, Any]) -> None:
         "$ref": f"#/definitions/{enum_type_name}",
     }
 
+    if "definitions" not in schema:
+        schema["definitions"] = {}
     schema["definitions"][enum_type_name] = enum_tag_property
     schema["enum_variant_to_other_required_keys"] = enum_value_to_required
 
@@ -551,16 +553,37 @@ def process_schema_definitions(
     correct_null_types_with_constraints(schema)
     correct_type_from_description(schema)
 
-    clean_metadata_from_description(schema)
-
     if "definitions" not in schema:
+        clean_metadata_from_description(schema)
         return
 
     new_defs: dict[str, Any] = schema.pop("definitions")
     for t, definition in new_defs.items():
         if t in type_to_json_file:
             continue
+
+        # Add temporary title for processing nested definitions
+        definition["title"] = t
+
+        # Process nested definitions that may have flattened types
+        # Only process if it has the pattern and metadata
+        if "oneOf" in definition and "required" in definition:
+            description = definition.get("description", "")
+            metadata = parse_class_description(description)
+            if "unflatten" in metadata:
+                correct_flattened_types(definition)
+
+        correct_null_types_with_constraints(definition)
+        correct_type_from_description(definition)
+        clean_metadata_from_description(definition)
+
+        # Remove the temporary title
+        definition.pop("title", None)
+
         definitions[t] = definition
+
+    # Now clean metadata from the parent schema after processing nested definitions
+    clean_metadata_from_description(schema)
 
 
 # ---------------------------------------------------------------------
