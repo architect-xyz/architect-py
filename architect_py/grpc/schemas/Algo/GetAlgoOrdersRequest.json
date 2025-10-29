@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GetAlgoOrdersRequest",
+  "type": "object",
+  "required": [
+    "order_ids"
+  ],
+  "properties": {
+    "order_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/OrderId"
+      }
+    }
+  },
+  "route": "/json.architect.Algo/GetAlgoOrders",
+  "rpc_method": "unary",
+  "service": "Algo",
+  "response_type": "AlgoOrdersResponse"
+}

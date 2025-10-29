@@ -2130,14 +2130,13 @@ class AsyncClient:
 
         Args:
             algo_order_id: The ID of the algo order to retrieve
-            algo_status_type: The type of the status_details field
 
         Returns:
             AlgoOrder object containing the order details and status
         """
         grpc_client = await self._core()
 
-        req = AlgoOrdersRequest(order_ids=[algo_order_id])
+        req = GetAlgoOrdersRequest(order_ids=[algo_order_id])
         res = await grpc_client.unary_unary(req)
         for algo_order in res.algo_orders:
             if algo_order.id == algo_order_id:
@@ -2246,6 +2245,69 @@ class AsyncClient:
         res = await grpc_client.unary_unary(req)
         return res
 
+    async def get_open_algo_orders(
+        self,
+        order_ids: Optional[Union[list[OrderId], OrderId]] = None,
+        algo: Optional[str] = None,
+        parent_order_id: Optional[OrderId] = None,
+        account: Optional[AccountIdOrName] = None,
+        trader: Optional[TraderIdOrEmail] = None,
+        display_symbol: Optional[str] = None,
+        from_inclusive: Optional[datetime] = None,
+        to_exclusive: Optional[datetime] = None,
+        limit: Optional[int] = None,
+    ) -> list[AlgoOrder]:
+        """
+        Returns a list of all open algo orders that match the filters.
+
+        Args:
+            order_ids: a list of order ids to get or a single order id
+            algo: filter by a specific algo name (e.g. SPREADER, QUOTE_ONE_SIDE)
+            parent_order_id: filter by a specific parent order id
+            account: filter by a specific account
+            trader: the trader to get algo orders for
+            display_symbol: filter by a specific display symbol
+            from_inclusive: the start date to get algo orders for, must include the timezone
+            to_exclusive: the end date to get algo orders for, must include the timezone
+            limit: the maximum number of algo orders to return
+
+        Returns:
+            List of open algo orders that match the filters
+        """
+        grpc_client = await self._core()
+        if order_ids is None and (from_inclusive is None or to_exclusive is None):
+            raise ValueError(
+                "If order_ids is not specified, then from_inclusive and to_exclusive "
+                "MUST be specified."
+            )
+
+        if from_inclusive is not None:
+            if not from_inclusive.tzinfo:
+                raise ValueError("start time must be timezone-aware")
+            from_inclusive = from_inclusive.astimezone(timezone.utc)
+
+        if to_exclusive is not None:
+            if not to_exclusive.tzinfo:
+                raise ValueError("end time must be timezone-aware")
+            to_exclusive = to_exclusive.astimezone(timezone.utc)
+
+        if order_ids is not None and not isinstance(order_ids, list):
+            order_ids = [order_ids]
+
+        open_algo_orders_request = OpenAlgoOrdersRequest.new(
+            order_ids=order_ids,
+            algo=algo,
+            account=account,
+            trader=trader,
+            parent_order_id=parent_order_id,
+            display_symbol=display_symbol,
+            from_inclusive=from_inclusive,
+            to_exclusive=to_exclusive,
+            limit=limit,
+        )
+        algo_orders = await grpc_client.unary_unary(open_algo_orders_request)
+        return algo_orders.algo_orders
+
     async def get_historical_algo_orders(
         self,
         order_ids: Optional[Union[list[OrderId], OrderId]] = None,
@@ -2310,10 +2372,4 @@ class AsyncClient:
             limit=limit,
         )
         algo_orders = await grpc_client.unary_unary(historical_algo_orders_request)
-        if algo_orders is None:
-            raise ValueError(
-                "No algo orders found for the given filters. "
-                "If order_ids is not specified, then from_inclusive and to_exclusive "
-                "MUST be specified."
-            )
         return algo_orders.algo_orders

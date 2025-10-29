@@ -100,6 +100,7 @@
 - **`pause_algo_order`**: Pause a running algo order.
 - **`stop_algo_order`**: Cancel/stop an algo order.
 - **`modify_algo_order`**: Modify an existing algo order's parameters.
+- **`get_open_algo_orders`**: Returns a list of all open algo orders that match the filters.
 - **`get_historical_algo_orders`**: Returns a list of all historical algo orders that match the filters.
 
 ---

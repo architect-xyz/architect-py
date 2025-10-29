@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AlgoOrdersRequest",
-  "description": "Find all algo orders matching the given criteria.\n\nIf limit is not specified, it will default to 100.",
+  "title": "OpenAlgoOrdersRequest",
+  "description": "Find all open algo orders matching the given criteria.\n\nIf limit is not specified, it will default to 100.",
   "type": "object",
   "properties": {
     "account": {
@@ -88,7 +88,7 @@
       ]
     }
   },
-  "route": "/json.architect.Algo/AlgoOrders",
+  "route": "/json.architect.Algo/OpenAlgoOrders",
   "rpc_method": "unary",
   "service": "Algo",
   "response_type": "AlgoOrdersResponse"

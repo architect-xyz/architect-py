@@ -682,7 +682,6 @@ class Client:
 
         Args:
             algo_order_id: The ID of the algo order to retrieve
-            algo_status_type: The type of the status_details field
 
         Returns:
             AlgoOrder object containing the order details and status
@@ -727,6 +726,24 @@ class Client:
 
         Returns:
             Updated AlgoOrder object with new parameters
+        """
+    def get_open_algo_orders(self, order_ids: list[OrderId] | OrderId | None = None, algo: str | None = None, parent_order_id: OrderId | None = None, account: AccountIdOrName | None = None, trader: TraderIdOrEmail | None = None, display_symbol: str | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, limit: int | None = None) -> list[AlgoOrder]:
+        """
+        Returns a list of all open algo orders that match the filters.
+
+        Args:
+            order_ids: a list of order ids to get or a single order id
+            algo: filter by a specific algo name (e.g. SPREADER, QUOTE_ONE_SIDE)
+            parent_order_id: filter by a specific parent order id
+            account: filter by a specific account
+            trader: the trader to get algo orders for
+            display_symbol: filter by a specific display symbol
+            from_inclusive: the start date to get algo orders for, must include the timezone
+            to_exclusive: the end date to get algo orders for, must include the timezone
+            limit: the maximum number of algo orders to return
+
+        Returns:
+            List of open algo orders that match the filters
         """
     def get_historical_algo_orders(self, order_ids: list[OrderId] | OrderId | None = None, algo: str | None = None, account: AccountIdOrName | None = None, trader: TraderIdOrEmail | None = None, parent_order_id: OrderId | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, limit: int | None = None) -> list[AlgoOrder]:
         """
