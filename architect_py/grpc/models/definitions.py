@@ -489,29 +489,6 @@ class ModifyStatus(int, Enum):
     Out = 127
 
 
-class OneTriggersOtherStatus(Struct, omit_defaults=True):
-    primary_filled_quantity: Decimal
-    secondary_fill_quantity: List[Decimal]
-    secondary_sent_quantity: List[Decimal]
-
-    # Constructor that takes all field titles as arguments for convenience
-    @classmethod
-    def new(
-        cls,
-        primary_filled_quantity: Decimal,
-        secondary_fill_quantity: List[Decimal],
-        secondary_sent_quantity: List[Decimal],
-    ):
-        return cls(
-            primary_filled_quantity,
-            secondary_fill_quantity,
-            secondary_sent_quantity,
-        )
-
-    def __str__(self) -> str:
-        return f"OneTriggersOtherStatus(primary_filled_quantity={self.primary_filled_quantity},secondary_fill_quantity={self.secondary_fill_quantity},secondary_sent_quantity={self.secondary_sent_quantity})"
-
-
 class OptionsTransaction(Struct, omit_defaults=True):
     clearing_firm_account: str
     quantity: Decimal
@@ -1170,7 +1147,18 @@ class OrderInfo(Struct, omit_defaults=True):
     time_in_force: TimeInForce
     k: Annotated[OrderType, Meta(title="order_type")]
     p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
-    po: Optional[Annotated[bool, Meta(title="post_only")]] = None
+    po: Optional[
+        Annotated[
+            bool,
+            Meta(
+                description="note that the CME does not support post-only",
+                title="post_only",
+            ),
+        ]
+    ] = None
+    """
+    note that the CME does not support post-only
+    """
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
     # Constructor that takes all field titles as arguments for convenience
@@ -2557,7 +2545,7 @@ class OneTriggersOtherParams(Struct, omit_defaults=True):
 
     # Note
 
-    You cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again.
+    You cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again. The progress in the status is based on the primary order filled amount only.
     """
 
     primary: OrderInfo
@@ -2580,6 +2568,43 @@ class OneTriggersOtherParams(Struct, omit_defaults=True):
 
     def __str__(self) -> str:
         return f"OneTriggersOtherParams(primary={self.primary},secondary={self.secondary},trigger_in_proportion={self.trigger_in_proportion})"
+
+
+class OneTriggersOtherStatus(Struct, omit_defaults=True):
+    primary_filled_quantity: Decimal
+    primary_fills: List[Fill]
+    secondary_fill_quantity: List[Decimal]
+    secondary_fills: Annotated[
+        List[List[Fill]],
+        Meta(
+            description="Each entry corresponds to the fills for the respective secondary order"
+        ),
+    ]
+    """
+    Each entry corresponds to the fills for the respective secondary order
+    """
+    secondary_sent_quantity: List[Decimal]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        primary_filled_quantity: Decimal,
+        primary_fills: List[Fill],
+        secondary_fill_quantity: List[Decimal],
+        secondary_fills: List[List[Fill]],
+        secondary_sent_quantity: List[Decimal],
+    ):
+        return cls(
+            primary_filled_quantity,
+            primary_fills,
+            secondary_fill_quantity,
+            secondary_fills,
+            secondary_sent_quantity,
+        )
+
+    def __str__(self) -> str:
+        return f"OneTriggersOtherStatus(primary_filled_quantity={self.primary_filled_quantity},primary_fills={self.primary_fills},secondary_fill_quantity={self.secondary_fill_quantity},secondary_fills={self.secondary_fills},secondary_sent_quantity={self.secondary_sent_quantity})"
 
 
 class OptionsSeriesInfo(Struct, omit_defaults=True):

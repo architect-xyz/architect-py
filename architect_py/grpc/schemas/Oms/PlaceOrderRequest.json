@@ -108,6 +108,7 @@
     },
     "po": {
       "title": "post_only",
+      "description": "note that the CME does not support post-only",
       "type": "boolean"
     },
     "tp": {

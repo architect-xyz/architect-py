@@ -2388,7 +2388,7 @@
     "type": "string"
   },
   "OneTriggersOtherParams": {
-    "description": "An OTO order consists of a primary \"primary\" order and one or more \"secondary\" orders that are triggered only after the primary order is filled.\n\n# Triggering Behavior\n\n- The \"primary\" order is placed immediately when the algo starts - The \"secondary\" orders are only placed after the primary order is filled - If `trigger_in_proportion` is true, the secondary orders are triggered proportionally rounded down based on the fill quantity of the primary order. A given leg might have multiple orders triggered in this way if the primary order is filled in multiple fills. - If `trigger_in_proportion` is false, the secondary orders are only triggered after the primary order is completely filled - This algo will not attempt to re-send any orders that are manually cancelled - This algo never cancels any orders, and any manual cancellations will not be re-sent.\n\n# Use Cases\n\nCommon use cases include: - Executing a hedging strategy after an initial position is established - Implementing conditional order sequences where subsequent orders depend on initial fills\n\n# Note\n\nYou cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again.",
+    "description": "An OTO order consists of a primary \"primary\" order and one or more \"secondary\" orders that are triggered only after the primary order is filled.\n\n# Triggering Behavior\n\n- The \"primary\" order is placed immediately when the algo starts - The \"secondary\" orders are only placed after the primary order is filled - If `trigger_in_proportion` is true, the secondary orders are triggered proportionally rounded down based on the fill quantity of the primary order. A given leg might have multiple orders triggered in this way if the primary order is filled in multiple fills. - If `trigger_in_proportion` is false, the secondary orders are only triggered after the primary order is completely filled - This algo will not attempt to re-send any orders that are manually cancelled - This algo never cancels any orders, and any manual cancellations will not be re-sent.\n\n# Use Cases\n\nCommon use cases include: - Executing a hedging strategy after an initial position is established - Implementing conditional order sequences where subsequent orders depend on initial fills\n\n# Note\n\nYou cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again. The progress in the status is based on the primary order filled amount only.",
     "type": "object",
     "required": [
       "primary",
@@ -2414,7 +2414,9 @@
     "type": "object",
     "required": [
       "primary_filled_quantity",
+      "primary_fills",
       "secondary_fill_quantity",
+      "secondary_fills",
       "secondary_sent_quantity"
     ],
     "properties": {
@@ -2422,11 +2424,27 @@
         "type": "string",
         "format": "decimal"
       },
+      "primary_fills": {
+        "type": "array",
+        "items": {
+          "$ref": "#/Fill"
+        }
+      },
       "secondary_fill_quantity": {
         "type": "array",
         "items": {
           "type": "string",
           "format": "decimal"
+        }
+      },
+      "secondary_fills": {
+        "description": "Each entry corresponds to the fills for the respective secondary order",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/Fill"
+          }
         }
       },
       "secondary_sent_quantity": {
@@ -2472,6 +2490,7 @@
       },
       "po": {
         "title": "post_only",
+        "description": "note that the CME does not support post-only",
         "type": "boolean"
       },
       "tp": {

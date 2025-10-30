@@ -49,7 +49,18 @@ class Order(Struct, omit_defaults=True):
     ss: Optional[Annotated[Optional[bool], Meta(title="is_short_sale")]] = None
     xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
     p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
-    po: Optional[Annotated[bool, Meta(title="post_only")]] = None
+    po: Optional[
+        Annotated[
+            bool,
+            Meta(
+                description="note that the CME does not support post-only",
+                title="post_only",
+            ),
+        ]
+    ] = None
+    """
+    note that the CME does not support post-only
+    """
     tp: Optional[Annotated[Decimal, Meta(title="trigger_price")]] = None
 
     # Constructor that takes all field titles as arguments for convenience
