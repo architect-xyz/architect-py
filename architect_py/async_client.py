@@ -657,7 +657,6 @@ class AsyncClient:
 
         ** Note that this function returns a TradableProduct (ie with a base and a quote)
 
-
         Args:
             series_symbol: the futures series
                 e.g. "ES CME Futures" would yield the lead future for the ES series
@@ -665,7 +664,7 @@ class AsyncClient:
                 ** If the venue is provided, it will return the future with the most volume in that venue**
 
         Returns:
-            The lead future symbol
+            The lead future symbol, e.g. "ES 20251219 CME Future/USD"
         """
         futures = await self.get_futures_series(series_symbol)
         if not venue:
@@ -2079,7 +2078,7 @@ class AsyncClient:
     async def place_algo_order(
         self,
         *,
-        params: SpreaderParams | QuoteOneSideParams,
+        params: SpreaderParams | QuoteOneSideParams | OneTriggersOtherParams,
         account: AccountIdOrName,
         id: Optional[OrderId] = None,
         trader: Optional[TraderIdOrEmail] = None,
@@ -2104,16 +2103,18 @@ class AsyncClient:
         """
         grpc_client = await self._core()
 
-        if isinstance(params, SpreaderParams):
-            algo = "SPREADER"
-        elif isinstance(params, QuoteOneSideParams):
-            algo = "QUOTE_ONE_SIDE"
-        elif isinstance(params, OneTriggersOtherParams):
-            algo = "ONE_TRIGGERS_OTHER"
-        else:
-            raise ValueError(
-                "Unsupported algo type. Only QuoteOneSideParams and SpreaderParams are supported for now."
-            )
+
+        match params:
+            case SpreaderParams():
+                algo = "SPREADER"
+            case QuoteOneSideParams():
+                algo = "QUOTE_ONE_SIDE"
+            case OneTriggersOtherParams():
+                algo = "ONE_TRIGGERS_OTHER"
+            case _:
+                raise ValueError(
+                    "Unsupported algo type. Only QuoteOneSideParams and SpreaderParams are supported for now."
+                )
 
         req = CreateAlgoOrderRequest(
             algo=algo, params=params, id=id, account=account, trader=trader
