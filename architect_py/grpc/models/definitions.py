@@ -1671,6 +1671,17 @@ class OptionsSeriesInstance(Struct, omit_defaults=True):
 
 
 class QuotingParameters(Struct, omit_defaults=True):
+    improve_or_join: Optional[
+        Annotated[
+            Optional[ImproveOrJoin],
+            Meta(
+                description="Whether to improve the market or join at the current best price"
+            ),
+        ]
+    ] = None
+    """
+    Whether to improve the market or join at the current best price
+    """
     max_quote_quantity: Optional[
         Annotated[
             Optional[Decimal], Meta(description="Maximum quantity to quote at a time")
@@ -1679,19 +1690,34 @@ class QuotingParameters(Struct, omit_defaults=True):
     """
     Maximum quantity to quote at a time
     """
+    max_ticks_outside: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Maximum number of ticks less aggressive than the BBO to quote"
+            ),
+        ]
+    ] = None
+    """
+    Maximum number of ticks less aggressive than the BBO to quote
+    """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
+        improve_or_join: Optional[ImproveOrJoin] = None,
         max_quote_quantity: Optional[Decimal] = None,
+        max_ticks_outside: Optional[Decimal] = None,
     ):
         return cls(
+            improve_or_join,
             max_quote_quantity,
+            max_ticks_outside,
         )
 
     def __str__(self) -> str:
-        return f"QuotingParameters(max_quote_quantity={self.max_quote_quantity})"
+        return f"QuotingParameters(improve_or_join={self.improve_or_join},max_quote_quantity={self.max_quote_quantity},max_ticks_outside={self.max_ticks_outside})"
 
 
 class SpreadLeg(Struct, omit_defaults=True):
@@ -2793,16 +2819,15 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     """
     marketdata_venue: str
     quantity: Decimal
-    quantity_filled: Annotated[
-        Decimal,
-        Meta(
-            description="Insert as 0, used for tracking fill quantity when modifying quote"
-        ),
-    ]
-    """
-    Insert as 0, used for tracking fill quantity when modifying quote
-    """
     symbol: str
+    max_quote_quantity: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Maximum quantity to quote at a time")
+        ]
+    ] = None
+    """
+    Maximum quantity to quote at a time
+    """
     max_ticks_outside: Optional[
         Annotated[
             Optional[Decimal],
@@ -2813,6 +2838,17 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     ] = None
     """
     Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100
+    """
+    quantity_filled: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Used to track existing fill quantity when modifying quote. Ignore for most use cases."
+            ),
+        ]
+    ] = None
+    """
+    Used to track existing fill quantity when modifying quote. Ignore for most use cases.
     """
 
     # Constructor that takes all field titles as arguments for convenience
@@ -2825,9 +2861,10 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
         limit_price: Decimal,
         marketdata_venue: str,
         quantity: Decimal,
-        quantity_filled: Decimal,
         symbol: str,
+        max_quote_quantity: Optional[Decimal] = None,
         max_ticks_outside: Optional[Decimal] = None,
+        quantity_filled: Optional[Decimal] = None,
     ):
         return cls(
             dir,
@@ -2836,13 +2873,14 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
             limit_price,
             marketdata_venue,
             quantity,
-            quantity_filled,
             symbol,
+            max_quote_quantity,
             max_ticks_outside,
+            quantity_filled,
         )
 
     def __str__(self) -> str:
-        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},quantity_filled={self.quantity_filled},symbol={self.symbol},max_ticks_outside={self.max_ticks_outside})"
+        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},symbol={self.symbol},max_quote_quantity={self.max_quote_quantity},max_ticks_outside={self.max_ticks_outside},quantity_filled={self.quantity_filled})"
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(

@@ -2103,7 +2103,6 @@ class AsyncClient:
         """
         grpc_client = await self._core()
 
-
         match params:
             case SpreaderParams():
                 algo = "SPREADER"

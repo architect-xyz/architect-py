@@ -202,7 +202,6 @@ class Client:
 
         ** Note that this function returns a TradableProduct (ie with a base and a quote)
 
-
         Args:
             series_symbol: the futures series
                 e.g. "ES CME Futures" would yield the lead future for the ES series
@@ -210,7 +209,7 @@ class Client:
                 ** If the venue is provided, it will return the future with the most volume in that venue**
 
         Returns:
-            The lead future symbol
+            The lead future symbol, e.g. "ES 20251219 CME Future/USD"
         '''
     @staticmethod
     def get_expiration_from_CME_name(name: str) -> date | None:
@@ -657,7 +656,7 @@ class Client:
 
         Useful for clearing stuck orders or stale orders when a human wants to intervene.
         """
-    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams, account: AccountIdOrName, id: OrderId | None = None, trader: TraderIdOrEmail | None = None) -> AlgoOrder:
+    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams | OneTriggersOtherParams, account: AccountIdOrName, id: OrderId | None = None, trader: TraderIdOrEmail | None = None) -> AlgoOrder:
         """
         Sends an advanced algo order such as the spreader. Documentation: [Algos Book](https://docs.architect.co/algos-book)
 

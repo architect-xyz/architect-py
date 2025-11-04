@@ -2547,7 +2547,6 @@
       "limit_price",
       "marketdata_venue",
       "quantity",
-      "quantity_filled",
       "symbol"
     ],
     "properties": {
@@ -2573,6 +2572,14 @@
       "marketdata_venue": {
         "type": "string"
       },
+      "max_quote_quantity": {
+        "description": "Maximum quantity to quote at a time",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
       "max_ticks_outside": {
         "description": "Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100",
         "type": [
@@ -2586,8 +2593,11 @@
         "format": "decimal"
       },
       "quantity_filled": {
-        "description": "Insert as 0, used for tracking fill quantity when modifying quote",
-        "type": "string",
+        "description": "Used to track existing fill quantity when modifying quote. Ignore for most use cases.",
+        "type": [
+          "string",
+          "null"
+        ],
         "format": "decimal"
       },
       "symbol": {
@@ -2641,8 +2651,27 @@
   "QuotingParameters": {
     "type": "object",
     "properties": {
+      "improve_or_join": {
+        "description": "Whether to improve the market or join at the current best price",
+        "anyOf": [
+          {
+            "$ref": "#/ImproveOrJoin"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "max_quote_quantity": {
         "description": "Maximum quantity to quote at a time",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "max_ticks_outside": {
+        "description": "Maximum number of ticks less aggressive than the BBO to quote",
         "type": [
           "string",
           "null"
