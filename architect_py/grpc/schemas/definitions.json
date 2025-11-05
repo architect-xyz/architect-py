@@ -2333,6 +2333,16 @@
       "symbol"
     ],
     "properties": {
+      "account": {
+        "anyOf": [
+          {
+            "$ref": "#/AccountIdOrName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "chase_ticks": {
         "description": "number of ticks more aggressive than the desired price for taking orders this is just to greatly increase the likelihood of a fill",
         "type": "integer",
