@@ -36,6 +36,7 @@ from architect_py.grpc.models.definitions import (
     AccountWithPermissions,
     CandleWidth,
     L2BookDiff,
+    OneCancelsOtherParams,
     OneTriggersOtherParams,
     OneTriggersOtherStatus,
     OrderId,
@@ -2078,7 +2079,10 @@ class AsyncClient:
     async def place_algo_order(
         self,
         *,
-        params: SpreaderParams | QuoteOneSideParams | OneTriggersOtherParams,
+        params: SpreaderParams
+        | QuoteOneSideParams
+        | OneTriggersOtherParams
+        | OneCancelsOtherParams,
         account: AccountIdOrName,
         id: Optional[OrderId] = None,
         trader: Optional[TraderIdOrEmail] = None,
@@ -2110,6 +2114,8 @@ class AsyncClient:
                 algo = "QUOTE_ONE_SIDE"
             case OneTriggersOtherParams():
                 algo = "ONE_TRIGGERS_OTHER"
+            case OneCancelsOtherParams():
+                algo = "ONE_CANCELS_OTHER"
             case _:
                 raise ValueError(
                     "Unsupported algo type. Only QuoteOneSideParams and SpreaderParams are supported for now."

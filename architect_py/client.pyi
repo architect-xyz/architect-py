@@ -10,7 +10,7 @@ from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
 from architect_py.grpc.client import GrpcClient as GrpcClient
-from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OneTriggersOtherParams as OneTriggersOtherParams, OneTriggersOtherStatus as OneTriggersOtherStatus, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail
+from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OneCancelsOtherParams as OneCancelsOtherParams, OneTriggersOtherParams as OneTriggersOtherParams, OneTriggersOtherStatus as OneTriggersOtherStatus, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail
 from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
@@ -656,7 +656,7 @@ class Client:
 
         Useful for clearing stuck orders or stale orders when a human wants to intervene.
         """
-    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams | OneTriggersOtherParams, account: AccountIdOrName, id: OrderId | None = None, trader: TraderIdOrEmail | None = None) -> AlgoOrder:
+    def place_algo_order(self, *, params: SpreaderParams | QuoteOneSideParams | OneTriggersOtherParams | OneCancelsOtherParams, account: AccountIdOrName, id: OrderId | None = None, trader: TraderIdOrEmail | None = None) -> AlgoOrder:
         """
         Sends an advanced algo order such as the spreader. Documentation: [Algos Book](https://docs.architect.co/algos-book)
 

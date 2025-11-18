@@ -2557,6 +2557,69 @@ class ModifyReject(Struct, omit_defaults=True):
         return f"ModifyReject(id={self.id},mid={self.mid},rm={self.rm})"
 
 
+class OneCancelsOtherParams(Struct, omit_defaults=True):
+    """
+    An OCO order consists of multiple orders where the fill of any one order automatically cancels all other orders in the group.
+
+    # Cancellation Behavior
+
+    - All orders are placed simultaneously when the algo starts - When any order is fully filled, the remaining orders are immediately cancelled - If `cancel_in_proportion` is true, partial fills trigger proportional cancellations of the remaining orders based on the fill quantity. Cancelled orders are replaced with new orders of proportionally-reduced quantities, rounded according to the instrument's step size. - If `cancel_in_proportion` is false, only a complete fill of one order triggers cancellation of all other orders - Cancelled orders are replaced with new orders (in proportional mode) to maintain exposure while accounting for partial fills on other orders
+
+    # Proportional Mode Details
+
+    When `cancel_in_proportion` is true: - Each fill (partial or complete) triggers cancellation of all other active orders - Cancelled orders are replaced with new orders calculated as: `new_quantity = original_quantity * (1 - percent_filled_on_any_order)` - The replacement quantity is rounded according to each instrument's step size - This ensures that as one order fills, the other orders proportionally reduce in size
+
+    # Use Cases
+
+    Common use cases include: - Placing orders on multiple exchanges where you only want one to execute - Implementing profit target and stop loss orders simultaneously - Managing risk by ensuring only one side of a position is filled - Spreading orders across venues while maintaining proportional exposure
+
+    # Important Notes
+
+    - You cannot modify the algo once it is sent; you must cancel and send a new one if you want different parameters - You also cannot pause the algo; it will simply stop if a pause is sent - If an order is rejected, the algo will continue operating with the remaining orders - The progress is based on the percentage of any order filled relative to its original quantity - It is technically possible for all orders to be filled if they execute simultaneously
+    """
+
+    cancel_in_proportion: bool
+    orders: List[OrderInfo]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        cancel_in_proportion: bool,
+        orders: List[OrderInfo],
+    ):
+        return cls(
+            cancel_in_proportion,
+            orders,
+        )
+
+    def __str__(self) -> str:
+        return f"OneCancelsOtherParams(cancel_in_proportion={self.cancel_in_proportion},orders={self.orders})"
+
+
+class OneCancelsOtherStatus(Struct, omit_defaults=True):
+    fills: List[List[Fill]]
+    num_active_orders: Annotated[int, Meta(ge=0)]
+    percent_done: float
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        fills: List[List[Fill]],
+        num_active_orders: int,
+        percent_done: float,
+    ):
+        return cls(
+            fills,
+            num_active_orders,
+            percent_done,
+        )
+
+    def __str__(self) -> str:
+        return f"OneCancelsOtherStatus(fills={self.fills},num_active_orders={self.num_active_orders},percent_done={self.percent_done})"
+
+
 class OneTriggersOtherParams(Struct, omit_defaults=True):
     """
     An OTO order consists of a primary "primary" order and one or more "secondary" orders that are triggered only after the primary order is filled.

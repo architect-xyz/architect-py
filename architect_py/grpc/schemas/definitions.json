@@ -2397,6 +2397,53 @@
     ],
     "type": "string"
   },
+  "OneCancelsOtherParams": {
+    "description": "An OCO order consists of multiple orders where the fill of any one order automatically cancels all other orders in the group.\n\n# Cancellation Behavior\n\n- All orders are placed simultaneously when the algo starts - When any order is fully filled, the remaining orders are immediately cancelled - If `cancel_in_proportion` is true, partial fills trigger proportional cancellations of the remaining orders based on the fill quantity. Cancelled orders are replaced with new orders of proportionally-reduced quantities, rounded according to the instrument's step size. - If `cancel_in_proportion` is false, only a complete fill of one order triggers cancellation of all other orders - Cancelled orders are replaced with new orders (in proportional mode) to maintain exposure while accounting for partial fills on other orders\n\n# Proportional Mode Details\n\nWhen `cancel_in_proportion` is true: - Each fill (partial or complete) triggers cancellation of all other active orders - Cancelled orders are replaced with new orders calculated as: `new_quantity = original_quantity * (1 - percent_filled_on_any_order)` - The replacement quantity is rounded according to each instrument's step size - This ensures that as one order fills, the other orders proportionally reduce in size\n\n# Use Cases\n\nCommon use cases include: - Placing orders on multiple exchanges where you only want one to execute - Implementing profit target and stop loss orders simultaneously - Managing risk by ensuring only one side of a position is filled - Spreading orders across venues while maintaining proportional exposure\n\n# Important Notes\n\n- You cannot modify the algo once it is sent; you must cancel and send a new one if you want different parameters - You also cannot pause the algo; it will simply stop if a pause is sent - If an order is rejected, the algo will continue operating with the remaining orders - The progress is based on the percentage of any order filled relative to its original quantity - It is technically possible for all orders to be filled if they execute simultaneously",
+    "type": "object",
+    "required": [
+      "cancel_in_proportion",
+      "orders"
+    ],
+    "properties": {
+      "cancel_in_proportion": {
+        "type": "boolean"
+      },
+      "orders": {
+        "type": "array",
+        "items": {
+          "$ref": "#/OrderInfo"
+        }
+      }
+    }
+  },
+  "OneCancelsOtherStatus": {
+    "type": "object",
+    "required": [
+      "fills",
+      "num_active_orders",
+      "percent_done"
+    ],
+    "properties": {
+      "fills": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/Fill"
+          }
+        }
+      },
+      "num_active_orders": {
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      },
+      "percent_done": {
+        "type": "number",
+        "format": "double"
+      }
+    }
+  },
   "OneTriggersOtherParams": {
     "description": "An OTO order consists of a primary \"primary\" order and one or more \"secondary\" orders that are triggered only after the primary order is filled.\n\n# Triggering Behavior\n\n- The \"primary\" order is placed immediately when the algo starts - The \"secondary\" orders are only placed after the primary order is filled - If `trigger_in_proportion` is true, the secondary orders are triggered proportionally rounded down based on the fill quantity of the primary order. A given leg might have multiple orders triggered in this way if the primary order is filled in multiple fills. - If `trigger_in_proportion` is false, the secondary orders are only triggered after the primary order is completely filled - This algo will not attempt to re-send any orders that are manually cancelled - This algo never cancels any orders, and any manual cancellations will not be re-sent.\n\n# Use Cases\n\nCommon use cases include: - Executing a hedging strategy after an initial position is established - Implementing conditional order sequences where subsequent orders depend on initial fills\n\n# Note\n\nYou cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters. If you manually cancel any of the orders, or they get rejected, the algo will NOT send the order again. The progress in the status is based on the primary order filled amount only.",
     "type": "object",

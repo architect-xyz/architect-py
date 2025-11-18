@@ -15,6 +15,9 @@ class AlgoParamTypes(Struct, omit_defaults=True):
     this is used to coerce creation of the params in the schema.json
     """
 
+    one_cancels_other: List[
+        Union[definitions.OneCancelsOtherParams, definitions.OneCancelsOtherStatus]
+    ]
     one_triggers_other: List[
         Union[definitions.OneTriggersOtherParams, definitions.OneTriggersOtherStatus]
     ]
@@ -27,6 +30,9 @@ class AlgoParamTypes(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        one_cancels_other: List[
+            Union[definitions.OneCancelsOtherParams, definitions.OneCancelsOtherStatus]
+        ],
         one_triggers_other: List[
             Union[
                 definitions.OneTriggersOtherParams, definitions.OneTriggersOtherStatus
@@ -38,10 +44,11 @@ class AlgoParamTypes(Struct, omit_defaults=True):
         spreader: List[Union[definitions.SpreaderParams, definitions.SpreaderStatus]],
     ):
         return cls(
+            one_cancels_other,
             one_triggers_other,
             quote_one_side,
             spreader,
         )
 
     def __str__(self) -> str:
-        return f"AlgoParamTypes(one_triggers_other={self.one_triggers_other},quote_one_side={self.quote_one_side},spreader={self.spreader})"
+        return f"AlgoParamTypes(one_cancels_other={self.one_cancels_other},one_triggers_other={self.one_triggers_other},quote_one_side={self.quote_one_side},spreader={self.spreader})"

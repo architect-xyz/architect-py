@@ -4,11 +4,25 @@
   "description": "this is used to coerce creation of the params in the schema.json",
   "type": "object",
   "required": [
+    "one_cancels_other",
     "one_triggers_other",
     "quote_one_side",
     "spreader"
   ],
   "properties": {
+    "one_cancels_other": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "../definitions.json#/OneCancelsOtherParams"
+        },
+        {
+          "$ref": "../definitions.json#/OneCancelsOtherStatus"
+        }
+      ],
+      "maxItems": 2,
+      "minItems": 2
+    },
     "one_triggers_other": {
       "type": "array",
       "items": [
