@@ -47,6 +47,17 @@ class Order(Struct, omit_defaults=True):
     ] = None
     rm: Optional[Annotated[Optional[str], Meta(title="reject_message")]] = None
     ss: Optional[Annotated[Optional[bool], Meta(title="is_short_sale")]] = None
+    tag: Optional[
+        Annotated[
+            str,
+            Meta(
+                description="Tag so that the user can attach arbitrary metadata to the order. Maximum of 10 characters; must be ASCII graphic characters."
+            ),
+        ]
+    ] = None
+    """
+    Tag so that the user can attach arbitrary metadata to the order. Maximum of 10 characters; must be ASCII graphic characters.
+    """
     xp: Optional[Annotated[Optional[Decimal], Meta(title="average_fill_price")]] = None
     p: Optional[Annotated[Decimal, Meta(title="limit_price")]] = None
     po: Optional[
@@ -86,6 +97,7 @@ class Order(Struct, omit_defaults=True):
         reject_reason: Optional[definitions.OrderRejectReason] = None,
         reject_message: Optional[str] = None,
         is_short_sale: Optional[bool] = None,
+        tag: Optional[str] = None,
         average_fill_price: Optional[Decimal] = None,
         limit_price: Optional[Decimal] = None,
         post_only: Optional[bool] = None,
@@ -111,6 +123,7 @@ class Order(Struct, omit_defaults=True):
             reject_reason,
             reject_message,
             is_short_sale,
+            tag,
             average_fill_price,
             limit_price,
             post_only,
@@ -118,7 +131,7 @@ class Order(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},is_short_sale={self.ss},average_fill_price={self.xp},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
+        return f"Order(account={self.a},dir={self.d},id={self.id},status={self.o},quantity={self.q},symbol={self.s},source={self.src},time_in_force={self.tif},recv_time_ns={self.tn},recv_time={self.ts},trader={self.u},execution_venue={self.ve},filled_quantity={self.xq},order_type={self.k},exchange_order_id={self.eid},parent_id={self.pid},reject_reason={self.r},reject_message={self.rm},is_short_sale={self.ss},tag={self.tag},average_fill_price={self.xp},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
 
     @property
     def account(self) -> str:

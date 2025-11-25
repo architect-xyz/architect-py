@@ -39,6 +39,17 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
     src: Optional[
         Annotated[Optional[definitions.OrderSource], Meta(title="source")]
     ] = None
+    tag: Optional[
+        Annotated[
+            str,
+            Meta(
+                description="Tag so that the user can attach arbitrary metadata to the order. Maximum of 10 characters; must be ASCII graphic characters."
+            ),
+        ]
+    ] = None
+    """
+    Tag so that the user can attach arbitrary metadata to the order. Maximum of 10 characters; must be ASCII graphic characters.
+    """
     u: Optional[
         Annotated[Optional[definitions.TraderIdOrEmail], Meta(title="trader")]
     ] = None
@@ -71,6 +82,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         id: Optional[definitions.OrderId] = None,
         parent_id: Optional[definitions.OrderId] = None,
         source: Optional[definitions.OrderSource] = None,
+        tag: Optional[str] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
         execution_venue: Optional[str] = None,
         limit_price: Optional[Decimal] = None,
@@ -87,6 +99,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
             id,
             parent_id,
             source,
+            tag,
             trader,
             execution_venue,
             limit_price,
@@ -95,7 +108,7 @@ class PlaceOrderRequest(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},order_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},trader={self.u},execution_venue={self.x},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
+        return f"PlaceOrderRequest(dir={self.d},quantity={self.q},symbol={self.s},time_in_force={self.tif},order_type={self.k},account={self.a},id={self.id},parent_id={self.pid},source={self.src},tag={self.tag},trader={self.u},execution_venue={self.x},limit_price={self.p},post_only={self.po},trigger_price={self.tp})"
 
     @property
     def dir(self) -> OrderDir:

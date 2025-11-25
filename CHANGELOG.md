@@ -1,3 +1,7 @@
+# 5.9.6
+- Various algo improvements
+- PlaceOrderRequest/Order now has a `tag` field so that users can put in arbitrary tags
+
 # 5.9.5
 - reconcile_out, manually reconciles out an order
 - Improve spreader order

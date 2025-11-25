@@ -103,6 +103,10 @@
         "null"
       ]
     },
+    "tag": {
+      "description": "Tag so that the user can attach arbitrary metadata to the order. Maximum of 10 characters; must be ASCII graphic characters.",
+      "type": "string"
+    },
     "tif": {
       "title": "time_in_force",
       "allOf": [
