@@ -4,12 +4,26 @@
   "description": "this is used to coerce creation of the params in the schema.json",
   "type": "object",
   "required": [
+    "bracket",
     "one_cancels_other",
     "one_triggers_other",
     "quote_one_side",
     "spreader"
   ],
   "properties": {
+    "bracket": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "../definitions.json#/BracketParams"
+        },
+        {
+          "$ref": "../definitions.json#/BracketStatus"
+        }
+      ],
+      "maxItems": 2,
+      "minItems": 2
+    },
     "one_cancels_other": {
       "type": "array",
       "items": [

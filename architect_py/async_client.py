@@ -34,9 +34,12 @@ from architect_py.grpc.models import *
 from architect_py.grpc.models.definitions import (
     AccountIdOrName,
     AccountWithPermissions,
+    BracketParams,
+    BracketStatus,
     CandleWidth,
     L2BookDiff,
     OneCancelsOtherParams,
+    OneCancelsOtherStatus,
     OneTriggersOtherParams,
     OneTriggersOtherStatus,
     OrderId,
@@ -2116,6 +2119,8 @@ class AsyncClient:
                 algo = "ONE_TRIGGERS_OTHER"
             case OneCancelsOtherParams():
                 algo = "ONE_CANCELS_OTHER"
+            case BracketParams():
+                algo = "BRACKET"
             case _:
                 raise ValueError(
                     "Unsupported algo type. Only QuoteOneSideParams and SpreaderParams are supported for now."
@@ -2158,14 +2163,19 @@ class AsyncClient:
             else:
                 return None
 
-        if res.algo == "SPREADER":
-            status_details_type = SpreaderStatus
-        elif res.algo == "QUOTE_ONE_SIDE":
-            status_details_type = QuoteOneSideStatus
-        elif res.algo == "ONE_TRIGGERS_OTHER":
-            status_details_type = OneTriggersOtherStatus
-        else:
-            status_details_type = None
+        match res.algo:
+            case "SPREADER":
+                status_details_type = SpreaderStatus
+            case "QUOTE_ONE_SIDE":
+                status_details_type = QuoteOneSideStatus
+            case "ONE_TRIGGERS_OTHER":
+                status_details_type = OneTriggersOtherStatus
+            case "ONE_CANCELS_OTHER":
+                status_details_type = OneCancelsOtherStatus
+            case "BRACKET":
+                status_details_type = BracketStatus
+            case _:
+                status_details_type = None
 
         if status_details_type is not None:
             res.status_details = msgspec.convert(

@@ -2030,6 +2030,53 @@ class BatchOrder(Struct, omit_defaults=True):
         return f"BatchOrder(orders={self.orders})"
 
 
+class BracketParams(Struct, omit_defaults=True):
+    """
+    A bracket order consists of an entry limit order, a take-profit order, and a stop-loss order.
+
+    The take-profit and stop-loss orders are managed via a One-Cancels-Other (OCO) algo as a subalgo.
+
+    # Note
+
+    You cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters.
+    """
+
+    entry: OrderInfo
+    stop_loss_limit_price: Decimal
+    stop_loss_trigger_price: Decimal
+    take_profit_price: Decimal
+    trigger_in_proportion: Annotated[
+        bool,
+        Meta(
+            description="if true, the OCO exit orders will be sent proportionally to the filled quantity of the entry order"
+        ),
+    ]
+    """
+    if true, the OCO exit orders will be sent proportionally to the filled quantity of the entry order
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        entry: OrderInfo,
+        stop_loss_limit_price: Decimal,
+        stop_loss_trigger_price: Decimal,
+        take_profit_price: Decimal,
+        trigger_in_proportion: bool,
+    ):
+        return cls(
+            entry,
+            stop_loss_limit_price,
+            stop_loss_trigger_price,
+            take_profit_price,
+            trigger_in_proportion,
+        )
+
+    def __str__(self) -> str:
+        return f"BracketParams(entry={self.entry},stop_loss_limit_price={self.stop_loss_limit_price},stop_loss_trigger_price={self.stop_loss_trigger_price},take_profit_price={self.take_profit_price},trigger_in_proportion={self.trigger_in_proportion})"
+
+
 class CancelReject(Struct, omit_defaults=True):
     id: OrderId
     xid: str
@@ -3325,6 +3372,38 @@ class EventContractSeriesInstance1(Struct, omit_defaults=True):
 EventContractSeriesInstance = Union[
     EventContractSeriesInstance1, EventContractSeriesInstance2
 ]
+
+
+class BracketStatus(Struct, omit_defaults=True):
+    entry_completed: bool
+    entry_filled_quantity: Decimal
+    entry_fills: List[Fill]
+    exit_filled_quantity: Decimal
+    exit_fills: List[Fill]
+    num_active_exit_orders: Annotated[int, Meta(ge=0)]
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        entry_completed: bool,
+        entry_filled_quantity: Decimal,
+        entry_fills: List[Fill],
+        exit_filled_quantity: Decimal,
+        exit_fills: List[Fill],
+        num_active_exit_orders: int,
+    ):
+        return cls(
+            entry_completed,
+            entry_filled_quantity,
+            entry_fills,
+            exit_filled_quantity,
+            exit_fills,
+            num_active_exit_orders,
+        )
+
+    def __str__(self) -> str:
+        return f"BracketStatus(entry_completed={self.entry_completed},entry_filled_quantity={self.entry_filled_quantity},entry_fills={self.entry_fills},exit_filled_quantity={self.exit_filled_quantity},exit_fills={self.exit_fills},num_active_exit_orders={self.num_active_exit_orders})"
 
 
 class SnapshotOrUpdateForStringAndSnapshotOrUpdateForStringAndExecutionInfo1(

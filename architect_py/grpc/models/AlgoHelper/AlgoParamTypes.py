@@ -15,6 +15,7 @@ class AlgoParamTypes(Struct, omit_defaults=True):
     this is used to coerce creation of the params in the schema.json
     """
 
+    bracket: List[Union[definitions.BracketParams, definitions.BracketStatus]]
     one_cancels_other: List[
         Union[definitions.OneCancelsOtherParams, definitions.OneCancelsOtherStatus]
     ]
@@ -30,6 +31,7 @@ class AlgoParamTypes(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        bracket: List[Union[definitions.BracketParams, definitions.BracketStatus]],
         one_cancels_other: List[
             Union[definitions.OneCancelsOtherParams, definitions.OneCancelsOtherStatus]
         ],
@@ -44,6 +46,7 @@ class AlgoParamTypes(Struct, omit_defaults=True):
         spreader: List[Union[definitions.SpreaderParams, definitions.SpreaderStatus]],
     ):
         return cls(
+            bracket,
             one_cancels_other,
             one_triggers_other,
             quote_one_side,
@@ -51,4 +54,4 @@ class AlgoParamTypes(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"AlgoParamTypes(one_cancels_other={self.one_cancels_other},one_triggers_other={self.one_triggers_other},quote_one_side={self.quote_one_side},spreader={self.spreader})"
+        return f"AlgoParamTypes(bracket={self.bracket},one_cancels_other={self.one_cancels_other},one_triggers_other={self.one_triggers_other},quote_one_side={self.quote_one_side},spreader={self.spreader})"

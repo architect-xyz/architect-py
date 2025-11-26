@@ -1,6 +1,8 @@
 # 5.9.6
 - Various algo improvements
 - PlaceOrderRequest/Order now has a `tag` field so that users can put in arbitrary tags
+- Bracket Algo working
+
 
 # 5.9.5
 - reconcile_out, manually reconciles out an order
@@ -16,7 +18,7 @@
 
 
 # 5.9.4
-- Remove Bracket from OrderType, changed it to algo
+- Remove Bracket from OrderType, changing it to algo
 - Added Spreader algo order
 
 # 5.9.3

@@ -2311,6 +2311,79 @@
       }
     }
   },
+  "BracketParams": {
+    "description": "A bracket order consists of an entry limit order, a take-profit order, and a stop-loss order.\n\nThe take-profit and stop-loss orders are managed via a One-Cancels-Other (OCO) algo as a subalgo.\n\n# Note\n\nYou cannot modify the algo once it is sent, you must cancel and send a new one if you want different parameters.",
+    "type": "object",
+    "required": [
+      "entry",
+      "stop_loss_limit_price",
+      "stop_loss_trigger_price",
+      "take_profit_price",
+      "trigger_in_proportion"
+    ],
+    "properties": {
+      "entry": {
+        "$ref": "#/OrderInfo"
+      },
+      "stop_loss_limit_price": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "stop_loss_trigger_price": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "take_profit_price": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "trigger_in_proportion": {
+        "description": "if true, the OCO exit orders will be sent proportionally to the filled quantity of the entry order",
+        "type": "boolean"
+      }
+    }
+  },
+  "BracketStatus": {
+    "type": "object",
+    "required": [
+      "entry_completed",
+      "entry_filled_quantity",
+      "entry_fills",
+      "exit_filled_quantity",
+      "exit_fills",
+      "num_active_exit_orders"
+    ],
+    "properties": {
+      "entry_completed": {
+        "type": "boolean"
+      },
+      "entry_filled_quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "entry_fills": {
+        "type": "array",
+        "items": {
+          "$ref": "#/Fill"
+        }
+      },
+      "exit_filled_quantity": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "exit_fills": {
+        "type": "array",
+        "items": {
+          "$ref": "#/Fill"
+        }
+      },
+      "num_active_exit_orders": {
+        "type": "integer",
+        "format": "default",
+        "minimum": 0.0
+      }
+    }
+  },
   "HumanDuration": {
     "type": "string"
   },
