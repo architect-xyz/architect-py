@@ -2387,14 +2387,6 @@
   "HumanDuration": {
     "type": "string"
   },
-  "ImproveOrJoin": {
-    "description": "Whether to improve the market or join at the current best price",
-    "enum": [
-      "Improve",
-      "Join"
-    ],
-    "type": "string"
-  },
   "LegParams": {
     "type": "object",
     "required": [
@@ -2673,7 +2665,6 @@
     "required": [
       "dir",
       "execution_venue",
-      "improve_or_join",
       "limit_price",
       "marketdata_venue",
       "quantity",
@@ -2686,13 +2677,13 @@
       "execution_venue": {
         "type": "string"
       },
-      "improve_or_join": {
-        "description": "Whether to improve the market or join at the current best price",
-        "allOf": [
-          {
-            "$ref": "#/ImproveOrJoin"
-          }
-        ]
+      "improve_by": {
+        "description": "If specified, improve the market by the specified number of ticks otherwise, join the current best price",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "int32"
       },
       "limit_price": {
         "description": "the most aggressive price the algo will quote at",
@@ -2718,6 +2709,13 @@
         ],
         "format": "decimal"
       },
+      "post_only": {
+        "description": "By default, QuoteOneSide avoids marketable orders. Set to false with improve_by > 0 to allow the algo to potentially cross the market when improving.",
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
       "quantity": {
         "type": "string",
         "format": "decimal"
@@ -2732,6 +2730,25 @@
       },
       "symbol": {
         "type": "string"
+      },
+      "ticks_before_repricing": {
+        "description": "optionally specify how many ticks away the market has to move before updating an existing quote.",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "time_before_repricing": {
+        "description": "optionally specify how long to wait before updating an existing quote",
+        "anyOf": [
+          {
+            "$ref": "#/HumanDuration"
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     }
   },
@@ -2781,16 +2798,13 @@
   "QuotingParameters": {
     "type": "object",
     "properties": {
-      "improve_or_join": {
-        "description": "Whether to improve the market or join at the current best price",
-        "anyOf": [
-          {
-            "$ref": "#/ImproveOrJoin"
-          },
-          {
-            "type": "null"
-          }
-        ]
+      "improve_by": {
+        "description": "If specified, improve the market by the specified number of ticks otherwise, join the current best price",
+        "type": [
+          "integer",
+          "null"
+        ],
+        "format": "int32"
       },
       "max_quote_quantity": {
         "description": "Maximum quantity to quote at a time",
@@ -2807,6 +2821,25 @@
           "null"
         ],
         "format": "decimal"
+      },
+      "ticks_before_repricing": {
+        "description": "optionally specify how many ticks away the market has to move before updating an existing quote.",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "time_before_repricing": {
+        "description": "optionally specify how long to wait before updating an existing quote",
+        "anyOf": [
+          {
+            "$ref": "#/HumanDuration"
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     }
   },

@@ -1093,15 +1093,6 @@ class FillKind(int, Enum):
 HumanDuration = str
 
 
-class ImproveOrJoin(str, Enum):
-    """
-    Whether to improve the market or join at the current best price
-    """
-
-    Improve = "Improve"
-    Join = "Join"
-
-
 class Unit(str, Enum):
     base = "base"
     quote = "quote"
@@ -1671,16 +1662,16 @@ class OptionsSeriesInstance(Struct, omit_defaults=True):
 
 
 class QuotingParameters(Struct, omit_defaults=True):
-    improve_or_join: Optional[
+    improve_by: Optional[
         Annotated[
-            Optional[ImproveOrJoin],
+            Optional[int],
             Meta(
-                description="Whether to improve the market or join at the current best price"
+                description="If specified, improve the market by the specified number of ticks otherwise, join the current best price"
             ),
         ]
     ] = None
     """
-    Whether to improve the market or join at the current best price
+    If specified, improve the market by the specified number of ticks otherwise, join the current best price
     """
     max_quote_quantity: Optional[
         Annotated[
@@ -1701,23 +1692,49 @@ class QuotingParameters(Struct, omit_defaults=True):
     """
     Maximum number of ticks less aggressive than the BBO to quote
     """
+    ticks_before_repricing: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="optionally specify how many ticks away the market has to move before updating an existing quote."
+            ),
+        ]
+    ] = None
+    """
+    optionally specify how many ticks away the market has to move before updating an existing quote.
+    """
+    time_before_repricing: Optional[
+        Annotated[
+            Optional[HumanDuration],
+            Meta(
+                description="optionally specify how long to wait before updating an existing quote"
+            ),
+        ]
+    ] = None
+    """
+    optionally specify how long to wait before updating an existing quote
+    """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
-        improve_or_join: Optional[ImproveOrJoin] = None,
+        improve_by: Optional[int] = None,
         max_quote_quantity: Optional[Decimal] = None,
         max_ticks_outside: Optional[Decimal] = None,
+        ticks_before_repricing: Optional[Decimal] = None,
+        time_before_repricing: Optional[HumanDuration] = None,
     ):
         return cls(
-            improve_or_join,
+            improve_by,
             max_quote_quantity,
             max_ticks_outside,
+            ticks_before_repricing,
+            time_before_repricing,
         )
 
     def __str__(self) -> str:
-        return f"QuotingParameters(improve_or_join={self.improve_or_join},max_quote_quantity={self.max_quote_quantity},max_ticks_outside={self.max_ticks_outside})"
+        return f"QuotingParameters(improve_by={self.improve_by},max_quote_quantity={self.max_quote_quantity},max_ticks_outside={self.max_ticks_outside},ticks_before_repricing={self.ticks_before_repricing},time_before_repricing={self.time_before_repricing})"
 
 
 class SpreadLeg(Struct, omit_defaults=True):
@@ -2912,15 +2929,6 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
 
     dir: OrderDir
     execution_venue: str
-    improve_or_join: Annotated[
-        ImproveOrJoin,
-        Meta(
-            description="Whether to improve the market or join at the current best price"
-        ),
-    ]
-    """
-    Whether to improve the market or join at the current best price
-    """
     limit_price: Annotated[
         Decimal, Meta(description="the most aggressive price the algo will quote at")
     ]
@@ -2930,6 +2938,17 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     marketdata_venue: str
     quantity: Decimal
     symbol: str
+    improve_by: Optional[
+        Annotated[
+            Optional[int],
+            Meta(
+                description="If specified, improve the market by the specified number of ticks otherwise, join the current best price"
+            ),
+        ]
+    ] = None
+    """
+    If specified, improve the market by the specified number of ticks otherwise, join the current best price
+    """
     max_quote_quantity: Optional[
         Annotated[
             Optional[Decimal], Meta(description="Maximum quantity to quote at a time")
@@ -2949,6 +2968,17 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     """
     Maximum number of ticks less aggressive than the BBO to quote - `None`: No constraint on distance from BBO - will quote at any valid price up to the limit price - `Some(n)`: Will only quote if within n ticks of the best same-side price (BBO) Orders beyond this distance are cancelled as they're unlikely to fill - Example: With `Some(5)` for a buy order, if best bid is 100, will only quote between 95-100
     """
+    post_only: Optional[
+        Annotated[
+            Optional[bool],
+            Meta(
+                description="By default, QuoteOneSide avoids marketable orders. Set to false with improve_by > 0 to allow the algo to potentially cross the market when improving."
+            ),
+        ]
+    ] = None
+    """
+    By default, QuoteOneSide avoids marketable orders. Set to false with improve_by > 0 to allow the algo to potentially cross the market when improving.
+    """
     quantity_filled: Optional[
         Annotated[
             Optional[Decimal],
@@ -2960,6 +2990,28 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
     """
     Used to track existing fill quantity when modifying quote. Ignore for most use cases.
     """
+    ticks_before_repricing: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="optionally specify how many ticks away the market has to move before updating an existing quote."
+            ),
+        ]
+    ] = None
+    """
+    optionally specify how many ticks away the market has to move before updating an existing quote.
+    """
+    time_before_repricing: Optional[
+        Annotated[
+            Optional[HumanDuration],
+            Meta(
+                description="optionally specify how long to wait before updating an existing quote"
+            ),
+        ]
+    ] = None
+    """
+    optionally specify how long to wait before updating an existing quote
+    """
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -2967,30 +3019,36 @@ class QuoteOneSideParams(Struct, omit_defaults=True):
         cls,
         dir: OrderDir,
         execution_venue: str,
-        improve_or_join: ImproveOrJoin,
         limit_price: Decimal,
         marketdata_venue: str,
         quantity: Decimal,
         symbol: str,
+        improve_by: Optional[int] = None,
         max_quote_quantity: Optional[Decimal] = None,
         max_ticks_outside: Optional[Decimal] = None,
+        post_only: Optional[bool] = None,
         quantity_filled: Optional[Decimal] = None,
+        ticks_before_repricing: Optional[Decimal] = None,
+        time_before_repricing: Optional[HumanDuration] = None,
     ):
         return cls(
             dir,
             execution_venue,
-            improve_or_join,
             limit_price,
             marketdata_venue,
             quantity,
             symbol,
+            improve_by,
             max_quote_quantity,
             max_ticks_outside,
+            post_only,
             quantity_filled,
+            ticks_before_repricing,
+            time_before_repricing,
         )
 
     def __str__(self) -> str:
-        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},improve_or_join={self.improve_or_join},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},symbol={self.symbol},max_quote_quantity={self.max_quote_quantity},max_ticks_outside={self.max_ticks_outside},quantity_filled={self.quantity_filled})"
+        return f"QuoteOneSideParams(dir={self.dir},execution_venue={self.execution_venue},limit_price={self.limit_price},marketdata_venue={self.marketdata_venue},quantity={self.quantity},symbol={self.symbol},improve_by={self.improve_by},max_quote_quantity={self.max_quote_quantity},max_ticks_outside={self.max_ticks_outside},post_only={self.post_only},quantity_filled={self.quantity_filled},ticks_before_repricing={self.ticks_before_repricing},time_before_repricing={self.time_before_repricing})"
 
 
 class SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1(
