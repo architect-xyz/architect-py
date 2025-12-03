@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SetAccountTradingEnabledRequest",
+  "type": "object",
+  "required": [
+    "account",
+    "trading_enabled"
+  ],
+  "properties": {
+    "account": {
+      "$ref": "../definitions.json#/AccountIdOrName"
+    },
+    "trading_enabled": {
+      "type": "boolean"
+    }
+  },
+  "route": "/json.architect.Accounts/SetAccountTradingEnabled",
+  "rpc_method": "unary",
+  "service": "Accounts",
+  "response_type": "SetAccountTradingEnabledResponse"
+}

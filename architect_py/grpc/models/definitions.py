@@ -2011,6 +2011,7 @@ class AccountWithPermissions(Struct, omit_defaults=True):
     account: Account
     permissions: AccountPermissions
     trader: UserId
+    trading_enabled: bool
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
@@ -2019,15 +2020,17 @@ class AccountWithPermissions(Struct, omit_defaults=True):
         account: Account,
         permissions: AccountPermissions,
         trader: UserId,
+        trading_enabled: bool,
     ):
         return cls(
             account,
             permissions,
             trader,
+            trading_enabled,
         )
 
     def __str__(self) -> str:
-        return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader})"
+        return f"AccountWithPermissions(account={self.account},permissions={self.permissions},trader={self.trader},trading_enabled={self.trading_enabled})"
 
 
 class BatchOrder(Struct, omit_defaults=True):

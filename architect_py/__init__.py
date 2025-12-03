@@ -127,6 +127,12 @@ from .grpc.models.Accounts.OpenPaperAccountRequest import OpenPaperAccountReques
 from .grpc.models.Accounts.OpenPaperAccountResponse import OpenPaperAccountResponse
 from .grpc.models.Accounts.ResetPaperAccountRequest import ResetPaperAccountRequest
 from .grpc.models.Accounts.ResetPaperAccountResponse import ResetPaperAccountResponse
+from .grpc.models.Accounts.SetAccountTradingEnabledRequest import (
+    SetAccountTradingEnabledRequest,
+)
+from .grpc.models.Accounts.SetAccountTradingEnabledResponse import (
+    SetAccountTradingEnabledResponse,
+)
 from .grpc.models.Algo.AlgoOrder import AlgoOrder
 from .grpc.models.Algo.AlgoOrderRequest import AlgoOrderRequest
 from .grpc.models.Algo.AlgoOrdersRequest import AlgoOrdersRequest
@@ -505,6 +511,8 @@ __all__ = [
     "RqdAccountStatistics",
     "RqdAccountStatisticsRequest",
     "RqdAccountStatisticsResponse",
+    "SetAccountTradingEnabledRequest",
+    "SetAccountTradingEnabledResponse",
     "SimpleDecimal",
     "SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString1",
     "SnapshotOrUpdateForAliasKindAndSnapshotOrUpdateForStringAndString2",

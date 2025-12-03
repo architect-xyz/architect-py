@@ -147,7 +147,8 @@
     "required": [
       "account",
       "permissions",
-      "trader"
+      "trader",
+      "trading_enabled"
     ],
     "properties": {
       "account": {
@@ -158,6 +159,9 @@
       },
       "trader": {
         "$ref": "#/UserId"
+      },
+      "trading_enabled": {
+        "type": "boolean"
       }
     }
   },
