@@ -2,7 +2,13 @@ import asyncio
 import logging
 import re
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import (
+    date,
+    datetime,
+    time,
+    timedelta,
+    timezone,
+)
 from decimal import Decimal
 from typing import (
     Any,
@@ -32,6 +38,7 @@ from architect_py.graphql_client.fragments import (
 from architect_py.grpc.client import GrpcClient
 from architect_py.grpc.models import *
 from architect_py.grpc.models.definitions import (
+    AccountHistoryGranularity,
     AccountIdOrName,
     AccountWithPermissions,
     BracketParams,
@@ -1397,6 +1404,9 @@ class AsyncClient:
         account: str,
         from_inclusive: Optional[datetime] = None,
         to_exclusive: Optional[datetime] = None,
+        granularity: Optional[AccountHistoryGranularity] = None,
+        limit: Optional[int] = None,
+        time_of_day: Optional[time] = None,
     ) -> list[AccountSummary]:
         """
         Get historical sequence of account summaries for the given account.
@@ -1417,7 +1427,12 @@ class AsyncClient:
             )
 
         req = AccountHistoryRequest(
-            account=account, from_inclusive=from_inclusive, to_exclusive=to_exclusive
+            account=account,
+            from_inclusive=from_inclusive,
+            to_exclusive=to_exclusive,
+            granularity=granularity,
+            limit=limit,
+            time_of_day=time_of_day,
         )
         res = await grpc_client.unary_unary(req)
         return res.history

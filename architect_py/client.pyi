@@ -10,7 +10,7 @@ from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
 from architect_py.grpc.client import GrpcClient as GrpcClient
-from architect_py.grpc.models.definitions import AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, BracketParams as BracketParams, BracketStatus as BracketStatus, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OneCancelsOtherParams as OneCancelsOtherParams, OneCancelsOtherStatus as OneCancelsOtherStatus, OneTriggersOtherParams as OneTriggersOtherParams, OneTriggersOtherStatus as OneTriggersOtherStatus, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail
+from architect_py.grpc.models.definitions import AccountHistoryGranularity as AccountHistoryGranularity, AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, BracketParams as BracketParams, BracketStatus as BracketStatus, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OneCancelsOtherParams as OneCancelsOtherParams, OneCancelsOtherStatus as OneCancelsOtherStatus, OneTriggersOtherParams as OneTriggersOtherParams, OneTriggersOtherStatus as OneTriggersOtherStatus, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail
 from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
@@ -18,7 +18,7 @@ from architect_py.utils.orderbook import update_orderbook_side as update_orderbo
 from architect_py.utils.pandas import candles_to_dataframe as candles_to_dataframe, tickers_to_dataframe as tickers_to_dataframe
 from architect_py.utils.price_bands import price_band_pairs as price_band_pairs
 from architect_py.utils.symbol_parsing import nominative_expiration as nominative_expiration
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Any, AsyncGenerator, Literal, Sequence, overload
 
@@ -420,7 +420,7 @@ class Client:
 
         If both arguments are given, the union of matching accounts are returned.
         """
-    def get_account_history(self, account: str, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None) -> list[AccountSummary]:
+    def get_account_history(self, account: str, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, granularity: AccountHistoryGranularity | None = None, limit: int | None = None, time_of_day: time | None = None) -> list[AccountSummary]:
         """
         Get historical sequence of account summaries for the given account.
         """
