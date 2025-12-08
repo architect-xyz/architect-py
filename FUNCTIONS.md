@@ -59,8 +59,8 @@
 
 - **`list_accounts`**: List accounts for the user that the API key belongs to.
 - **`get_account_summary`**: Get account summary, including balances, positions, pnls, etc.
-- **`get_positions`**: Get positions for the specified symbols.
 - **`get_account_summaries`**: Get account summaries for accounts matching the filters.
+- **`get_positions_summary`**: Get positions summary for accounts matching the filters.
 - **`get_account_history`**: Get historical sequence of account summaries for the given account.
 - **`open_paper_account`**: Open a new paper trading account for the authenticated user.
 - **`reset_paper_account`**: Reset a paper trading account to its initial state.

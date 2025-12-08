@@ -32,6 +32,7 @@ from .grpc.models.definitions import (
     OrderStale,
     OrderStatus,
     OrderType,
+    PositionSummary,
     ProductCatalogInfo,
     PutOrCall,
     QuoteOneSideStatus,
@@ -192,6 +193,8 @@ from .grpc.models.Folio.HistoricalFillsRequest import HistoricalFillsRequest
 from .grpc.models.Folio.HistoricalFillsResponse import HistoricalFillsResponse
 from .grpc.models.Folio.HistoricalOrdersRequest import HistoricalOrdersRequest
 from .grpc.models.Folio.HistoricalOrdersResponse import HistoricalOrdersResponse
+from .grpc.models.Folio.PositionsRequest import PositionsRequest
+from .grpc.models.Folio.PositionsResponse import PositionsResponse
 from .grpc.models.Health.HealthCheckRequest import HealthCheckRequest
 from .grpc.models.Health.HealthCheckResponse import HealthCheckResponse
 from .grpc.models.Marketdata.ArrayOfL1BookSnapshot import ArrayOfL1BookSnapshot
@@ -489,6 +492,9 @@ __all__ = [
     "PlaceBatchOrderRequest",
     "PlaceBatchOrderResponse",
     "PlaceOrderRequest",
+    "PositionSummary",
+    "PositionsRequest",
+    "PositionsResponse",
     "PriceDisplayFormat",
     "ProductCatalogInfo",
     "ProductInfo",

@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PositionsResponse",
+  "type": "object",
+  "required": [
+    "positions"
+  ],
+  "properties": {
+    "positions": {
+      "type": "array",
+      "items": {
+        "$ref": "../definitions.json#/PositionSummary"
+      }
+    }
+  }
+}

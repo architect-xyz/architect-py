@@ -52,6 +52,7 @@ from architect_py.grpc.models.definitions import (
     OrderId,
     OrderSource,
     OrderType,
+    PositionSummary,
     QuoteOneSideParams,
     QuoteOneSideStatus,
     SortTickersBy,
@@ -1356,27 +1357,6 @@ class AsyncClient:
         res = await grpc_client.unary_unary(req)
         return res
 
-    async def get_positions(
-        self,
-        accounts: Optional[list[str]] = None,
-        trader: Optional[str] = None,
-    ) -> dict[str, Decimal]:
-        """
-        Get positions for the specified symbols.
-
-        Args:
-            symbols: list of symbol strings
-        """
-        account_summaries = await self.get_account_summaries(
-            accounts=accounts, trader=trader
-        )
-        positions: dict[str, Decimal] = {}
-        for summary in account_summaries:
-            for symbol, summary in summary.positions.items():
-                for pos in summary:
-                    positions[symbol] = positions.get(symbol, Decimal(0)) + pos.quantity
-        return positions
-
     async def get_account_summaries(
         self,
         accounts: Optional[list[str]] = None,
@@ -1398,6 +1378,50 @@ class AsyncClient:
         )
         res = await grpc_client.unary_unary(request)
         return res.account_summaries
+
+    async def get_positions(
+        self,
+        accounts: Optional[list[str]] = None,
+        trader: Optional[str] = None,
+    ) -> dict[str, Decimal]:
+        """
+        @deprecated(reason="Use get_positions_summary for an informative summary of positions,
+        or get_account_summaries for a faster, detailed view of positions.")
+
+        Args:
+            symbols: list of symbol strings
+        """
+        account_summaries = await self.get_account_summaries(
+            accounts=accounts, trader=trader
+        )
+        positions: dict[str, Decimal] = {}
+        for summary in account_summaries:
+            for symbol, summary in summary.positions.items():
+                for pos in summary:
+                    positions[symbol] = positions.get(symbol, Decimal(0)) + pos.quantity
+        return positions
+
+    async def get_positions_summary(
+        self,
+        accounts: Optional[list[str]] = None,
+        trader: Optional[str] = None,
+    ) -> list[PositionSummary]:
+        """
+        Get positions summary for accounts matching the filters.
+
+        Args:
+            accounts: list of account uuids or names
+            trader: if specified, return summaries for all accounts for this trader
+
+        If both arguments are given, the union of matching accounts are returned.
+
+        Returns:
+            a list of PositionSummary
+        """
+        grpc_client = await self._core()
+        req = PositionsRequest(accounts=accounts, trader=trader)
+        res = await grpc_client.unary_unary(req)
+        return res.positions
 
     async def get_account_history(
         self,

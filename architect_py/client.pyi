@@ -10,7 +10,7 @@ from architect_py.graphql_client import GraphQLClient as GraphQLClient
 from architect_py.graphql_client.exceptions import GraphQLClientGraphQLMultiError as GraphQLClientGraphQLMultiError
 from architect_py.graphql_client.fragments import ExecutionInfoFields as ExecutionInfoFields, ProductInfoFields as ProductInfoFields
 from architect_py.grpc.client import GrpcClient as GrpcClient
-from architect_py.grpc.models.definitions import AccountHistoryGranularity as AccountHistoryGranularity, AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, BracketParams as BracketParams, BracketStatus as BracketStatus, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OneCancelsOtherParams as OneCancelsOtherParams, OneCancelsOtherStatus as OneCancelsOtherStatus, OneTriggersOtherParams as OneTriggersOtherParams, OneTriggersOtherStatus as OneTriggersOtherStatus, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail
+from architect_py.grpc.models.definitions import AccountHistoryGranularity as AccountHistoryGranularity, AccountIdOrName as AccountIdOrName, AccountWithPermissions as AccountWithPermissions, BracketParams as BracketParams, BracketStatus as BracketStatus, CandleWidth as CandleWidth, L2BookDiff as L2BookDiff, OneCancelsOtherParams as OneCancelsOtherParams, OneCancelsOtherStatus as OneCancelsOtherStatus, OneTriggersOtherParams as OneTriggersOtherParams, OneTriggersOtherStatus as OneTriggersOtherStatus, OrderId as OrderId, OrderSource as OrderSource, OrderType as OrderType, PositionSummary as PositionSummary, QuoteOneSideParams as QuoteOneSideParams, QuoteOneSideStatus as QuoteOneSideStatus, SortTickersBy as SortTickersBy, SpreaderParams as SpreaderParams, SpreaderStatus as SpreaderStatus, TraderIdOrEmail as TraderIdOrEmail
 from architect_py.grpc.orderflow import OrderflowChannel as OrderflowChannel
 from architect_py.grpc.resolve_endpoint import PAPER_GRPC_PORT as PAPER_GRPC_PORT, resolve_endpoint as resolve_endpoint
 from architect_py.utils.nearest_tick import TickRoundMethod as TickRoundMethod
@@ -403,13 +403,6 @@ class Client:
             account: account uuid or name
                 Examples: "00000000-0000-0000-0000-000000000000", "STONEX:000000/JDoe"
         '''
-    def get_positions(self, accounts: list[str] | None = None, trader: str | None = None) -> dict[str, Decimal]:
-        """
-        Get positions for the specified symbols.
-
-        Args:
-            symbols: list of symbol strings
-        """
     def get_account_summaries(self, accounts: list[str] | None = None, trader: str | None = None) -> list[AccountSummary]:
         """
         Get account summaries for accounts matching the filters.
@@ -419,6 +412,27 @@ class Client:
             trader: if specified, return summaries for all accounts for this trader
 
         If both arguments are given, the union of matching accounts are returned.
+        """
+    def get_positions(self, accounts: list[str] | None = None, trader: str | None = None) -> dict[str, Decimal]:
+        '''
+        @deprecated(reason="Use get_positions_summary for an informative summary of positions,
+        or get_account_summaries for a faster, detailed view of positions.")
+
+        Args:
+            symbols: list of symbol strings
+        '''
+    def get_positions_summary(self, accounts: list[str] | None = None, trader: str | None = None) -> list[PositionSummary]:
+        """
+        Get positions summary for accounts matching the filters.
+
+        Args:
+            accounts: list of account uuids or names
+            trader: if specified, return summaries for all accounts for this trader
+
+        If both arguments are given, the union of matching accounts are returned.
+
+        Returns:
+            a list of PositionSummary
         """
     def get_account_history(self, account: str, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, granularity: AccountHistoryGranularity | None = None, limit: int | None = None, time_of_day: time | None = None) -> list[AccountSummary]:
         """

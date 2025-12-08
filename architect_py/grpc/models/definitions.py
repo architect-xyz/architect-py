@@ -628,6 +628,95 @@ class OrderType(str, Enum):
     TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT"
 
 
+class PositionSummary(Struct, omit_defaults=True):
+    """
+    A single aggregated position with P&L and notional computed
+    """
+
+    direction: Annotated[
+        OrderDir,
+        Meta(description='Position direction: "buy" for long, "sell" for short'),
+    ]
+    """
+    Position direction: "buy" for long, "sell" for short
+    """
+    quantity: Annotated[
+        Decimal,
+        Meta(
+            description="Net position quantity (signed: positive = long, negative = short)"
+        ),
+    ]
+    """
+    Net position quantity (signed: positive = long, negative = short)
+    """
+    symbol: Annotated[str, Meta(description="Tradable product symbol")]
+    """
+    Tradable product symbol
+    """
+    avg_cost_basis: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Weighted average cost basis (entry price)"),
+        ]
+    ] = None
+    """
+    Weighted average cost basis (entry price)
+    """
+    current_price: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(description="Current mark price (last price or mid)"),
+        ]
+    ] = None
+    """
+    Current mark price (last price or mid)
+    """
+    notional_usd: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Notional value in quote currency: current_price × quantity × multiplier"
+            ),
+        ]
+    ] = None
+    """
+    Notional value in quote currency: current_price × quantity × multiplier
+    """
+    unrealized_pnl: Optional[
+        Annotated[
+            Optional[Decimal], Meta(description="Unrealized P&L in quote currency")
+        ]
+    ] = None
+    """
+    Unrealized P&L in quote currency
+    """
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        direction: OrderDir,
+        quantity: Decimal,
+        symbol: str,
+        avg_cost_basis: Optional[Decimal] = None,
+        current_price: Optional[Decimal] = None,
+        notional_usd: Optional[Decimal] = None,
+        unrealized_pnl: Optional[Decimal] = None,
+    ):
+        return cls(
+            direction,
+            quantity,
+            symbol,
+            avg_cost_basis,
+            current_price,
+            notional_usd,
+            unrealized_pnl,
+        )
+
+    def __str__(self) -> str:
+        return f"PositionSummary(direction={self.direction},quantity={self.quantity},symbol={self.symbol},avg_cost_basis={self.avg_cost_basis},current_price={self.current_price},notional_usd={self.notional_usd},unrealized_pnl={self.unrealized_pnl})"
+
+
 class ProductCatalogInfo(Struct, omit_defaults=True):
     """
     Loosely normalized information about exchange products; used to seed symbology loaders and populate extended product info;

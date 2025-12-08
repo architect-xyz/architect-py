@@ -2158,6 +2158,66 @@
       }
     }
   },
+  "PositionSummary": {
+    "description": "A single aggregated position with P&L and notional computed",
+    "type": "object",
+    "required": [
+      "direction",
+      "quantity",
+      "symbol"
+    ],
+    "properties": {
+      "avg_cost_basis": {
+        "description": "Weighted average cost basis (entry price)",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "current_price": {
+        "description": "Current mark price (last price or mid)",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "direction": {
+        "description": "Position direction: \"buy\" for long, \"sell\" for short",
+        "allOf": [
+          {
+            "$ref": "#/Dir"
+          }
+        ]
+      },
+      "notional_usd": {
+        "description": "Notional value in quote currency: current_price \u00d7 quantity \u00d7 multiplier",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      },
+      "quantity": {
+        "description": "Net position quantity (signed: positive = long, negative = short)",
+        "type": "string",
+        "format": "decimal"
+      },
+      "symbol": {
+        "description": "Tradable product symbol",
+        "type": "string"
+      },
+      "unrealized_pnl": {
+        "description": "Unrealized P&L in quote currency",
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "decimal"
+      }
+    }
+  },
   "AccountHistoryGranularity": {
     "type": "string",
     "enum": [
