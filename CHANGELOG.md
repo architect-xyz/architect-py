@@ -2,6 +2,7 @@
 - Various algo improvements
 - PlaceOrderRequest/Order now has a `tag` field so that users can put in arbitrary tags
 - Bracket Algo working
+- enriched position summary
 
 
 # 5.9.5
