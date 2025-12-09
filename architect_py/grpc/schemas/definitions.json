@@ -2162,11 +2162,17 @@
     "description": "A single aggregated position with P&L and notional computed",
     "type": "object",
     "required": [
+      "account",
       "direction",
       "quantity",
       "symbol"
     ],
     "properties": {
+      "account": {
+        "description": "Account ID this position belongs to",
+        "type": "string",
+        "format": "uuid"
+      },
       "avg_cost_basis": {
         "description": "Weighted average cost basis (entry price)",
         "type": [

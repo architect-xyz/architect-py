@@ -633,6 +633,10 @@ class PositionSummary(Struct, omit_defaults=True):
     A single aggregated position with P&L and notional computed
     """
 
+    account: Annotated[str, Meta(description="Account ID this position belongs to")]
+    """
+    Account ID this position belongs to
+    """
     direction: Annotated[
         OrderDir,
         Meta(description='Position direction: "buy" for long, "sell" for short'),
@@ -695,6 +699,7 @@ class PositionSummary(Struct, omit_defaults=True):
     @classmethod
     def new(
         cls,
+        account: str,
         direction: OrderDir,
         quantity: Decimal,
         symbol: str,
@@ -704,6 +709,7 @@ class PositionSummary(Struct, omit_defaults=True):
         unrealized_pnl: Optional[Decimal] = None,
     ):
         return cls(
+            account,
             direction,
             quantity,
             symbol,
@@ -714,7 +720,7 @@ class PositionSummary(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"PositionSummary(direction={self.direction},quantity={self.quantity},symbol={self.symbol},avg_cost_basis={self.avg_cost_basis},current_price={self.current_price},notional_usd={self.notional_usd},unrealized_pnl={self.unrealized_pnl})"
+        return f"PositionSummary(account={self.account},direction={self.direction},quantity={self.quantity},symbol={self.symbol},avg_cost_basis={self.avg_cost_basis},current_price={self.current_price},notional_usd={self.notional_usd},unrealized_pnl={self.unrealized_pnl})"
 
 
 class ProductCatalogInfo(Struct, omit_defaults=True):
