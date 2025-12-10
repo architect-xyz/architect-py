@@ -1,3 +1,6 @@
+# 5.9.7
+- Added ability to update account risk rules via AccountRulesRequest
+
 # 5.9.6
 - Various algo improvements
 - PlaceOrderRequest/Order now has a `tag` field so that users can put in arbitrary tags
