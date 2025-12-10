@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UpdateAccountRuleResponse",
+  "type": "object",
+  "required": [
+    "account_rule"
+  ],
+  "properties": {
+    "account_rule": {
+      "$ref": "../definitions.json#/AccountRule"
+    }
+  }
+}

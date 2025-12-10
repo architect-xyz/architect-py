@@ -79,6 +79,44 @@ class AccountPosition(Struct, omit_defaults=True):
         return f"AccountPosition(quantity={self.quantity},break_even_price={self.break_even_price},cost_basis={self.cost_basis},liquidation_price={self.liquidation_price},trade_time={self.trade_time},unrealized_pnl={self.unrealized_pnl})"
 
 
+class AccountRule(Struct, omit_defaults=True):
+    account_id: str
+    specificity: int
+    target: str
+    trading_enabled: bool
+    ts: datetime
+    max_net_pos_qty: Optional[Decimal] = None
+    max_order_qty: Optional[Decimal] = None
+    min_net_pos_qty: Optional[Decimal] = None
+
+    # Constructor that takes all field titles as arguments for convenience
+    @classmethod
+    def new(
+        cls,
+        account_id: str,
+        specificity: int,
+        target: str,
+        trading_enabled: bool,
+        ts: datetime,
+        max_net_pos_qty: Optional[Decimal] = None,
+        max_order_qty: Optional[Decimal] = None,
+        min_net_pos_qty: Optional[Decimal] = None,
+    ):
+        return cls(
+            account_id,
+            specificity,
+            target,
+            trading_enabled,
+            ts,
+            max_net_pos_qty,
+            max_order_qty,
+            min_net_pos_qty,
+        )
+
+    def __str__(self) -> str:
+        return f"AccountRule(account_id={self.account_id},specificity={self.specificity},target={self.target},trading_enabled={self.trading_enabled},ts={self.ts},max_net_pos_qty={self.max_net_pos_qty},max_order_qty={self.max_order_qty},min_net_pos_qty={self.min_net_pos_qty})"
+
+
 class AccountStatistics(Struct, omit_defaults=True):
     cash_excess: Optional[
         Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]

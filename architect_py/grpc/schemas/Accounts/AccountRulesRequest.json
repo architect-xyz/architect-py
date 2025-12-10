@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AccountRulesRequest",
+  "type": "object",
+  "properties": {
+    "account_ids": {
+      "description": "If specified, filter to only these specific account IDs.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    }
+  },
+  "route": "/json.architect.Accounts/AccountRules",
+  "rpc_method": "unary",
+  "service": "Accounts",
+  "response_type": "AccountRulesResponse"
+}

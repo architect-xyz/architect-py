@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UpdateAccountRuleRequest",
+  "type": "object",
+  "required": [
+    "account_id",
+    "specificity",
+    "target"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "is_deleted": {
+      "description": "Whether this rule should be deleted",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "max_net_pos_qty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
+    "max_order_qty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
+    "min_net_pos_qty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
+    "specificity": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "target": {
+      "type": "string"
+    },
+    "trading_enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    }
+  },
+  "route": "/json.architect.Accounts/UpdateAccountRule",
+  "rpc_method": "unary",
+  "service": "Accounts",
+  "response_type": "UpdateAccountRuleResponse"
+}
