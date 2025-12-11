@@ -1589,6 +1589,8 @@ class AsyncClient:
         Historical orders are orders that are not open, having been filled,
         canceled, expired, or outed.
 
+        NOTE: a limit of 1000 is imposed on the number of orders returned.
+
         Args:
             order_ids: a list of order ids to get
             from_inclusive: the start date to get orders for
@@ -1673,6 +1675,7 @@ class AsyncClient:
     ) -> HistoricalFillsResponse:
         """
         Returns all fills matching the given filters.
+        NOTE: A limit of 1000 is imposed on the number of fills returned.
 
         Args:
             from_inclusive: the start date to get fills for

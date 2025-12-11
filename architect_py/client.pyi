@@ -494,6 +494,8 @@ class Client:
         Historical orders are orders that are not open, having been filled,
         canceled, expired, or outed.
 
+        NOTE: a limit of 1000 is imposed on the number of orders returned.
+
         Args:
             order_ids: a list of order ids to get
             from_inclusive: the start date to get orders for
@@ -529,6 +531,7 @@ class Client:
     def get_fills(self, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, venue: str | None = None, account: str | None = None, order_id: OrderId | None = None, limit: int | None = None) -> HistoricalFillsResponse:
         '''
         Returns all fills matching the given filters.
+        NOTE: A limit of 1000 is imposed on the number of fills returned.
 
         Args:
             from_inclusive: the start date to get fills for
