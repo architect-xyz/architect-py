@@ -530,7 +530,7 @@ class AsyncClient:
         res = await self.graphql_client.get_product_info_query(symbol)
         if res.product_info is None:
             if "/" in symbol:
-                assert ValueError(
+                raise ValueError(
                     f"Product info not found for symbol: {symbol}.\n"
                     "for calling get_product_info, "
                     f"symbol {symbol} should not have a quote (ie should not end with /USD);"
