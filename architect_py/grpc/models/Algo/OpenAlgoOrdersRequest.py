@@ -35,7 +35,7 @@ class OpenAlgoOrdersRequest(Struct, omit_defaults=True):
     """
     parent_order_id: Optional[definitions.OrderId] = None
     status: Optional[List[definitions.AlgoOrderStatus]] = None
-    to_exclusive: Optional[datetime] = None
+    to_inclusive: Optional[datetime] = None
     trader: Optional[definitions.TraderIdOrEmail] = None
 
     # Constructor that takes all field titles as arguments for convenience
@@ -50,7 +50,7 @@ class OpenAlgoOrdersRequest(Struct, omit_defaults=True):
         order_ids: Optional[List[definitions.OrderId]] = None,
         parent_order_id: Optional[definitions.OrderId] = None,
         status: Optional[List[definitions.AlgoOrderStatus]] = None,
-        to_exclusive: Optional[datetime] = None,
+        to_inclusive: Optional[datetime] = None,
         trader: Optional[definitions.TraderIdOrEmail] = None,
     ):
         return cls(
@@ -62,12 +62,12 @@ class OpenAlgoOrdersRequest(Struct, omit_defaults=True):
             order_ids,
             parent_order_id,
             status,
-            to_exclusive,
+            to_inclusive,
             trader,
         )
 
     def __str__(self) -> str:
-        return f"OpenAlgoOrdersRequest(account={self.account},algo={self.algo},display_symbol={self.display_symbol},from_inclusive={self.from_inclusive},limit={self.limit},order_ids={self.order_ids},parent_order_id={self.parent_order_id},status={self.status},to_exclusive={self.to_exclusive},trader={self.trader})"
+        return f"OpenAlgoOrdersRequest(account={self.account},algo={self.algo},display_symbol={self.display_symbol},from_inclusive={self.from_inclusive},limit={self.limit},order_ids={self.order_ids},parent_order_id={self.parent_order_id},status={self.status},to_inclusive={self.to_inclusive},trader={self.trader})"
 
     @staticmethod
     def get_response_type():

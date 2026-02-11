@@ -70,7 +70,7 @@
         "$ref": "../definitions.json#/AlgoOrderStatus"
       }
     },
-    "to_exclusive": {
+    "to_inclusive": {
       "type": [
         "string",
         "null"

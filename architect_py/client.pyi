@@ -505,9 +505,6 @@ class Client:
             parent_order_id: the parent order id to get orders for
         Returns:
             Historical orders that match the union of the filters.
-
-        If order_ids is not specified, then from_inclusive and to_exclusive
-        MUST be specified.
         """
     def get_order(self, order_id: OrderId) -> Order | None:
         """
@@ -743,9 +740,12 @@ class Client:
         Returns:
             Updated AlgoOrder object with new parameters
         """
-    def get_open_algo_orders(self, order_ids: list[OrderId] | OrderId | None = None, algo: str | None = None, parent_order_id: OrderId | None = None, account: AccountIdOrName | None = None, trader: TraderIdOrEmail | None = None, display_symbol: str | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, limit: int | None = None) -> list[AlgoOrder]:
+    def get_open_algo_orders(self, order_ids: list[OrderId] | OrderId | None = None, algo: str | None = None, parent_order_id: OrderId | None = None, account: AccountIdOrName | None = None, trader: TraderIdOrEmail | None = None, display_symbol: str | None = None, from_inclusive: datetime | None = None, to_inclusive: datetime | None = None, limit: int | None = None) -> list[AlgoOrder]:
         """
         Returns a list of all open algo orders that match the filters.
+
+        If no filters are provided, this returns open algo orders up to the service default limit
+        (currently 100 unless overridden by `limit`).
 
         Args:
             order_ids: a list of order ids to get or a single order id
@@ -754,8 +754,8 @@ class Client:
             account: filter by a specific account
             trader: the trader to get algo orders for
             display_symbol: filter by a specific display symbol
-            from_inclusive: the start date to get algo orders for, must include the timezone
-            to_exclusive: the end date to get algo orders for, must include the timezone
+            from_inclusive: optional start date filter, must include the timezone
+            to_inclusive: optional end date filter (inclusive), must include the timezone
             limit: the maximum number of algo orders to return
 
         Returns:

@@ -1,3 +1,7 @@
+# 5.9.8
+- get_open_algo_orders no longer requires the from_inclusive and to_inclusive
+- made msgspec requirement >=20.0.0
+
 # 5.9.7
 - Added ability to update account risk rules via AccountRulesRequest
 

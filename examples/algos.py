@@ -71,7 +71,10 @@ async def send_oto_order():
     assert status is not None, "Status details must be available"
     print(status.status_details)
 
-    await client.get_open_orders()
+    open_algo_orders = await client.get_open_algo_orders(order_ids=order.id)
+    open_child_orders = await client.get_open_orders(parent_order_id=order.id)
+    print(f"Open algo orders after place: {[o.id for o in open_algo_orders]}")
+    print(f"Open child OMS orders after place: {[o.id for o in open_child_orders]}")
 
     await asyncio.sleep(1)
     status = await client.get_algo_order_status(order.id)
@@ -82,4 +85,7 @@ async def send_oto_order():
 
     await client.stop_algo_order(order.id)
 
-    await client.get_open_orders()
+    open_algo_orders = await client.get_open_algo_orders(order_ids=order.id)
+    open_child_orders = await client.get_open_orders(parent_order_id=order.id)
+    print(f"Open algo orders after stop: {[o.id for o in open_algo_orders]}")
+    print(f"Open child OMS orders after stop: {[o.id for o in open_child_orders]}")

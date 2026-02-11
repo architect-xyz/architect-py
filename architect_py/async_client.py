@@ -1396,8 +1396,8 @@ class AsyncClient:
         )
         positions: dict[str, Decimal] = {}
         for summary in account_summaries:
-            for symbol, summary in summary.positions.items():
-                for pos in summary:
+            for symbol, symbol_positions in summary.positions.items():
+                for pos in symbol_positions:
                     positions[symbol] = positions.get(symbol, Decimal(0)) + pos.quantity
         return positions
 
@@ -1437,18 +1437,14 @@ class AsyncClient:
         """
         grpc_client = await self._core()
         if from_inclusive is not None:
-            assert from_inclusive.tzinfo is timezone.utc, (
-                "from_inclusive must be a utc datetime:\n"
-                "for example datetime.now(timezone.utc) or \n"
-                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
-            )
+            if not from_inclusive.tzinfo:
+                raise ValueError("start time must be timezone-aware")
+            from_inclusive = from_inclusive.astimezone(timezone.utc)
 
         if to_exclusive is not None:
-            assert to_exclusive.tzinfo is timezone.utc, (
-                "to_exclusive must be a utc datetime:\n"
-                "for example datetime.now(timezone.utc) or \n"
-                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
-            )
+            if not to_exclusive.tzinfo:
+                raise ValueError("end time must be timezone-aware")
+            to_exclusive = to_exclusive.astimezone(timezone.utc)
 
         req = AccountHistoryRequest(
             account=account,
@@ -1600,9 +1596,6 @@ class AsyncClient:
             parent_order_id: the parent order id to get orders for
         Returns:
             Historical orders that match the union of the filters.
-
-        If order_ids is not specified, then from_inclusive and to_exclusive
-        MUST be specified.
         """
         grpc_client = await self._core()
 
@@ -1625,12 +1618,6 @@ class AsyncClient:
             to_exclusive=to_exclusive,
         )
         orders = await grpc_client.unary_unary(historical_orders_request)
-        if orders is None:
-            raise ValueError(
-                "No orders found for the given filters. "
-                "If order_ids is not specified, then from_inclusive and to_exclusive "
-                "MUST be specified."
-            )
         return orders.orders
 
     async def get_order(self, order_id: OrderId) -> Optional[Order]:
@@ -1686,18 +1673,14 @@ class AsyncClient:
         """
         grpc_client = await self._core()
         if from_inclusive is not None:
-            assert from_inclusive.tzinfo is timezone.utc, (
-                "from_inclusive must be a utc datetime:\n"
-                "for example datetime.now(timezone.utc) or \n"
-                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
-            )
+            if not from_inclusive.tzinfo:
+                raise ValueError("start time must be timezone-aware")
+            from_inclusive = from_inclusive.astimezone(timezone.utc)
 
         if to_exclusive is not None:
-            assert to_exclusive.tzinfo is timezone.utc, (
-                "to_exclusive must be a utc datetime:\n"
-                "for example datetime.now(timezone.utc) or \n"
-                "dt = datetime(2025, 4, 15, 12, 0, 0, tzinfo=timezone.utc)"
-            )
+            if not to_exclusive.tzinfo:
+                raise ValueError("end time must be timezone-aware")
+            to_exclusive = to_exclusive.astimezone(timezone.utc)
         req = HistoricalFillsRequest(
             account=account,
             from_inclusive=from_inclusive,
@@ -2312,11 +2295,14 @@ class AsyncClient:
         trader: Optional[TraderIdOrEmail] = None,
         display_symbol: Optional[str] = None,
         from_inclusive: Optional[datetime] = None,
-        to_exclusive: Optional[datetime] = None,
+        to_inclusive: Optional[datetime] = None,
         limit: Optional[int] = None,
     ) -> list[AlgoOrder]:
         """
         Returns a list of all open algo orders that match the filters.
+
+        If no filters are provided, this returns open algo orders up to the service default limit
+        (currently 100 unless overridden by `limit`).
 
         Args:
             order_ids: a list of order ids to get or a single order id
@@ -2325,29 +2311,24 @@ class AsyncClient:
             account: filter by a specific account
             trader: the trader to get algo orders for
             display_symbol: filter by a specific display symbol
-            from_inclusive: the start date to get algo orders for, must include the timezone
-            to_exclusive: the end date to get algo orders for, must include the timezone
+            from_inclusive: optional start date filter, must include the timezone
+            to_inclusive: optional end date filter (inclusive), must include the timezone
             limit: the maximum number of algo orders to return
 
         Returns:
             List of open algo orders that match the filters
         """
         grpc_client = await self._core()
-        if order_ids is None and (from_inclusive is None or to_exclusive is None):
-            raise ValueError(
-                "If order_ids is not specified, then from_inclusive and to_exclusive "
-                "MUST be specified."
-            )
 
         if from_inclusive is not None:
             if not from_inclusive.tzinfo:
                 raise ValueError("start time must be timezone-aware")
             from_inclusive = from_inclusive.astimezone(timezone.utc)
 
-        if to_exclusive is not None:
-            if not to_exclusive.tzinfo:
+        if to_inclusive is not None:
+            if not to_inclusive.tzinfo:
                 raise ValueError("end time must be timezone-aware")
-            to_exclusive = to_exclusive.astimezone(timezone.utc)
+            to_inclusive = to_inclusive.astimezone(timezone.utc)
 
         if order_ids is not None and not isinstance(order_ids, list):
             order_ids = [order_ids]
@@ -2360,7 +2341,7 @@ class AsyncClient:
             parent_order_id=parent_order_id,
             display_symbol=display_symbol,
             from_inclusive=from_inclusive,
-            to_exclusive=to_exclusive,
+            to_inclusive=to_inclusive,
             limit=limit,
         )
         algo_orders = await grpc_client.unary_unary(open_algo_orders_request)
