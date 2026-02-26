@@ -1,3 +1,6 @@
+# 5.9.9
+- Added `get_options_contracts()` for quoting multiple options contracts in a single batch request
+
 # 5.9.8
 - get_open_algo_orders no longer requires the from_inclusive and to_inclusive
 - made msgspec requirement >=20.0.0

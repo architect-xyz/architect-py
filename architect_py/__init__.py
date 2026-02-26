@@ -274,6 +274,12 @@ from .grpc.models.OptionsMarketdata.OptionsContractGreeksRequest import (
     OptionsContractGreeksRequest,
 )
 from .grpc.models.OptionsMarketdata.OptionsContractRequest import OptionsContractRequest
+from .grpc.models.OptionsMarketdata.OptionsContractsRequest import (
+    OptionsContractsRequest,
+)
+from .grpc.models.OptionsMarketdata.OptionsContractsResponse import (
+    OptionsContractsResponse,
+)
 from .grpc.models.OptionsMarketdata.OptionsExpirations import OptionsExpirations
 from .grpc.models.OptionsMarketdata.OptionsExpirationsRequest import (
     OptionsExpirationsRequest,
@@ -461,6 +467,8 @@ __all__ = [
     "OptionsContract",
     "OptionsContractGreeksRequest",
     "OptionsContractRequest",
+    "OptionsContractsRequest",
+    "OptionsContractsResponse",
     "OptionsExerciseType",
     "OptionsExpirations",
     "OptionsExpirationsRequest",

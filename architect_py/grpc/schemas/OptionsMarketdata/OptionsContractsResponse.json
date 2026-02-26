@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OptionsContractsResponse",
+  "type": "object",
+  "required": [
+    "options_contracts"
+  ],
+  "properties": {
+    "options_contracts": {
+      "type": "array",
+      "items": {
+        "$ref": "../OptionsMarketdata/OptionsContract.json/#"
+      }
+    }
+  }
+}
