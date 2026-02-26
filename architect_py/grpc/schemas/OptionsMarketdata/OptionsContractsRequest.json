@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OptionsContractsRequest",
+  "type": "object",
+  "required": [
+    "tradable_products"
+  ],
+  "properties": {
+    "tradable_products": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "route": "/json.architect.OptionsMarketdata/OptionsContracts",
+  "rpc_method": "unary",
+  "service": "OptionsMarketdata",
+  "response_type": "OptionsContractsResponse"
+}
