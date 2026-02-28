@@ -93,3 +93,24 @@ def add_one_month_to_datetime(dt: datetime):
         return dt.replace(year=dt.year + 1, month=1)
     else:
         return dt.replace(month=dt.month + 1)
+
+
+@pytest.mark.asyncio
+async def test_get_product_info_error_message_for_symbol_with_slash():
+    from unittest.mock import AsyncMock, MagicMock
+
+    from architect_py.graphql_client.get_product_info_query import (
+        GetProductInfoQuerySymbology,
+    )
+
+    mock_client = MagicMock(spec=AsyncClient)
+    mock_client.graphql_client = AsyncMock()
+    mock_response = GetProductInfoQuerySymbology(product_info=None)
+    mock_client.graphql_client.get_product_info_query = AsyncMock(
+        return_value=mock_response
+    )
+
+    with pytest.raises(ValueError) as exc_info:
+        await AsyncClient.get_product_info(mock_client, "ES 20250620 CME Future/USD")
+
+    assert "should not have a quote" in str(exc_info.value)
