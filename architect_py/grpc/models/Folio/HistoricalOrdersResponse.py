@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from msgspec import Struct
 
@@ -12,16 +12,19 @@ from ..Oms.Order import Order
 
 class HistoricalOrdersResponse(Struct, omit_defaults=True):
     orders: List[Order]
+    next_cursor: Optional[str] = None
 
     # Constructor that takes all field titles as arguments for convenience
     @classmethod
     def new(
         cls,
         orders: List[Order],
+        next_cursor: Optional[str] = None,
     ):
         return cls(
             orders,
+            next_cursor,
         )
 
     def __str__(self) -> str:
-        return f"HistoricalOrdersResponse(orders={self.orders})"
+        return f"HistoricalOrdersResponse(orders={self.orders},next_cursor={self.next_cursor})"

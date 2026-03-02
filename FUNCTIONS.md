@@ -70,7 +70,7 @@
 ### 📝 Order management
 
 - **`get_open_orders`**: Returns a list of open orders for the user that match the filters.
-- **`get_historical_orders`**: Returns a list of all historical orders that match the filters.
+- **`get_historical_orders`**: Returns a paginated historical orders response that matches the filters.
 - **`get_order`**: Returns the specified order.  Useful for looking at past sent orders.
 - **`get_orders`**: Returns the specified orders.  Useful for looking at past sent orders.
 - **`get_fills`**: Returns all fills matching the given filters.

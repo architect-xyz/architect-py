@@ -13,6 +13,13 @@
         }
       ]
     },
+    "cursor": {
+      "description": "Opaque keyset cursor (base64url no-pad) for pagination.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "from_inclusive": {
       "type": [
         "string",

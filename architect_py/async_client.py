@@ -1578,14 +1578,32 @@ class AsyncClient:
         venue: Optional[str] = None,
         account: Optional[str] = None,
         parent_order_id: Optional[OrderId] = None,
-    ) -> list[Order]:
+        limit: Optional[int] = None,
+        cursor: Optional[str] = None,
+    ) -> HistoricalOrdersResponse:
         """
-        Returns a list of all historical orders that match the filters.
+        Returns a paginated historical orders response that matches the filters.
 
         Historical orders are orders that are not open, having been filled,
         canceled, expired, or outed.
 
-        NOTE: a limit of 1000 is imposed on the number of orders returned.
+        Results are ordered by recv_time descending (newest first).
+        Each response returns orders plus a next_cursor token.
+
+        To paginate through all orders in a time window:
+
+            all_orders = []
+            cursor = None
+            while True:
+                response = await client.get_historical_orders(
+                    from_inclusive=start,
+                    to_exclusive=end,
+                    cursor=cursor,
+                )
+                all_orders.extend(response.orders)
+                if response.next_cursor is None:
+                    break
+                cursor = response.next_cursor
 
         Args:
             order_ids: a list of order ids to get
@@ -1594,8 +1612,10 @@ class AsyncClient:
             venue: the venue to get orders for, e.g. CME
             account: account uuid or name
             parent_order_id: the parent order id to get orders for
+            limit: maximum number of orders to return (default 1000, max 1000)
+            cursor: opaque keyset cursor from a previous response
         Returns:
-            Historical orders that match the union of the filters.
+            HistoricalOrdersResponse with orders and next_cursor.
         """
         grpc_client = await self._core()
 
@@ -1616,9 +1636,10 @@ class AsyncClient:
             parent_order_id=parent_order_id,
             from_inclusive=from_inclusive,
             to_exclusive=to_exclusive,
+            limit=limit,
+            cursor=cursor,
         )
-        orders = await grpc_client.unary_unary(historical_orders_request)
-        return orders.orders
+        return await grpc_client.unary_unary(historical_orders_request)
 
     async def get_order(self, order_id: OrderId) -> Optional[Order]:
         """
