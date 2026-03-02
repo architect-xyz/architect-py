@@ -1,5 +1,6 @@
 # 5.9.9
 - Added `get_options_contracts()` for quoting multiple options contracts in a single batch request
+- `get_historical_orders` now returns `HistoricalOrdersResponse` (with `.orders` and `.next_cursor`) instead of `list[Order]`; use `response.next_cursor` to paginate through results
 
 # 5.9.8
 - get_open_algo_orders no longer requires the from_inclusive and to_inclusive

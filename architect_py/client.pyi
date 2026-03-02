@@ -487,14 +487,30 @@ class Client:
 
         Returns a list of all open orders for the authenticated user.
         '''
-    def get_historical_orders(self, order_ids: list[OrderId] | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, venue: str | None = None, account: str | None = None, parent_order_id: OrderId | None = None) -> list[Order]:
+    def get_historical_orders(self, order_ids: list[OrderId] | None = None, from_inclusive: datetime | None = None, to_exclusive: datetime | None = None, venue: str | None = None, account: str | None = None, parent_order_id: OrderId | None = None, limit: int | None = None, cursor: str | None = None) -> HistoricalOrdersResponse:
         """
-        Returns a list of all historical orders that match the filters.
+        Returns a paginated historical orders response that matches the filters.
 
         Historical orders are orders that are not open, having been filled,
         canceled, expired, or outed.
 
-        NOTE: a limit of 1000 is imposed on the number of orders returned.
+        Results are ordered by recv_time descending (newest first).
+        Each response returns orders plus a next_cursor token.
+
+        To paginate through all orders in a time window:
+
+            all_orders = []
+            cursor = None
+            while True:
+                response = client.get_historical_orders(
+                    from_inclusive=start,
+                    to_exclusive=end,
+                    cursor=cursor,
+                )
+                all_orders.extend(response.orders)
+                if response.next_cursor is None:
+                    break
+                cursor = response.next_cursor
 
         Args:
             order_ids: a list of order ids to get
@@ -503,8 +519,10 @@ class Client:
             venue: the venue to get orders for, e.g. CME
             account: account uuid or name
             parent_order_id: the parent order id to get orders for
+            limit: maximum number of orders to return (default 1000, max 1000)
+            cursor: opaque keyset cursor from a previous response
         Returns:
-            Historical orders that match the union of the filters.
+            HistoricalOrdersResponse with orders and next_cursor.
         """
     def get_order(self, order_id: OrderId) -> Order | None:
         """

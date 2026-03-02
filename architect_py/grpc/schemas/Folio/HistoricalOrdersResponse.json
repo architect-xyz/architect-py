@@ -6,6 +6,12 @@
     "orders"
   ],
   "properties": {
+    "next_cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "orders": {
       "type": "array",
       "items": {

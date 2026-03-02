@@ -16,6 +16,15 @@ from .. import definitions
 
 class HistoricalOrdersRequest(Struct, omit_defaults=True):
     account: Optional[definitions.AccountIdOrName] = None
+    cursor: Optional[
+        Annotated[
+            Optional[str],
+            Meta(description="Opaque keyset cursor (base64url no-pad) for pagination."),
+        ]
+    ] = None
+    """
+    Opaque keyset cursor (base64url no-pad) for pagination.
+    """
     from_inclusive: Optional[datetime] = None
     limit: Optional[
         Annotated[Optional[int], Meta(description="Default maximum is 1000.")]
@@ -42,6 +51,7 @@ class HistoricalOrdersRequest(Struct, omit_defaults=True):
     def new(
         cls,
         account: Optional[definitions.AccountIdOrName] = None,
+        cursor: Optional[str] = None,
         from_inclusive: Optional[datetime] = None,
         limit: Optional[int] = None,
         order_ids: Optional[List[definitions.OrderId]] = None,
@@ -52,6 +62,7 @@ class HistoricalOrdersRequest(Struct, omit_defaults=True):
     ):
         return cls(
             account,
+            cursor,
             from_inclusive,
             limit,
             order_ids,
@@ -62,7 +73,7 @@ class HistoricalOrdersRequest(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"HistoricalOrdersRequest(account={self.account},from_inclusive={self.from_inclusive},limit={self.limit},order_ids={self.order_ids},parent_order_id={self.parent_order_id},to_exclusive={self.to_exclusive},trader={self.trader},venue={self.venue})"
+        return f"HistoricalOrdersRequest(account={self.account},cursor={self.cursor},from_inclusive={self.from_inclusive},limit={self.limit},order_ids={self.order_ids},parent_order_id={self.parent_order_id},to_exclusive={self.to_exclusive},trader={self.trader},venue={self.venue})"
 
     @staticmethod
     def get_response_type():
