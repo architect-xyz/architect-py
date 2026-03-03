@@ -321,9 +321,24 @@ class Client:
         """
         Gets the ticker for a symbol.
         """
-    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, include_options: bool = False, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame:
+    def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame:
         """
-        Gets the tickers for a list of symbols.
+        Gets venue tickers by symbols or sort mode (`SYMBOL_ASC` / `SYMBOL_DESC` supported).
+
+        Exactly one of `symbols` or `sort_by` must be provided.
+
+        Args:
+            venue: marketdata venue.
+            symbols: explicit symbol list to query.
+            sort_by: one of VOLUME_DESC, CHANGE_ASC, CHANGE_DESC,
+                ABS_CHANGE_DESC, SYMBOL_ASC, SYMBOL_DESC.
+            offset: pagination offset.
+            limit: pagination limit.
+            as_dataframe: if True, return a pandas DataFrame.
+
+        Notes:
+            For US-EQUITIES sorted queries, pagination is applied to the full
+            feed-cache universe.
         """
     def get_options_contract(self, *, tradable_product: TradableProduct | str, venue: str) -> OptionsContract:
         '''
