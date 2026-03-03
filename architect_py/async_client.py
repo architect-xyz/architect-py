@@ -949,21 +949,34 @@ class AsyncClient:
         *,
         venue: Venue,
         symbols: Optional[Sequence[TradableProduct | str]] = None,
-        include_options: bool = False,
         sort_by: Optional[SortTickersBy | str] = None,
         offset: Optional[int] = None,
         limit: Optional[int] = None,
         as_dataframe: bool = False,
     ) -> Union[Sequence[Ticker], pd.DataFrame]:
         """
-        Gets the tickers for a list of symbols.
+        Gets venue tickers by symbols or sort mode (`SYMBOL_ASC` / `SYMBOL_DESC` supported).
+
+        Exactly one of `symbols` or `sort_by` must be provided.
+
+        Args:
+            venue: marketdata venue.
+            symbols: explicit symbol list to query.
+            sort_by: one of VOLUME_DESC, CHANGE_ASC, CHANGE_DESC,
+                ABS_CHANGE_DESC, SYMBOL_ASC, SYMBOL_DESC.
+            offset: pagination offset.
+            limit: pagination limit.
+            as_dataframe: if True, return a pandas DataFrame.
+
+        Notes:
+            For US-EQUITIES sorted queries, pagination is applied to the full
+            feed-cache universe.
         """
         grpc_client = await self._marketdata(venue)
         sort_by = SortTickersBy(sort_by) if sort_by else None
         symbols = [str(symbol) for symbol in symbols] if symbols else None
         req = TickersRequest.new(
             offset=offset,
-            include_options=include_options,
             sort_by=sort_by,
             limit=limit,
             symbols=symbols,

@@ -1465,7 +1465,9 @@
       "VOLUME_DESC",
       "CHANGE_ASC",
       "CHANGE_DESC",
-      "ABS_CHANGE_DESC"
+      "ABS_CHANGE_DESC",
+      "SYMBOL_ASC",
+      "SYMBOL_DESC"
     ]
   },
   "OrderId": {

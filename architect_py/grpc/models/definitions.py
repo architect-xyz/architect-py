@@ -1101,6 +1101,8 @@ class SortTickersBy(str, Enum):
     CHANGE_ASC = "CHANGE_ASC"
     CHANGE_DESC = "CHANGE_DESC"
     ABS_CHANGE_DESC = "ABS_CHANGE_DESC"
+    SYMBOL_ASC = "SYMBOL_ASC"
+    SYMBOL_DESC = "SYMBOL_DESC"
 
 
 class Statement(Struct, omit_defaults=True):
