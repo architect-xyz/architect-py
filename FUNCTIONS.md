@@ -47,6 +47,7 @@
 ### 🎯 Options
 
 - **`get_options_contract`**: Get the options contract for a tradable product.
+- **`get_options_contracts`**: Get options contracts for multiple tradable products in a single request.
 - **`get_options_chain`**: Get the options chain for a symbol.
 - **`get_options_expirations`**: Get the available expirations for a symbol's options chain.
 - **`get_options_wraps`**: Get the available wraps for a symbol's options chain.

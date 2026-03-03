@@ -338,6 +338,18 @@ class Client:
         Returns:
             An OptionsContract object for the tradable product.
         '''
+    def get_options_contracts(self, *, tradable_products: Sequence[TradableProduct | str], venue: str) -> list[OptionsContract]:
+        '''
+        Get options contracts for multiple tradable products in a single request.
+
+        Args:
+            tradable_products: list of tradable products to get options contracts for
+                e.g. ["AAPL  250919P00200000 Option/USD", "AAPL  250919C00200000 Option/USD"]
+            venue: the venue to get options contracts from, e.g. "US-EQUITIES"
+
+        Returns:
+            A list of OptionsContract objects.
+        '''
     def get_options_chain(self, *, expiration: date, underlying: str, wrap: str | None = None, venue: str) -> OptionsChain:
         '''
         Get the options chain for a symbol.
