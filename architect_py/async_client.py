@@ -1229,6 +1229,30 @@ class AsyncClient:
         res: OptionsContract = await grpc_client.unary_unary(req)
         return res
 
+    async def get_options_contracts(
+        self,
+        *,
+        tradable_products: Sequence[TradableProduct | str],
+        venue: str,
+    ) -> list[OptionsContract]:
+        """
+        Get options contracts for multiple tradable products in a single request.
+
+        Args:
+            tradable_products: list of tradable products to get options contracts for
+                e.g. ["AAPL  250919P00200000 Option/USD", "AAPL  250919C00200000 Option/USD"]
+            venue: the venue to get options contracts from, e.g. "US-EQUITIES"
+
+        Returns:
+            A list of OptionsContract objects.
+        """
+        grpc_client = await self._marketdata(venue)
+        req = OptionsContractsRequest(
+            tradable_products=[str(tp) for tp in tradable_products]
+        )
+        res: OptionsContractsResponse = await grpc_client.unary_unary(req)
+        return res.options_contracts
+
     async def get_options_chain(
         self,
         *,
