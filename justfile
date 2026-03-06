@@ -22,6 +22,10 @@ publish:
 test:
     uv run pytest --cov
 
+subrepo-push:
+    git subrepo push .
+
+
 typecheck:
     uv run pyright
 
