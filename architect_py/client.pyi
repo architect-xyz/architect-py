@@ -326,7 +326,7 @@ class Client:
         """
     def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame:
         """
-        Gets venue tickers by symbols or sort mode.
+        Gets venue tickers by symbols or sort mode (`SYMBOL_ASC` / `SYMBOL_DESC` supported).
 
         Exactly one of `symbols` or `sort_by` must be provided.
 

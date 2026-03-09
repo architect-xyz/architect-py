@@ -958,7 +958,7 @@ class AsyncClient:
         as_dataframe: bool = False,
     ) -> Union[Sequence[Ticker], pd.DataFrame]:
         """
-        Gets venue tickers by symbols or sort mode.
+        Gets venue tickers by symbols or sort mode (`SYMBOL_ASC` / `SYMBOL_DESC` supported).
 
         Exactly one of `symbols` or `sort_by` must be provided.
 
