@@ -316,11 +316,11 @@ async def test_paper_pnl(async_client: AsyncClient):
     )
 
     account_summary = await async_client.get_account_summary(account_id)
-    assert account_summary.purchasing_power is not None, (
-        "Expected purchasing power after trades to be set, got None"
+    assert account_summary.available_margin is not None, (
+        "Expected available_margin after trades to be set, got None"
     )
 
-    pre_purchasing_power = account_summary.purchasing_power
+    pre_available_margin = account_summary.available_margin
 
     quantity = Decimal(value="7")
 
@@ -352,13 +352,13 @@ async def test_paper_pnl(async_client: AsyncClient):
     pnl = (sell_fill_price - buy_fill_price) * ES_MULTIPLIER * quantity
 
     account_summary = await async_client.get_account_summary(account_id)
-    assert account_summary.purchasing_power is not None, (
-        "Expected purchasing power after trades to be set, got None"
+    assert account_summary.available_margin is not None, (
+        "Expected available_margin after trades to be set, got None"
     )
-    post_purchasing_power = account_summary.purchasing_power
+    post_available_margin = account_summary.available_margin
 
-    assert post_purchasing_power == pre_purchasing_power + pnl, (
-        f"Expected purchasing power to be {pre_purchasing_power + pnl}, got {post_purchasing_power}.\n"
-        f"Buy fill price: {buy_fill_price}, Sell fill price: {sell_fill_price}, quantity: {quantity}, pnl: {pnl}, pre_purchasing_power: {pre_purchasing_power}, post_purchasing_power: {post_purchasing_power}"
+    assert post_available_margin == pre_available_margin + pnl, (
+        f"Expected available_margin to be {pre_available_margin + pnl}, got {post_available_margin}.\n"
+        f"Buy fill price: {buy_fill_price}, Sell fill price: {sell_fill_price}, quantity: {quantity}, pnl: {pnl}, pre_available_margin: {pre_available_margin}, post_available_margin: {post_available_margin}"
     )
     await async_client.close()

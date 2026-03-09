@@ -23,61 +23,99 @@ class AccountSummary(Struct, omit_defaults=True):
     map from TradableProduct to a list of AccountPosition
     """
     timestamp: datetime
-    cash_excess: Optional[
-        Annotated[Optional[Decimal], Meta(description="Cash available to withdraw.")]
+    available_margin: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Pre-multiplied margin basis available for new risk. Instrument-specific purchasing power must be derived from this and margin rate."
+            ),
+        ]
     ] = None
     """
-    Cash available to withdraw.
+    Pre-multiplied margin basis available for new risk. Instrument-specific purchasing power must be derived from this and margin rate.
+    """
+    cash_excess: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Withdrawable cash only. Never use this as risk buffer or buying-power basis."
+            ),
+        ]
+    ] = None
+    """
+    Withdrawable cash only. Never use this as risk buffer or buying-power basis.
     """
     equity: Optional[
         Annotated[
             Optional[Decimal],
-            Meta(description="Total account equity; net liquidation value."),
+            Meta(
+                description="Total account equity / net liquidation value in quote currency."
+            ),
         ]
     ] = None
     """
-    Total account equity; net liquidation value.
+    Total account equity / net liquidation value in quote currency.
+    """
+    excess_liquidity: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Maintenance-margin risk buffer. Compute as `max(0, margin_balance - maintenance_margin_requirement)` when both inputs are trustworthy and same-currency; otherwise `None`."
+            ),
+        ]
+    ] = None
+    """
+    Maintenance-margin risk buffer. Compute as `max(0, margin_balance - maintenance_margin_requirement)` when both inputs are trustworthy and same-currency; otherwise `None`.
     """
     position_margin: Optional[
         Annotated[
             Optional[Decimal],
-            Meta(description="Margin requirement based on current positions only."),
+            Meta(description="Margin requirement from open positions only."),
         ]
     ] = None
     """
-    Margin requirement based on current positions only.
+    Margin requirement from open positions only.
     """
-    purchasing_power: Optional[
+    realized_pnl: Optional[
         Annotated[
             Optional[Decimal],
             Meta(
-                description="Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)"
+                description="Cumulative realized PnL since start of current trading day/session."
             ),
         ]
     ] = None
     """
-    Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)
+    Cumulative realized PnL since start of current trading day/session.
     """
-    realized_pnl: Optional[Decimal] = None
     total_margin: Optional[
         Annotated[
             Optional[Decimal],
             Meta(
-                description="Margin requirement calculated for worst-case based on open positions and working orders."
+                description="Margin requirement including open positions and working orders."
             ),
         ]
     ] = None
     """
-    Margin requirement calculated for worst-case based on open positions and working orders.
+    Margin requirement including open positions and working orders.
     """
-    unrealized_pnl: Optional[Decimal] = None
-    yesterday_equity: Optional[
+    unrealized_pnl: Optional[
         Annotated[
-            Optional[Decimal], Meta(description="Yesterday total account equity.")
+            Optional[Decimal], Meta(description="Mark-to-market PnL on open positions.")
         ]
     ] = None
     """
-    Yesterday total account equity.
+    Mark-to-market PnL on open positions.
+    """
+    yesterday_equity: Optional[
+        Annotated[
+            Optional[Decimal],
+            Meta(
+                description="Prior-day closing equity (or venue-provided equivalent)."
+            ),
+        ]
+    ] = None
+    """
+    Prior-day closing equity (or venue-provided equivalent).
     """
 
     # Constructor that takes all field titles as arguments for convenience
@@ -88,10 +126,11 @@ class AccountSummary(Struct, omit_defaults=True):
         balances: Dict[str, Decimal],
         positions: Dict[str, List[definitions.AccountPosition]],
         timestamp: datetime,
+        available_margin: Optional[Decimal] = None,
         cash_excess: Optional[Decimal] = None,
         equity: Optional[Decimal] = None,
+        excess_liquidity: Optional[Decimal] = None,
         position_margin: Optional[Decimal] = None,
-        purchasing_power: Optional[Decimal] = None,
         realized_pnl: Optional[Decimal] = None,
         total_margin: Optional[Decimal] = None,
         unrealized_pnl: Optional[Decimal] = None,
@@ -102,10 +141,11 @@ class AccountSummary(Struct, omit_defaults=True):
             balances,
             positions,
             timestamp,
+            available_margin,
             cash_excess,
             equity,
+            excess_liquidity,
             position_margin,
-            purchasing_power,
             realized_pnl,
             total_margin,
             unrealized_pnl,
@@ -113,4 +153,4 @@ class AccountSummary(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"AccountSummary(account={self.account},balances={self.balances},positions={self.positions},timestamp={self.timestamp},cash_excess={self.cash_excess},equity={self.equity},position_margin={self.position_margin},purchasing_power={self.purchasing_power},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"
+        return f"AccountSummary(account={self.account},balances={self.balances},positions={self.positions},timestamp={self.timestamp},available_margin={self.available_margin},cash_excess={self.cash_excess},equity={self.equity},excess_liquidity={self.excess_liquidity},position_margin={self.position_margin},realized_pnl={self.realized_pnl},total_margin={self.total_margin},unrealized_pnl={self.unrealized_pnl},yesterday_equity={self.yesterday_equity})"

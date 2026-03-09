@@ -13,6 +13,14 @@
       "type": "string",
       "format": "uuid"
     },
+    "available_margin": {
+      "description": "Pre-multiplied margin basis available for new risk. Instrument-specific purchasing power must be derived from this and margin rate.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
     "balances": {
       "type": "object",
       "additionalProperties": {
@@ -21,7 +29,7 @@
       }
     },
     "cash_excess": {
-      "description": "Cash available to withdraw.",
+      "description": "Withdrawable cash only. Never use this as risk buffer or buying-power basis.",
       "type": [
         "string",
         "null"
@@ -29,7 +37,15 @@
       "format": "decimal"
     },
     "equity": {
-      "description": "Total account equity; net liquidation value.",
+      "description": "Total account equity / net liquidation value in quote currency.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "decimal"
+    },
+    "excess_liquidity": {
+      "description": "Maintenance-margin risk buffer. Compute as `max(0, margin_balance - maintenance_margin_requirement)` when both inputs are trustworthy and same-currency; otherwise `None`.",
       "type": [
         "string",
         "null"
@@ -37,7 +53,7 @@
       "format": "decimal"
     },
     "position_margin": {
-      "description": "Margin requirement based on current positions only.",
+      "description": "Margin requirement from open positions only.",
       "type": [
         "string",
         "null"
@@ -54,15 +70,8 @@
         }
       }
     },
-    "purchasing_power": {
-      "description": "Total purchasing power; post-multiplied. (e.g. for cash margin account could be 2x available cash)",
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "decimal"
-    },
     "realized_pnl": {
+      "description": "Cumulative realized PnL since start of current trading day/session.",
       "type": [
         "string",
         "null"
@@ -74,7 +83,7 @@
       "format": "date-time"
     },
     "total_margin": {
-      "description": "Margin requirement calculated for worst-case based on open positions and working orders.",
+      "description": "Margin requirement including open positions and working orders.",
       "type": [
         "string",
         "null"
@@ -82,6 +91,7 @@
       "format": "decimal"
     },
     "unrealized_pnl": {
+      "description": "Mark-to-market PnL on open positions.",
       "type": [
         "string",
         "null"
@@ -89,7 +99,7 @@
       "format": "decimal"
     },
     "yesterday_equity": {
-      "description": "Yesterday total account equity.",
+      "description": "Prior-day closing equity (or venue-provided equivalent).",
       "type": [
         "string",
         "null"
