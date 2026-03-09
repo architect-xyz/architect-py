@@ -1,3 +1,6 @@
+# 5.9.10
+- `get_tickers` response now includes an `has_options_chain` field indicating whether a ticker has listed options
+
 # 5.9.9
 - Added `get_options_contracts()` for quoting multiple options contracts in a single batch request
 - `get_historical_orders` now returns `HistoricalOrdersResponse` (with `.orders` and `.next_cursor`) instead of `list[Order]`; use `response.next_cursor` to paginate through results

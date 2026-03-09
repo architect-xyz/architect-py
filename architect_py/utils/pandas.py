@@ -72,6 +72,7 @@ TICKERS_FIELD_MAP = {
     "mp": "mark_price",
     "o": "open_24h",
     "oi": "open_interest",
+    "has_options_chain": "has_options_chain",
     "p": "last_price",
     "price_to_earnings": "price_to_earnings",
     "q": "last_size",

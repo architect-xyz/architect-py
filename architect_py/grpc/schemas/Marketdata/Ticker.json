@@ -141,6 +141,12 @@
       ],
       "format": "decimal"
     },
+    "has_options_chain": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "p": {
       "title": "last_price",
       "type": [

@@ -937,7 +937,10 @@ class AsyncClient:
 
     async def get_ticker(self, symbol: TradableProduct | str, venue: Venue) -> Ticker:
         """
-        Gets the ticker for a symbol.
+        Gets the ticker for a symbol (US-EQUITIES populates `has_options_chain` when resolvable).
+
+        For US-EQUITIES, `Ticker.has_options_chain` is populated when optionability
+        can be resolved (`True`/`False`) and `None` when unknown.
         """
         grpc_client = await self._marketdata(venue)
         req = TickerRequest(symbol=str(symbol), venue=venue)
@@ -955,7 +958,7 @@ class AsyncClient:
         as_dataframe: bool = False,
     ) -> Union[Sequence[Ticker], pd.DataFrame]:
         """
-        Gets venue tickers by symbols or sort mode (`SYMBOL_ASC` / `SYMBOL_DESC` supported).
+        Gets venue tickers by symbols or sort mode.
 
         Exactly one of `symbols` or `sort_by` must be provided.
 
@@ -2165,10 +2168,12 @@ class AsyncClient:
     async def place_algo_order(
         self,
         *,
-        params: SpreaderParams
-        | QuoteOneSideParams
-        | OneTriggersOtherParams
-        | OneCancelsOtherParams,
+        params: (
+            SpreaderParams
+            | QuoteOneSideParams
+            | OneTriggersOtherParams
+            | OneCancelsOtherParams
+        ),
         account: AccountIdOrName,
         id: Optional[OrderId] = None,
         trader: Optional[TraderIdOrEmail] = None,
