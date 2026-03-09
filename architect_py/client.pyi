@@ -319,14 +319,14 @@ class Client:
         """
     def get_ticker(self, symbol: TradableProduct | str, venue: Venue) -> Ticker:
         """
-        Gets the ticker for a symbol (US-EQUITIES populates `has_options_chain` when resolvable).
+        Gets the ticker for a symbol.
 
         For US-EQUITIES, `Ticker.has_options_chain` is populated when optionability
         can be resolved (`True`/`False`) and `None` when unknown.
         """
     def get_tickers(self, *, venue: Venue, symbols: Sequence[TradableProduct | str] | None = None, sort_by: SortTickersBy | str | None = None, offset: int | None = None, limit: int | None = None, as_dataframe: bool = False) -> Sequence[Ticker] | pd.DataFrame:
         """
-        Gets venue tickers by symbols or sort mode (`SYMBOL_ASC` / `SYMBOL_DESC` supported).
+        Gets venue tickers by symbols or sort mode.
 
         Exactly one of `symbols` or `sort_by` must be provided.
 
