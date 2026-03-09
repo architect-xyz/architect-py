@@ -133,12 +133,12 @@ class AccountStatistics(Struct, omit_defaults=True):
         Annotated[
             Optional[Decimal],
             Meta(
-                description="Withdrawable cash only. Never use this as risk buffer or buying-power basis."
+                description="Withdrawable cash. Not necessarily equivalent to buying-power basis or risk buffer."
             ),
         ]
     ] = None
     """
-    Withdrawable cash only. Never use this as risk buffer or buying-power basis.
+    Withdrawable cash. Not necessarily equivalent to buying-power basis or risk buffer.
     """
     equity: Optional[
         Annotated[

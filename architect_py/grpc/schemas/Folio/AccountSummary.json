@@ -29,7 +29,7 @@
       }
     },
     "cash_excess": {
-      "description": "Withdrawable cash only. Never use this as risk buffer or buying-power basis.",
+      "description": "Withdrawable cash. Not necessarily equivalent to buying-power basis or risk buffer.",
       "type": [
         "string",
         "null"

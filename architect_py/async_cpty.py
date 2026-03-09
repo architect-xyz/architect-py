@@ -292,6 +292,7 @@ class AsyncCpty:
         yesterday_equity: Optional[Decimal] = None,
         position_margin: Optional[Decimal] = None,
         available_margin: Optional[Decimal] = None,
+        excess_liquidity: Optional[Decimal] = None,
         realized_pnl: Optional[Decimal] = None,
         unrealized_pnl: Optional[Decimal] = None,
     ):
@@ -319,6 +320,7 @@ class AsyncCpty:
                     yesterday_equity=yesterday_equity,
                     position_margin=position_margin,
                     available_margin=available_margin,
+                    excess_liquidity=excess_liquidity,
                     realized_pnl=realized_pnl,
                     unrealized_pnl=unrealized_pnl,
                 ),

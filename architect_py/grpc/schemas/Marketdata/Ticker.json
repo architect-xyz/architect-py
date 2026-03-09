@@ -86,6 +86,12 @@
       ],
       "format": "decimal"
     },
+    "has_options_chain": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "ip": {
       "title": "index_price",
       "type": [
@@ -140,12 +146,6 @@
         "null"
       ],
       "format": "decimal"
-    },
-    "has_options_chain": {
-      "type": [
-        "boolean",
-        "null"
-      ]
     },
     "p": {
       "title": "last_price",

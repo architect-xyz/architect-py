@@ -1,4 +1,5 @@
 # 5.9.10
+- account summary responses now use `available_margin` and `excess_liquidity`; `purchasing_power` was removed
 - `get_tickers` response now includes an `has_options_chain` field indicating whether a ticker has listed options
 
 # 5.9.9

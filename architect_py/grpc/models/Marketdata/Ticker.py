@@ -28,6 +28,7 @@ class Ticker(Struct, omit_defaults=True):
     fr: Optional[Annotated[Optional[Decimal], Meta(title="funding_rate")]] = None
     ft: Optional[Annotated[Optional[datetime], Meta(title="next_funding_time")]] = None
     h: Optional[Annotated[Optional[Decimal], Meta(title="high_24h")]] = None
+    has_options_chain: Optional[bool] = None
     ip: Optional[Annotated[Optional[Decimal], Meta(title="index_price")]] = None
     isp: Optional[
         Annotated[Optional[Decimal], Meta(title="indicative_settlement_price")]
@@ -37,7 +38,6 @@ class Ticker(Struct, omit_defaults=True):
     mp: Optional[Annotated[Optional[Decimal], Meta(title="mark_price")]] = None
     o: Optional[Annotated[Optional[Decimal], Meta(title="open_24h")]] = None
     oi: Optional[Annotated[Optional[Decimal], Meta(title="open_interest")]] = None
-    has_options_chain: Optional[bool] = None
     p: Optional[Annotated[Optional[Decimal], Meta(title="last_price")]] = None
     price_to_earnings: Optional[Decimal] = None
     q: Optional[Annotated[Optional[Decimal], Meta(title="last_size")]] = None
@@ -71,6 +71,7 @@ class Ticker(Struct, omit_defaults=True):
         funding_rate: Optional[Decimal] = None,
         next_funding_time: Optional[datetime] = None,
         high_24h: Optional[Decimal] = None,
+        has_options_chain: Optional[bool] = None,
         index_price: Optional[Decimal] = None,
         indicative_settlement_price: Optional[Decimal] = None,
         low_24h: Optional[Decimal] = None,
@@ -78,7 +79,6 @@ class Ticker(Struct, omit_defaults=True):
         mark_price: Optional[Decimal] = None,
         open_24h: Optional[Decimal] = None,
         open_interest: Optional[Decimal] = None,
-        has_options_chain: Optional[bool] = None,
         last_price: Optional[Decimal] = None,
         price_to_earnings: Optional[Decimal] = None,
         last_size: Optional[Decimal] = None,
@@ -107,6 +107,7 @@ class Ticker(Struct, omit_defaults=True):
             funding_rate,
             next_funding_time,
             high_24h,
+            has_options_chain,
             index_price,
             indicative_settlement_price,
             low_24h,
@@ -114,7 +115,6 @@ class Ticker(Struct, omit_defaults=True):
             mark_price,
             open_24h,
             open_interest,
-            has_options_chain,
             last_price,
             price_to_earnings,
             last_size,
@@ -130,7 +130,7 @@ class Ticker(Struct, omit_defaults=True):
         )
 
     def __str__(self) -> str:
-        return f"Ticker(symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},venue={self.ve},ask_price={self.ap},ask_size={self.as_},bid_price={self.bp},bid_size={self.bs},dividend={self.dividend},dividend_yield={self.dividend_yield},eps_adj={self.eps_adj},funding_rate={self.fr},next_funding_time={self.ft},high_24h={self.h},index_price={self.ip},indicative_settlement_price={self.isp},low_24h={self.l},market_cap={self.market_cap},mark_price={self.mp},open_24h={self.o},open_interest={self.oi},has_options_chain={self.has_options_chain},last_price={self.p},price_to_earnings={self.price_to_earnings},last_size={self.q},last_settlement_date={self.sd},shares_outstanding_weighted_adj={self.shares_outstanding_weighted_adj},last_settlement_price={self.sp},volume_24h={self.v},volume_30d={self.vm},session_high={self.xh},session_low={self.xl},session_open={self.xo},session_volume={self.xv})"
+        return f"Ticker(symbol={self.s},timestamp_ns={self.tn},timestamp={self.ts},venue={self.ve},ask_price={self.ap},ask_size={self.as_},bid_price={self.bp},bid_size={self.bs},dividend={self.dividend},dividend_yield={self.dividend_yield},eps_adj={self.eps_adj},funding_rate={self.fr},next_funding_time={self.ft},high_24h={self.h},has_options_chain={self.has_options_chain},index_price={self.ip},indicative_settlement_price={self.isp},low_24h={self.l},market_cap={self.market_cap},mark_price={self.mp},open_24h={self.o},open_interest={self.oi},last_price={self.p},price_to_earnings={self.price_to_earnings},last_size={self.q},last_settlement_date={self.sd},shares_outstanding_weighted_adj={self.shares_outstanding_weighted_adj},last_settlement_price={self.sp},volume_24h={self.v},volume_30d={self.vm},session_high={self.xh},session_low={self.xl},session_open={self.xo},session_volume={self.xv})"
 
     @property
     def symbol(self) -> str:
